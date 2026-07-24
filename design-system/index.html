@@ -246,6 +246,11 @@ table.map td code{font-size:12px}
 .phone{width:402px;zoom:var(--ps,.72);margin:0 auto;border-radius:var(--radius-device-outer);background:var(--device-bezel);padding:10px;box-shadow:var(--shadow-2)}
 .phone .screen{border-radius:var(--radius-device);overflow:hidden;background:var(--paper);position:relative;aspect-ratio:402/874}
 .phone img.shot{width:100%;display:block}
+/* An <img> has no CSS context, so a currentColor SVG renders BLACK and a #484848
+   wordmark stays dark — both disappear on a dark surface. Invert monochrome marks in
+   dark mode. Brand-coloured marks (miden orange, aave violet) and multi-colour
+   illustrations are deliberately excluded — inverting those would corrupt the brand. */
+[data-theme="dark"] img[data-mono]{filter:invert(1)}
 [data-theme="light"] .only-dark{display:none}
 [data-theme="dark"] .only-light{display:none}
 /* balance card is a colored surface in light, near-black in dark (hairline delineates it) */
@@ -288,6 +293,8 @@ table.map td code{font-size:12px}
    collapsed action tab), so the icon's own colour is never flattened against its chip. */
 .mrow .ic{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex:none;overflow:hidden}
 .mrow .ic img{width:38px;height:38px;display:block}
+/* white-marked token logos need a disc to sit on, in both themes */
+.mrow .ic img[src*='usdc'],.vaultrow img[src*='usdc'],.dapp .tile img[src*='usdc']{background:#2775CA;border-radius:50%}
 .mrow .ic.sq{background:var(--surface-2);border-radius:var(--radius-md)}
 .mrow .ic.sq img{width:21px;height:21px}
 .mrow .nm{font-weight:700;font-size:14.5px}
@@ -1012,7 +1019,7 @@ ul.tick li:before{content:"→";position:absolute;left:2px;color:var(--accent-in
     <div class="card mcell" style="margin-top:14px">
       <div class="mlabel">Segmented tabs · expand + collapse · 320ms spatial — tap through them</div>
       <div class="mseg" data-seg style="max-width:380px;padding:0">
-        <div class="seg on"><img src="assets/icons/wallet.svg" alt=""><span class="lbl">Overview</span></div>
+        <div class="seg on"><img src="assets/icons/wallet.svg" data-mono alt=""><span class="lbl">Overview</span></div>
         <div class="seg"><img src="assets/icons/send-new.svg" alt=""><span class="lbl">Send</span></div>
         <div class="seg"><img src="assets/icons/receive-new.svg" alt=""><span class="lbl">Receive</span></div>
         <div class="seg"><img src="assets/icons/earn.svg" alt=""><span class="lbl">Earn</span></div>
@@ -1032,7 +1039,7 @@ ul.tick li:before{content:"→";position:absolute;left:2px;color:var(--accent-in
 
       <div class="cm">
         <div class="cmh"><span class="cmt">Copy confirmation</span><span class="cmf freq">frequent · subtle</span></div>
-        <button class="copybtn" id="copyb"><span class="ic2"><img src="assets/icons/copy.svg" alt="" style="width:15px;height:15px;display:block"></span><span class="ctxt">mtst1ap8…r4fp</span></button>
+        <button class="copybtn" id="copyb"><span class="ic2"><img src="assets/icons/copy.svg" data-mono alt="" style="width:15px;height:15px;display:block"></span><span class="ctxt">mtst1ap8…r4fp</span></button>
         <div class="cmd">The most-repeated action in a wallet. A 250ms icon pop and colour shift — enough to confirm, not enough to notice twice.</div>
       </div>
 
@@ -1282,14 +1289,14 @@ ul.tick li:before{content:"→";position:absolute;left:2px;color:var(--accent-in
     <h3 class="sh">Headers &amp; navigation</h3>
     <div class="crow">
       <div class="ccol"><div class="clabel">TabHeader — top-level page</div>
-        <div class="hdr tab"><span class="ht">Activity</span><span style="margin-left:auto"><img src="assets/icons/wallet.svg" alt="" style="width:20px;height:20px;opacity:.6"></span></div></div>
+        <div class="hdr tab"><span class="ht">Activity</span><span style="margin-left:auto"><img src="assets/icons/wallet.svg" data-mono alt="" style="width:20px;height:20px;opacity:.6"></span></div></div>
       <div class="ccol"><div class="clabel">ScreenHeader — back / close</div>
         <div class="hdr"><span class="bk">‹</span><span class="ht">Review transaction</span></div></div>
       <div class="ccol"><div class="clabel">bottom nav</div>
         <div class="mnav" style="margin:0;width:290px">
-          <div class="t on"><img src="assets/icons/home-new.svg" alt="" style="width:21px;height:21px">Home</div>
-          <div class="t"><img src="assets/icons/explore.svg" alt="" style="width:21px;height:21px">Explore</div>
-          <div class="t"><img src="assets/icons/activity.svg" alt="" style="width:21px;height:21px">Activity</div>
+          <div class="t on"><img src="assets/icons/home-new.svg" data-mono alt="" style="width:21px;height:21px">Home</div>
+          <div class="t"><img src="assets/icons/explore.svg" data-mono alt="" style="width:21px;height:21px">Explore</div>
+          <div class="t"><img src="assets/icons/activity.svg" data-mono alt="" style="width:21px;height:21px">Activity</div>
         </div></div>
     </div>
 
@@ -1350,7 +1357,7 @@ ul.tick li:before{content:"→";position:absolute;left:2px;color:var(--accent-in
     <h3 class="sh">Wallet-specific</h3>
     <div class="crow">
       <div class="ccol"><div class="clabel">address display — one truncation rule, always copyable</div>
-        <div class="addrbox"><span class="a">mtst1ap8…r4fp</span><img src="assets/icons/copy.svg" alt="" style="width:16px;height:16px"></div></div>
+        <div class="addrbox"><span class="a">mtst1ap8…r4fp</span><img src="assets/icons/copy.svg" data-mono alt="" style="width:16px;height:16px"></div></div>
       <div class="ccol"><div class="clabel">passcode — 6 digits</div>
         <div class="dots" id="pdots"><i class="f"></i><i class="f"></i><i></i><i></i><i></i><i></i></div>
         <div class="pad" id="pad"><button>1</button><button>2</button><button>3</button><button>4</button><button>5</button><button>6</button><button>7</button><button>8</button><button>9</button><span></span><button>0</button><button>⌫</button></div></div>
@@ -1431,7 +1438,7 @@ ul.tick li:before{content:"→";position:absolute;left:2px;color:var(--accent-in
           <div class="stat"><span>9:41</span><span class="r">✦ ▪ ▪</span></div>
           <div class="mpad" style="flex:1;display:flex;flex-direction:column">
             <div class="mseg" data-seg>
-              <div class="seg on"><img src="assets/icons/wallet.svg" alt=""><span class="lbl">Overview</span></div>
+              <div class="seg on"><img src="assets/icons/wallet.svg" data-mono alt=""><span class="lbl">Overview</span></div>
               <div class="seg"><img src="assets/icons/send-new.svg" alt=""><span class="lbl">Send</span></div>
               <div class="seg"><img src="assets/icons/receive-new.svg" alt=""><span class="lbl">Receive</span></div>
               <div class="seg"><img src="assets/icons/earn.svg" alt=""><span class="lbl">Earn</span></div>
@@ -1447,7 +1454,7 @@ ul.tick li:before{content:"→";position:absolute;left:2px;color:var(--accent-in
             <div class="msearch">Search for tokens</div>
             <div class="mrow"><div class="ic"><img src="assets/icons/miden.svg" alt=""></div><div><div class="nm">Miden</div><div class="ad">0.00 MIDEN</div></div><div class="rt"><div class="f">$0.00</div><div class="b" style="color:var(--pos)">+0.00%</div></div></div>
           </div>
-          <div class="mnav"><div class="t on"><img src="assets/icons/home-new.svg" alt="">Home</div><div class="t"><img src="assets/icons/explore.svg" alt="">Explore</div><div class="t"><img src="assets/icons/activity.svg" alt="">Activity</div></div>
+          <div class="mnav"><div class="t on"><img src="assets/icons/home-new.svg" data-mono alt="">Home</div><div class="t"><img src="assets/icons/explore.svg" data-mono alt="">Explore</div><div class="t"><img src="assets/icons/activity.svg" data-mono alt="">Activity</div></div>
         </div></div></div>
       </div>
     </div>
@@ -1606,7 +1613,7 @@ ul.tick li:before{content:"→";position:absolute;left:2px;color:var(--accent-in
           <div class="mpad" style="flex:1;display:flex;flex-direction:column">
             <div class="obtop"><button class="obback" aria-label="Go back">‹</button><div class="progdots"><i class="on"></i><i class="on"></i><i></i><i></i><i></i><i></i><i></i></div></div>
             <div class="obmid">
-              <div class="fid"><b></b><b></b><b></b><b></b><span class="gl"><img src="assets/icons/face.svg" alt="" style="width:52px;height:52px"></span></div>
+              <div class="fid"><b></b><b></b><b></b><b></b><span class="gl"><img src="assets/icons/face.svg" data-mono alt="" style="width:52px;height:52px"></span></div>
               <div style="text-align:center;font-family:var(--display);font-weight:800;font-size:15px;margin-top:24px">Face ID set up</div>
             </div>
             <div class="zone"><button class="btn btn-secondary" style="width:100%;min-height:52px">Use passcode instead</button></div>
@@ -1639,9 +1646,9 @@ ul.tick li:before{content:"→";position:absolute;left:2px;color:var(--accent-in
             <div style="font-size:11px;font-weight:700;color:var(--accent-ink);margin-top:6px">Learn more about the Guardian</div>
             <div class="gguard">
               <div class="gcard"><div class="band">Default</div><div class="glogo"><img src="assets/icons/miden.svg" alt=""><span class="gname" style="margin-left:5px">Miden</span></div><div class="gmeta">Operated by Miden<br>Location: US-EAST</div></div>
-              <div class="gcard sel"><div class="glogo"><img src="assets/icons/gateway.svg" alt=""></div><div class="gmeta">Operated by Gateway FM<br>Location: EU-NORTH</div></div>
-              <div class="gcard"><div class="glogo"><img src="assets/icons/lambdaclass.svg" alt=""></div><div class="gmeta">Operated by Lambda Class<br>Location: EU-CENTRAL</div></div>
-              <div class="gcard"><div class="glogo"><img src="assets/icons/open-zeppelin.svg" alt=""></div><div class="gmeta">Operated by OpenZeppelin<br>Location: US-EAST</div></div>
+              <div class="gcard sel"><div class="glogo"><img src="assets/icons/gateway.svg" data-mono alt=""></div><div class="gmeta">Operated by Gateway FM<br>Location: EU-NORTH</div></div>
+              <div class="gcard"><div class="glogo"><img src="assets/icons/lambdaclass.svg" data-mono alt=""></div><div class="gmeta">Operated by Lambda Class<br>Location: EU-CENTRAL</div></div>
+              <div class="gcard"><div class="glogo"><img src="assets/icons/open-zeppelin.svg" data-mono alt=""></div><div class="gmeta">Operated by OpenZeppelin<br>Location: US-EAST</div></div>
             </div>
             <div class="zone"><button class="btn btn-primary" style="width:100%">Continue</button></div>
           </div>
@@ -1728,7 +1735,7 @@ ul.tick li:before{content:"→";position:absolute;left:2px;color:var(--accent-in
           <div class="stat"><span>9:41</span><span class="r">✦ ▪ ▪</span></div>
           <div class="mpad" style="flex:1;display:flex;flex-direction:column">
             <div class="mseg" data-seg>
-              <div class="seg on"><img src="assets/icons/wallet.svg" alt=""><span class="lbl">Overview</span></div>
+              <div class="seg on"><img src="assets/icons/wallet.svg" data-mono alt=""><span class="lbl">Overview</span></div>
               <div class="seg"><img src="assets/icons/send-new.svg" alt=""><span class="lbl">Send</span></div>
               <div class="seg"><img src="assets/icons/receive-new.svg" alt=""><span class="lbl">Receive</span></div>
               <div class="seg"><img src="assets/icons/earn.svg" alt=""><span class="lbl">Earn</span></div>
@@ -1744,14 +1751,14 @@ ul.tick li:before{content:"→";position:absolute;left:2px;color:var(--accent-in
             <div class="mrow"><div class="ic"><img src="assets/icons/miden.svg" alt=""></div><div><div class="nm">Miden</div><div class="ad">1,204.50 MIDEN</div></div><div class="rt"><div class="f">$12,480.50</div><div class="b" style="color:var(--pos)">+0.32%</div></div></div>
             <div class="mrow"><div class="ic"><img src="assets/icons/usdc.svg" alt=""></div><div><div class="nm">USDC</div><div class="ad">0.00 USDC</div></div><div class="rt"><div class="f">$0.00</div><div class="b">—</div></div></div>
           </div>
-          <div class="mnav"><div class="t on"><img src="assets/icons/home-new.svg" alt="">Home</div><div class="t"><img src="assets/icons/explore.svg" alt="">Explore</div><div class="t"><img src="assets/icons/activity.svg" alt="">Activity</div></div>
+          <div class="mnav"><div class="t on"><img src="assets/icons/home-new.svg" data-mono alt="">Home</div><div class="t"><img src="assets/icons/explore.svg" data-mono alt="">Explore</div><div class="t"><img src="assets/icons/activity.svg" data-mono alt="">Activity</div></div>
         </div></div></div>
         <div class="scrnote">Funded state. Balance and amounts in Nunito tabular; addresses in Geist Mono.</div></div>
 
       <div><div class="scrcap"><i></i>Accounts sheet</div>
         <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
           <div class="stat"><span>9:41</span><span class="r">✦ ▪ ▪</span></div>
-          <div class="mpad" style="flex:1;opacity:.4"><div class="mseg"><div class="seg on"><img src="assets/icons/wallet.svg" alt=""><span class="lbl">Overview</span></div><div class="seg"><img src="assets/icons/send-new.svg" alt=""></div><div class="seg"><img src="assets/icons/receive-new.svg" alt=""></div><div class="seg"><img src="assets/icons/earn.svg" alt=""></div></div>
+          <div class="mpad" style="flex:1;opacity:.4"><div class="mseg"><div class="seg on"><img src="assets/icons/wallet.svg" data-mono alt=""><span class="lbl">Overview</span></div><div class="seg"><img src="assets/icons/send-new.svg" alt=""></div><div class="seg"><img src="assets/icons/receive-new.svg" alt=""></div><div class="seg"><img src="assets/icons/earn.svg" alt=""></div></div>
             <div class="mbc"><div class="top" data-surface="graphite"><div class="tl">Total Balance</div><div class="amt">$12,480.50 <small>USD</small></div></div></div></div>
           <div style="position:absolute;inset:0;background:rgba(0,0,0,.45)"></div>
           <div style="position:absolute;left:0;right:0;bottom:0;background:var(--surface);border-radius:var(--radius-lg) var(--radius-lg) 0 0;padding:12px 20px max(16px,var(--safe-bottom))">
@@ -1766,7 +1773,7 @@ ul.tick li:before{content:"→";position:absolute;left:2px;color:var(--accent-in
               <span style="width:30px;height:30px;border-radius:50%;background:var(--card-green)"></span>
               <span style="width:30px;height:30px;border-radius:50%;background:var(--card-purple)"></span>
             </div>
-            <div class="setgroup" style="margin-top:14px"><div class="setrow"><img src="assets/icons/settings-new.svg" alt="">Settings<span class="ch">›</span></div></div>
+            <div class="setgroup" style="margin-top:14px"><div class="setrow"><img src="assets/icons/settings-new.svg" data-mono alt="">Settings<span class="ch">›</span></div></div>
           </div>
         </div></div></div>
         <div class="scrnote">The canonical bottom sheet — one overlay primitive (vaul) for every picker in the app.</div></div>
@@ -1811,7 +1818,7 @@ ul.tick li:before{content:"→";position:absolute;left:2px;color:var(--accent-in
             <div class="sh2"><span class="bk2">‹</span><span class="t2">Receive</span></div>
             <div style="text-align:center;margin-top:6%"><div class="qrbox"><div class="qrpat"></div></div></div>
             <div style="text-align:center;font-size:12.5px;color:var(--ink-2);margin-top:16px">Your Miden address</div>
-            <div class="addrbox" style="width:auto;margin-top:8px"><span class="a">mtst1ap8…r4fp</span><img src="assets/icons/copy.svg" alt="" style="width:16px;height:16px"></div>
+            <div class="addrbox" style="width:auto;margin-top:8px"><span class="a">mtst1ap8…r4fp</span><img src="assets/icons/copy.svg" data-mono alt="" style="width:16px;height:16px"></div>
             <div class="notice" style="background:var(--surface-2);color:var(--ink-2)"><span>ⓘ</span><span>Only send Miden-network assets to this address.</span></div>
             <div class="zone"><button class="btn btn-primary" style="width:100%">Share address</button><div class="gh">Set an amount</div></div>
           </div>
@@ -1849,7 +1856,7 @@ ul.tick li:before{content:"→";position:absolute;left:2px;color:var(--accent-in
             <div class="mrow"><div class="ic sq"><img src="assets/icons/earn.svg" alt=""></div><div><div class="nm">Earn deposit</div><div class="ad">Aave · MIDEN</div></div><div class="rt"><div class="f">−500.00</div><div class="b">Confirmed</div></div></div>
             <div class="mrow"><div class="ic sq"><img src="assets/icons/send-new.svg" alt=""></div><div><div class="nm">Sent</div><div class="ad addr">mtst1zz9…41mn</div></div><div class="rt"><div class="f" style="color:var(--neg)">Failed</div><div class="b">Not sent</div></div></div>
           </div>
-          <div class="mnav"><div class="t"><img src="assets/icons/home-new.svg" alt="">Home</div><div class="t"><img src="assets/icons/explore.svg" alt="">Explore</div><div class="t on"><img src="assets/icons/activity.svg" alt="">Activity</div></div>
+          <div class="mnav"><div class="t"><img src="assets/icons/home-new.svg" data-mono alt="">Home</div><div class="t"><img src="assets/icons/explore.svg" data-mono alt="">Explore</div><div class="t on"><img src="assets/icons/activity.svg" data-mono alt="">Activity</div></div>
         </div></div></div>
         <div class="scrnote">Failed rows say <b>"Not sent"</b> in the value column — status is never colour-only, and never ambiguous about the money.</div></div>
 
@@ -1879,7 +1886,7 @@ ul.tick li:before{content:"→";position:absolute;left:2px;color:var(--accent-in
           <div class="stat"><span>9:41</span><span class="r">✦ ▪ ▪</span></div>
           <div class="mpad" style="flex:1;display:flex;flex-direction:column">
             <div class="mseg" data-seg>
-              <div class="seg"><img src="assets/icons/wallet.svg" alt=""><span class="lbl">Overview</span></div>
+              <div class="seg"><img src="assets/icons/wallet.svg" data-mono alt=""><span class="lbl">Overview</span></div>
               <div class="seg"><img src="assets/icons/send-new.svg" alt=""><span class="lbl">Send</span></div>
               <div class="seg"><img src="assets/icons/receive-new.svg" alt=""><span class="lbl">Receive</span></div>
               <div class="seg on"><img src="assets/icons/earn.svg" alt=""><span class="lbl">Earn</span></div>
@@ -1890,7 +1897,7 @@ ul.tick li:before{content:"→";position:absolute;left:2px;color:var(--accent-in
             <div class="vaultrow"><img src="assets/icons/aave.svg" alt=""><div><div class="vn">Aave · MIDEN</div><div class="vs">Deposited 500.00</div></div><div class="vapy"><div class="p">4.82%</div><div class="pl">APY</div></div></div>
             <div class="vaultrow"><img src="assets/icons/usdc.svg" alt=""><div><div class="vn">Aave · USDC</div><div class="vs">Not deposited</div></div><div class="vapy"><div class="p">5.14%</div><div class="pl">APY</div></div></div>
           </div>
-          <div class="mnav"><div class="t on"><img src="assets/icons/home-new.svg" alt="">Home</div><div class="t"><img src="assets/icons/explore.svg" alt="">Explore</div><div class="t"><img src="assets/icons/activity.svg" alt="">Activity</div></div>
+          <div class="mnav"><div class="t on"><img src="assets/icons/home-new.svg" data-mono alt="">Home</div><div class="t"><img src="assets/icons/explore.svg" data-mono alt="">Explore</div><div class="t"><img src="assets/icons/activity.svg" data-mono alt="">Activity</div></div>
         </div></div></div>
         <div class="scrnote">Earn rebuilt on the kit — the same graphite hero and grey rows as Home. No bespoke header, no charting dependency.</div></div>
 
@@ -1955,21 +1962,21 @@ ul.tick li:before{content:"→";position:absolute;left:2px;color:var(--accent-in
           <div class="mpad" style="flex:1;display:flex;flex-direction:column">
             <div style="font-family:var(--display);font-weight:800;font-size:23px;padding:6px 0 14px">Settings</div>
             <div class="setgroup">
-              <div class="setrow"><img src="assets/icons/settings-new.svg" alt="">General<span class="ch">›</span></div>
-              <div class="setrow"><img src="assets/icons/globe.svg" alt="">Language<span class="ch">›</span></div>
-              <div class="setrow"><img src="assets/icons/contacts-book.svg" alt="">Address book<span class="ch">›</span></div>
+              <div class="setrow"><img src="assets/icons/settings-new.svg" data-mono alt="">General<span class="ch">›</span></div>
+              <div class="setrow"><img src="assets/icons/globe.svg" data-mono alt="">Language<span class="ch">›</span></div>
+              <div class="setrow"><img src="assets/icons/contacts-book.svg" data-mono alt="">Address book<span class="ch">›</span></div>
             </div>
             <div class="setgroup">
-              <div class="setrow"><img src="assets/icons/key.svg" alt="">Recovery phrase<span class="ch">›</span></div>
-              <div class="setrow"><img src="assets/icons/lock.svg" alt="">Guardian<span class="ch">›</span></div>
+              <div class="setrow"><img src="assets/icons/key.svg" data-mono alt="">Recovery phrase<span class="ch">›</span></div>
+              <div class="setrow"><img src="assets/icons/lock.svg" data-mono alt="">Guardian<span class="ch">›</span></div>
               <div class="setrow"><img src="assets/icons/share.svg" alt="">Encrypted wallet file<span class="ch">›</span></div>
             </div>
             <div class="setgroup">
               <div class="setrow"><img src="assets/icons/convert.svg" alt="">Authorized dApps<span class="ch">›</span></div>
-              <div class="setrow"><img src="assets/icons/coins.svg" alt="">About<span class="ch">›</span></div>
+              <div class="setrow"><img src="assets/icons/coins.svg" data-mono alt="">About<span class="ch">›</span></div>
             </div>
           </div>
-          <div class="mnav"><div class="t"><img src="assets/icons/home-new.svg" alt="">Home</div><div class="t"><img src="assets/icons/explore.svg" alt="">Explore</div><div class="t"><img src="assets/icons/activity.svg" alt="">Activity</div></div>
+          <div class="mnav"><div class="t"><img src="assets/icons/home-new.svg" data-mono alt="">Home</div><div class="t"><img src="assets/icons/explore.svg" data-mono alt="">Explore</div><div class="t"><img src="assets/icons/activity.svg" data-mono alt="">Activity</div></div>
         </div></div></div>
         <div class="scrnote">Grouped soft blocks rather than a divided table — the same stacking idiom as everywhere else.</div></div>
 
@@ -1995,17 +2002,17 @@ ul.tick li:before{content:"→";position:absolute;left:2px;color:var(--accent-in
           <div class="stat"><span>9:41</span><span class="r">✦ ▪ ▪</span></div>
           <div class="mpad" style="flex:1;display:flex;flex-direction:column">
             <div style="font-family:var(--display);font-weight:800;font-size:23px;padding:6px 0 12px">Explore</div>
-            <div class="urlbar"><img src="assets/icons/search.svg" alt="" style="width:15px;height:15px;opacity:.5">Search or enter address</div>
+            <div class="urlbar"><img src="assets/icons/search.svg" data-mono alt="" style="width:15px;height:15px;opacity:.5">Search or enter address</div>
             <div style="font-size:11.5px;color:var(--ink-2);font-weight:700;margin:18px 0 6px">FAVOURITES</div>
             <div class="daygrid">
               <div class="dapp"><div class="tile"><img src="assets/icons/miden.svg" alt=""></div>Miden</div>
               <div class="dapp"><div class="tile"><img src="assets/icons/aave.svg" alt=""></div>Aave</div>
               <div class="dapp"><div class="tile"><img src="assets/icons/usdc.svg" alt=""></div>Faucet</div>
-              <div class="dapp"><div class="tile"><img src="assets/icons/globe.svg" alt=""></div>Browse</div>
+              <div class="dapp"><div class="tile"><img src="assets/icons/globe.svg" data-mono alt=""></div>Browse</div>
             </div>
             <div class="notice" style="background:var(--surface-2);color:var(--ink-2);margin-top:16px"><span>ⓘ</span><span>Connected sites can request signatures. You approve every transaction.</span></div>
           </div>
-          <div class="mnav"><div class="t"><img src="assets/icons/home-new.svg" alt="">Home</div><div class="t on"><img src="assets/icons/explore.svg" alt="">Explore</div><div class="t"><img src="assets/icons/activity.svg" alt="">Activity</div></div>
+          <div class="mnav"><div class="t"><img src="assets/icons/home-new.svg" data-mono alt="">Home</div><div class="t on"><img src="assets/icons/explore.svg" data-mono alt="">Explore</div><div class="t"><img src="assets/icons/activity.svg" data-mono alt="">Activity</div></div>
         </div></div></div>
         <div class="scrnote">Browser rejoins the app: same header scale, same tiles, same nav. The trust statement is on the surface, not buried.</div></div>
 

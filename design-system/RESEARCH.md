@@ -402,6 +402,24 @@ and below it should be roughly balanced. Large asymmetry (>55% skew) = top-ancho
 *(A naive "largest gap" metric does NOT work — it flags short screens with pinned CTAs, which are
 correct.)*
 
+## 7.0 Audit icons, not just text `[SPEC]`
+
+SC 1.4.11 requires **3:1 for meaningful non-text elements**, but a text-only contrast pass
+never sees them. A contrast audit that walks text nodes will report a screen "clean" while an
+icon on it is literally invisible. **Measure rendered icon pixels too** (rasterise to a canvas,
+take the mean colour of opaque pixels, compare against the composited background).
+
+**The `<img>` + `currentColor` trap.** An `<img>` has **no CSS context**, so an SVG authored with
+`fill="currentColor"` renders **black** no matter what `color` the surrounding page sets — it
+cannot inherit. On a dark surface it disappears entirely. Same outcome for a baked dark hex
+(`#484848`) wordmark. Fixes, in order of preference: inline the SVG, use `mask-image` with
+`background-color: currentColor`, or — for monochrome marks only — `filter: invert(1)` in dark.
+**Never invert brand-coloured marks or multi-colour illustrations**; that corrupts the brand.
+
+**Exemptions when auditing** (WCAG 1.4.11 carve-outs): brand logotypes and purely decorative
+graphics. A mean-colour ratio is also meaningless for a multi-tone illustration — exclude those
+rather than "fixing" them.
+
 ## 7.1 Vertical zoning & keypad placement — the graded verdict
 
 A dedicated verification pass (10 findings, adversarial 3-vote) settled this. **It demolished the
