@@ -38,6 +38,14 @@
      WCAG's "large text" floor of 18.66px bold == 1.1663rem at a 16px root; the CTA sits
      above it at 1.1875rem and grows with the user's preference, so it can never fall
      below the threshold. */
+  /* SCREEN TYPE SCALE — headings may only use these. Six drifting values (72/23/21/20/19/16)
+     collapsed to four deliberate steps at ~1.3x. --t-display is intentionally off-scale: it is
+     the Welcome brand moment only, never a step screen. */
+  --t-display:72px;   /* hero — Welcome only */
+  --t-title:26px;     /* step headline — every onboarding step */
+  --t-heading:20px;   /* screen / section header */
+  --t-subhead:16px;   /* compact header (back-bar) */
+  --hero-w:140px;     /* step illustration width */
   --text-cta:1.1875rem;      /* 19px @16 — primary CTA label, accessibility-critical */
   --text-body:0.9375rem;     /* 15px */
   --text-label:0.8125rem;    /* 13px */
@@ -246,11 +254,13 @@ table.map td code{font-size:12px}
 .phone{width:402px;zoom:var(--ps,.72);margin:0 auto;border-radius:var(--radius-device-outer);background:var(--device-bezel);padding:10px;box-shadow:var(--shadow-2)}
 .phone .screen{border-radius:var(--radius-device);overflow:hidden;background:var(--paper);position:relative;aspect-ratio:402/874}
 .phone img.shot{width:100%;display:block}
-/* An <img> has no CSS context, so a currentColor SVG renders BLACK and a #484848
-   wordmark stays dark — both disappear on a dark surface. Invert monochrome marks in
-   dark mode. Brand-coloured marks (miden orange, aave violet) and multi-colour
-   illustrations are deliberately excluded — inverting those would corrupt the brand. */
-[data-theme="dark"] img[data-mono]{filter:invert(1)}
+/* UI ICONS ARE currentColor. An <img> has no CSS context, so a currentColor SVG renders
+   black and can never adapt. Rendering the glyph as a MASK tinted by background-color
+   makes it inherit `color` — so it adapts to theme, to [data-surface] scopes, and to
+   state exactly like text does. Brand marks stay <img>: never recolour a brand. */
+.svgic{display:inline-block;width:20px;height:20px;flex:none;vertical-align:middle;
+  background-color:currentColor;
+  -webkit-mask:var(--ic) center/contain no-repeat;mask:var(--ic) center/contain no-repeat}
 [data-theme="light"] .only-dark{display:none}
 [data-theme="dark"] .only-light{display:none}
 /* balance card is a colored surface in light, near-black in dark (hairline delineates it) */
@@ -296,7 +306,7 @@ table.map td code{font-size:12px}
 /* white-marked token logos need a disc to sit on, in both themes */
 .mrow .ic img[src*='usdc'],.vaultrow img[src*='usdc'],.dapp .tile img[src*='usdc']{background:#2775CA;border-radius:50%}
 .mrow .ic.sq{background:var(--surface-2);border-radius:var(--radius-md)}
-.mrow .ic.sq img{width:21px;height:21px}
+.mrow .ic.sq img,.mrow .ic.sq .svgic{width:21px;height:21px}
 .mrow .nm{font-weight:700;font-size:14.5px}
 .mrow .ad{font-family:var(--num);font-feature-settings:var(--num-feat);font-size:11px;color:var(--ink-2)}
 .mrow .ad.addr{font-family:var(--mono)}   /* addresses stay mono */
@@ -320,7 +330,7 @@ table.map td code{font-size:12px}
 .mseg .seg.on{flex:1 1 auto;min-width:max-content;padding:0 13px;font-weight:700;font-size:13.5px;
   background:var(--surface);color:var(--ink);box-shadow:var(--shadow-1)}
 .mseg .seg svg{width:19px;height:19px;flex:none}
-.mseg .seg img{width:20px;height:20px;flex:none;display:block}
+.mseg .seg img,.mseg .seg .svgic{width:20px;height:20px;flex:none;display:block}
 .mseg .seg .lbl{max-width:0;opacity:0;overflow:hidden;white-space:nowrap;
   transition:max-width var(--dur-spatial) var(--ease-spatial),opacity var(--dur-fast) ease var(--dur-fast),margin-left var(--dur-spatial) var(--ease-spatial)}
 .mseg .seg.on .lbl{max-width:12rem;opacity:1;margin-left:8px}
@@ -343,7 +353,7 @@ table.map td code{font-size:12px}
 .mwel{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;padding:var(--safe-top,62px) 24px 0;background:var(--paper);--safe-top:62px;--safe-bottom:34px}
 .mwel .mid{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;width:100%;padding:32px 0}
 .mwel .logo{width:130px;height:auto}
-.mwel h2{font-family:var(--display);font-weight:700;font-size:72px;line-height:.99;letter-spacing:-.02em;text-align:center;margin-top:16px;color:var(--ink)}
+.mwel h2{font-family:var(--display);font-weight:700;font-size:var(--t-display);line-height:.99;letter-spacing:-.02em;text-align:center;margin-top:16px;color:var(--ink)}
 .mwel p{text-align:center;color:var(--ink);font-size:20px;line-height:1.3;font-weight:500;margin-top:16px}
 .legend{display:flex;gap:18px;flex-wrap:wrap;margin-top:16px;font-size:13px;color:var(--ink-2)}
 .legend b{color:var(--ink)}
@@ -394,8 +404,8 @@ ul.tick li:before{content:"→";position:absolute;left:2px;color:var(--accent-in
 .scrcap{font-family:var(--display);font-weight:800;font-size:13px;margin-bottom:9px;display:flex;align-items:center;gap:7px}
 .scrcap i{width:7px;height:7px;border-radius:50%;background:var(--accent);display:block;flex:none}
 .scrnote{font-size:11.5px;color:var(--ink-2);margin-top:9px;line-height:1.45}
-.obillus{display:block;margin:0 auto;max-width:9.5rem}
-.obh{font-family:var(--display);font-weight:900;font-size:23px;line-height:1.12;text-align:center;margin-top:16px}
+.obillus{display:block;margin:0 auto;width:var(--hero-w);height:auto}
+.obh{font-family:var(--display);font-weight:900;font-size:var(--t-title);line-height:1.12;text-align:center;margin-top:16px}
 .obp{font-size:13px;color:var(--ink-2);text-align:center;margin-top:9px;line-height:1.45}
 /* STEP-SCREEN CONTENT BLOCK — the layout rule I was violating.
    Content is optically centred in the space between the progress bar and the action
@@ -464,10 +474,10 @@ ul.tick li:before{content:"→";position:absolute;left:2px;color:var(--accent-in
 .setgroup{background:var(--surface-2);border-radius:var(--radius-lg);padding:2px 12px;margin-bottom:9px}
 .setrow{display:flex;align-items:center;gap:11px;padding:11px 0;font-size:13.5px;font-weight:600}
 .setrow+.setrow{border-top:1px solid var(--rule)}
-.setrow img{width:19px;height:19px;flex:none;opacity:.75}
+.setrow img,.setrow .svgic{width:19px;height:19px;flex:none;opacity:.75}
 .setrow .ch{margin-left:auto;color:var(--ink-3);font-size:15px}
 .vaultrow{display:flex;align-items:center;gap:11px;background:var(--surface-2);border-radius:var(--radius-md);padding:12px;margin-bottom:8px}
-.vaultrow img{width:30px;height:30px;flex:none}
+.vaultrow img,.vaultrow .svgic{width:30px;height:30px;flex:none}
 .vaultrow .vn{font-weight:700;font-size:13.5px}
 .vaultrow .vs{font-size:11px;color:var(--ink-2);margin-top:1px}
 .vapy{margin-left:auto;text-align:right}
@@ -485,7 +495,7 @@ ul.tick li:before{content:"→";position:absolute;left:2px;color:var(--accent-in
 .daygrid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:8px}
 .dapp{text-align:center;font-size:11px;color:var(--ink-2)}
 .dapp .tile{width:46px;height:46px;border-radius:var(--radius-md);background:var(--surface-2);margin:0 auto 5px;display:flex;align-items:center;justify-content:center}
-.dapp .tile img{width:26px;height:26px}
+.dapp .tile img,.dapp .tile .svgic{width:26px;height:26px}
 .urlbar{background:var(--surface-2);border-radius:var(--radius-full);padding:11px 16px;font-size:13px;color:var(--ink-3);display:flex;align-items:center;gap:8px}
 /* ---------- viewports & adaptivity ---------- */
 .vpset{display:flex;gap:16px;align-items:flex-start;flex-wrap:wrap;margin-top:14px}
@@ -498,7 +508,7 @@ ul.tick li:before{content:"→";position:absolute;left:2px;color:var(--accent-in
 /* ---------- send → review → sign flow ---------- */
 .sh2{display:flex;align-items:center;gap:10px;padding:2px 0 14px}
 .sh2 .bk2{width:30px;height:30px;border-radius:50%;background:var(--surface-2);display:flex;align-items:center;justify-content:center;flex:none;font-size:14px}
-.sh2 .t2{font-family:var(--display);font-weight:800;font-size:16px}
+.sh2 .t2{font-family:var(--display);font-weight:800;font-size:var(--t-subhead)}
 .recip{display:flex;align-items:center;gap:10px;background:var(--surface-2);border-radius:var(--radius-md);padding:11px 13px}
 .recip .rav{width:26px;height:26px;border-radius:50%;background:var(--tx-sent);flex:none}
 .recip .raddr{font-family:var(--mono);font-size:12px;flex:1}
@@ -587,8 +597,8 @@ ul.tick li:before{content:"→";position:absolute;left:2px;color:var(--accent-in
 .drow .vsub{display:block;font-size:11px;color:var(--ink-3);font-weight:500;margin-top:2px;font-family:var(--ui)}
 .hdr{display:flex;align-items:center;gap:12px;padding:13px 15px;border-radius:var(--radius-md);background:var(--surface-2);width:310px}
 .hdr .bk{width:34px;height:34px;border-radius:50%;background:var(--surface);display:flex;align-items:center;justify-content:center;flex:none;font-size:15px}
-.hdr .ht{font-family:var(--display);font-weight:800;font-size:17px}
-.hdr.tab .ht{font-size:23px}
+.hdr .ht{font-family:var(--display);font-weight:800;font-size:var(--t-subhead)}
+.hdr.tab .ht{font-size:var(--t-heading)}
 .bnr{display:flex;gap:11px;align-items:flex-start;border-radius:var(--radius-md);padding:13px 15px;font-size:13px;width:330px;line-height:1.45}
 .bnr.info{background:var(--surface-2);color:var(--ink)}
 .bnr.warn2{background:var(--accent-wash);color:var(--accent-ink)}
@@ -597,8 +607,9 @@ ul.tick li:before{content:"→";position:absolute;left:2px;color:var(--accent-in
 .stbox{border:1px dashed var(--rule-strong);border-radius:var(--radius-md);padding:24px 18px;text-align:center;width:210px}
 .stbox .st{font-family:var(--display);font-weight:800;font-size:14.5px}
 .stbox .ss{font-size:12px;color:var(--ink-2);margin-top:5px;line-height:1.4}
-.pad{display:grid;grid-template-columns:repeat(3,58px);gap:9px}
-.pad button{height:100%;min-height:52px;border:0;border-radius:var(--radius-md);background:var(--surface-2);font-family:var(--ui);font-size:22px;font-weight:600;color:var(--ink);cursor:pointer;transition:transform var(--dur-fast) ease,background var(--dur-fast) ease}
+.pad{display:grid;grid-template-columns:repeat(3,76px);justify-content:space-between;gap:14px 0}
+.pad button{width:76px;height:76px;border:0;border-radius:50%;background:var(--surface-2);font-family:var(--ui);font-size:26px;font-weight:500;color:var(--ink);cursor:pointer;justify-self:center;
+  transition:transform var(--dur-fast) ease,background var(--dur-fast) ease}
 .pad button:active{transform:scale(.94);background:var(--surface-3)}
 .dots{display:flex;gap:11px;justify-content:center;margin-bottom:14px}
 .dots i{width:12px;height:12px;border-radius:50%;background:var(--surface-3);display:block;transition:background var(--dur-base) ease,transform var(--dur-base) var(--ease-spatial)}
@@ -1019,10 +1030,10 @@ ul.tick li:before{content:"→";position:absolute;left:2px;color:var(--accent-in
     <div class="card mcell" style="margin-top:14px">
       <div class="mlabel">Segmented tabs · expand + collapse · 320ms spatial — tap through them</div>
       <div class="mseg" data-seg style="max-width:380px;padding:0">
-        <div class="seg on"><img src="assets/icons/wallet.svg" data-mono alt=""><span class="lbl">Overview</span></div>
-        <div class="seg"><img src="assets/icons/send-new.svg" alt=""><span class="lbl">Send</span></div>
-        <div class="seg"><img src="assets/icons/receive-new.svg" alt=""><span class="lbl">Receive</span></div>
-        <div class="seg"><img src="assets/icons/earn.svg" alt=""><span class="lbl">Earn</span></div>
+        <div class="seg on"><span class="svgic" style="--ic:url(assets/icons/wallet.svg);" aria-hidden="true"></span><span class="lbl">Overview</span></div>
+        <div class="seg"><span class="svgic" style="--ic:url(assets/icons/send-new.svg);" aria-hidden="true"></span><span class="lbl">Send</span></div>
+        <div class="seg"><span class="svgic" style="--ic:url(assets/icons/receive-new.svg);" aria-hidden="true"></span><span class="lbl">Receive</span></div>
+        <div class="seg"><span class="svgic" style="--ic:url(assets/icons/earn.svg);" aria-hidden="true"></span><span class="lbl">Earn</span></div>
       </div>
       <p class="small" style="margin-top:12px"><b>Why size carries the signal:</b> the width change makes the active surface unmistakable at a glance, and the label only exists while it's needed — no permanent clutter. The tab's hue arrives <em>on activation</em>, so colour is confirmation, not decoration. Collapsed tabs stay 46×38px, well above the 24×24 AA target floor, and the label fades in <code>80ms</code> behind the width so text never stretches.</p>
     </div>
@@ -1039,7 +1050,7 @@ ul.tick li:before{content:"→";position:absolute;left:2px;color:var(--accent-in
 
       <div class="cm">
         <div class="cmh"><span class="cmt">Copy confirmation</span><span class="cmf freq">frequent · subtle</span></div>
-        <button class="copybtn" id="copyb"><span class="ic2"><img src="assets/icons/copy.svg" data-mono alt="" style="width:15px;height:15px;display:block"></span><span class="ctxt">mtst1ap8…r4fp</span></button>
+        <button class="copybtn" id="copyb"><span class="ic2"><span class="svgic" style="--ic:url(assets/icons/copy.svg);width:15px;height:15px;display:block" aria-hidden="true"></span></span><span class="ctxt">mtst1ap8…r4fp</span></button>
         <div class="cmd">The most-repeated action in a wallet. A 250ms icon pop and colour shift — enough to confirm, not enough to notice twice.</div>
       </div>
 
@@ -1188,7 +1199,7 @@ ul.tick li:before{content:"→";position:absolute;left:2px;color:var(--accent-in
       <button class="btn btn-primary" disabled>Disabled</button>
       <button class="btn btn-secondary">Cancel</button>
       <button class="btn btn-ghost">Recover account ›</button>
-      <button class="iconbtn"><img src="assets/icons/send-new.svg" alt="" style="width:20px;height:20px"></button>
+      <button class="iconbtn"><span class="svgic" style="--ic:url(assets/icons/send-new.svg);width:20px;height:20px" aria-hidden="true"></span></button>
     </div>
     <div class="callout warn"><b>Rule — the primary label is white, and it therefore has a minimum size.</b> White on <code>#E77537</code> is exactly <b>3.00:1</b>, which conforms under SC 1.4.3 <em>only</em> as <b>large text</b> (≥18pt, or ≥14pt bold = <b>18.66px bold</b>) — so every CTA label is set at <b>19px/700</b>. Drop below that and the button silently becomes non-conformant, because the margin at 3.00:1 is <b>zero</b>. Small labels on an accent fill must use <code>--on-accent-sm</code> (near-black, <b>5.78:1</b>) instead — the guardian <em>Default</em> band and the active stepper dot do. For <b>irreversible actions</b> (send/sign confirm) <code>.critical</code> uses <code>--accent-critical</code> <code>#D9661F</code> — defined in <em>both</em> themes, because a light-only definition made the confirm button invisible in dark mode.</div>
     <div class="callout"><b>Rule — no outlined buttons.</b> Every action is either the filled <b>primary</b> (orange), a filled neutral <b>secondary</b> (<code>surface-2</code>), or a borderless <b>ghost</b> (text + accent). Borders on tap targets read heavier and less minimal — hairline rules are reserved for <em>structural</em> separation (cards, rows, dividers), never for buttons, chips or pills. This retires the legacy outlined secondary (<code>border-2 border-primary-orange</code>) outright.</div>
@@ -1234,7 +1245,7 @@ ul.tick li:before{content:"→";position:absolute;left:2px;color:var(--accent-in
     <h3 class="sh">List rows</h3>
     <div class="demo" style="flex-direction:column;align-items:stretch;gap:0">
       <div class="mrow"><div class="ic"><img src="assets/icons/miden.svg" alt=""></div><div><div class="nm">MIDEN</div><div class="ad addr">mtst1a…8yna</div></div><div class="rt"><div class="f">$12,480.50</div><div class="b">1,204.50</div></div></div>
-      <div class="mrow" style="border-top:1px solid var(--rule)"><div class="ic sq"><img src="assets/icons/receive-new.svg" alt=""></div><div><div class="nm">Received</div><div class="ad addr">from mtst1a…k29p</div></div><div class="rt"><div class="f" style="color:var(--pos)">+40.00</div><div class="b">2m ago</div></div></div>
+      <div class="mrow" style="border-top:1px solid var(--rule)"><div class="ic sq"><span class="svgic" style="--ic:url(assets/icons/receive-new.svg);" aria-hidden="true"></span></div><div><div class="nm">Received</div><div class="ad addr">from mtst1a…k29p</div></div><div class="rt"><div class="f" style="color:var(--pos)">+40.00</div><div class="b">2m ago</div></div></div>
     </div>
     <p class="small" style="margin-top:10px"><span class="tag survive">survive</span> <code>AssetListItem</code> (assets) · <code>ActivityRow</code> (transactions). <span class="tag merge">merge</span> <code>ListItem → CardItem</code> (generic) and <code>DetailRow ↔ ReviewRow</code> (one key/value row).</p>
 
@@ -1289,14 +1300,14 @@ ul.tick li:before{content:"→";position:absolute;left:2px;color:var(--accent-in
     <h3 class="sh">Headers &amp; navigation</h3>
     <div class="crow">
       <div class="ccol"><div class="clabel">TabHeader — top-level page</div>
-        <div class="hdr tab"><span class="ht">Activity</span><span style="margin-left:auto"><img src="assets/icons/wallet.svg" data-mono alt="" style="width:20px;height:20px;opacity:.6"></span></div></div>
+        <div class="hdr tab"><span class="ht">Activity</span><span style="margin-left:auto"><span class="svgic" style="--ic:url(assets/icons/wallet.svg);width:20px;height:20px;opacity:.6" aria-hidden="true"></span></span></div></div>
       <div class="ccol"><div class="clabel">ScreenHeader — back / close</div>
         <div class="hdr"><span class="bk">‹</span><span class="ht">Review transaction</span></div></div>
       <div class="ccol"><div class="clabel">bottom nav</div>
         <div class="mnav" style="margin:0;width:290px">
-          <div class="t on"><img src="assets/icons/home-new.svg" data-mono alt="" style="width:21px;height:21px">Home</div>
-          <div class="t"><img src="assets/icons/explore.svg" data-mono alt="" style="width:21px;height:21px">Explore</div>
-          <div class="t"><img src="assets/icons/activity.svg" data-mono alt="" style="width:21px;height:21px">Activity</div>
+          <div class="t on"><span class="svgic" style="--ic:url(assets/icons/home-new.svg);width:21px;height:21px" aria-hidden="true"></span>Home</div>
+          <div class="t"><span class="svgic" style="--ic:url(assets/icons/explore.svg);width:21px;height:21px" aria-hidden="true"></span>Explore</div>
+          <div class="t"><span class="svgic" style="--ic:url(assets/icons/activity.svg);width:21px;height:21px" aria-hidden="true"></span>Activity</div>
         </div></div>
     </div>
 
@@ -1357,7 +1368,7 @@ ul.tick li:before{content:"→";position:absolute;left:2px;color:var(--accent-in
     <h3 class="sh">Wallet-specific</h3>
     <div class="crow">
       <div class="ccol"><div class="clabel">address display — one truncation rule, always copyable</div>
-        <div class="addrbox"><span class="a">mtst1ap8…r4fp</span><img src="assets/icons/copy.svg" data-mono alt="" style="width:16px;height:16px"></div></div>
+        <div class="addrbox"><span class="a">mtst1ap8…r4fp</span><span class="svgic" style="--ic:url(assets/icons/copy.svg);width:16px;height:16px" aria-hidden="true"></span></div></div>
       <div class="ccol"><div class="clabel">passcode — 6 digits</div>
         <div class="dots" id="pdots"><i class="f"></i><i class="f"></i><i></i><i></i><i></i><i></i></div>
         <div class="pad" id="pad"><button>1</button><button>2</button><button>3</button><button>4</button><button>5</button><button>6</button><button>7</button><button>8</button><button>9</button><span></span><button>0</button><button>⌫</button></div></div>
@@ -1438,10 +1449,10 @@ ul.tick li:before{content:"→";position:absolute;left:2px;color:var(--accent-in
           <div class="stat"><span>9:41</span><span class="r">✦ ▪ ▪</span></div>
           <div class="mpad" style="flex:1;display:flex;flex-direction:column">
             <div class="mseg" data-seg>
-              <div class="seg on"><img src="assets/icons/wallet.svg" data-mono alt=""><span class="lbl">Overview</span></div>
-              <div class="seg"><img src="assets/icons/send-new.svg" alt=""><span class="lbl">Send</span></div>
-              <div class="seg"><img src="assets/icons/receive-new.svg" alt=""><span class="lbl">Receive</span></div>
-              <div class="seg"><img src="assets/icons/earn.svg" alt=""><span class="lbl">Earn</span></div>
+              <div class="seg on"><span class="svgic" style="--ic:url(assets/icons/wallet.svg);" aria-hidden="true"></span><span class="lbl">Overview</span></div>
+              <div class="seg"><span class="svgic" style="--ic:url(assets/icons/send-new.svg);" aria-hidden="true"></span><span class="lbl">Send</span></div>
+              <div class="seg"><span class="svgic" style="--ic:url(assets/icons/receive-new.svg);" aria-hidden="true"></span><span class="lbl">Receive</span></div>
+              <div class="seg"><span class="svgic" style="--ic:url(assets/icons/earn.svg);" aria-hidden="true"></span><span class="lbl">Earn</span></div>
             </div>
             <div class="mbc">
               <div class="top" data-surface="graphite"><div class="tl">Total Balance</div>
@@ -1454,7 +1465,7 @@ ul.tick li:before{content:"→";position:absolute;left:2px;color:var(--accent-in
             <div class="msearch">Search for tokens</div>
             <div class="mrow"><div class="ic"><img src="assets/icons/miden.svg" alt=""></div><div><div class="nm">Miden</div><div class="ad">0.00 MIDEN</div></div><div class="rt"><div class="f">$0.00</div><div class="b" style="color:var(--pos)">+0.00%</div></div></div>
           </div>
-          <div class="mnav"><div class="t on"><img src="assets/icons/home-new.svg" data-mono alt="">Home</div><div class="t"><img src="assets/icons/explore.svg" data-mono alt="">Explore</div><div class="t"><img src="assets/icons/activity.svg" data-mono alt="">Activity</div></div>
+          <div class="mnav"><div class="t on"><span class="svgic" style="--ic:url(assets/icons/home-new.svg);" aria-hidden="true"></span>Home</div><div class="t"><span class="svgic" style="--ic:url(assets/icons/explore.svg);" aria-hidden="true"></span>Explore</div><div class="t"><span class="svgic" style="--ic:url(assets/icons/activity.svg);" aria-hidden="true"></span>Activity</div></div>
         </div></div></div>
       </div>
     </div>
@@ -1583,7 +1594,7 @@ ul.tick li:before{content:"→";position:absolute;left:2px;color:var(--accent-in
             <h2 class="obh" style="margin-top:2%">Set up your passcode</h2>
             <p class="obp">Create a 6 digit code</p>
             <div class="dots" style="margin:20px 0 22px"><i></i><i></i><i></i><i></i><i></i><i></i></div>
-            <div class="pad" style="grid-template-columns:repeat(3,1fr);grid-auto-rows:92px;gap:9px;width:100%;margin-top:auto;padding-bottom:2px">
+            <div class="pad" style="width:100%;margin-top:auto;padding-bottom:2px">
               <button>1</button><button>2</button><button>3</button><button>4</button><button>5</button><button>6</button>
                 <button>7</button><button>8</button><button>9</button><span></span><button>0</button><button>⌫</button></div>
             <div class="zone"><button class="btn btn-secondary" style="width:100%;min-height:52px">Use FaceID or Biometric</button></div>
@@ -1599,7 +1610,7 @@ ul.tick li:before{content:"→";position:absolute;left:2px;color:var(--accent-in
             <h2 class="obh" style="margin-top:2%">Confirm your passcode</h2>
             <p class="obp">Re-enter the same 6 digits</p>
             <div class="dots" style="margin:20px 0 22px"><i class="f"></i><i class="f"></i><i class="f"></i><i></i><i></i><i></i></div>
-            <div class="pad" style="grid-template-columns:repeat(3,1fr);grid-auto-rows:92px;gap:9px;width:100%;margin-top:auto;padding-bottom:2px">
+            <div class="pad" style="width:100%;margin-top:auto;padding-bottom:2px">
               <button>1</button><button>2</button><button>3</button><button>4</button><button>5</button><button>6</button>
                 <button>7</button><button>8</button><button>9</button><span></span><button>0</button><button>⌫</button></div>
             <div class="zone"><button class="btn btn-secondary" style="width:100%;min-height:52px">Use FaceID or Biometric</button></div>
@@ -1613,7 +1624,7 @@ ul.tick li:before{content:"→";position:absolute;left:2px;color:var(--accent-in
           <div class="mpad" style="flex:1;display:flex;flex-direction:column">
             <div class="obtop"><button class="obback" aria-label="Go back">‹</button><div class="progdots"><i class="on"></i><i class="on"></i><i></i><i></i><i></i><i></i><i></i></div></div>
             <div class="obmid">
-              <div class="fid"><b></b><b></b><b></b><b></b><span class="gl"><img src="assets/icons/face.svg" data-mono alt="" style="width:52px;height:52px"></span></div>
+              <div class="fid"><b></b><b></b><b></b><b></b><span class="gl"><span class="svgic" style="--ic:url(assets/icons/face.svg);width:52px;height:52px" aria-hidden="true"></span></span></div>
               <div style="text-align:center;font-family:var(--display);font-weight:800;font-size:15px;margin-top:24px">Face ID set up</div>
             </div>
             <div class="zone"><button class="btn btn-secondary" style="width:100%;min-height:52px">Use passcode instead</button></div>
@@ -1641,7 +1652,7 @@ ul.tick li:before{content:"→";position:absolute;left:2px;color:var(--accent-in
           <div class="stat"><span>9:41</span><span class="r">✦ ▪ ▪</span></div>
           <div class="mpad" style="flex:1;display:flex;flex-direction:column">
             <div class="obtop"><button class="obback" aria-label="Go back">‹</button><div class="progdots"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i><i></i></div></div>
-            <h2 class="obh" style="text-align:left;font-size:21px">Choose your Guardian</h2>
+            <h2 class="obh" style="text-align:left">Choose your Guardian</h2>
             <p class="obp" style="text-align:left;margin-top:5px">Select an option below</p>
             <div style="font-size:11px;font-weight:700;color:var(--accent-ink);margin-top:6px">Learn more about the Guardian</div>
             <div class="gguard">
@@ -1660,7 +1671,7 @@ ul.tick li:before{content:"→";position:absolute;left:2px;color:var(--accent-in
           <div class="stat"><span>9:41</span><span class="r">✦ ▪ ▪</span></div>
           <div class="mpad" style="flex:1;display:flex;flex-direction:column">
             <div class="obtop"><button class="obback" aria-label="Go back">‹</button><div class="progdots"><i class="on"></i><i class="on"></i><i></i><i></i><i></i><i></i><i></i></div></div>
-            <h2 class="obh" style="text-align:left;font-size:20px">Choose your Guardian</h2>
+            <h2 class="obh" style="text-align:left">Choose your Guardian</h2>
             <p class="obp" style="text-align:left;margin-top:4px">For the last step, choose your Miden Guardian. This will serve as a protective layer</p>
             <div class="isheet">
               <div class="ih">What is a Guardian?</div>
@@ -1696,7 +1707,7 @@ ul.tick li:before{content:"→";position:absolute;left:2px;color:var(--accent-in
           <div class="stat"><span>9:41</span><span class="r">✦ ▪ ▪</span></div>
           <div class="mpad" style="flex:1;display:flex;flex-direction:column">
             <div class="obtop"><button class="obback" aria-label="Go back">‹</button><div class="progdots"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i></div></div>
-            <h2 class="obh" style="text-align:left;font-size:21px">Write this down</h2>
+            <h2 class="obh" style="text-align:left">Write this down</h2>
             <p class="obp" style="text-align:left">12 words, in order. This is the only way to restore your wallet.</p>
             <div class="seedgrid" style="margin-top:12px">
               <div class="seedw"><i>1</i>ripple</div><div class="seedw"><i>2</i>canvas</div><div class="seedw"><i>3</i>orbit</div>
@@ -1715,9 +1726,9 @@ ul.tick li:before{content:"→";position:absolute;left:2px;color:var(--accent-in
           <div class="stat"><span>9:41</span><span class="r">✦ ▪ ▪</span></div>
           <div class="mpad" style="flex:1;display:flex;flex-direction:column;align-items:center">
             <img src="assets/bread-logo.svg" alt="" style="width:52px;margin-top:2%">
-            <h2 class="obh" style="font-size:19px;margin-top:12px">Enter your passcode</h2>
+            <h2 class="obh">Enter your passcode</h2>
             <div class="dots" style="margin:20px 0 22px"><i class="f"></i><i class="f"></i><i></i><i></i><i></i><i></i></div>
-            <div class="pad" style="grid-template-columns:repeat(3,1fr);grid-auto-rows:92px;gap:9px;width:100%;margin-top:auto;padding-bottom:2px">
+            <div class="pad" style="width:100%;margin-top:auto;padding-bottom:2px">
               <button>1</button><button>2</button><button>3</button><button>4</button><button>5</button><button>6</button>
                 <button>7</button><button>8</button><button>9</button><span></span><button>0</button><button>⌫</button></div>
             <div class="zone" style="width:100%"><button class="btn btn-secondary" style="width:100%;min-height:52px">Use Face ID</button></div>
@@ -1735,10 +1746,10 @@ ul.tick li:before{content:"→";position:absolute;left:2px;color:var(--accent-in
           <div class="stat"><span>9:41</span><span class="r">✦ ▪ ▪</span></div>
           <div class="mpad" style="flex:1;display:flex;flex-direction:column">
             <div class="mseg" data-seg>
-              <div class="seg on"><img src="assets/icons/wallet.svg" data-mono alt=""><span class="lbl">Overview</span></div>
-              <div class="seg"><img src="assets/icons/send-new.svg" alt=""><span class="lbl">Send</span></div>
-              <div class="seg"><img src="assets/icons/receive-new.svg" alt=""><span class="lbl">Receive</span></div>
-              <div class="seg"><img src="assets/icons/earn.svg" alt=""><span class="lbl">Earn</span></div>
+              <div class="seg on"><span class="svgic" style="--ic:url(assets/icons/wallet.svg);" aria-hidden="true"></span><span class="lbl">Overview</span></div>
+              <div class="seg"><span class="svgic" style="--ic:url(assets/icons/send-new.svg);" aria-hidden="true"></span><span class="lbl">Send</span></div>
+              <div class="seg"><span class="svgic" style="--ic:url(assets/icons/receive-new.svg);" aria-hidden="true"></span><span class="lbl">Receive</span></div>
+              <div class="seg"><span class="svgic" style="--ic:url(assets/icons/earn.svg);" aria-hidden="true"></span><span class="lbl">Earn</span></div>
             </div>
             <div class="mbc">
               <div class="top" data-surface="graphite"><div class="tl">Total Balance</div>
@@ -1751,14 +1762,14 @@ ul.tick li:before{content:"→";position:absolute;left:2px;color:var(--accent-in
             <div class="mrow"><div class="ic"><img src="assets/icons/miden.svg" alt=""></div><div><div class="nm">Miden</div><div class="ad">1,204.50 MIDEN</div></div><div class="rt"><div class="f">$12,480.50</div><div class="b" style="color:var(--pos)">+0.32%</div></div></div>
             <div class="mrow"><div class="ic"><img src="assets/icons/usdc.svg" alt=""></div><div><div class="nm">USDC</div><div class="ad">0.00 USDC</div></div><div class="rt"><div class="f">$0.00</div><div class="b">—</div></div></div>
           </div>
-          <div class="mnav"><div class="t on"><img src="assets/icons/home-new.svg" data-mono alt="">Home</div><div class="t"><img src="assets/icons/explore.svg" data-mono alt="">Explore</div><div class="t"><img src="assets/icons/activity.svg" data-mono alt="">Activity</div></div>
+          <div class="mnav"><div class="t on"><span class="svgic" style="--ic:url(assets/icons/home-new.svg);" aria-hidden="true"></span>Home</div><div class="t"><span class="svgic" style="--ic:url(assets/icons/explore.svg);" aria-hidden="true"></span>Explore</div><div class="t"><span class="svgic" style="--ic:url(assets/icons/activity.svg);" aria-hidden="true"></span>Activity</div></div>
         </div></div></div>
         <div class="scrnote">Funded state. Balance and amounts in Nunito tabular; addresses in Geist Mono.</div></div>
 
       <div><div class="scrcap"><i></i>Accounts sheet</div>
         <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
           <div class="stat"><span>9:41</span><span class="r">✦ ▪ ▪</span></div>
-          <div class="mpad" style="flex:1;opacity:.4"><div class="mseg"><div class="seg on"><img src="assets/icons/wallet.svg" data-mono alt=""><span class="lbl">Overview</span></div><div class="seg"><img src="assets/icons/send-new.svg" alt=""></div><div class="seg"><img src="assets/icons/receive-new.svg" alt=""></div><div class="seg"><img src="assets/icons/earn.svg" alt=""></div></div>
+          <div class="mpad" style="flex:1;opacity:.4"><div class="mseg"><div class="seg on"><span class="svgic" style="--ic:url(assets/icons/wallet.svg);" aria-hidden="true"></span><span class="lbl">Overview</span></div><div class="seg"><span class="svgic" style="--ic:url(assets/icons/send-new.svg);" aria-hidden="true"></span></div><div class="seg"><span class="svgic" style="--ic:url(assets/icons/receive-new.svg);" aria-hidden="true"></span></div><div class="seg"><span class="svgic" style="--ic:url(assets/icons/earn.svg);" aria-hidden="true"></span></div></div>
             <div class="mbc"><div class="top" data-surface="graphite"><div class="tl">Total Balance</div><div class="amt">$12,480.50 <small>USD</small></div></div></div></div>
           <div style="position:absolute;inset:0;background:rgba(0,0,0,.45)"></div>
           <div style="position:absolute;left:0;right:0;bottom:0;background:var(--surface);border-radius:var(--radius-lg) var(--radius-lg) 0 0;padding:12px 20px max(16px,var(--safe-bottom))">
@@ -1773,7 +1784,7 @@ ul.tick li:before{content:"→";position:absolute;left:2px;color:var(--accent-in
               <span style="width:30px;height:30px;border-radius:50%;background:var(--card-green)"></span>
               <span style="width:30px;height:30px;border-radius:50%;background:var(--card-purple)"></span>
             </div>
-            <div class="setgroup" style="margin-top:14px"><div class="setrow"><img src="assets/icons/settings-new.svg" data-mono alt="">Settings<span class="ch">›</span></div></div>
+            <div class="setgroup" style="margin-top:14px"><div class="setrow"><span class="svgic" style="--ic:url(assets/icons/settings-new.svg);" aria-hidden="true"></span>Settings<span class="ch">›</span></div></div>
           </div>
         </div></div></div>
         <div class="scrnote">The canonical bottom sheet — one overlay primitive (vaul) for every picker in the app.</div></div>
@@ -1818,7 +1829,7 @@ ul.tick li:before{content:"→";position:absolute;left:2px;color:var(--accent-in
             <div class="sh2"><span class="bk2">‹</span><span class="t2">Receive</span></div>
             <div style="text-align:center;margin-top:6%"><div class="qrbox"><div class="qrpat"></div></div></div>
             <div style="text-align:center;font-size:12.5px;color:var(--ink-2);margin-top:16px">Your Miden address</div>
-            <div class="addrbox" style="width:auto;margin-top:8px"><span class="a">mtst1ap8…r4fp</span><img src="assets/icons/copy.svg" data-mono alt="" style="width:16px;height:16px"></div>
+            <div class="addrbox" style="width:auto;margin-top:8px"><span class="a">mtst1ap8…r4fp</span><span class="svgic" style="--ic:url(assets/icons/copy.svg);width:16px;height:16px" aria-hidden="true"></span></div>
             <div class="notice" style="background:var(--surface-2);color:var(--ink-2)"><span>ⓘ</span><span>Only send Miden-network assets to this address.</span></div>
             <div class="zone"><button class="btn btn-primary" style="width:100%">Share address</button><div class="gh">Set an amount</div></div>
           </div>
@@ -1831,8 +1842,8 @@ ul.tick li:before{content:"→";position:absolute;left:2px;color:var(--accent-in
           <div class="mpad" style="flex:1;display:flex;flex-direction:column">
             <div class="sh2"><span class="bk2">‹</span><span class="t2">Pending</span></div>
             <p class="obp" style="text-align:left;margin-top:0">Notes sent to you that aren't claimed yet.</p>
-            <div class="mrow"><div class="ic sq"><img src="assets/icons/receive-new.svg" alt=""></div><div><div class="nm">From mtst1kq2…88xz</div><div class="ad">2 min ago</div></div><div class="rt"><div class="f" style="color:var(--pos)">+40.00</div><div class="b">MIDEN</div></div></div>
-            <div class="mrow"><div class="ic sq"><img src="assets/icons/receive-new.svg" alt=""></div><div><div class="nm">From mtst1zz9…41mn</div><div class="ad">1 hr ago</div></div><div class="rt"><div class="f" style="color:var(--pos)">+12.50</div><div class="b">MIDEN</div></div></div>
+            <div class="mrow"><div class="ic sq"><span class="svgic" style="--ic:url(assets/icons/receive-new.svg);" aria-hidden="true"></span></div><div><div class="nm">From mtst1kq2…88xz</div><div class="ad">2 min ago</div></div><div class="rt"><div class="f" style="color:var(--pos)">+40.00</div><div class="b">MIDEN</div></div></div>
+            <div class="mrow"><div class="ic sq"><span class="svgic" style="--ic:url(assets/icons/receive-new.svg);" aria-hidden="true"></span></div><div><div class="nm">From mtst1zz9…41mn</div><div class="ad">1 hr ago</div></div><div class="rt"><div class="f" style="color:var(--pos)">+12.50</div><div class="b">MIDEN</div></div></div>
             <div class="zone"><button class="btn btn-primary" style="width:100%">Claim all · 52.50</button></div>
           </div>
         </div></div></div>
@@ -1850,13 +1861,13 @@ ul.tick li:before{content:"→";position:absolute;left:2px;color:var(--accent-in
             <div style="font-family:var(--display);font-weight:800;font-size:23px;padding:6px 0 12px">Activity</div>
             <div class="filters"><span class="fc on">All</span><span class="fc">Sent</span><span class="fc">Received</span><span class="fc">Earn</span></div>
             <div style="font-size:11px;color:var(--ink-2);font-weight:700;margin:6px 0 2px">TODAY</div>
-            <div class="mrow"><div class="ic sq"><img src="assets/icons/receive-new.svg" alt=""></div><div><div class="nm">Received</div><div class="ad addr">mtst1kq2…88xz</div></div><div class="rt"><div class="f" style="color:var(--pos)">+40.00</div><div class="b">2m ago</div></div></div>
-            <div class="mrow"><div class="ic sq"><img src="assets/icons/send-new.svg" alt=""></div><div><div class="nm">Sent</div><div class="ad addr">mtst1ap8…r4fp</div></div><div class="rt"><div class="f">−12.50</div><div class="b">1h ago</div></div></div>
+            <div class="mrow"><div class="ic sq"><span class="svgic" style="--ic:url(assets/icons/receive-new.svg);" aria-hidden="true"></span></div><div><div class="nm">Received</div><div class="ad addr">mtst1kq2…88xz</div></div><div class="rt"><div class="f" style="color:var(--pos)">+40.00</div><div class="b">2m ago</div></div></div>
+            <div class="mrow"><div class="ic sq"><span class="svgic" style="--ic:url(assets/icons/send-new.svg);" aria-hidden="true"></span></div><div><div class="nm">Sent</div><div class="ad addr">mtst1ap8…r4fp</div></div><div class="rt"><div class="f">−12.50</div><div class="b">1h ago</div></div></div>
             <div style="font-size:11px;color:var(--ink-2);font-weight:700;margin:12px 0 2px">YESTERDAY</div>
-            <div class="mrow"><div class="ic sq"><img src="assets/icons/earn.svg" alt=""></div><div><div class="nm">Earn deposit</div><div class="ad">Aave · MIDEN</div></div><div class="rt"><div class="f">−500.00</div><div class="b">Confirmed</div></div></div>
-            <div class="mrow"><div class="ic sq"><img src="assets/icons/send-new.svg" alt=""></div><div><div class="nm">Sent</div><div class="ad addr">mtst1zz9…41mn</div></div><div class="rt"><div class="f" style="color:var(--neg)">Failed</div><div class="b">Not sent</div></div></div>
+            <div class="mrow"><div class="ic sq"><span class="svgic" style="--ic:url(assets/icons/earn.svg);" aria-hidden="true"></span></div><div><div class="nm">Earn deposit</div><div class="ad">Aave · MIDEN</div></div><div class="rt"><div class="f">−500.00</div><div class="b">Confirmed</div></div></div>
+            <div class="mrow"><div class="ic sq"><span class="svgic" style="--ic:url(assets/icons/send-new.svg);" aria-hidden="true"></span></div><div><div class="nm">Sent</div><div class="ad addr">mtst1zz9…41mn</div></div><div class="rt"><div class="f" style="color:var(--neg)">Failed</div><div class="b">Not sent</div></div></div>
           </div>
-          <div class="mnav"><div class="t"><img src="assets/icons/home-new.svg" data-mono alt="">Home</div><div class="t"><img src="assets/icons/explore.svg" data-mono alt="">Explore</div><div class="t on"><img src="assets/icons/activity.svg" data-mono alt="">Activity</div></div>
+          <div class="mnav"><div class="t"><span class="svgic" style="--ic:url(assets/icons/home-new.svg);" aria-hidden="true"></span>Home</div><div class="t"><span class="svgic" style="--ic:url(assets/icons/explore.svg);" aria-hidden="true"></span>Explore</div><div class="t on"><span class="svgic" style="--ic:url(assets/icons/activity.svg);" aria-hidden="true"></span>Activity</div></div>
         </div></div></div>
         <div class="scrnote">Failed rows say <b>"Not sent"</b> in the value column — status is never colour-only, and never ambiguous about the money.</div></div>
 
@@ -1886,10 +1897,10 @@ ul.tick li:before{content:"→";position:absolute;left:2px;color:var(--accent-in
           <div class="stat"><span>9:41</span><span class="r">✦ ▪ ▪</span></div>
           <div class="mpad" style="flex:1;display:flex;flex-direction:column">
             <div class="mseg" data-seg>
-              <div class="seg"><img src="assets/icons/wallet.svg" data-mono alt=""><span class="lbl">Overview</span></div>
-              <div class="seg"><img src="assets/icons/send-new.svg" alt=""><span class="lbl">Send</span></div>
-              <div class="seg"><img src="assets/icons/receive-new.svg" alt=""><span class="lbl">Receive</span></div>
-              <div class="seg on"><img src="assets/icons/earn.svg" alt=""><span class="lbl">Earn</span></div>
+              <div class="seg"><span class="svgic" style="--ic:url(assets/icons/wallet.svg);" aria-hidden="true"></span><span class="lbl">Overview</span></div>
+              <div class="seg"><span class="svgic" style="--ic:url(assets/icons/send-new.svg);" aria-hidden="true"></span><span class="lbl">Send</span></div>
+              <div class="seg"><span class="svgic" style="--ic:url(assets/icons/receive-new.svg);" aria-hidden="true"></span><span class="lbl">Receive</span></div>
+              <div class="seg on"><span class="svgic" style="--ic:url(assets/icons/earn.svg);" aria-hidden="true"></span><span class="lbl">Earn</span></div>
             </div>
             <div class="mbc"><div class="top" data-surface="graphite"><div class="tl">Earning</div><div class="amt">$500.00 <small>USD</small></div>
               <div class="delta" style="background:var(--pos-wash);color:var(--pos)">+$4.10 all time</div></div></div>
@@ -1897,7 +1908,7 @@ ul.tick li:before{content:"→";position:absolute;left:2px;color:var(--accent-in
             <div class="vaultrow"><img src="assets/icons/aave.svg" alt=""><div><div class="vn">Aave · MIDEN</div><div class="vs">Deposited 500.00</div></div><div class="vapy"><div class="p">4.82%</div><div class="pl">APY</div></div></div>
             <div class="vaultrow"><img src="assets/icons/usdc.svg" alt=""><div><div class="vn">Aave · USDC</div><div class="vs">Not deposited</div></div><div class="vapy"><div class="p">5.14%</div><div class="pl">APY</div></div></div>
           </div>
-          <div class="mnav"><div class="t on"><img src="assets/icons/home-new.svg" data-mono alt="">Home</div><div class="t"><img src="assets/icons/explore.svg" data-mono alt="">Explore</div><div class="t"><img src="assets/icons/activity.svg" data-mono alt="">Activity</div></div>
+          <div class="mnav"><div class="t on"><span class="svgic" style="--ic:url(assets/icons/home-new.svg);" aria-hidden="true"></span>Home</div><div class="t"><span class="svgic" style="--ic:url(assets/icons/explore.svg);" aria-hidden="true"></span>Explore</div><div class="t"><span class="svgic" style="--ic:url(assets/icons/activity.svg);" aria-hidden="true"></span>Activity</div></div>
         </div></div></div>
         <div class="scrnote">Earn rebuilt on the kit — the same graphite hero and grey rows as Home. No bespoke header, no charting dependency.</div></div>
 
@@ -1962,21 +1973,21 @@ ul.tick li:before{content:"→";position:absolute;left:2px;color:var(--accent-in
           <div class="mpad" style="flex:1;display:flex;flex-direction:column">
             <div style="font-family:var(--display);font-weight:800;font-size:23px;padding:6px 0 14px">Settings</div>
             <div class="setgroup">
-              <div class="setrow"><img src="assets/icons/settings-new.svg" data-mono alt="">General<span class="ch">›</span></div>
-              <div class="setrow"><img src="assets/icons/globe.svg" data-mono alt="">Language<span class="ch">›</span></div>
-              <div class="setrow"><img src="assets/icons/contacts-book.svg" data-mono alt="">Address book<span class="ch">›</span></div>
+              <div class="setrow"><span class="svgic" style="--ic:url(assets/icons/settings-new.svg);" aria-hidden="true"></span>General<span class="ch">›</span></div>
+              <div class="setrow"><span class="svgic" style="--ic:url(assets/icons/globe.svg);" aria-hidden="true"></span>Language<span class="ch">›</span></div>
+              <div class="setrow"><span class="svgic" style="--ic:url(assets/icons/contacts-book.svg);" aria-hidden="true"></span>Address book<span class="ch">›</span></div>
             </div>
             <div class="setgroup">
-              <div class="setrow"><img src="assets/icons/key.svg" data-mono alt="">Recovery phrase<span class="ch">›</span></div>
-              <div class="setrow"><img src="assets/icons/lock.svg" data-mono alt="">Guardian<span class="ch">›</span></div>
-              <div class="setrow"><img src="assets/icons/share.svg" alt="">Encrypted wallet file<span class="ch">›</span></div>
+              <div class="setrow"><span class="svgic" style="--ic:url(assets/icons/key.svg);" aria-hidden="true"></span>Recovery phrase<span class="ch">›</span></div>
+              <div class="setrow"><span class="svgic" style="--ic:url(assets/icons/lock.svg);" aria-hidden="true"></span>Guardian<span class="ch">›</span></div>
+              <div class="setrow"><span class="svgic" style="--ic:url(assets/icons/share.svg);" aria-hidden="true"></span>Encrypted wallet file<span class="ch">›</span></div>
             </div>
             <div class="setgroup">
-              <div class="setrow"><img src="assets/icons/convert.svg" alt="">Authorized dApps<span class="ch">›</span></div>
-              <div class="setrow"><img src="assets/icons/coins.svg" data-mono alt="">About<span class="ch">›</span></div>
+              <div class="setrow"><span class="svgic" style="--ic:url(assets/icons/convert.svg);" aria-hidden="true"></span>Authorized dApps<span class="ch">›</span></div>
+              <div class="setrow"><span class="svgic" style="--ic:url(assets/icons/coins.svg);" aria-hidden="true"></span>About<span class="ch">›</span></div>
             </div>
           </div>
-          <div class="mnav"><div class="t"><img src="assets/icons/home-new.svg" data-mono alt="">Home</div><div class="t"><img src="assets/icons/explore.svg" data-mono alt="">Explore</div><div class="t"><img src="assets/icons/activity.svg" data-mono alt="">Activity</div></div>
+          <div class="mnav"><div class="t"><span class="svgic" style="--ic:url(assets/icons/home-new.svg);" aria-hidden="true"></span>Home</div><div class="t"><span class="svgic" style="--ic:url(assets/icons/explore.svg);" aria-hidden="true"></span>Explore</div><div class="t"><span class="svgic" style="--ic:url(assets/icons/activity.svg);" aria-hidden="true"></span>Activity</div></div>
         </div></div></div>
         <div class="scrnote">Grouped soft blocks rather than a divided table — the same stacking idiom as everywhere else.</div></div>
 
@@ -2002,17 +2013,17 @@ ul.tick li:before{content:"→";position:absolute;left:2px;color:var(--accent-in
           <div class="stat"><span>9:41</span><span class="r">✦ ▪ ▪</span></div>
           <div class="mpad" style="flex:1;display:flex;flex-direction:column">
             <div style="font-family:var(--display);font-weight:800;font-size:23px;padding:6px 0 12px">Explore</div>
-            <div class="urlbar"><img src="assets/icons/search.svg" data-mono alt="" style="width:15px;height:15px;opacity:.5">Search or enter address</div>
+            <div class="urlbar"><span class="svgic" style="--ic:url(assets/icons/search.svg);width:15px;height:15px;opacity:.5" aria-hidden="true"></span>Search or enter address</div>
             <div style="font-size:11.5px;color:var(--ink-2);font-weight:700;margin:18px 0 6px">FAVOURITES</div>
             <div class="daygrid">
               <div class="dapp"><div class="tile"><img src="assets/icons/miden.svg" alt=""></div>Miden</div>
               <div class="dapp"><div class="tile"><img src="assets/icons/aave.svg" alt=""></div>Aave</div>
               <div class="dapp"><div class="tile"><img src="assets/icons/usdc.svg" alt=""></div>Faucet</div>
-              <div class="dapp"><div class="tile"><img src="assets/icons/globe.svg" data-mono alt=""></div>Browse</div>
+              <div class="dapp"><div class="tile"><span class="svgic" style="--ic:url(assets/icons/globe.svg);" aria-hidden="true"></span></div>Browse</div>
             </div>
             <div class="notice" style="background:var(--surface-2);color:var(--ink-2);margin-top:16px"><span>ⓘ</span><span>Connected sites can request signatures. You approve every transaction.</span></div>
           </div>
-          <div class="mnav"><div class="t"><img src="assets/icons/home-new.svg" data-mono alt="">Home</div><div class="t on"><img src="assets/icons/explore.svg" data-mono alt="">Explore</div><div class="t"><img src="assets/icons/activity.svg" data-mono alt="">Activity</div></div>
+          <div class="mnav"><div class="t"><span class="svgic" style="--ic:url(assets/icons/home-new.svg);" aria-hidden="true"></span>Home</div><div class="t on"><span class="svgic" style="--ic:url(assets/icons/explore.svg);" aria-hidden="true"></span>Explore</div><div class="t"><span class="svgic" style="--ic:url(assets/icons/activity.svg);" aria-hidden="true"></span>Activity</div></div>
         </div></div></div>
         <div class="scrnote">Browser rejoins the app: same header scale, same tiles, same nav. The trust statement is on the surface, not buried.</div></div>
 
