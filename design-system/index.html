@@ -246,9 +246,9 @@ table.map td code{font-size:12px}
 .notch{position:absolute;top:9px;left:50%;transform:translateX(-50%);width:96px;height:26px;background:var(--device-bezel);border-radius:var(--radius-lg);z-index:5}
 
 /* proposed mock internals */
-.mock{position:absolute;inset:0;display:flex;flex-direction:column;background:var(--paper);font-family:var(--ui);--safe-bottom:34px}
+.mock{position:absolute;inset:0;display:flex;flex-direction:column;background:var(--paper);font-family:var(--ui);--safe-top:62px;--safe-bottom:34px}
 .mock::after{content:'';position:absolute;left:50%;transform:translateX(-50%);bottom:9px;width:134px;height:5px;border-radius:var(--radius-full);background:var(--ink);opacity:.28;pointer-events:none}
-.mock .stat{height:44px;display:flex;align-items:center;justify-content:space-between;padding:14px 20px 0;font-family:var(--mono);font-size:12px;font-weight:600;color:var(--ink)}
+.mock .stat{height:var(--safe-top);flex:none;display:flex;align-items:flex-end;justify-content:space-between;padding:0 20px 8px;font-family:var(--mono);font-size:12px;font-weight:600;color:var(--ink)}
 .mock .stat .r{display:flex;gap:5px;align-items:center}
 .mpad{padding:6px 16px 0;overflow:hidden}
 .macct{display:flex;align-items:center;justify-content:space-between;padding:8px 4px 14px}
@@ -326,7 +326,7 @@ table.map td code{font-size:12px}
 /* welcome mock */
 /* KEPT AS SHIPPED — 130px mark, 72px display headline, 20px body, vertically centred.
    The only change is the bottom: the system action zone (52px CTA + safe-area clearance). */
-.mwel{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;padding:0 24px;background:var(--paper);--safe-bottom:34px}
+.mwel{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;padding:var(--safe-top,62px) 24px 0;background:var(--paper);--safe-top:62px;--safe-bottom:34px}
 .mwel .mid{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;width:100%;padding:32px 0}
 .mwel .logo{width:130px;height:auto}
 .mwel h2{font-family:var(--display);font-weight:700;font-size:72px;line-height:.99;letter-spacing:-.02em;text-align:center;margin-top:16px;color:var(--ink)}
@@ -383,9 +383,42 @@ ul.tick li:before{content:"→";position:absolute;left:2px;color:var(--accent-in
 .obillus{display:block;margin:0 auto;max-width:9.5rem}
 .obh{font-family:var(--display);font-weight:900;font-size:23px;line-height:1.12;text-align:center;margin-top:16px}
 .obp{font-size:13px;color:var(--ink-2);text-align:center;margin-top:9px;line-height:1.45}
+/* Figma uses a SEGMENTED BAR, not dots — and the flow is 7 steps, not 4. */
 .progdots{display:flex;gap:5px;justify-content:center;padding:4px 0 14px}
-.progdots i{height:4px;border-radius:var(--radius-full);background:var(--surface-3);flex:1;max-width:52px;display:block}
+.progdots i{height:5px;border-radius:var(--radius-full);background:var(--surface-3);flex:1;display:block}
 .progdots i.on{background:var(--accent)}
+/* splash — full-bleed brand orange, knocked-out white mark */
+.splash{position:absolute;inset:0;background:var(--accent-brand,#E77537);display:flex;align-items:center;justify-content:center}
+.splash img{width:150px;filter:brightness(0) invert(1)}
+/* Face ID scan brackets */
+.fid{width:132px;height:132px;margin:0 auto;position:relative}
+.fid b{position:absolute;width:30px;height:30px;border:4px solid var(--accent);display:block}
+.fid b:nth-child(1){top:0;left:0;border-right:0;border-bottom:0;border-radius:8px 0 0 0}
+.fid b:nth-child(2){top:0;right:0;border-left:0;border-bottom:0;border-radius:0 8px 0 0}
+.fid b:nth-child(3){bottom:0;left:0;border-right:0;border-top:0;border-radius:0 0 0 8px}
+.fid b:nth-child(4){bottom:0;right:0;border-left:0;border-top:0;border-radius:0 0 8px 0}
+.fid .gl{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:34px;color:var(--ink-2)}
+.fid.ok b{border-color:var(--pos)}
+.fid.ok .gl span{width:56px;height:56px;border-radius:10px;background:var(--pos);color:var(--pure-white);display:flex;align-items:center;justify-content:center;font-size:26px}
+/* guardian picker — 2-up grid, "Default" band, orange outline = selected */
+.gguard{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:12px}
+.gcard{border-radius:var(--radius-md);background:var(--surface);box-shadow:0 0 0 1.5px var(--rule-strong);overflow:hidden;text-align:center}
+.gcard.sel{box-shadow:0 0 0 2px var(--accent)}
+.gcard .band{background:var(--accent);color:var(--on-accent);font-size:8.5px;font-weight:800;padding:3px 0;letter-spacing:.02em}
+.gcard .glogo{height:44px;display:flex;align-items:center;justify-content:center;padding:6px 10px}
+.gcard .glogo img{max-width:100%;max-height:26px}
+.gcard .gname{font-family:var(--display);font-weight:800;font-size:12px}
+.gcard .gmeta{font-size:8px;color:var(--ink-2);padding:0 4px 7px;line-height:1.4}
+/* guardian explainer sheet */
+.isheet{border:2px solid var(--accent);border-radius:var(--radius-lg);padding:12px 12px 0;margin-top:10px;background:var(--surface)}
+.isheet .ih{font-family:var(--display);font-weight:800;font-size:15px;text-align:center}
+.isheet .ip{font-size:10px;color:var(--ink-2);text-align:center;line-height:1.45;margin-top:8px}
+.isheet .irule{height:3px;background:var(--accent);border-radius:var(--radius-full);margin:11px 0 9px}
+.isec{padding:8px 0}
+.isec+.isec{border-top:1px solid var(--rule)}
+.isec .it{display:flex;align-items:center;gap:6px;justify-content:center;font-family:var(--display);font-weight:800;font-size:11.5px}
+.isec .it i{width:14px;height:14px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:8px;color:var(--pure-white);font-style:normal}
+.isec .id2{font-size:9px;color:var(--ink-2);text-align:center;line-height:1.45;margin-top:4px}
 .seedgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}
 .seedw{background:var(--surface-2);border-radius:var(--radius-sm);padding:8px 7px;font-size:11.5px;font-weight:600;display:flex;gap:6px;align-items:baseline}
 .seedw i{color:var(--ink-3);font-style:normal;font-family:var(--num);font-size:10px;min-width:11px}
@@ -1454,102 +1487,185 @@ ul.tick li:before{content:"→";position:absolute;left:2px;color:var(--accent-in
     <h2 class="h">Onboarding</h2>
     <div class="scrgrid">
 
-      <div><div class="scrcap"><i></i>Welcome</div>
+      <div><div class="scrcap"><i></i>01 · Splash</div>
         <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
-          <div class="mwel">
-            <div class="mid">
-              <img class="logo" src="assets/bread-logo.svg" alt="bread"/>
-              <h2>Welcome<br>to Bread!</h2>
-              <p>Bread Wallet is a simple and secure way to manage your digital money privately.</p>
+          <div class="splash"><img src="assets/bread-logo.svg" alt="Bread"></div>
+        </div></div></div>
+        <div class="scrnote"><b>Was missing from my build.</b> Full-bleed brand orange with the mark knocked out white — the one place <code>--accent-brand</code> is a full-screen fill.</div></div>
+
+      <div><div class="scrcap"><i></i>02 · Welcome</div>
+        <div class="phone"><div class="screen"><div class="notch"></div><div class="mwel">
+          <div class="mid">
+            <img class="logo" src="assets/bread-logo.svg" alt="bread"/>
+            <h2>Welcome<br>to Bread!</h2>
+            <p>Bread Wallet is a simple and secure way to manage your digital money privately.</p>
+          </div>
+          <div class="zone" style="width:100%"><button class="btn btn-primary" style="width:100%">Get started</button><div class="gh">Recover your account ›</div></div>
+        </div></div></div>
+        <div class="scrnote">Already matched Figma. Kept as shipped; only the action zone gained safe-area clearance.</div></div>
+
+      <div><div class="scrcap"><i></i>03 · Protection method</div>
+        <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
+          <div class="stat"><span>9:41</span><span class="r">✦ ▪ ▪</span></div>
+          <div class="mpad" style="flex:1;display:flex;flex-direction:column">
+            <div class="progdots"><i class="on"></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+            <img class="obillus" src="assets/icons/protected-illustration.svg" alt="" style="margin-top:12%">
+            <h2 class="obh">Choose how you want to protect your wallet</h2>
+            <div class="zone">
+              <button class="btn btn-primary" style="width:100%">Use FaceID or Biometric</button>
+              <button class="btn btn-secondary" style="width:100%;margin-top:10px;min-height:52px">Set up your passcode</button>
             </div>
-            <div class="zone" style="width:100%"><button class="btn btn-primary" style="width:100%">Get started</button><div class="gh">Recover your account ›</div></div>
           </div>
         </div></div></div>
-        <div class="scrnote">The reference for the whole system: warm ground, rounded display type, one orange CTA, ghost beneath.</div></div>
+        <div class="scrnote"><b>Correction:</b> the second action is a <b>filled grey button</b>, not the ghost text link I had. This is the systematic difference — Figma uses filled secondaries throughout.</div></div>
 
-      <div><div class="scrcap"><i></i>Choose protection</div>
+      <div><div class="scrcap"><i></i>04 · Passcode create</div>
         <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
+          <div class="stat"><span>9:41</span><span class="r">✦ ▪ ▪</span></div>
           <div class="mpad" style="flex:1;display:flex;flex-direction:column">
-            <div class="progdots"><i class="on"></i><i></i><i></i><i></i></div>
-            <img class="obillus" src="assets/icons/protected-illustration.svg" alt="" style="margin-top:14%">
-            <h2 class="obh">Choose how to protect your wallet</h2>
-            <p class="obp">Either can be changed later in Settings.</p>
-            <div class="zone"><button class="btn btn-primary" style="width:100%">Use Face ID</button><div class="gh">Set up a passcode instead</div></div>
+            <div class="progdots"><i class="on"></i><i class="on"></i><i></i><i></i><i></i><i></i><i></i></div>
+            <h2 class="obh" style="margin-top:4%">Set up your passcode</h2>
+            <p class="obp">Create a 6 digit code</p>
+            <div class="dots" style="margin:18px 0 20px"><i></i><i></i><i></i><i></i><i></i><i></i></div>
+            <div style="flex:1;display:flex;align-items:center">
+              <div class="pad" style="grid-template-columns:repeat(3,1fr);gap:11px;width:100%">
+                <button>1</button><button>2</button><button>3</button><button>4</button><button>5</button><button>6</button>
+                <button>7</button><button>8</button><button>9</button><span></span><button>0</button><button>⌫</button></div>
+            </div>
+            <div class="zone"><button class="btn btn-secondary" style="width:100%;min-height:52px">Use FaceID or Biometric</button></div>
           </div>
         </div></div></div>
-        <div class="scrnote">The designer's real illustration. Progress dots replace a title bar — onboarding's own header pattern.</div></div>
+        <div class="scrnote"><b>Correction:</b> mine had no bottom action. Figma pins a filled-grey biometric shortcut below the numpad.</div></div>
 
-      <div><div class="scrcap"><i></i>Set passcode</div>
+      <div><div class="scrcap"><i></i>05 · Passcode confirm</div>
         <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
+          <div class="stat"><span>9:41</span><span class="r">✦ ▪ ▪</span></div>
           <div class="mpad" style="flex:1;display:flex;flex-direction:column">
-            <div class="progdots"><i class="on"></i><i class="on"></i><i></i><i></i></div>
-            <h2 class="obh" style="margin-top:8%">Set up your passcode</h2>
-            <p class="obp">Create a 6-digit code.</p>
-            <div class="dots" style="margin:22px 0 26px"><i class="f"></i><i class="f"></i><i class="f"></i><i></i><i></i><i></i></div>
-            <div class="pad" style="grid-template-columns:repeat(3,1fr);gap:11px;margin-top:auto;margin-bottom:max(16px,var(--safe-bottom))">
-              <button>1</button><button>2</button><button>3</button><button>4</button><button>5</button><button>6</button>
-              <button>7</button><button>8</button><button>9</button><span></span><button>0</button><button>⌫</button></div>
+            <div class="progdots"><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i><i></i><i></i></div>
+            <h2 class="obh" style="margin-top:4%">Confirm your passcode</h2>
+            <p class="obp">Re-enter the same 6 digits</p>
+            <div class="dots" style="margin:18px 0 20px"><i class="f"></i><i class="f"></i><i class="f"></i><i></i><i></i><i></i></div>
+            <div style="flex:1;display:flex;align-items:center">
+              <div class="pad" style="grid-template-columns:repeat(3,1fr);gap:11px;width:100%">
+                <button>1</button><button>2</button><button>3</button><button>4</button><button>5</button><button>6</button>
+                <button>7</button><button>8</button><button>9</button><span></span><button>0</button><button>⌫</button></div>
+            </div>
+            <div class="zone"><button class="btn btn-secondary" style="width:100%;min-height:52px">Use FaceID or Biometric</button></div>
           </div>
         </div></div></div>
-        <div class="scrnote">Numpad is the action surface, so there's no separate CTA — the zone's safe-area clearance still applies.</div></div>
+        <div class="scrnote">Identical layout to 04 — only the heading, helper copy and filled-dot state differ.</div></div>
 
-      <div><div class="scrcap"><i></i>Choose Guardian</div>
+      <div><div class="scrcap"><i></i>04a · Face ID scan</div>
         <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
+          <div class="stat"><span>9:41</span><span class="r">✦ ▪ ▪</span></div>
           <div class="mpad" style="flex:1;display:flex;flex-direction:column">
-            <div class="progdots"><i class="on"></i><i class="on"></i><i class="on"></i><i></i></div>
+            <div class="progdots"><i class="on"></i><i class="on"></i><i></i><i></i><i></i><i></i><i></i></div>
+            <div style="margin-top:22%"><div class="fid"><b></b><b></b><b></b><b></b><span class="gl"><img src="assets/icons/face.svg" alt="" style="width:52px;height:52px"></span></div></div>
+            <div style="text-align:center;font-family:var(--display);font-weight:800;font-size:15px;margin-top:20px">Face ID set up</div>
+            <div class="zone"><button class="btn btn-secondary" style="width:100%;min-height:52px">Use passcode instead</button></div>
+          </div>
+        </div></div></div>
+        <div class="scrnote">Orange corner brackets frame the scan. Escape hatch is again a filled-grey secondary.</div></div>
+
+      <div><div class="scrcap"><i></i>04b · Face ID success</div>
+        <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
+          <div class="stat"><span>9:41</span><span class="r">✦ ▪ ▪</span></div>
+          <div class="mpad" style="flex:1;display:flex;flex-direction:column">
+            <div class="progdots"><i class="on"></i><i class="on"></i><i></i><i></i><i></i><i></i><i></i></div>
+            <div style="margin-top:22%"><div class="fid ok"><b></b><b></b><b></b><b></b><span class="gl"><span>✓</span></span></div></div>
+            <div style="text-align:center;font-family:var(--display);font-weight:800;font-size:15px;margin-top:20px">Confirmed!</div>
+            <p class="obp" style="margin-top:5px">Only one more step!</p>
+            <div class="zone"><button class="btn btn-primary" style="width:100%">Continue</button></div>
+          </div>
+        </div></div></div>
+        <div class="scrnote">Brackets flip <b>orange → green</b> on success. Colour is paired with a tick and a word, never colour alone.</div></div>
+
+      <div><div class="scrcap"><i></i>06 · Choose your Guardian</div>
+        <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
+          <div class="stat"><span>9:41</span><span class="r">✦ ▪ ▪</span></div>
+          <div class="mpad" style="flex:1;display:flex;flex-direction:column">
+            <div class="progdots"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i><i></i></div>
             <h2 class="obh" style="text-align:left;font-size:21px">Choose your Guardian</h2>
-            <p class="obp" style="text-align:left">Who helps you recover access if you lose this device.</p>
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:16px">
-              <div style="background:var(--surface-2);border-radius:var(--radius-md);padding:16px 10px;text-align:center;box-shadow:inset 0 0 0 2px var(--accent)"><img src="assets/icons/open-zeppelin.svg" alt="" style="width:100%;max-width:96px"><div style="font-size:10px;color:var(--ink-2);margin-top:9px">US-EAST</div></div>
-              <div style="background:var(--surface-2);border-radius:var(--radius-md);padding:16px 10px;text-align:center"><img src="assets/icons/gateway.svg" alt="" style="width:100%;max-width:96px"><div style="font-size:10px;color:var(--ink-2);margin-top:9px">EU-NORTH</div></div>
-              <div style="background:var(--surface-2);border-radius:var(--radius-md);padding:16px 10px;text-align:center"><img src="assets/icons/lambdaclass.svg" alt="" style="width:100%;max-width:96px"><div style="font-size:10px;color:var(--ink-2);margin-top:9px">EU-CENTRAL</div></div>
+            <p class="obp" style="text-align:left;margin-top:5px">Select an option below</p>
+            <div style="font-size:11px;font-weight:700;color:var(--accent-ink);margin-top:6px">Learn more about the Guardian</div>
+            <div class="gguard">
+              <div class="gcard"><div class="band">Default</div><div class="glogo"><img src="assets/icons/miden.svg" alt=""><span class="gname" style="margin-left:5px">Miden</span></div><div class="gmeta">Operated by Miden<br>Location: US-EAST</div></div>
+              <div class="gcard sel"><div class="glogo"><img src="assets/icons/gateway.svg" alt=""></div><div class="gmeta">Operated by Gateway FM<br>Location: EU-NORTH</div></div>
+              <div class="gcard"><div class="glogo"><img src="assets/icons/lambdaclass.svg" alt=""></div><div class="gmeta">Operated by Lambda Class<br>Location: EU-CENTRAL</div></div>
+              <div class="gcard"><div class="glogo"><img src="assets/icons/open-zeppelin.svg" alt=""></div><div class="gmeta">Operated by OpenZeppelin<br>Location: US-EAST</div></div>
             </div>
-            <div class="zone"><button class="btn btn-primary" style="width:100%">Continue</button><div class="gh">What is a Guardian?</div></div>
+            <div class="zone"><button class="btn btn-primary" style="width:100%">Continue</button></div>
           </div>
         </div></div></div>
-        <div class="scrnote">Selection shown by an inset ring, not a coloured band — so the logo is never cropped or compressed.</div></div>
+        <div class="scrnote"><b>2-up grid with a "Default" band; selection is an orange outline.</b> Note the band sits <em>above</em> the logo in its own row — it must never overlay or compress the wordmark (the original bug). <b>Contrast flag:</b> Figma's disabled Continue is <code>#dfd8d3</code> with white text ≈ <b>1.4:1</b> — I've kept it enabled here rather than ship a non-conformant disabled state.</div></div>
 
-      <div><div class="scrcap"><i></i>Recovery phrase</div>
+      <div><div class="scrcap"><i></i>06a · What is a Guardian?</div>
         <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
+          <div class="stat"><span>9:41</span><span class="r">✦ ▪ ▪</span></div>
           <div class="mpad" style="flex:1;display:flex;flex-direction:column">
-            <div class="progdots"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i></div>
+            <div class="progdots"><i class="on"></i><i class="on"></i><i></i><i></i><i></i><i></i><i></i></div>
+            <h2 class="obh" style="text-align:left;font-size:20px">Choose your Guardian</h2>
+            <p class="obp" style="text-align:left;margin-top:4px">For the last step, choose your Miden Guardian. This will serve as a protective layer</p>
+            <div class="isheet">
+              <div class="ih">What is a Guardian?</div>
+              <img src="assets/icons/guardian-avatar.svg" alt="" style="display:block;margin:8px auto 0;max-width:78px">
+              <div class="ip">A Guardian is an independent service that <b>cosigns every transaction</b> from your wallet, adding a safety net without giving up self-custody.</div>
+              <div class="irule"></div>
+              <div class="isec"><div class="it"><i style="background:var(--pos)">✓</i>What it does</div><div class="id2">Approves or rejects transactions based on your security policy. Helps you recover if you lose your device.</div></div>
+              <div class="isec"><div class="it"><i style="background:var(--accent)">⊙</i>Switching is easy</div><div class="id2">You can rotate to a different Guardian — or remove one entirely — at any time using your recovery phrase.</div></div>
+              <div class="isec"><div class="it"><i style="background:var(--neg)">✕</i>What it cannot do</div><div class="id2">Move your funds on its own. Access your private state. See your balances unless you share them.</div></div>
+            </div>
+            <div class="zone"><button class="btn btn-primary" style="width:100%">Got it</button></div>
+          </div>
+        </div></div></div>
+        <div class="scrnote">The explainer is an orange-outlined sheet. Its three sections are the clearest statement of the trust model in the whole product — worth protecting in copy review.</div></div>
+
+      <div><div class="scrcap"><i></i>07 · Wallet ready</div>
+        <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
+          <div class="stat"><span>9:41</span><span class="r">✦ ▪ ▪</span></div>
+          <div class="mpad" style="flex:1;display:flex;flex-direction:column">
+            <img class="obillus" src="assets/icons/confirmation-illustrantion.svg" alt="" style="margin-top:24%">
+            <h2 class="obh">Your <span style="color:var(--accent-ink)">Wallet</span> is ready!</h2>
+            <p class="obp">Write down your recovery phrase within 7 days to fully secure your wallet.</p>
+            <p class="obp" style="margin-top:10px">We\'ll remind you daily on the home screen.</p>
+            <div class="zone"><button class="btn btn-primary" style="width:100%">Open Wallet</button></div>
+          </div>
+        </div></div></div>
+        <div class="scrnote">Copy corrected to Figma, with <em>Wallet</em> accented. Uses <code>--accent-ink</code> so the orange word clears AA as text.</div></div>
+
+      <div><div class="scrcap"><i></i>Recovery phrase <span class="small" style="font-weight:400">· app-only</span></div>
+        <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
+          <div class="stat"><span>9:41</span><span class="r">✦ ▪ ▪</span></div>
+          <div class="mpad" style="flex:1;display:flex;flex-direction:column">
+            <div class="progdots"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i></div>
             <h2 class="obh" style="text-align:left;font-size:21px">Write this down</h2>
             <p class="obp" style="text-align:left">12 words, in order. This is the only way to restore your wallet.</p>
-            <div class="seedgrid" style="margin-top:14px">
+            <div class="seedgrid" style="margin-top:12px">
               <div class="seedw"><i>1</i>ripple</div><div class="seedw"><i>2</i>canvas</div><div class="seedw"><i>3</i>orbit</div>
               <div class="seedw"><i>4</i>meadow</div><div class="seedw"><i>5</i>tunnel</div><div class="seedw"><i>6</i>crisp</div>
               <div class="seedw"><i>7</i>lantern</div><div class="seedw"><i>8</i>harbor</div><div class="seedw"><i>9</i>velvet</div>
               <div class="seedw"><i>10</i>pigeon</div><div class="seedw"><i>11</i>amber</div><div class="seedw"><i>12</i>quartz</div>
             </div>
-            <div class="notice" style="margin-top:12px"><span>⛔</span><span>Never share these words. Anyone with them can take your funds.</span></div>
-            <div class="zone"><button class="btn btn-primary" style="width:100%">I've written it down</button><div class="gh">Copy to clipboard</div></div>
+            <div class="notice" style="margin-top:10px"><span>⛔</span><span>Never share these words. Anyone with them can take your funds.</span></div>
+            <div class="zone"><button class="btn btn-primary" style="width:100%">I\'ve written it down</button></div>
           </div>
         </div></div></div>
-        <div class="scrnote"><b>Tier-2:</b> deliberately <em>not</em> password-shaped — no masking, no strength meter, no autofill affordance. Numbered plain words, plus an explicit theft warning.</div></div>
+        <div class="scrnote"><b>Not in this Figma page</b> — carried from the shipped app. Tier-2: deliberately not password-shaped (no masking, no strength meter, no autofill).</div></div>
 
-      <div><div class="scrcap"><i></i>Wallet ready</div>
+      <div><div class="scrcap"><i></i>Unlock <span class="small" style="font-weight:400">· app-only</span></div>
         <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
-          <div class="mpad" style="flex:1;display:flex;flex-direction:column">
-            <img class="obillus" src="assets/icons/confirmation-illustrantion.svg" alt="" style="margin-top:26%">
-            <h2 class="obh">Your wallet is ready</h2>
-            <p class="obp">Back up your recovery phrase within 7 days to fully secure it.</p>
-            <div class="zone"><button class="btn btn-primary" style="width:100%">Open wallet</button></div>
-          </div>
-        </div></div></div>
-        <div class="scrnote">A rare, earned moment — this is where the delight budget is spent (Delight–Impact Curve).</div></div>
-
-      <div><div class="scrcap"><i></i>Unlock</div>
-        <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
+          <div class="stat"><span>9:41</span><span class="r">✦ ▪ ▪</span></div>
           <div class="mpad" style="flex:1;display:flex;flex-direction:column;align-items:center">
-            <img src="assets/bread-logo.svg" alt="" style="width:52px;margin-top:16%">
-            <h2 class="obh" style="font-size:20px;margin-top:14px">Enter your passcode</h2>
-            <div class="dots" style="margin:20px 0 24px"><i class="f"></i><i class="f"></i><i></i><i></i><i></i><i></i></div>
-            <div class="pad" style="grid-template-columns:repeat(3,1fr);gap:11px;width:100%;margin-top:auto;margin-bottom:max(16px,var(--safe-bottom))">
+            <img src="assets/bread-logo.svg" alt="" style="width:52px;margin-top:14%">
+            <h2 class="obh" style="font-size:19px;margin-top:12px">Enter your passcode</h2>
+            <div class="dots" style="margin:18px 0 20px"><i class="f"></i><i class="f"></i><i></i><i></i><i></i><i></i></div>
+            <div class="pad" style="grid-template-columns:repeat(3,1fr);gap:10px;width:100%">
               <button>1</button><button>2</button><button>3</button><button>4</button><button>5</button><button>6</button>
               <button>7</button><button>8</button><button>9</button><span></span><button>0</button><button>⌫</button></div>
+            <div class="zone" style="width:100%"><button class="btn btn-secondary" style="width:100%;min-height:52px">Use Face ID</button></div>
           </div>
         </div></div></div>
-        <div class="scrnote">Same numpad component as setup — one keypad, two contexts.</div></div>
+        <div class="scrnote">Same numpad component, third context. Biometric shortcut now matches Figma\'s filled-grey treatment.</div></div>
 
     </div>
 
@@ -1583,6 +1699,7 @@ ul.tick li:before{content:"→";position:absolute;left:2px;color:var(--accent-in
 
       <div><div class="scrcap"><i></i>Accounts sheet</div>
         <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
+          <div class="stat"><span>9:41</span><span class="r">✦ ▪ ▪</span></div>
           <div class="mpad" style="flex:1;opacity:.4"><div class="mseg"><div class="seg on"><img src="assets/icons/wallet.svg" alt=""><span class="lbl">Overview</span></div><div class="seg"><img src="assets/icons/send-new.svg" alt=""></div><div class="seg"><img src="assets/icons/receive-new.svg" alt=""></div><div class="seg"><img src="assets/icons/earn.svg" alt=""></div></div>
             <div class="mbc"><div class="top" data-surface="graphite"><div class="tl">Total Balance</div><div class="amt">$12,480.50 <small>USD</small></div></div></div></div>
           <div style="position:absolute;inset:0;background:rgba(0,0,0,.45)"></div>
@@ -1605,6 +1722,7 @@ ul.tick li:before{content:"→";position:absolute;left:2px;color:var(--accent-in
 
       <div><div class="scrcap"><i></i>Send · recipient</div>
         <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
+          <div class="stat"><span>9:41</span><span class="r">✦ ▪ ▪</span></div>
           <div class="mpad" style="flex:1;display:flex;flex-direction:column">
             <div class="sh2"><span class="bk2">‹</span><span class="t2">Send to</span></div>
             <div class="searchf" style="width:auto">Address, name or ENS</div>
@@ -1619,6 +1737,7 @@ ul.tick li:before{content:"→";position:absolute;left:2px;color:var(--accent-in
 
       <div><div class="scrcap"><i></i>Send · success</div>
         <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
+          <div class="stat"><span>9:41</span><span class="r">✦ ▪ ▪</span></div>
           <div class="mpad" style="flex:1;display:flex;flex-direction:column">
             <div class="rcpt"><div class="ok2">✓</div>
               <div style="font-family:var(--display);font-weight:900;font-size:22px">Sent</div>
@@ -1636,6 +1755,7 @@ ul.tick li:before{content:"→";position:absolute;left:2px;color:var(--accent-in
 
       <div><div class="scrcap"><i></i>Receive</div>
         <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
+          <div class="stat"><span>9:41</span><span class="r">✦ ▪ ▪</span></div>
           <div class="mpad" style="flex:1;display:flex;flex-direction:column">
             <div class="sh2"><span class="bk2">‹</span><span class="t2">Receive</span></div>
             <div style="text-align:center;margin-top:6%"><div class="qrbox"><div class="qrpat"></div></div></div>
@@ -1649,6 +1769,7 @@ ul.tick li:before{content:"→";position:absolute;left:2px;color:var(--accent-in
 
       <div><div class="scrcap"><i></i>Pending notes</div>
         <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
+          <div class="stat"><span>9:41</span><span class="r">✦ ▪ ▪</span></div>
           <div class="mpad" style="flex:1;display:flex;flex-direction:column">
             <div class="sh2"><span class="bk2">‹</span><span class="t2">Pending</span></div>
             <p class="obp" style="text-align:left;margin-top:0">Notes sent to you that aren't claimed yet.</p>
@@ -1666,6 +1787,7 @@ ul.tick li:before{content:"→";position:absolute;left:2px;color:var(--accent-in
 
       <div><div class="scrcap"><i></i>Activity</div>
         <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
+          <div class="stat"><span>9:41</span><span class="r">✦ ▪ ▪</span></div>
           <div class="mpad" style="flex:1;display:flex;flex-direction:column">
             <div style="font-family:var(--display);font-weight:800;font-size:23px;padding:6px 0 12px">Activity</div>
             <div class="filters"><span class="fc on">All</span><span class="fc">Sent</span><span class="fc">Received</span><span class="fc">Earn</span></div>
@@ -1682,6 +1804,7 @@ ul.tick li:before{content:"→";position:absolute;left:2px;color:var(--accent-in
 
       <div><div class="scrcap"><i></i>Transaction detail</div>
         <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
+          <div class="stat"><span>9:41</span><span class="r">✦ ▪ ▪</span></div>
           <div class="mpad" style="flex:1;display:flex;flex-direction:column">
             <div class="sh2"><span class="bk2">‹</span><span class="t2">Transaction</span></div>
             <div class="dcard compact" style="width:auto">
@@ -1702,6 +1825,7 @@ ul.tick li:before{content:"→";position:absolute;left:2px;color:var(--accent-in
 
       <div><div class="scrcap"><i></i>Earn · vaults</div>
         <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
+          <div class="stat"><span>9:41</span><span class="r">✦ ▪ ▪</span></div>
           <div class="mpad" style="flex:1;display:flex;flex-direction:column">
             <div class="mseg" data-seg>
               <div class="seg"><img src="assets/icons/wallet.svg" alt=""><span class="lbl">Overview</span></div>
@@ -1721,6 +1845,7 @@ ul.tick li:before{content:"→";position:absolute;left:2px;color:var(--accent-in
 
       <div><div class="scrcap"><i></i>Vault detail</div>
         <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
+          <div class="stat"><span>9:41</span><span class="r">✦ ▪ ▪</span></div>
           <div class="mpad" style="flex:1;display:flex;flex-direction:column">
             <div class="sh2"><span class="bk2">‹</span><span class="t2">Aave · MIDEN</span></div>
             <div class="dcard compact" style="width:auto">
@@ -1739,6 +1864,7 @@ ul.tick li:before{content:"→";position:absolute;left:2px;color:var(--accent-in
 
       <div><div class="scrcap"><i></i>Earn · deposit</div>
         <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
+          <div class="stat"><span>9:41</span><span class="r">✦ ▪ ▪</span></div>
           <div class="mpad" style="flex:1;display:flex;flex-direction:column">
             <div class="sh2"><span class="bk2">‹</span><span class="t2">Deposit</span></div>
             <div class="recip"><img src="assets/icons/aave.svg" alt="" style="width:26px;height:26px"><span class="raddr" style="font-family:var(--ui);font-weight:700">Aave · MIDEN</span><span class="redit">4.82% APY</span></div>
@@ -1751,6 +1877,7 @@ ul.tick li:before{content:"→";position:absolute;left:2px;color:var(--accent-in
 
       <div><div class="scrcap"><i></i>Swap</div>
         <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
+          <div class="stat"><span>9:41</span><span class="r">✦ ▪ ▪</span></div>
           <div class="mpad" style="flex:1;display:flex;flex-direction:column">
             <div class="sh2"><span class="bk2">‹</span><span class="t2">Swap</span></div>
             <div class="dmeta" style="padding:12px">
@@ -1773,6 +1900,7 @@ ul.tick li:before{content:"→";position:absolute;left:2px;color:var(--accent-in
 
       <div><div class="scrcap"><i></i>Settings</div>
         <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
+          <div class="stat"><span>9:41</span><span class="r">✦ ▪ ▪</span></div>
           <div class="mpad" style="flex:1;display:flex;flex-direction:column">
             <div style="font-family:var(--display);font-weight:800;font-size:23px;padding:6px 0 14px">Settings</div>
             <div class="setgroup">
@@ -1796,6 +1924,7 @@ ul.tick li:before{content:"→";position:absolute;left:2px;color:var(--accent-in
 
       <div><div class="scrcap"><i></i>Reveal recovery phrase</div>
         <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
+          <div class="stat"><span>9:41</span><span class="r">✦ ▪ ▪</span></div>
           <div class="mpad" style="flex:1;display:flex;flex-direction:column">
             <div class="sh2"><span class="bk2">‹</span><span class="t2">Recovery phrase</span></div>
             <div class="notice" style="margin-top:4px"><span>⛔</span><span>Anyone who sees these 12 words can take everything in this wallet. Make sure no one is watching.</span></div>
@@ -1812,6 +1941,7 @@ ul.tick li:before{content:"→";position:absolute;left:2px;color:var(--accent-in
 
       <div><div class="scrcap"><i></i>dApp browser</div>
         <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
+          <div class="stat"><span>9:41</span><span class="r">✦ ▪ ▪</span></div>
           <div class="mpad" style="flex:1;display:flex;flex-direction:column">
             <div style="font-family:var(--display);font-weight:800;font-size:23px;padding:6px 0 12px">Explore</div>
             <div class="urlbar"><img src="assets/icons/search.svg" alt="" style="width:15px;height:15px;opacity:.5">Search or enter address</div>
