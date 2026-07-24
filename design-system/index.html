@@ -383,6 +383,13 @@ ul.tick li:before{content:"→";position:absolute;left:2px;color:var(--accent-in
 .obillus{display:block;margin:0 auto;max-width:9.5rem}
 .obh{font-family:var(--display);font-weight:900;font-size:23px;line-height:1.12;text-align:center;margin-top:16px}
 .obp{font-size:13px;color:var(--ink-2);text-align:center;margin-top:9px;line-height:1.45}
+/* STEP-SCREEN CONTENT BLOCK — the layout rule I was violating.
+   Content is optically centred in the space between the progress bar and the action
+   zone, never top-anchored with the slack dumped underneath. Sits ~7% above true
+   centre because the eye reads geometric centre as slightly low. */
+.obmid{flex:1;display:flex;flex-direction:column;justify-content:center;padding-bottom:7%}
+.obmid .obh{margin-top:24px}
+.obmid .obp{margin-top:12px;max-width:30ch;margin-left:auto;margin-right:auto}
 /* Figma uses a SEGMENTED BAR, not dots — and the flow is 7 steps, not 4. */
 .progdots{display:flex;gap:5px;justify-content:center;padding:4px 0 14px}
 .progdots i{height:5px;border-radius:var(--radius-full);background:var(--surface-3);flex:1;display:block}
@@ -901,6 +908,23 @@ ul.tick li:before{content:"→";position:absolute;left:2px;color:var(--accent-in
       <div class="card"><h3 class="sh" style="margin-top:0">Page gutter = 24px</h3><p class="small">Every screen's horizontal padding is <code>space-6</code> (the current <code>px-6</code>, now the only allowed value). Content max-width holds on tablet/desktop targets.</p></div>
       <div class="card"><h3 class="sh" style="margin-top:0">Vertical rhythm</h3><p class="small">Section gaps <code>space-6/8</code>; in-card stacks <code>space-2/3</code>; row padding <code>space-3</code>. No <code>h-9.5</code>, no <code>pt-4.5</code> one-offs.</p></div>
     </div>
+
+    <h3 class="sh">Screen composition — the three-zone model</h3>
+    <p class="sub">A spacing scale governs gaps <em>between</em> elements. It says nothing about how a screen distributes its <b>leftover</b> space — which is where layouts actually go wrong. This is the missing rule.</p>
+    <table class="map">
+      <tr><th>Zone</th><th>Behaviour</th><th>Sizing</th></tr>
+      <tr><td><b>1 · Chrome</b> (status bar, progress, header)</td><td>Fixed to the top</td><td><code>safe-top 62px</code> + its own height</td></tr>
+      <tr><td><b>2 · Content</b></td><td><b>Absorbs all slack and optically centres in it</b></td><td><code>flex:1</code> + <code>justify-content:center</code></td></tr>
+      <tr><td><b>3 · Action zone</b></td><td>Pinned to the bottom</td><td><code>max(16px, env(safe-area-inset-bottom))</code></td></tr>
+    </table>
+    <ul class="tick">
+      <li><b>Slack belongs to the content zone, never below it.</b> Top-anchoring the content and letting the remainder pool above the buttons is the single most common way a step screen reads as unfinished. If a screen has one obviously empty band, this rule is being broken.</li>
+      <li><b>Optical centring, not geometric.</b> The content block sits ~7% <em>above</em> true centre — the eye perceives geometric centre as slightly low. (Classic typographic setting; same reason a book's text block sits above centre.)</li>
+      <li><b>Negative space is composed, not leftover.</b> This is the <em>ma</em> (間) principle from the palette research: the gap is active presence and must be deliberate. A void that merely fell out of the layout algorithm is not <em>ma</em> — it's a bug.</li>
+      <li><b>Measure:</b> centred body copy caps at <b>30ch</b>. Beyond that the ragged edges stop reading as a block.</li>
+      <li><b>Hero illustration:</b> 30–38% of screen width (≈120–150px at 402pt). Smaller and it can't anchor the composition, which is what makes the space around it read as empty.</li>
+    </ul>
+    <div class="callout warn"><b>The falsifiable version:</b> in a step screen, no single vertical gap may exceed <b>~22% of screen height</b> (≈190pt at 874). If one does, the content is either top-anchored when it should be centred, or the hero element is undersized. This is machine-checkable, and I now check it — it's how the Protection-method screen got caught.</div>
   </section>
 
   <!-- SHAPE -->
@@ -1509,8 +1533,10 @@ ul.tick li:before{content:"→";position:absolute;left:2px;color:var(--accent-in
           <div class="stat"><span>9:41</span><span class="r">✦ ▪ ▪</span></div>
           <div class="mpad" style="flex:1;display:flex;flex-direction:column">
             <div class="progdots"><i class="on"></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
-            <img class="obillus" src="assets/icons/protected-illustration.svg" alt="" style="margin-top:12%">
-            <h2 class="obh">Choose how you want to protect your wallet</h2>
+            <div class="obmid">
+              <img class="obillus" src="assets/icons/protected-illustration.svg" alt="">
+              <h2 class="obh">Choose how you want to protect your wallet</h2>
+            </div>
             <div class="zone">
               <button class="btn btn-primary" style="width:100%">Use FaceID or Biometric</button>
               <button class="btn btn-secondary" style="width:100%;margin-top:10px;min-height:52px">Set up your passcode</button>
@@ -1560,8 +1586,10 @@ ul.tick li:before{content:"→";position:absolute;left:2px;color:var(--accent-in
           <div class="stat"><span>9:41</span><span class="r">✦ ▪ ▪</span></div>
           <div class="mpad" style="flex:1;display:flex;flex-direction:column">
             <div class="progdots"><i class="on"></i><i class="on"></i><i></i><i></i><i></i><i></i><i></i></div>
-            <div style="margin-top:22%"><div class="fid"><b></b><b></b><b></b><b></b><span class="gl"><img src="assets/icons/face.svg" alt="" style="width:52px;height:52px"></span></div></div>
-            <div style="text-align:center;font-family:var(--display);font-weight:800;font-size:15px;margin-top:20px">Face ID set up</div>
+            <div class="obmid">
+              <div class="fid"><b></b><b></b><b></b><b></b><span class="gl"><img src="assets/icons/face.svg" alt="" style="width:52px;height:52px"></span></div>
+              <div style="text-align:center;font-family:var(--display);font-weight:800;font-size:15px;margin-top:24px">Face ID set up</div>
+            </div>
             <div class="zone"><button class="btn btn-secondary" style="width:100%;min-height:52px">Use passcode instead</button></div>
           </div>
         </div></div></div>
@@ -1572,9 +1600,11 @@ ul.tick li:before{content:"→";position:absolute;left:2px;color:var(--accent-in
           <div class="stat"><span>9:41</span><span class="r">✦ ▪ ▪</span></div>
           <div class="mpad" style="flex:1;display:flex;flex-direction:column">
             <div class="progdots"><i class="on"></i><i class="on"></i><i></i><i></i><i></i><i></i><i></i></div>
-            <div style="margin-top:22%"><div class="fid ok"><b></b><b></b><b></b><b></b><span class="gl"><span>✓</span></span></div></div>
-            <div style="text-align:center;font-family:var(--display);font-weight:800;font-size:15px;margin-top:20px">Confirmed!</div>
-            <p class="obp" style="margin-top:5px">Only one more step!</p>
+            <div class="obmid">
+              <div class="fid ok"><b></b><b></b><b></b><b></b><span class="gl"><span>✓</span></span></div>
+              <div style="text-align:center;font-family:var(--display);font-weight:800;font-size:15px;margin-top:24px">Confirmed!</div>
+              <p class="obp" style="margin-top:6px">Only one more step!</p>
+            </div>
             <div class="zone"><button class="btn btn-primary" style="width:100%">Continue</button></div>
           </div>
         </div></div></div>
@@ -1624,10 +1654,12 @@ ul.tick li:before{content:"→";position:absolute;left:2px;color:var(--accent-in
         <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
           <div class="stat"><span>9:41</span><span class="r">✦ ▪ ▪</span></div>
           <div class="mpad" style="flex:1;display:flex;flex-direction:column">
-            <img class="obillus" src="assets/icons/confirmation-illustrantion.svg" alt="" style="margin-top:24%">
-            <h2 class="obh">Your <span style="color:var(--accent-ink)">Wallet</span> is ready!</h2>
-            <p class="obp">Write down your recovery phrase within 7 days to fully secure your wallet.</p>
-            <p class="obp" style="margin-top:10px">We\'ll remind you daily on the home screen.</p>
+            <div class="obmid">
+              <img class="obillus" src="assets/icons/confirmation-illustrantion.svg" alt="">
+              <h2 class="obh">Your <span style="color:var(--accent-ink)">Wallet</span> is ready!</h2>
+              <p class="obp">Write down your recovery phrase within 7 days to fully secure your wallet.</p>
+              <p class="obp" style="margin-top:10px">We\'ll remind you daily on the home screen.</p>
+            </div>
             <div class="zone"><button class="btn btn-primary" style="width:100%">Open Wallet</button></div>
           </div>
         </div></div></div>
