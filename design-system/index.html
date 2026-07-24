@@ -62,7 +62,7 @@
                      where the research says the stricter option should win. */
   --accent:#E77537; --accent-hover:#D3651F; --accent-ink:#A84A1A; --accent-wash:#FFF3EC;
   --accent-critical:#D9661F;
-  --on-accent:#FFFFFF;
+  --on-accent:#1C1A18;
   --pos:#4A6B44; --pos-wash:#EAF1E8; --pend:#A8421F; --neg:#A33421;
   /* tx hues: soft pastel SQUARE FILLS carry the personality; the dark glyph carries the
      accessibility (5.2–5.8:1). Never put a white glyph on these. */
@@ -76,7 +76,8 @@
 /* -------- DARK (graphite ground, same single orange) -------- */
 [data-theme="dark"]{
   --paper:#191919; --surface:#232323; --surface-2:#2B2B2B; --surface-3:#333333;
-  --ink:#FFFFFF; --ink-2:rgba(255,255,255,.65); --ink-3:rgba(255,255,255,.40);
+  --ink:#FFFFFF; --ink-2:rgba(255,255,255,.65); --ink-3:rgba(255,255,255,.55);
+  --accent-critical:#D9661F;   /* must exist in BOTH themes — see .critical */
   --rule:rgba(255,255,255,.08); --rule-strong:rgba(255,255,255,.16);
   /* Dark: the brand orange works as BOTH fill and text here (5.86:1 either way), so
      --accent-ink collapses back to the brand hue. Same token names, theme-resolved values. */
@@ -253,7 +254,7 @@ table.map td code{font-size:12px}
 .mpad{padding:6px 16px 0;overflow:hidden}
 .macct{display:flex;align-items:center;justify-content:space-between;padding:8px 4px 14px}
 .macct .l{display:flex;align-items:center;gap:9px}
-.macct .av{width:30px;height:30px;border-radius:50%;background:var(--pos);display:flex;align-items:center;justify-content:center;color:var(--pure-white);font-weight:800;font-size:13px;font-family:var(--display)}
+.macct .av{width:30px;height:30px;border-radius:50%;background:var(--pos);display:flex;align-items:center;justify-content:center;color:var(--paper);font-weight:800;font-size:13px;font-family:var(--display)}
 .macct .nm{font-weight:700;font-size:15px}
 .mpill{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;border:1px solid var(--rule-strong);border-radius:var(--radius-full);padding:4px 11px;color:var(--ink)}
 .mpill .g{width:7px;height:7px;border-radius:50%;background:var(--pos)}
@@ -320,7 +321,7 @@ table.map td code{font-size:12px}
 .mprompt .cl{color:var(--ink-3);font-size:15px}
 /* bottom nav — floating labeled pill, 3 tabs (Home/Explore/Activity) */
 .mnav{margin:auto 10px 12px;height:62px;border-radius:var(--radius-lg);display:flex;align-items:center;justify-content:space-around;background:var(--surface);box-shadow:var(--shadow-1);border:1px solid var(--rule)}
-.mnav .t{display:flex;flex-direction:column;align-items:center;gap:3px;color:var(--ink-3);font-size:10.5px;font-weight:600}
+.mnav .t{display:flex;flex-direction:column;align-items:center;gap:3px;color:var(--ink-3);font-size:11px;font-weight:600}
 .mnav .t.on{color:var(--accent-ink)}
 .mnav .t svg{width:22px;height:22px}
 /* welcome mock */
@@ -394,7 +395,10 @@ ul.tick li:before{content:"→";position:absolute;left:2px;color:var(--accent-in
    progress row so it costs no vertical space, and carries a full 44pt tap target. */
 .obtop{display:flex;align-items:center;gap:10px;padding:4px 0 14px}
 .obtop .obback{width:44px;height:44px;margin-left:-13px;flex:none;display:flex;align-items:center;
-  justify-content:center;font-size:20px;color:var(--ink);cursor:pointer}
+  justify-content:center;font-size:20px;color:var(--ink);cursor:pointer;
+  background:none;border:0;padding:0;font-family:var(--ui);border-radius:var(--radius-full);
+  transition:background var(--dur-fast) var(--ease-standard)}
+.obtop .obback:active{background:var(--surface-2)}
 .obtop .progdots{flex:1;padding:0}
 /* Figma uses a SEGMENTED BAR, not dots — and the flow is 7 steps, not 4. */
 .progdots{display:flex;gap:5px;justify-content:center;padding:4px 0 14px}
@@ -412,7 +416,7 @@ ul.tick li:before{content:"→";position:absolute;left:2px;color:var(--accent-in
 .fid b:nth-child(4){bottom:0;right:0;border-left:0;border-top:0;border-radius:0 0 8px 0}
 .fid .gl{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:34px;color:var(--ink-2)}
 .fid.ok b{border-color:var(--pos)}
-.fid.ok .gl span{width:56px;height:56px;border-radius:10px;background:var(--pos);color:var(--pure-white);display:flex;align-items:center;justify-content:center;font-size:26px}
+.fid.ok .gl span{width:56px;height:56px;border-radius:10px;background:var(--pos);color:var(--paper);display:flex;align-items:center;justify-content:center;font-size:26px}
 /* guardian picker — 2-up grid, "Default" band, orange outline = selected */
 /* All four cards must be IDENTICAL in size. The "Default" band is absolutely
    positioned and its height is reserved as padding-top on EVERY card, so a card
@@ -421,27 +425,27 @@ ul.tick li:before{content:"→";position:absolute;left:2px;color:var(--accent-in
    centre in the same space (this is what makes the OZ mark stop compressing). */
 .gguard{display:grid;grid-template-columns:1fr 1fr;gap:9px;grid-auto-rows:1fr;margin-top:12px}
 .gcard{position:relative;display:flex;flex-direction:column;border-radius:var(--radius-md);background:var(--surface);
-  box-shadow:0 0 0 1.5px var(--rule-strong);overflow:hidden;text-align:center;padding-top:17px;min-height:98px}
+  box-shadow:0 0 0 1.5px var(--rule-strong);overflow:hidden;text-align:center;padding-top:20px;min-height:101px}
 .gcard.sel{box-shadow:0 0 0 2px var(--accent)}
-.gcard .band{position:absolute;top:0;left:0;right:0;height:17px;display:flex;align-items:center;justify-content:center;
-  background:var(--accent);color:var(--on-accent);font-size:8.5px;font-weight:800;letter-spacing:.02em}
+.gcard .band{position:absolute;top:0;left:0;right:0;height:20px;display:flex;align-items:center;justify-content:center;
+  background:var(--accent);color:var(--on-accent);font-size:11px;font-weight:800;letter-spacing:.02em}
 .gcard .glogo{flex:1;display:flex;align-items:center;justify-content:center;gap:5px;padding:6px 10px;min-height:38px}
 .gcard .glogo img{max-width:100%;max-height:24px;width:auto;height:auto}
 .gcard .gname{font-family:var(--display);font-weight:800;font-size:12px}
-.gcard .gmeta{font-size:8px;color:var(--ink-2);padding:0 4px 7px;line-height:1.4}
+.gcard .gmeta{font-size:11px;color:var(--ink-2);padding:0 4px 7px;line-height:1.4}
 /* guardian explainer sheet */
 .isheet{border:2px solid var(--accent);border-radius:var(--radius-lg);padding:12px 12px 0;margin-top:10px;background:var(--surface)}
 .isheet .ih{font-family:var(--display);font-weight:800;font-size:15px;text-align:center}
-.isheet .ip{font-size:10px;color:var(--ink-2);text-align:center;line-height:1.45;margin-top:8px}
+.isheet .ip{font-size:11px;color:var(--ink-2);text-align:center;line-height:1.45;margin-top:8px}
 .isheet .irule{height:3px;background:var(--accent);border-radius:var(--radius-full);margin:11px 0 9px}
 .isec{padding:8px 0}
 .isec+.isec{border-top:1px solid var(--rule)}
 .isec .it{display:flex;align-items:center;gap:6px;justify-content:center;font-family:var(--display);font-weight:800;font-size:11.5px}
-.isec .it i{width:14px;height:14px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:8px;color:var(--pure-white);font-style:normal}
-.isec .id2{font-size:9px;color:var(--ink-2);text-align:center;line-height:1.45;margin-top:4px}
+.isec .it i{width:18px;height:18px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:var(--paper);font-style:normal;flex:none}
+.isec .id2{font-size:11px;color:var(--ink-2);text-align:center;line-height:1.45;margin-top:4px}
 .seedgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}
 .seedw{background:var(--surface-2);border-radius:var(--radius-sm);padding:8px 7px;font-size:11.5px;font-weight:600;display:flex;gap:6px;align-items:baseline}
-.seedw i{color:var(--ink-3);font-style:normal;font-family:var(--num);font-size:10px;min-width:11px}
+.seedw i{color:var(--ink-2);font-style:normal;font-family:var(--num);font-size:11px;min-width:13px}
 .qrbox{width:168px;height:168px;margin:0 auto;background:var(--pure-white);border-radius:var(--radius-md);padding:12px;box-shadow:var(--shadow-1)}
 .qrpat{width:100%;height:100%;background-image:repeating-conic-gradient(var(--ink) 0 25%,transparent 0 50%);background-size:13px 13px;border-radius:var(--radius-sm)}
 .setgroup{background:var(--surface-2);border-radius:var(--radius-lg);padding:2px 12px;margin-bottom:9px}
@@ -455,18 +459,18 @@ ul.tick li:before{content:"→";position:absolute;left:2px;color:var(--accent-in
 .vaultrow .vs{font-size:11px;color:var(--ink-2);margin-top:1px}
 .vapy{margin-left:auto;text-align:right}
 .vapy .p{font-family:var(--num);font-feature-settings:var(--num-feat);font-weight:800;font-size:15px;color:var(--pos)}
-.vapy .pl{font-size:10px;color:var(--ink-2)}
+.vapy .pl{font-size:11px;color:var(--ink-2)}
 .metricrow{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
 .metric2{background:var(--surface-2);border-radius:var(--radius-md);padding:11px 12px}
 .metric2 .mv{font-family:var(--num);font-feature-settings:var(--num-feat);font-weight:800;font-size:16px}
-.metric2 .mk{font-size:10.5px;color:var(--ink-2);margin-top:2px}
+.metric2 .mk{font-size:11px;color:var(--ink-2);margin-top:2px}
 .filters{display:flex;gap:6px;padding:2px 0 10px;flex-wrap:wrap}
 .filters .fc{font-size:11.5px;font-weight:700;padding:6px 12px;border-radius:var(--radius-full);background:var(--surface-2);color:var(--ink-2)}
 .filters .fc.on{background:var(--ink);color:var(--paper)}
 .rcpt{text-align:center;padding-top:22px}
 .rcpt .ok2{width:58px;height:58px;border-radius:50%;background:var(--pos-wash);color:var(--pos);display:flex;align-items:center;justify-content:center;font-size:26px;margin:0 auto 14px}
 .daygrid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:8px}
-.dapp{text-align:center;font-size:10.5px;color:var(--ink-2)}
+.dapp{text-align:center;font-size:11px;color:var(--ink-2)}
 .dapp .tile{width:46px;height:46px;border-radius:var(--radius-md);background:var(--surface-2);margin:0 auto 5px;display:flex;align-items:center;justify-content:center}
 .dapp .tile img{width:26px;height:26px}
 .urlbar{background:var(--surface-2);border-radius:var(--radius-full);padding:11px 16px;font-size:13px;color:var(--ink-3);display:flex;align-items:center;gap:8px}
@@ -612,10 +616,10 @@ ul.tick li:before{content:"→";position:absolute;left:2px;color:var(--accent-in
 .morph .tail{display:inline-block;overflow:hidden;white-space:nowrap;max-width:80px;transition:max-width var(--dur-base) var(--ease-spatial),opacity var(--dur-base) ease}
 .morph .tail.hide{max-width:0;opacity:0}
 .stp{display:flex;align-items:center;gap:11px;padding:7px 0}
-.stp .dot{width:22px;height:22px;border-radius:50%;background:var(--surface-3);display:flex;align-items:center;justify-content:center;color:var(--ink-3);font-size:11px;font-weight:700;flex:none;
+.stp .dot{width:22px;height:22px;border-radius:50%;background:var(--surface-3);display:flex;align-items:center;justify-content:center;color:var(--ink-2);font-size:11px;font-weight:700;flex:none;
   transition:background var(--dur-base) ease,color var(--dur-base) ease,transform var(--dur-base) var(--ease-spatial)}
-.stp.on .dot{background:var(--accent);color:var(--pure-white);transform:scale(1.14)}
-.stp.done .dot{background:var(--pos);color:var(--pure-white)}
+.stp.on .dot{background:var(--accent);color:var(--on-accent);transform:scale(1.14)}
+.stp.done .dot{background:var(--pos);color:var(--paper)}
 .stp .sl{font-size:13px;color:var(--ink-3);transition:color var(--dur-base) ease}
 .stp.on .sl,.stp.done .sl{color:var(--ink);font-weight:600}
 .okwrap{display:flex;justify-content:center;padding:4px 0}
@@ -1173,7 +1177,7 @@ ul.tick li:before{content:"→";position:absolute;left:2px;color:var(--accent-in
       <button class="btn btn-ghost">Recover account ›</button>
       <button class="iconbtn"><img src="assets/icons/send-new.svg" alt="" style="width:20px;height:20px"></button>
     </div>
-    <div class="callout warn"><b>Rule — the primary label has a minimum size, and it is an accessibility constraint, not a style choice.</b> White on the Bread orange is exactly <b>3.00:1</b>. That conforms under SC 1.4.3 <em>only</em> as <b>large text</b> (≥18pt, or ≥14pt bold = <b>18.66px bold</b>) — so the primary CTA label is set at <b>19px/700</b>. Drop it below that and the button silently becomes non-conformant. Margin is zero at 3.00:1, so for <b>irreversible actions</b> (send/sign confirm) use <code>--accent-critical</code> <code>#D9661F</code> (3.58:1) — the research is explicit that the stricter option wins on the money path.</div>
+    <div class="callout warn"><b>Rule — the label on brand orange is near-black, not white.</b> White on <code>#E77537</code> is exactly <b>3.00:1</b>, which conforms under SC 1.4.3 <em>only</em> as large text and leaves <b>zero margin</b>. So <code>--on-accent</code> is <b>#1C1A18</b> (<b>5.78:1</b>), which passes at any size. The CTA stays <b>19px/700</b> for hierarchy, not for conformance. For <b>irreversible actions</b> (send/sign confirm) <code>.critical</code> uses <code>--accent-critical</code> <code>#D9661F</code> — defined in <em>both</em> themes, because a light-only definition made the confirm button invisible in dark mode.</div>
     <div class="callout"><b>Rule — no outlined buttons.</b> Every action is either the filled <b>primary</b> (orange), a filled neutral <b>secondary</b> (<code>surface-2</code>), or a borderless <b>ghost</b> (text + accent). Borders on tap targets read heavier and less minimal — hairline rules are reserved for <em>structural</em> separation (cards, rows, dividers), never for buttons, chips or pills. This retires the legacy outlined secondary (<code>border-2 border-primary-orange</code>) outright.</div>
     <table class="map">
       <tr><th>Impl</th><th>File</th><th>Verdict</th></tr>
@@ -1483,7 +1487,7 @@ ul.tick li:before{content:"→";position:absolute;left:2px;color:var(--accent-in
             <div class="zone"><button class="btn btn-primary critical">Confirm &amp; send</button><div class="gh">Cancel</div></div>
           </div>
         </div></div></div>
-        <p class="small" style="margin-top:10px"><b>Constraints:</b> <b>fee disclosed at the decision point</b> (not after), and an explicit <b>irreversibility cue</b> in plain language. Confirm uses <code>--accent-critical</code> (3.58:1) — the stricter fill, because 3.00:1's zero margin is unacceptable on the money path.</p>
+        <p class="small" style="margin-top:10px"><b>Constraints:</b> <b>fee disclosed at the decision point</b> (not after), and an explicit <b>irreversibility cue</b> in plain language. Confirm uses <code>--accent-critical</code> <code>#D9661F</code> with the near-black label (<b>5.02:1</b>) — a deeper fill than the standard CTA, because the money path should not sit at the conformance floor. Defined in both themes.</p>
       </div>
 
       <div>
@@ -1545,7 +1549,7 @@ ul.tick li:before{content:"→";position:absolute;left:2px;color:var(--accent-in
         <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
           <div class="stat"><span>9:41</span><span class="r">✦ ▪ ▪</span></div>
           <div class="mpad" style="flex:1;display:flex;flex-direction:column">
-            <div class="obtop"><span class="obback">‹</span><div class="progdots"><i class="on"></i><i></i><i></i><i></i><i></i><i></i><i></i></div></div>
+            <div class="obtop"><button class="obback" aria-label="Go back">‹</button><div class="progdots"><i class="on"></i><i></i><i></i><i></i><i></i><i></i><i></i></div></div>
             <div class="obmid">
               <img class="obillus" src="assets/icons/protected-illustration.svg" alt="">
               <h2 class="obh">Choose how you want to protect your wallet</h2>
@@ -1562,7 +1566,7 @@ ul.tick li:before{content:"→";position:absolute;left:2px;color:var(--accent-in
         <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
           <div class="stat"><span>9:41</span><span class="r">✦ ▪ ▪</span></div>
           <div class="mpad" style="flex:1;display:flex;flex-direction:column">
-            <div class="obtop"><span class="obback">‹</span><div class="progdots"><i class="on"></i><i class="on"></i><i></i><i></i><i></i><i></i><i></i></div></div>
+            <div class="obtop"><button class="obback" aria-label="Go back">‹</button><div class="progdots"><i class="on"></i><i class="on"></i><i></i><i></i><i></i><i></i><i></i></div></div>
             <h2 class="obh" style="margin-top:2%">Set up your passcode</h2>
             <p class="obp">Create a 6 digit code</p>
             <div class="dots" style="margin:20px 0 22px"><i></i><i></i><i></i><i></i><i></i><i></i></div>
@@ -1578,7 +1582,7 @@ ul.tick li:before{content:"→";position:absolute;left:2px;color:var(--accent-in
         <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
           <div class="stat"><span>9:41</span><span class="r">✦ ▪ ▪</span></div>
           <div class="mpad" style="flex:1;display:flex;flex-direction:column">
-            <div class="obtop"><span class="obback">‹</span><div class="progdots"><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i><i></i><i></i></div></div>
+            <div class="obtop"><button class="obback" aria-label="Go back">‹</button><div class="progdots"><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i><i></i><i></i></div></div>
             <h2 class="obh" style="margin-top:2%">Confirm your passcode</h2>
             <p class="obp">Re-enter the same 6 digits</p>
             <div class="dots" style="margin:20px 0 22px"><i class="f"></i><i class="f"></i><i class="f"></i><i></i><i></i><i></i></div>
@@ -1594,7 +1598,7 @@ ul.tick li:before{content:"→";position:absolute;left:2px;color:var(--accent-in
         <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
           <div class="stat"><span>9:41</span><span class="r">✦ ▪ ▪</span></div>
           <div class="mpad" style="flex:1;display:flex;flex-direction:column">
-            <div class="obtop"><span class="obback">‹</span><div class="progdots"><i class="on"></i><i class="on"></i><i></i><i></i><i></i><i></i><i></i></div></div>
+            <div class="obtop"><button class="obback" aria-label="Go back">‹</button><div class="progdots"><i class="on"></i><i class="on"></i><i></i><i></i><i></i><i></i><i></i></div></div>
             <div class="obmid">
               <div class="fid"><b></b><b></b><b></b><b></b><span class="gl"><img src="assets/icons/face.svg" alt="" style="width:52px;height:52px"></span></div>
               <div style="text-align:center;font-family:var(--display);font-weight:800;font-size:15px;margin-top:24px">Face ID set up</div>
@@ -1608,7 +1612,7 @@ ul.tick li:before{content:"→";position:absolute;left:2px;color:var(--accent-in
         <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
           <div class="stat"><span>9:41</span><span class="r">✦ ▪ ▪</span></div>
           <div class="mpad" style="flex:1;display:flex;flex-direction:column">
-            <div class="obtop"><span class="obback">‹</span><div class="progdots"><i class="on"></i><i class="on"></i><i></i><i></i><i></i><i></i><i></i></div></div>
+            <div class="obtop"><button class="obback" aria-label="Go back">‹</button><div class="progdots"><i class="on"></i><i class="on"></i><i></i><i></i><i></i><i></i><i></i></div></div>
             <div class="obmid">
               <div class="fid ok"><b></b><b></b><b></b><b></b><span class="gl"><span>✓</span></span></div>
               <div style="text-align:center;font-family:var(--display);font-weight:800;font-size:15px;margin-top:24px">Confirmed!</div>
@@ -1623,7 +1627,7 @@ ul.tick li:before{content:"→";position:absolute;left:2px;color:var(--accent-in
         <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
           <div class="stat"><span>9:41</span><span class="r">✦ ▪ ▪</span></div>
           <div class="mpad" style="flex:1;display:flex;flex-direction:column">
-            <div class="obtop"><span class="obback">‹</span><div class="progdots"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i><i></i></div></div>
+            <div class="obtop"><button class="obback" aria-label="Go back">‹</button><div class="progdots"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i><i></i></div></div>
             <h2 class="obh" style="text-align:left;font-size:21px">Choose your Guardian</h2>
             <p class="obp" style="text-align:left;margin-top:5px">Select an option below</p>
             <div style="font-size:11px;font-weight:700;color:var(--accent-ink);margin-top:6px">Learn more about the Guardian</div>
@@ -1642,7 +1646,7 @@ ul.tick li:before{content:"→";position:absolute;left:2px;color:var(--accent-in
         <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
           <div class="stat"><span>9:41</span><span class="r">✦ ▪ ▪</span></div>
           <div class="mpad" style="flex:1;display:flex;flex-direction:column">
-            <div class="obtop"><span class="obback">‹</span><div class="progdots"><i class="on"></i><i class="on"></i><i></i><i></i><i></i><i></i><i></i></div></div>
+            <div class="obtop"><button class="obback" aria-label="Go back">‹</button><div class="progdots"><i class="on"></i><i class="on"></i><i></i><i></i><i></i><i></i><i></i></div></div>
             <h2 class="obh" style="text-align:left;font-size:20px">Choose your Guardian</h2>
             <p class="obp" style="text-align:left;margin-top:4px">For the last step, choose your Miden Guardian. This will serve as a protective layer</p>
             <div class="isheet">
@@ -1651,7 +1655,7 @@ ul.tick li:before{content:"→";position:absolute;left:2px;color:var(--accent-in
               <div class="ip">A Guardian is an independent service that <b>cosigns every transaction</b> from your wallet, adding a safety net without giving up self-custody.</div>
               <div class="irule"></div>
               <div class="isec"><div class="it"><i style="background:var(--pos)">✓</i>What it does</div><div class="id2">Approves or rejects transactions based on your security policy. Helps you recover if you lose your device.</div></div>
-              <div class="isec"><div class="it"><i style="background:var(--accent)">⊙</i>Switching is easy</div><div class="id2">You can rotate to a different Guardian — or remove one entirely — at any time using your recovery phrase.</div></div>
+              <div class="isec"><div class="it"><i style="background:var(--accent-ink)">⊙</i>Switching is easy</div><div class="id2">You can rotate to a different Guardian — or remove one entirely — at any time using your recovery phrase.</div></div>
               <div class="isec"><div class="it"><i style="background:var(--neg)">✕</i>What it cannot do</div><div class="id2">Move your funds on its own. Access your private state. See your balances unless you share them.</div></div>
             </div>
             <div class="zone"><button class="btn btn-primary" style="width:100%">Got it</button></div>
@@ -1678,7 +1682,7 @@ ul.tick li:before{content:"→";position:absolute;left:2px;color:var(--accent-in
         <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
           <div class="stat"><span>9:41</span><span class="r">✦ ▪ ▪</span></div>
           <div class="mpad" style="flex:1;display:flex;flex-direction:column">
-            <div class="obtop"><span class="obback">‹</span><div class="progdots"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i></div></div>
+            <div class="obtop"><button class="obback" aria-label="Go back">‹</button><div class="progdots"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i></div></div>
             <h2 class="obh" style="text-align:left;font-size:21px">Write this down</h2>
             <p class="obp" style="text-align:left">12 words, in order. This is the only way to restore your wallet.</p>
             <div class="seedgrid" style="margin-top:12px">
