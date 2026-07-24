@@ -402,10 +402,83 @@ and below it should be roughly balanced. Large asymmetry (>55% skew) = top-ancho
 *(A naive "largest gap" metric does NOT work — it flags short screens with pinned CTAs, which are
 correct.)*
 
-> **§7 is under revision.** A dedicated research pass on keypad placement and vertical zoning is
-> in flight — native passcode keypads are **bottom-anchored** for thumb reach, which conflicts
-> with blanket optical-centring. Expect a split rule: *centre* simple step screens with no input
-> surface; *bottom-anchor* any screen whose primary interaction is a keypad or keyboard.
+## 7.1 Vertical zoning & keypad placement — the graded verdict
+
+A dedicated verification pass (10 findings, adversarial 3-vote) settled this. **It demolished the
+usual justification for "controls belong at the bottom."** Read the tags carefully.
+
+### Hard specs `[SPEC]`
+
+1. **Touch targets: 44×44pt (iOS) / 48×48dp (Android) is the *tappable-region* floor.**
+   Nuance most people get wrong: Apple's Accessibility page lists 44×44pt as the *default* control
+   size and 28×28pt as the *minimum* — but the Buttons page still requires "a hit region of at
+   least 44×44 pt." So **28pt is the smallest permissible *visual frame*, never a tap target.**
+   Apple also adds ~12pt padding around bezelled elements, ~24pt around bezel-less.
+2. **WCAG 2.2 SC 2.5.8 implies a 24px centre-to-centre pitch floor** — the 24px-circle rule is
+   geometrically equivalent to 24px minimum pitch between undersized targets. This is a *legal
+   floor only*; for a keypad the 44/48 platform guidance is far stricter and clears it automatically.
+3. **Apple's "avoid controls at the bottom of a window" is macOS-scoped** — the stated mechanism is
+   users dragging windows below the screen edge. It is **not** iOS guidance and does **not** conflict
+   with bottom-anchored iOS controls. iOS's only edge rule is the orthogonal *"avoid full-width buttons."*
+4. **Material 3 normatively places bottom chrome at the bottom** — the navigation bar "should always
+   be placed at the bottom of the product and span the full length of the window" (compact <600dp
+   and medium 600–839dp only); the **docked toolbar** (M3's replacement for the deprecated bottom app
+   bar) is bottom-only and full-width. **A docked toolbar and a bottom nav bar must never co-exist.**
+
+### The folklore correction `[CONTESTED]` — this corrects *me*
+
+5. **Apple's HIG contains NO thumb-zone, reachability, one-handed-reach, or "interactive controls
+   belong at the bottom" guidance.** Its stated rationale for control sizing/spacing is
+   dexterity/mobility and mis-tap avoidance — **not reach**. Its *only* explicit vertical-importance
+   rule points the **other way**: put the most important items near the **top** and leading edge,
+   justified by reading order.
+6. **Material 3's ergonomic rationale is one unsourced adjective.** The nav bar is "positioned at
+   the bottom of windows for convenient access" — and a full-page grep for
+   `thumb|reach|ergonom|research|study|one-hand` returns **zero hits**, no citations, no linked
+   studies. **Cite M3 as platform convention, never as empirical support for a thumb-zone claim.**
+
+> **Therefore: bottom-anchor a keypad because it is platform convention plus a plausible ergonomic
+> inference — NOT because a spec or a study says so. Tag it `[CONSENSUS]`, never `[SPEC]`.**
+> My earlier "iOS does it for thumb reach" justification was partly folklore.
+
+### What the grip evidence actually says `[CONSENSUS]`
+
+7. **Hoober 2013 (UXmatters)** — 1,333 observations of people using phones in public over two months
+   ending 8 Jan 2013; 780 involved touching the screen. Of those 780: **49% one-handed, 36% cradled
+   (two hands, one touching), 15% two-handed.** Within cradling, 72% used a thumb.
+8. **Rigid thumb-zone maps (green/yellow/red overlays) are not supported by their own primary
+   source.** Hoober reports grip "is not a static state. Users change the way they're holding their
+   phone very often — sometimes every few seconds," and **explicitly declines** to endorse banishing
+   low-priority or destructive functions to the hard-to-reach upper-left. His prescription is
+   *procedural*: test on a physical device. No demographics, no tablets, and it predates the
+   4″→6.9″ expansion.
+
+### Do not cite `[UNVERIFIED]`
+
+9. Large parts of the standard mobile-ergonomics canon produced **no surviving evidence**:
+   - The **"96% vs 61% tap accuracy"** figure — no primary source located anywhere.
+   - **NN/g's "the middle of the screen is most tappable"** — *this also fails verification.* I cited
+     it earlier as a counterweight; it is not established either. Both directions of the
+     bottom-vs-middle argument are weaker than they are usually presented.
+   - **Wroblewski's and Hurff's thumb-zone maps** — folklore until independently sourced.
+
+### Derived geometry `[DERIVED — low confidence, not measured]`
+
+10. For a 6-digit passcode keypad on **402×874pt**, computed from the confirmed specs (not measured
+    from native implementations): 3×4 grid, **circular keys 76pt diameter**, column centres at
+    x = 100.5 / 201 / 301.5 (pitch 100.5pt, ~24.5pt clear gap between key edges ≈ 4× the WCAG pitch
+    floor). **No confirmed claim supplied real native keypad metrics** — treat as a starting point,
+    not a spec. *Our implementation uses 92pt-tall rectangular keys, which clears every floor above.*
+
+### The reconciled composition rule
+
+- **Centre** the content block on step screens with **no input surface** (welcome, explainer,
+  success, illustration+heading steps).
+- **Bottom-anchor the whole input cluster** (label → dots → keypad) on any screen whose primary
+  interaction is a **keypad or keyboard**. Move the cluster as a unit — bottom-anchoring the input
+  alone just relocates the void.
+- Keypad should occupy **~45–48% of screen height**; below ~30% it floats and the surrounding space
+  reads as dead.
 
 ---
 

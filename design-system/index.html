@@ -390,6 +390,12 @@ ul.tick li:before{content:"→";position:absolute;left:2px;color:var(--accent-in
 .obmid{flex:1;display:flex;flex-direction:column;justify-content:center;padding-bottom:7%}
 .obmid .obh{margin-top:24px}
 .obmid .obp{margin-top:12px;max-width:30ch;margin-left:auto;margin-right:auto}
+/* Every step needs a way back (Navigation/Back Button, High). The chevron shares the
+   progress row so it costs no vertical space, and carries a full 44pt tap target. */
+.obtop{display:flex;align-items:center;gap:10px;padding:4px 0 14px}
+.obtop .obback{width:44px;height:44px;margin-left:-13px;flex:none;display:flex;align-items:center;
+  justify-content:center;font-size:20px;color:var(--ink);cursor:pointer}
+.obtop .progdots{flex:1;padding:0}
 /* Figma uses a SEGMENTED BAR, not dots — and the flow is 7 steps, not 4. */
 .progdots{display:flex;gap:5px;justify-content:center;padding:4px 0 14px}
 .progdots i{height:5px;border-radius:var(--radius-full);background:var(--surface-3);flex:1;display:block}
@@ -488,7 +494,7 @@ ul.tick li:before{content:"→";position:absolute;left:2px;color:var(--accent-in
   background:color-mix(in srgb,var(--neg) 10%,transparent);color:var(--neg);margin-top:10px}
 .zone{margin-top:auto;padding-top:16px;padding-bottom:max(16px,var(--safe-bottom,0px))}
 .zone .btn-primary{width:100%;padding:13px 10px;min-height:52px}
-.zone .gh{text-align:center;font-size:12.5px;font-weight:700;color:var(--ink-2);padding:10px 0 2px}
+.zone .gh{min-height:44px;display:flex;align-items:center;justify-content:center;font-size:12.5px;font-weight:700;color:var(--ink-2)}
 .critical{background:var(--accent-critical)}
 /* ---------- error / failure screens ---------- */
 .errscr{width:238px;border:1px solid var(--rule);border-radius:var(--radius-lg);background:var(--paper);padding:20px 17px;display:flex;flex-direction:column;align-items:center;text-align:center;min-height:322px}
@@ -650,7 +656,7 @@ ul.tick li:before{content:"→";position:absolute;left:2px;color:var(--accent-in
 .azrow .azguideline span{position:absolute;right:0;top:-9px;font-family:var(--mono);font-size:10px;color:var(--accent-ink);background:var(--paper);padding:0 6px}
 .azzone{position:absolute;left:0;right:0;bottom:0;padding:0 18px 16px}
 .azzone .btn-primary{width:100%;text-align:center}
-.azzone .azghost{text-align:center;color:var(--ink-3);font-size:12px;font-weight:600;padding:10px 0}
+.azzone .azghost{min-height:44px;display:flex;align-items:center;justify-content:center;color:var(--ink-3);font-size:12px;font-weight:600}
 @media(max-width:1080px){.app{grid-template-columns:1fr}.sidebar{display:none}.main{padding:32px 22px 90px}.compare,.grid2{grid-template-columns:1fr}.metrics{grid-template-columns:1fr 1fr}}
 </style>
 </head>
@@ -1539,7 +1545,7 @@ ul.tick li:before{content:"→";position:absolute;left:2px;color:var(--accent-in
         <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
           <div class="stat"><span>9:41</span><span class="r">✦ ▪ ▪</span></div>
           <div class="mpad" style="flex:1;display:flex;flex-direction:column">
-            <div class="progdots"><i class="on"></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+            <div class="obtop"><span class="obback">‹</span><div class="progdots"><i class="on"></i><i></i><i></i><i></i><i></i><i></i><i></i></div></div>
             <div class="obmid">
               <img class="obillus" src="assets/icons/protected-illustration.svg" alt="">
               <h2 class="obh">Choose how you want to protect your wallet</h2>
@@ -1556,7 +1562,7 @@ ul.tick li:before{content:"→";position:absolute;left:2px;color:var(--accent-in
         <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
           <div class="stat"><span>9:41</span><span class="r">✦ ▪ ▪</span></div>
           <div class="mpad" style="flex:1;display:flex;flex-direction:column">
-            <div class="progdots"><i class="on"></i><i class="on"></i><i></i><i></i><i></i><i></i><i></i></div>
+            <div class="obtop"><span class="obback">‹</span><div class="progdots"><i class="on"></i><i class="on"></i><i></i><i></i><i></i><i></i><i></i></div></div>
             <h2 class="obh" style="margin-top:2%">Set up your passcode</h2>
             <p class="obp">Create a 6 digit code</p>
             <div class="dots" style="margin:20px 0 22px"><i></i><i></i><i></i><i></i><i></i><i></i></div>
@@ -1572,7 +1578,7 @@ ul.tick li:before{content:"→";position:absolute;left:2px;color:var(--accent-in
         <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
           <div class="stat"><span>9:41</span><span class="r">✦ ▪ ▪</span></div>
           <div class="mpad" style="flex:1;display:flex;flex-direction:column">
-            <div class="progdots"><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i><i></i><i></i></div>
+            <div class="obtop"><span class="obback">‹</span><div class="progdots"><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i><i></i><i></i></div></div>
             <h2 class="obh" style="margin-top:2%">Confirm your passcode</h2>
             <p class="obp">Re-enter the same 6 digits</p>
             <div class="dots" style="margin:20px 0 22px"><i class="f"></i><i class="f"></i><i class="f"></i><i></i><i></i><i></i></div>
@@ -1588,7 +1594,7 @@ ul.tick li:before{content:"→";position:absolute;left:2px;color:var(--accent-in
         <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
           <div class="stat"><span>9:41</span><span class="r">✦ ▪ ▪</span></div>
           <div class="mpad" style="flex:1;display:flex;flex-direction:column">
-            <div class="progdots"><i class="on"></i><i class="on"></i><i></i><i></i><i></i><i></i><i></i></div>
+            <div class="obtop"><span class="obback">‹</span><div class="progdots"><i class="on"></i><i class="on"></i><i></i><i></i><i></i><i></i><i></i></div></div>
             <div class="obmid">
               <div class="fid"><b></b><b></b><b></b><b></b><span class="gl"><img src="assets/icons/face.svg" alt="" style="width:52px;height:52px"></span></div>
               <div style="text-align:center;font-family:var(--display);font-weight:800;font-size:15px;margin-top:24px">Face ID set up</div>
@@ -1602,7 +1608,7 @@ ul.tick li:before{content:"→";position:absolute;left:2px;color:var(--accent-in
         <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
           <div class="stat"><span>9:41</span><span class="r">✦ ▪ ▪</span></div>
           <div class="mpad" style="flex:1;display:flex;flex-direction:column">
-            <div class="progdots"><i class="on"></i><i class="on"></i><i></i><i></i><i></i><i></i><i></i></div>
+            <div class="obtop"><span class="obback">‹</span><div class="progdots"><i class="on"></i><i class="on"></i><i></i><i></i><i></i><i></i><i></i></div></div>
             <div class="obmid">
               <div class="fid ok"><b></b><b></b><b></b><b></b><span class="gl"><span>✓</span></span></div>
               <div style="text-align:center;font-family:var(--display);font-weight:800;font-size:15px;margin-top:24px">Confirmed!</div>
@@ -1617,7 +1623,7 @@ ul.tick li:before{content:"→";position:absolute;left:2px;color:var(--accent-in
         <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
           <div class="stat"><span>9:41</span><span class="r">✦ ▪ ▪</span></div>
           <div class="mpad" style="flex:1;display:flex;flex-direction:column">
-            <div class="progdots"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i><i></i></div>
+            <div class="obtop"><span class="obback">‹</span><div class="progdots"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i><i></i></div></div>
             <h2 class="obh" style="text-align:left;font-size:21px">Choose your Guardian</h2>
             <p class="obp" style="text-align:left;margin-top:5px">Select an option below</p>
             <div style="font-size:11px;font-weight:700;color:var(--accent-ink);margin-top:6px">Learn more about the Guardian</div>
@@ -1636,7 +1642,7 @@ ul.tick li:before{content:"→";position:absolute;left:2px;color:var(--accent-in
         <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
           <div class="stat"><span>9:41</span><span class="r">✦ ▪ ▪</span></div>
           <div class="mpad" style="flex:1;display:flex;flex-direction:column">
-            <div class="progdots"><i class="on"></i><i class="on"></i><i></i><i></i><i></i><i></i><i></i></div>
+            <div class="obtop"><span class="obback">‹</span><div class="progdots"><i class="on"></i><i class="on"></i><i></i><i></i><i></i><i></i><i></i></div></div>
             <h2 class="obh" style="text-align:left;font-size:20px">Choose your Guardian</h2>
             <p class="obp" style="text-align:left;margin-top:4px">For the last step, choose your Miden Guardian. This will serve as a protective layer</p>
             <div class="isheet">
@@ -1672,7 +1678,7 @@ ul.tick li:before{content:"→";position:absolute;left:2px;color:var(--accent-in
         <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
           <div class="stat"><span>9:41</span><span class="r">✦ ▪ ▪</span></div>
           <div class="mpad" style="flex:1;display:flex;flex-direction:column">
-            <div class="progdots"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i></div>
+            <div class="obtop"><span class="obback">‹</span><div class="progdots"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i></div></div>
             <h2 class="obh" style="text-align:left;font-size:21px">Write this down</h2>
             <p class="obp" style="text-align:left">12 words, in order. This is the only way to restore your wallet.</p>
             <div class="seedgrid" style="margin-top:12px">
