@@ -56,13 +56,18 @@
      --on-accent   = white. White on brand orange is exactly 3.00:1, which conforms under
                      SC 1.4.3 ONLY as *large text* (>=18pt / >=14pt bold = 18.66px bold).
                      => The primary CTA therefore has a MINIMUM LABEL SIZE. See .btn-primary.
+                     Margin is ZERO at 3.00:1 — never shrink a white-on-orange label, and
+                     never use --on-accent for small text.
+     --on-accent-sm= near-black, for SMALL labels on an accent fill (5.78:1, any size).
+                     Used by the guardian "Default" band and the active stepper dot.
      --accent-ink  = darker orange for orange TEXT on light grounds (links, small marks),
                      because the brand orange as text is only 2.90:1.
      --accent-critical = optional deeper fill (3.58:1 w/ white) for irreversible actions,
                      where the research says the stricter option should win. */
   --accent:#E77537; --accent-hover:#D3651F; --accent-ink:#A84A1A; --accent-wash:#FFF3EC;
   --accent-critical:#D9661F;
-  --on-accent:#1C1A18;
+  --on-accent:#FFFFFF;        /* CTA labels — 3.00:1, valid as large text (>=18.66px bold) */
+  --on-accent-sm:#1C1A18;     /* small labels on accent — 5.78:1, valid at any size */
   --pos:#4A6B44; --pos-wash:#EAF1E8; --pend:#A8421F; --neg:#A33421;
   /* tx hues: soft pastel SQUARE FILLS carry the personality; the dark glyph carries the
      accessibility (5.2–5.8:1). Never put a white glyph on these. */
@@ -82,7 +87,8 @@
   /* Dark: the brand orange works as BOTH fill and text here (5.86:1 either way), so
      --accent-ink collapses back to the brand hue. Same token names, theme-resolved values. */
   --accent:#E77537; --accent-hover:#F08B57; --accent-ink:#E77537; --accent-wash:#33210F;
-  --on-accent:#191919;
+  --on-accent:#FFFFFF;
+  --on-accent-sm:#191919;
   --pos:#90BA89; --pos-wash:#26301F; --pend:#E85D2F; --neg:#E5654E;
   --tx-received:#A8BBA3; --tx-sent:#A3BCCF; --tx-swap:#C9BAD9; --tx-earn:#BDB9CC; --tx-faucet:#CDB0DE;
   --tx-glyph:#1C1A18;
@@ -428,7 +434,7 @@ ul.tick li:before{content:"→";position:absolute;left:2px;color:var(--accent-in
   box-shadow:0 0 0 1.5px var(--rule-strong);overflow:hidden;text-align:center;padding-top:20px;min-height:101px}
 .gcard.sel{box-shadow:0 0 0 2px var(--accent)}
 .gcard .band{position:absolute;top:0;left:0;right:0;height:20px;display:flex;align-items:center;justify-content:center;
-  background:var(--accent);color:var(--on-accent);font-size:11px;font-weight:800;letter-spacing:.02em}
+  background:var(--accent);color:var(--on-accent-sm);font-size:11px;font-weight:800;letter-spacing:.02em}
 .gcard .glogo{flex:1;display:flex;align-items:center;justify-content:center;gap:5px;padding:6px 10px;min-height:38px}
 .gcard .glogo img{max-width:100%;max-height:24px;width:auto;height:auto}
 .gcard .gname{font-family:var(--display);font-weight:800;font-size:12px}
@@ -618,7 +624,7 @@ ul.tick li:before{content:"→";position:absolute;left:2px;color:var(--accent-in
 .stp{display:flex;align-items:center;gap:11px;padding:7px 0}
 .stp .dot{width:22px;height:22px;border-radius:50%;background:var(--surface-3);display:flex;align-items:center;justify-content:center;color:var(--ink-2);font-size:11px;font-weight:700;flex:none;
   transition:background var(--dur-base) ease,color var(--dur-base) ease,transform var(--dur-base) var(--ease-spatial)}
-.stp.on .dot{background:var(--accent);color:var(--on-accent);transform:scale(1.14)}
+.stp.on .dot{background:var(--accent);color:var(--on-accent-sm);transform:scale(1.14)}
 .stp.done .dot{background:var(--pos);color:var(--paper)}
 .stp .sl{font-size:13px;color:var(--ink-3);transition:color var(--dur-base) ease}
 .stp.on .sl,.stp.done .sl{color:var(--ink);font-weight:600}
@@ -1177,7 +1183,7 @@ ul.tick li:before{content:"→";position:absolute;left:2px;color:var(--accent-in
       <button class="btn btn-ghost">Recover account ›</button>
       <button class="iconbtn"><img src="assets/icons/send-new.svg" alt="" style="width:20px;height:20px"></button>
     </div>
-    <div class="callout warn"><b>Rule — the label on brand orange is near-black, not white.</b> White on <code>#E77537</code> is exactly <b>3.00:1</b>, which conforms under SC 1.4.3 <em>only</em> as large text and leaves <b>zero margin</b>. So <code>--on-accent</code> is <b>#1C1A18</b> (<b>5.78:1</b>), which passes at any size. The CTA stays <b>19px/700</b> for hierarchy, not for conformance. For <b>irreversible actions</b> (send/sign confirm) <code>.critical</code> uses <code>--accent-critical</code> <code>#D9661F</code> — defined in <em>both</em> themes, because a light-only definition made the confirm button invisible in dark mode.</div>
+    <div class="callout warn"><b>Rule — the primary label is white, and it therefore has a minimum size.</b> White on <code>#E77537</code> is exactly <b>3.00:1</b>, which conforms under SC 1.4.3 <em>only</em> as <b>large text</b> (≥18pt, or ≥14pt bold = <b>18.66px bold</b>) — so every CTA label is set at <b>19px/700</b>. Drop below that and the button silently becomes non-conformant, because the margin at 3.00:1 is <b>zero</b>. Small labels on an accent fill must use <code>--on-accent-sm</code> (near-black, <b>5.78:1</b>) instead — the guardian <em>Default</em> band and the active stepper dot do. For <b>irreversible actions</b> (send/sign confirm) <code>.critical</code> uses <code>--accent-critical</code> <code>#D9661F</code> — defined in <em>both</em> themes, because a light-only definition made the confirm button invisible in dark mode.</div>
     <div class="callout"><b>Rule — no outlined buttons.</b> Every action is either the filled <b>primary</b> (orange), a filled neutral <b>secondary</b> (<code>surface-2</code>), or a borderless <b>ghost</b> (text + accent). Borders on tap targets read heavier and less minimal — hairline rules are reserved for <em>structural</em> separation (cards, rows, dividers), never for buttons, chips or pills. This retires the legacy outlined secondary (<code>border-2 border-primary-orange</code>) outright.</div>
     <table class="map">
       <tr><th>Impl</th><th>File</th><th>Verdict</th></tr>
@@ -1671,7 +1677,7 @@ ul.tick li:before{content:"→";position:absolute;left:2px;color:var(--accent-in
               <img class="obillus" src="assets/icons/confirmation-illustrantion.svg" alt="">
               <h2 class="obh">Your <span style="color:var(--accent-ink)">Wallet</span> is ready!</h2>
               <p class="obp">Write down your recovery phrase within 7 days to fully secure your wallet.</p>
-              <p class="obp" style="margin-top:10px">We\'ll remind you daily on the home screen.</p>
+              <p class="obp" style="margin-top:10px">We'll remind you daily on the home screen.</p>
             </div>
             <div class="zone"><button class="btn btn-primary" style="width:100%">Open Wallet</button></div>
           </div>
@@ -1692,7 +1698,7 @@ ul.tick li:before{content:"→";position:absolute;left:2px;color:var(--accent-in
               <div class="seedw"><i>10</i>pigeon</div><div class="seedw"><i>11</i>amber</div><div class="seedw"><i>12</i>quartz</div>
             </div>
             <div class="notice" style="margin-top:10px"><span>⛔</span><span>Never share these words. Anyone with them can take your funds.</span></div>
-            <div class="zone"><button class="btn btn-primary" style="width:100%">I\'ve written it down</button></div>
+            <div class="zone"><button class="btn btn-primary" style="width:100%">I've written it down</button></div>
           </div>
         </div></div></div>
         <div class="scrnote"><b>Not in this Figma page</b> — carried from the shipped app. Tier-2: deliberately not password-shaped (no masking, no strength meter, no autofill).</div></div>
@@ -1710,7 +1716,7 @@ ul.tick li:before{content:"→";position:absolute;left:2px;color:var(--accent-in
             <div class="zone" style="width:100%"><button class="btn btn-secondary" style="width:100%;min-height:52px">Use Face ID</button></div>
           </div>
         </div></div></div>
-        <div class="scrnote">Same numpad component, third context. Biometric shortcut now matches Figma\'s filled-grey treatment.</div></div>
+        <div class="scrnote">Same numpad component, third context. Biometric shortcut now matches Figma's filled-grey treatment.</div></div>
 
     </div>
 
