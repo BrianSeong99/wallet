@@ -11,7 +11,7 @@
 //   1. GEOMETRY  — nothing inside the home-indicator / safe-area band, nothing
 //                  clipped by the frame, no overflow
 //   2. CONTRAST  — text vs composited background (4.5:1, or 3:1 for large text),
-//                  and currentColor icons (3:1)
+//                  currentColor icons (3:1), and .nti non-text indicators (3:1)
 //   3. TARGETS   — every interactive element >= 44pt
 //   4. TYPE      — nothing below the 11pt Apple floor
 //
@@ -92,7 +92,7 @@ const probe = () => {
       ? parseFloat(getComputedStyle(mockEl).getPropertyValue('--safe-bottom')) || 0
       : 0;
     const minBottom = Math.max(16, safeBottom);
-    const f = { screen: cap, inSafeArea: [], clipped: [], overflow: false, contrast: [], icons: [], targets: [], tiny: [] };
+    const f = { screen: cap, inSafeArea: [], clipped: [], overflow: false, contrast: [], icons: [], fills: [], targets: [], tiny: [] };
 
     const body = scr.querySelector('.mock,.mwel');
     if (body && body.scrollHeight > scr.clientHeight + 2) f.overflow = true;
@@ -145,9 +145,50 @@ const probe = () => {
           if (ratio < 2.95) f.icons.push({ ratio: +ratio.toFixed(2) });
         }
       }
+      // 2c. meaningful non-text indicators — status dots, bars, any graphic that CARRIES
+      // information rather than decorating. 3:1 against its surround (SC 1.4.11).
+      // Opt-in by class, deliberately: deciding whether a graphic is load-bearing is the
+      // SC 1.4.11 judgement itself, and auto-detecting every filled box would flag every
+      // card and surface (which are exempt) and drown the real hits. Until this check
+      // existed the harness verified text and icons only, so a status token used as a
+      // FILL was never measured at all — the exact hole that let --status-positive ship
+      // at 2.19:1 as text while passing as a dot.
+      if (el.classList?.contains('nti')) {
+        // State can be carried by the border rather than the fill (the Face ID success
+        // corners are border-colour only), so fall back to it when the box is transparent.
+        let fg = parse(cs.backgroundColor);
+        if (!fg || fg.a === 0) fg = parse(cs.borderTopColor);
+        if (fg && fg.a > 0) {
+          const bg = bgOf(el.parentElement), ratio = cr(over(fg, bg), bg);
+          if (ratio < 2.95) f.fills.push({ el: label, ratio: +ratio.toFixed(2) });
+        }
+      }
     });
     out.push(f);
   });
+
+  // Specimens pass. probe() otherwise only walks INSIDE .phone frames, so every declared
+  // indicator in the Foundations/Components sections was invisible to the checks above and
+  // reported a meaningless 0. Geometry does not apply out here (there is no device frame),
+  // so this measures only the declared graphics: .nti fills/borders and .svgic icons.
+  const spec = { screen: '· component specimens (outside phone frames)',
+                 inSafeArea: [], clipped: [], overflow: false,
+                 contrast: [], icons: [], fills: [], targets: [], tiny: [] };
+  document.querySelectorAll('.nti,.svgic').forEach(el => {
+    if (el.closest('.phone')) return;
+    const r = el.getBoundingClientRect();
+    if (r.width < 2 || r.height < 2) return;
+    const cs = getComputedStyle(el);
+    if (cs.display === 'none' || cs.visibility === 'hidden') return;
+    const label = el.className?.toString().slice(0, 24) || el.tagName;
+    let fg = parse(cs.backgroundColor);
+    if (!fg || fg.a === 0) fg = parse(cs.borderTopColor);
+    if (!fg || fg.a === 0) return;
+    const bg = bgOf(el.parentElement), ratio = cr(over(fg, bg), bg);
+    if (ratio < 2.95) (el.classList.contains('svgic') ? spec.icons : spec.fills)
+      .push({ el: label, ratio: +ratio.toFixed(2) });
+  });
+  out.push(spec);
   return out;
 };
 
@@ -173,7 +214,7 @@ const run = async () => {
   await page.evaluate(cleanup);
 
   let total = 0;
-  const tally = { inSafeArea: 0, clipped: 0, overflow: 0, contrast: 0, icons: 0, targets: 0, tiny: 0 };
+  const tally = { inSafeArea: 0, clipped: 0, overflow: 0, contrast: 0, icons: 0, fills: 0, targets: 0, tiny: 0 };
   for (const [theme, screens] of Object.entries(results)) {
     for (const s of screens) {
       const hits = Object.entries(tally).filter(([k]) => k === 'overflow' ? s.overflow : s[k]?.length);
@@ -197,6 +238,7 @@ const run = async () => {
   console.log(`  overflow        : ${tally.overflow}`);
   console.log(`  contrast        : ${tally.contrast}`);
   console.log(`  icon contrast   : ${tally.icons}`);
+  console.log(`  fill contrast   : ${tally.fills}   (.nti indicators vs surround, 3:1)`);
   console.log(`  targets < 44pt  : ${tally.targets}`);
   console.log(`  text < 11pt     : ${tally.tiny}`);
   if (errors.length) console.log(`  console errors  : ${errors.length} → ${errors[0]}`);

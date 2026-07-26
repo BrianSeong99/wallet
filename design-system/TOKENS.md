@@ -180,9 +180,39 @@ dot dark green and muddies the wash.
 This is exactly the fill-vs-text split already resolved for the accent
 (`--accent` fill / `--accent-ink` text), and **this document missed it** — the map above
 sends `status-positive` and `status-negative` to single `--pos` / `--neg` values with no
-note that each carries two jobs. Fix: add `--pos-ink` / `--neg-ink` for the `text-`
-usages, leave the fills alone. Call sites: `HistoryItem.tsx:37-43`,
+note that each carries two jobs. Call sites: `HistoryItem.tsx:37-43`,
 `HistoryDetails.tsx:121-158,788`, `Earn.tsx:118`.
+
+**Resolved in the design system (see `index.html › Color › Status`).** Rather than add
+`-ink` variants, the values are defined as the **ink** role — they all pass 4.5:1 as text —
+and the other two roles derive from them via a `data-status` scope, matching the existing
+`data-surface` and `data-tier` patterns:
+
+| Role | Declaration | Requirement |
+|---|---|---|
+| ink (text, dot, border) | `color/background: var(--st)` | 4.5:1 vs page (3:1 for the dot, SC 1.4.11) |
+| fill (label on a solid pill) | `background: var(--st); color: var(--paper)` | 4.5:1 |
+| wash (ink text on a tint) | `background: var(--st-wash); color: var(--st)` | 4.5:1 |
+
+The on-fill label is **`--paper`**, not white — the page colour inverts per theme, so one
+declaration is correct in both. Measured, both themes:
+
+| Status | ink on page | label on fill | ink on wash |
+|---|---|---|---|
+| `--pos` | 5.84 / 8.01 | 5.84 / 8.01 | 5.25 / 6.28 |
+| `--warn` | 5.73 / 9.17 | 5.73 / 9.17 | 5.13 / 7.48 |
+| `--pend` | 5.86 / 5.06 | 5.86 / 5.06 | — |
+| `--neg` | 6.61 / 6.32 | 6.61 / 6.32 | 5.82 / 5.42 |
+
+**`--pend` deliberately has no wash.** The app only ever uses `bg-status-positive/15` and
+`bg-status-negative/15`, so a pending wash would be an invented requirement — and its dark
+ink lands at **4.21:1** on one, which is exactly the sort of value that ships unmeasured.
+Washes exist for `pos`, `warn` and `neg` only.
+
+Remaining adjacency, stated honestly: dark `--pend` `#E85D2F` is still close in hue to
+`--accent`. That is intentional — pending is an accent-adjacent transient state and the
+value matches the shipped `--status-pending` — but it is the one status pair that context,
+not colour, has to separate.
 
 ## Blocker 2 — the tx glyph fix would break tests
 
