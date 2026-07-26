@@ -27,6 +27,7 @@ personality lives in grounds, tints and fills; accessibility lives in the inks.
 | `--accent-hover` | `#D3651F` | `#F08B57` | fill hover |
 | `--ink-2` / `--ink-3` | `#5F5F5F` / `#6E6E6E` | unchanged | both clear 4.5:1; placeholders are **not** exempt |
 | `--pos` / `--pend` / `--neg` | `#4A6B44` / `#A8421F` / `#A33421` | unchanged | 5.8–6.6:1 as text |
+| `--warn` | `#8A5A00` light / `#E8B33F` dark | **new** | 5.7:1 / 9.2:1 — see note below |
 | `--tx-*` | pastel fills `#A8BBA3 #A3BCCF #C9BAD9 #BDB9CC #CDB0DE` | same | soft squares keep the personality… |
 | `--tx-glyph` | `#3F3F3F` | `#1C1A18` | …and the **dark glyph** carries the contrast (5.2–5.8:1). **Never a white glyph on these.** |
 
@@ -93,6 +94,21 @@ wholesale imported Tailwind palette + `getRandomColor()`.
 | `status-positive`, `receive-green`, `green.500`, `#90BA89`, `#1A9C52`, `#009B3A`, `#A8BBA3` (balance delta) | `--pos` |
 | `status-pending`, `#E85D2F` | `--pend` |
 | `status-negative`, `#FF5500`, `#CC5D5D`, `#C51A0A`, `bg-red-500/10` | `--neg` |
+| `bg-yellow-500` (password-strength "medium") | `--warn` |
+
+### The status set is FOUR values, not three
+
+Dark mode exposed a three-way hue collision: `--accent` (hue 21°, L .300), `--pend`
+(15°, L .252) and the original dark `--neg` `#E5654E` (9°, L .265) were all the same
+orange at the same lightness. Consequences: an **error was indistinguishable from the
+brand colour**, and the password meter's *low* and *medium* tiers rendered identically.
+Contrast checking cannot catch this — every one of those values passes 4.5:1; the defect
+is that three different *meanings* share one hue.
+
+Resolution: dark `--neg` → `#F5736B` (hue 3.5°, true red), and a new `--warn` amber
+(hue ~40°) for the warning tier. `--pend` keeps its burnt orange for pending
+transactions, where accent-adjacency is appropriate. Pending, warning, error and success
+are four meanings and now four tokens.
 | `--tx-received/sent/swap/earn/faucet` | **keep as-is** (the one good sub-system) |
 | `--surface-balance*` (light: graphite/color) | **keep in light; in DARK → near-black** `#101010` top / `#000` bottom + 8% hairline. The balance card is a *colored* surface only in light mode; in dark it sits in the theme instead of floating as an odd grey box. |
 | `--card-*` picker (slate/orange/blue/green/purple) | **light-mode only.** In dark, every variant collapses to the near-black balance surface (no colored cards in dark). |

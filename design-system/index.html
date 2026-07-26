@@ -91,7 +91,7 @@
   --accent-critical:#D9661F;
   --on-accent:#FFFFFF;        /* CTA labels — 3.00:1, valid as large text (>=18.66px bold) */
   --on-accent-sm:#1C1A18;     /* small labels on accent — 5.78:1, valid at any size */
-  --pos:#4A6B44; --pos-wash:#EAF1E8; --pend:#A8421F; --neg:#A33421;
+  --pos:#4A6B44; --pos-wash:#EAF1E8; --pend:#A8421F; --neg:#A33421; --warn:#8A5A00;
   /* tx hues: soft pastel SQUARE FILLS carry the personality; the dark glyph carries the
      accessibility (5.2–5.8:1). Never put a white glyph on these. */
   --tx-received:#A8BBA3; --tx-sent:#A3BCCF; --tx-swap:#C9BAD9; --tx-earn:#BDB9CC; --tx-faucet:#CDB0DE;
@@ -112,7 +112,7 @@
   --accent:#E77537; --accent-hover:#F08B57; --accent-ink:#E77537; --accent-wash:#33210F;
   --on-accent:#FFFFFF;
   --on-accent-sm:#191919;
-  --pos:#90BA89; --pos-wash:#26301F; --pend:#E85D2F; --neg:#E5654E;
+  --pos:#90BA89; --pos-wash:#26301F; --pend:#E85D2F; --neg:#F5736B; --warn:#E8B33F;
   --tx-received:#A8BBA3; --tx-sent:#A3BCCF; --tx-swap:#C9BAD9; --tx-earn:#BDB9CC; --tx-faucet:#CDB0DE;
   --tx-glyph:#1C1A18;
   /* Balance card goes near-black in dark mode (colors are light-mode only). */
@@ -446,7 +446,7 @@ ul.tick li:before{content:"→";position:absolute;left:2px;color:var(--accent-in
 .opw{width:100%;background:var(--surface-2);border:0;border-radius:var(--radius-md);padding:13px 14px;
   font-family:var(--ui);font-size:16px;color:var(--ink);margin-top:9px}
 .opw.ok{box-shadow:0 0 0 1.5px var(--pos)}
-.opwmeta{display:flex;align-items:center;justify-content:space-between;margin-top:8px;font-size:11px;color:var(--ink-2)}
+.opwmeta{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:8px;font-size:11px;color:var(--ink-2)}
 .opwbar{display:flex;gap:4px;margin-top:8px}
 .opwbar i{height:4px;flex:1;border-radius:var(--radius-full);background:var(--surface-3);display:block}
 .opwbar i.on{background:var(--pos)}
