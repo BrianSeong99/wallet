@@ -449,7 +449,26 @@ ul.tick li:before{content:"→";position:absolute;left:2px;color:var(--accent-in
 .opwmeta{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:8px;font-size:11px;color:var(--ink-2)}
 .opwbar{display:flex;gap:4px;margin-top:8px}
 .opwbar i{height:4px;flex:1;border-radius:var(--radius-full);background:var(--surface-3);display:block}
-.opwbar i.on{background:var(--pos)}
+/* Password strength is ONE component with four tiers, driven by data-tier on the
+   wrapper — never per-instance colour. Segment count AND a text label both carry
+   the tier, so colour is never the sole signal (SC 1.4.1, Level A). */
+.strength .tier{font-weight:700}
+.strength[data-tier="low"]    .opwbar i:nth-child(-n+1){background:var(--neg)}
+.strength[data-tier="medium"] .opwbar i:nth-child(-n+2){background:var(--warn)}
+.strength[data-tier="strong"] .opwbar i{background:var(--pos)}
+.strength[data-tier="low"]    .tier{color:var(--neg)}
+.strength[data-tier="medium"] .tier{color:var(--warn)}
+.strength[data-tier="strong"] .tier{color:var(--pos)}
+/* Field + inline error. .ferr is the one error-message shape for onboarding forms. */
+.opw.err{box-shadow:0 0 0 1.5px var(--neg)}
+/* Ring only. The digit stays default ink: tinting an 11px numeral --neg lands at 4.25:1
+   in dark, and it was redundant anyway — the .ferr message names the word ("Word 3"),
+   which is a stronger SC 1.4.1 carrier than any colour cue. */
+.sword.err{box-shadow:0 0 0 1.5px var(--neg)}
+/* No icon: the app's icon set ships no alert glyph, and inventing one would break the
+   "use the real assets" rule. Weight + colour + position under the field carry it. */
+.ferr{margin-top:10px;font-size:11.5px;line-height:1.45;font-weight:700;color:var(--neg)}
+.fok{margin-top:8px;font-size:11.5px;line-height:1.45;font-weight:700;color:var(--pos)}
 .ropt{text-align:left;background:var(--surface-2);border-radius:var(--radius-md);padding:12px 13px;margin-top:9px;position:relative}
 .ropt.sel{box-shadow:0 0 0 2px var(--accent)}
 .ropt .rt2{font-family:var(--display);font-weight:800;font-size:14px;display:flex;align-items:center;gap:7px}
@@ -1655,6 +1674,23 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
       <div class="ccol"><div class="clabel">search</div><div class="searchf"><img src="assets/icons/miden.svg" alt="" style="width:15px;height:15px;opacity:.45">Search for tokens</div></div>
     </div>
 
+    <h3 class="sh">Password strength <span class="small">— four tiers, one component, <code>data-tier</code> on the wrapper</span></h3>
+    <p class="sub">Segment count <em>and</em> the label both change with the tier, so the meter never depends on colour alone (<b>SC 1.4.1</b>, Level A). Tier names are the shipped i18n keys. Amber is a <b>new <code>--warn</code> token</b>, not the existing <code>--pend</code>. Reusing <code>--pend</code> was a mistake caught in dark mode: <code>--accent</code> (hue 21°), <code>--pend</code> (15°) and the old <code>--neg</code> (9°) were all the same orange at the same lightness, so <em>low</em> and <em>medium</em> rendered identically and both read as brand colour. A warning tier is a genuine fourth meaning — pending, warning, error and success are four states, not three.</p>
+    <div class="crow">
+      <div class="ccol"><div class="clabel">empty — default hint</div><div class="strength">
+        <div class="opwbar"><i></i><i></i><i></i></div>
+        <div class="opwmeta"><span>Minimum 8 characters with at least 1 number</span><span class="tier">&mdash;</span></div></div></div>
+      <div class="ccol"><div class="clabel">low <code>--neg</code></div><div class="strength" data-tier="low">
+        <div class="opwbar"><i></i><i></i><i></i></div>
+        <div class="opwmeta"><span>Minimum 8 characters with at least 1 number</span><span class="tier">Low</span></div></div></div>
+      <div class="ccol"><div class="clabel">medium <code>--warn</code></div><div class="strength" data-tier="medium">
+        <div class="opwbar"><i></i><i></i><i></i></div>
+        <div class="opwmeta"><span>Minimum 8 characters with at least 1 number</span><span class="tier">Medium</span></div></div></div>
+      <div class="ccol"><div class="clabel">strong <code>--pos</code></div><div class="strength" data-tier="strong">
+        <div class="opwbar"><i></i><i></i><i></i></div>
+        <div class="opwmeta"><span>Minimum 8 characters with at least 1 number</span><span class="tier">Very strong!</span></div></div></div>
+    </div>
+
     <h3 class="sh">Amount entry <span class="small">— the wallet's most-used field</span></h3>
     <div class="crow">
       <div class="amtent"><div class="clabel">empty</div><div class="big"><span class="cur">0.00</span> <span class="cur" style="font-size:20px">MIDEN</span></div><div class="sub2">Available 1,204.50 MIDEN</div></div>
@@ -2120,15 +2156,36 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
             <p class="obp" style="text-align:left">Set a password to unlock your wallet</p>
             <div style="margin-top:14px">
               <input class="opw" type="password" value="0000000000" aria-label="Enter password">
-              <div class="opwbar"><i class="on"></i><i class="on"></i><i class="on"></i></div>
-              <div class="opwmeta"><span>Minimum 8 characters with at least 1 number</span><span style="color:var(--pos);font-weight:700">Strong</span></div>
+              <div class="strength" data-tier="strong">
+                <div class="opwbar"><i></i><i></i><i></i></div>
+                <div class="opwmeta"><span>Minimum 8 characters with at least 1 number</span><span class="tier">Very strong!</span></div>
+              </div>
               <input class="opw ok" type="password" value="0000000000" aria-label="Enter password again" style="margin-top:14px">
-              <div class="opwmeta"><span style="color:var(--pos);font-weight:700">&#10003; It&rsquo;s a match!</span></div>
+              <div class="fok">&#10003; It&rsquo;s a match!</div>
             </div>
             <div class="zone"><button class="btn btn-primary" style="width:100%">Continue</button></div>
           </div>
         </div></div></div>
         <div class="scrnote"><b>Was missing entirely.</b> The biometric branch reaches this only when <code>checkHardwareSecurityAvailable()</code> is false &mdash; otherwise the key lives in the Secure Enclave (<code>__HARDWARE_ONLY__</code>) and this screen is skipped. Without it the spec implied biometric users had no fallback.</div></div>
+      <div><div class="scrcap"><i></i>06b&prime; &middot; Password strength &mdash; low <span class="tag retire">was missing</span></div>
+        <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
+          <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>
+          <div class="mpad" style="flex:1;display:flex;flex-direction:column">
+            <div class="obtop"><button class="obback" aria-label="Go back">&lsaquo;</button><div class="progdots"><i class="on"></i><i class="on"></i><i class="on"></i><i></i></div></div>
+            <h2 class="obh" style="text-align:left">Create password</h2>
+            <p class="obp" style="text-align:left">Set a password to unlock your wallet</p>
+            <div style="margin-top:14px">
+              <input class="opw" type="password" value="000000" aria-label="Enter password">
+              <div class="strength" data-tier="low">
+                <div class="opwbar"><i></i><i></i><i></i></div>
+                <div class="opwmeta"><span>Minimum 8 characters with at least 1 number</span><span class="tier">Low</span></div>
+              </div>
+              <input class="opw" type="password" value="" placeholder="Confirm password" aria-label="Enter password again" style="margin-top:14px">
+            </div>
+            <div class="zone"><button class="btn btn-primary" disabled>Continue</button></div>
+          </div>
+        </div></div></div>
+        <div class="scrnote"><b>The meter has four tiers; only one was drawn.</b> Shipped code sets <code>veryStrong</code>/<code>medium</code>/<code>low</code> plus an unfilled default hint &mdash; so a one-tier mock wasn&rsquo;t a spec. Now one component, <code>data-tier</code> on the wrapper, driving <em>both</em> segment count and label colour: satisfying <b>SC 1.4.1</b> because the word (&ldquo;Low&rdquo;) carries the tier without colour. <b>Deliberately no red ring on the field</b> &mdash; a password mid-typing is incomplete, not invalid, and premature error styling is its own defect. The ring is reserved for real validation failures (mismatch, bad seed word). <b>Open weakness worth fixing in product:</b> the hint is static, so it never says <em>which</em> rule you failed.</div></div>
       <div><div class="scrcap"><i></i>06c &middot; Set up account recovery <span class="tag retire">was missing</span></div>
         <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
           <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>
@@ -2170,6 +2227,24 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
           </div>
         </div></div></div>
         <div class="scrnote">Now correctly <b>4 of 4</b> &mdash; it previously showed no progress at all. A rare earned moment, where the delight budget is spent.</div></div>
+      <div><div class="scrcap"><i></i>07c &middot; Biometric failed <span class="tag retire">was missing</span></div>
+        <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
+          <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>
+          <div class="mpad" style="flex:1;display:flex;flex-direction:column">
+            <div class="obtop"><div class="progdots"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i></div></div>
+            <div class="obmid">
+              <img class="obillus" src="assets/icons/confirmation-illustrantion.svg" alt="">
+              <h2 class="obh">Your <span style="color:var(--accent-ink)">Wallet</span> is ready!</h2>
+              <p class="obp">Write down your recovery phrase within 7 days to fully secure your wallet.</p>
+              <div class="ferr" style="text-align:center">Biometric authentication failed</div>
+            </div>
+            <div class="zone">
+              <button class="btn btn-primary" style="width:100%">Continue with Password</button>
+              <div class="gh">Try Biometric Again</div>
+            </div>
+          </div>
+        </div></div></div>
+        <div class="scrnote"><b>A fully-built state with no design.</b> <code>Confirmation.tsx</code> already ships it: <code>biometricFailed</code> in red, and the CTA pair swaps to <code>continueWithPassword</code> + <code>tryBiometricAgain</code> once <code>showPasswordFallback</code> is set. Before attempts run out it instead shows <code>retry</code> plus &ldquo;<em>n</em> attempts remaining&rdquo;. Two decisions: the <b>success illustration and headline stay</b> &mdash; the wallet genuinely was created, and only the unlock method failed, so re-framing the screen as a failure would lie about what happened; and the <b>escape hatch is primary</b>, retry ghost beneath, because a user whose face or finger just failed twice needs the exit more than another attempt.</div></div>
       <div><div class="scrcap"><i></i>08 &middot; Back up your wallet <span class="tag survive">1/4</span></div>
         <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
           <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>
@@ -2213,6 +2288,19 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
           </div>
         </div></div></div>
         <div class="scrnote"><b>The entire import path was undesigned</b> &mdash; &ldquo;Recover your account&rdquo; on Welcome led nowhere. Import is step 1 of its own flow. Pasting fills all 12 fields at once (<code>seedPhraseTip</code>).</div></div>
+      <div><div class="scrcap"><i></i>10e &middot; Invalid seed word <span class="tag retire">was missing</span></div>
+        <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
+          <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>
+          <div class="mpad" style="flex:1;display:flex;flex-direction:column">
+            <div class="obtop"><button class="obback" aria-label="Go back">&lsaquo;</button><div class="progdots"><i class="on"></i><i></i><i></i><i></i></div></div>
+            <h2 class="obh" style="text-align:left">Import Wallet</h2>
+            <p class="obp" style="text-align:left">Enter your wallet&rsquo;s 12-word Seed phrase.</p>
+<div class="seedgrid" style="margin-top:14px"><div class="sword"><i>1</i>ripple</div><div class="sword"><i>2</i>canvas</div><div class="sword err"><i>3</i>orbet</div><div class="sword"><i>4</i>meadow</div><div class="sword"><i>5</i>tunnel</div><div class="sword"><i>6</i>garden</div><div class="sword"><i>7</i>silver</div><div class="sword"><i>8</i>pledge</div><div class="sword"><i>9</i>circus</div><div class="sword"><i>10</i>fabric</div><div class="sword"><i>11</i>ozone</div><div class="sword"><i>12</i>napkin</div></div>
+            <div class="ferr">Word 3 isn&rsquo;t in the Miden word list. Check the spelling.</div>
+            <div class="zone"><button class="btn btn-primary" disabled>Continue Import</button></div>
+          </div>
+        </div></div></div>
+        <div class="scrnote"><b>Two shipped bugs, not just a missing mock.</b> (1) <code>ImportSeedPhrase.tsx:85</code> renders <code>t('importSeedPhraseError')</code> &mdash; and <b>that key does not exist in <code>en.json</code></b>, so the error paragraph resolves to the raw key or to nothing. (2) <code>errorsMap</code> at <code>:31</code> already computes <em>per-word</em> validity against the BIP-39 list, but it is only reduced to a single boolean; the individual fields are never marked. So today a mistyped word gives you a <b>dead Continue button and no explanation</b>. The fix costs almost nothing because the data already exists: ring the offending word, and name it in the message. Ring colour is <code>--neg</code>, and the index digit turns with it so the marker is not colour-only.</div></div>
       <div><div class="scrcap"><i></i>11 &middot; Import recovery method <span class="tag retire">was missing</span></div>
         <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
           <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>
@@ -2254,10 +2342,12 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
             <p class="obp" style="text-align:left">Set a password to unlock your wallet</p>
             <div style="margin-top:12px">
               <input class="opw" type="password" value="0000000000" aria-label="Enter password">
-              <div class="opwbar"><i class="on"></i><i class="on"></i><i class="on"></i></div>
-              <div class="opwmeta"><span>Minimum 8 characters with at least 1 number</span><span style="color:var(--pos);font-weight:700">Strong</span></div>
+              <div class="strength" data-tier="strong">
+                <div class="opwbar"><i></i><i></i><i></i></div>
+                <div class="opwmeta"><span>Minimum 8 characters with at least 1 number</span><span class="tier">Very strong!</span></div>
+              </div>
               <input class="opw ok" type="password" value="0000000000" aria-label="Enter password again" style="margin-top:12px">
-              <div class="opwmeta"><span style="color:var(--pos);font-weight:700">&#10003; It&rsquo;s a match!</span></div>
+              <div class="fok">&#10003; It&rsquo;s a match!</div>
             </div>
             <div class="zone"><button class="btn btn-primary" style="width:100%">Continue</button></div>
           </div>
