@@ -406,20 +406,40 @@ table.map td code{font-size:12px}
 .mseg .seg.on .lbl{max-width:12rem;opacity:1;margin-left:8px}
 @media (prefers-reduced-motion: reduce){.mseg .seg,.mseg .seg .lbl{transition-duration:.01ms}}
 /* fund-wallet prompt */
-.mprompt{display:flex;align-items:center;gap:10px;background:var(--surface-2);
-  border-radius:var(--radius-md);padding:10px 6px 10px 13px}
-/* Variant = the wash from data-status plus a status dot. Title and body stay ink so
-   legibility never depends on the tint. The SHIPPED PromptCard declares
-   variant: 'default' | 'warning' | 'critical' and HomePrompts passes 'warning', but the
-   component never destructures `variant` -- so every prompt renders identically today. */
-.mprompt[data-status]{background:var(--st-wash)}
-.mprompt .pdot{width:8px;height:8px;border-radius:50%;background:var(--st);flex:none}
+/* ---- Prompt card ------------------------------------------------------------------
+   Rebuilt. The first version was a pale amber box with a coloured status dot and two
+   lines of helpful body copy -- the house style of every generated alert component, and
+   it read as exactly that. What the app itself ships is quieter and better:
+   `bg-surface-input rounded-10`, no wash, no dot. This follows it.
+   Meaning is carried instead by a REAL icon from the app's set (key.svg -- it is about a
+   recovery phrase), one line of body, and a chevron. The chevron is functional, not
+   decorative: the whole card is role="button" and navigates to
+   /settings/verify-seed-phrase, but the shipped component renders EITHER a dismiss X or a
+   chevron, never both -- so a dismissible prompt has no affordance saying it is tappable.
+   Showing both fixes that. The wash is reserved for `critical`, where an irreversible
+   consequence genuinely warrants colour. */
+.mprompt{display:flex;align-items:center;gap:11px;background:var(--surface-2);
+  border-radius:var(--radius-md);padding:11px 4px 11px 13px}
+.mprompt[data-status="neg"]{background:var(--st-wash)}
+.mprompt .pic{width:32px;height:32px;border-radius:var(--radius-sm);flex:none;
+  background:var(--surface-3);display:flex;align-items:center;justify-content:center;color:var(--ink-2)}
+.mprompt .pic .svgic{width:17px;height:17px}
 .mprompt .ptx{flex:1;min-width:0}
-.mprompt .pt{font-family:var(--display);font-weight:800;font-size:13px;line-height:1.25}
-.mprompt .pb{font-size:11.5px;color:var(--ink-2);margin-top:2px;line-height:1.4}
+.mprompt .pt{font-family:var(--display);font-weight:800;font-size:12.5px;line-height:1.3}
+/* Two lines, clamped -- not nowrap+ellipsis. The shipped body copy
+   ("Confirm you saved your recovery phrase so you can restore this wallet later.") does
+   not fit one line beside an icon, a chevron and a dismiss target, and truncating it
+   mid-sentence is worse than wrapping. Paraphrasing it shorter is not an option either:
+   it is a real i18n string -- so the clamp is 3 lines, which is what the 76-character
+   shipped string actually needs in a ~200pt column at 11.5px. The clamp stays as a guard
+   against longer localisations rather than as the normal state. */
+.mprompt .pb{font-size:11.5px;color:var(--ink-2);margin-top:2px;line-height:1.35;
+  display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.mprompt .pch{color:var(--ink-3);font-size:13px;flex:none;line-height:1}
 .mprompt .pdis{min-width:44px;min-height:44px;border:0;background:none;padding:0;flex:none;
-  display:flex;align-items:center;justify-content:center;color:var(--ink-2);font-size:13px;cursor:pointer}
-.mpdots{display:flex;justify-content:center;gap:5px;margin-top:7px}
+  display:flex;align-items:center;justify-content:center;color:var(--ink-2);font-size:12px;cursor:pointer}
+/* Dots appear at 2+ only, matching PromptCarousel, which renders a lone slide bare. */
+.mpdots{display:flex;justify-content:center;gap:5px;margin-top:8px}
 .mpdots i{width:5px;height:5px;border-radius:50%;background:var(--rule-strong);display:block}
 .mpdots i.on{background:var(--ink-3)}
 .mprompt .tx{flex:1}
@@ -436,7 +456,12 @@ table.map td code{font-size:12px}
            "makes your app's interface appear unstable".
    [SPEC]  Material 3 requires a label on every item and forbids removing them; Android's
            own LABEL_VISIBILITY_AUTO resolves to always-labelled at <=3 items. We have 3.
-   [SPEC]  WCAG 2.5.5 (AAA) 44x44 -- item is 77x61.
+   [SPEC]  WCAG 2.5.5 (AAA) 44x44 -- item is 113x49 at the reference width.
+   Width is INSET-based, not content-hugging. Share of a 402pt screen, measured: iOS 26
+   = 89.6% (21pt insets), Rainbow = 79.5% (40pt), the current build = 97.9% (which is
+   why it reads as neither bar nor capsule). A content-hugging capsule came out at
+   63.4% -- visibly meaner than anything shipping. 24pt insets land at 88.1%, between
+   iOS 26 and Rainbow, with 113pt items.
    [MEASURED] The shipped nav marks active with #E77537 on #FBFBFB = 2.90:1, failing both
            1.4.3 (4.5:1 text) and 1.4.11 (3:1 icon). Dark is 5.86:1, so the defect is
            light-only, which is how it survived review.
@@ -452,11 +477,10 @@ table.map td code{font-size:12px}
    (surface-3 = 4.21:1). So light steps UP into a warm accent wash (5.08:1) and dark
    steps DOWN into a recessed well at the page colour (5.86:1). Same shape language in
    both themes; only the direction of the step changes -- the surface-step idiom. */
-.mnav{margin:auto auto max(12px,var(--safe-bottom,0px));min-height:61px;padding:6px;border-radius:var(--radius-full);
-  display:flex;align-items:stretch;gap:6px;width:max-content;
-  background:var(--surface);box-shadow:var(--shadow-1);position:relative}
+.mnav{margin:auto 24px max(16px,var(--safe-bottom,0px));min-height:61px;padding:6px;border-radius:var(--radius-full);
+  display:flex;align-items:stretch;gap:6px;background:var(--surface);box-shadow:var(--shadow-1);position:relative}
 [data-theme="dark"] .mnav{box-shadow:none;background:var(--surface-2)}
-.mnav .t{min-width:77px;min-height:49px;padding:5px 14px;border-radius:var(--radius-full);
+.mnav .t{flex:1;min-width:77px;min-height:49px;padding:5px 10px;border-radius:var(--radius-full);
   display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;
   color:var(--ink-2);font-size:11px;line-height:13px;font-weight:600;
   background:none;border:0;cursor:pointer;position:relative}
@@ -2080,7 +2104,7 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
                 <div class="amt">$0.00 <small>USD</small></div></div>
               <div class="bot" data-surface="graphite-deep"><span class="acc">Account #: mtst1ap8…r4fp</span><button class="m" aria-label="Account options"><i>⋯</i></button></div>
             </div>
-            <div class="mprompt" data-status="warn"><span class="pdot nti"></span><div class="ptx"><div class="pt">Verify your recovery phrase</div><div class="pb">Confirm you saved your recovery phrase so you can restore this wallet later.</div></div><button class="pdis" aria-label="Dismiss">&#10005;</button></div>
+            <div class="mprompt"><span class="pic"><span class="svgic" style="--ic:url(assets/icons/key.svg)" aria-hidden="true"></span></span><div class="ptx"><div class="pt">Verify your recovery phrase</div><div class="pb">Confirm you saved your recovery phrase so you can restore this wallet later.</div></div><span class="pch">&rsaquo;</span><button class="pdis" aria-label="Dismiss">&#10005;</button></div>
             <div class="masset-h">Assets</div>
             <div class="msearch">Search for tokens</div>
             <div class="mrow"><div class="ic"><img src="assets/icons/miden.svg" alt=""></div><div><div class="nm">Miden</div><div class="ad">0.00 MIDEN</div></div><div class="rt"><div class="f">$0.00</div><div class="b" style="color:var(--pos)">+0.00%</div></div></div>
@@ -2606,7 +2630,7 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
                 <div class="amt">$12,480.50 <small>USD</small></div></div>
               <div class="bot" data-surface="graphite-deep"><span class="acc">Account #: mtst1ap8…r4fp</span><button class="m" aria-label="Account options"><i>⋯</i></button></div>
             </div>
-            <div class="mprompt" data-status="warn"><span class="pdot nti"></span><div class="ptx"><div class="pt">Verify your recovery phrase</div><div class="pb">Confirm you saved your recovery phrase so you can restore this wallet later.</div></div><button class="pdis" aria-label="Dismiss">&#10005;</button></div>
+            <div class="mprompt"><span class="pic"><span class="svgic" style="--ic:url(assets/icons/key.svg)" aria-hidden="true"></span></span><div class="ptx"><div class="pt">Verify your recovery phrase</div><div class="pb">Confirm you saved your recovery phrase so you can restore this wallet later.</div></div><span class="pch">&rsaquo;</span><button class="pdis" aria-label="Dismiss">&#10005;</button></div>
             <div class="masset-h">Assets</div>
             <div class="msearch">Search for tokens</div>
             <div class="mrow"><div class="ic"><img src="assets/icons/miden.svg" alt=""></div><div><div class="nm">Miden</div><div class="ad">1,204.50 MIDEN</div></div><div class="rt"><div class="f">$12,480.50</div><div class="b" style="color:var(--pos)">+0.32%</div></div></div>
