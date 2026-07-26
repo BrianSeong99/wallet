@@ -354,10 +354,18 @@ tinted chip, so the composite stays close to the surface in both themes.
 ports to native as a single number. CSS approximates `springs.pill` (320/30) with
 `--ease-out-cubic`; the spring is the implementation spec.
 
-**Known asset gap:** Instagram also swaps outlined → filled icons on activation. Our set
-ships **one weight per glyph**, so that signal is unavailable — active differentiation rests
-on the pill plus a modest `--ink-2` → `--ink` step. Fixing it properly means authoring filled
-variants of the three nav glyphs.
+**Top asset gap — now the highest-value fix.** *Every* reference uses an **outlined → filled
+glyph swap** as the primary active signal: both Instagram variants, and Slack's 2023 bar. Our
+set ships **one weight per glyph**, so the most widely-used active-state mechanism in the
+category is unavailable to us, and the pill is doing work the icon should share. Authoring
+filled variants of the three nav glyphs is the single highest-leverage asset task.
+
+**The tint is a live decision, not settled.** Among shipping Liquid Glass adopters, Slack tints
+its active glyph (`#762B7D`) and **Instagram uses no brand colour at all** — neutral ink in both
+themes, confirmed across four images including Meta press assets. Apple's HIG says "a colored
+glyph plus a highlighted shape", so tinted is HIG-faithful; neutral is reference-faithful and
+measures better (9.01:1 / 12.63:1 versus `--accent-ink`'s narrower pass). Both variants are
+built; pick one deliberately.
 
 ## Prompt card — internal spacing
 

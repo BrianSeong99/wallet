@@ -785,3 +785,61 @@ destination, so there is nothing to gain and a known affordance cost.
 from a marketing render), any animation duration or curve for the tab switch, the dark-mode
 appearance of the bar or highlight on either platform, and whether the iOS 26 purple is
 theme-derived. Slack's release notes never mention the nav change at all.
+
+### 8.10 Instagram — two variants, and the tint is a choice not a requirement
+
+Instagram runs **two nav designs concurrently** as of late July 2026:
+
+| | A — flat bar (dominant) | B — Liquid Glass (iOS 26, still testing) |
+|---|---|---|
+| Container | full-width, edge-to-edge, opaque, content clipped at its top edge | **floating inset translucent capsule**, content visible through it |
+| Active highlight | **filled glyph only — no pill, no underline, no dot** | **filled glyph + a neutral grey translucent capsule behind it** |
+| Colour | pure black on white / pure white on near-black | same, neutral |
+
+The screenshot Brian supplied is **variant B** — floating translucent capsule with a light pill
+behind a filled Home glyph. That is why "the Liquid Glass navbar from Apple" was the right way
+to describe what he wanted.
+
+**The decisive finding: Instagram's Liquid Glass nav uses NO brand colour at all.** Confirmed
+across four independent images, two of them Meta-supplied press assets. Active is neutral
+high-contrast ink in both themes; contrast and glyph weight carry the state.
+
+**So among shipping Liquid Glass adopters, the tint is a choice, not a property of the
+material:** Slack tints its active glyph (`#762B7D`, 8.9), Instagram does not. Both ship the
+same material. Our own measurement favours neutral — `--ink` on a neutral pill is 9.01:1 light
+/ 12.63:1 dark, versus `--accent-ink` which passes with less headroom. Apple's HIG describes
+"a colored glyph plus a highlighted shape", so the tinted version is HIG-faithful; the neutral
+version is reference-faithful and measures better. **Both are built. This is a live decision,
+not a settled one.**
+
+**The gap that now matters most.** *Both* Instagram variants and Slack's 2023 bar use an
+**outlined → filled glyph swap** as the primary active signal. Our icon set ships **one weight
+per glyph**, so the single most-used active-state mechanism across every reference app is
+unavailable to us. That elevates authoring filled variants of the three nav glyphs from a nice
+-to-have to the top asset task — currently the pill is doing work the icon should share.
+
+**Motion, honestly.** Instagram's *content* transition is a **horizontal paged slide that
+tracks the drag** — verified by extracting frames from the video on Mosseri's own Threads post
+(a frame at ~8.5s shows the feed sliding out left, Reels entering right, a hard seam, and a
+synthetic touch dot mid-drag). It is not a crossfade. **Tap-driven icon animation, durations
+and easing: not found anywhere.** No first-party motion spec exists for Instagram or Slack.
+Our liquid squish is therefore derived from the material's behaviour and `springs.pill`, not
+copied — worth stating plainly rather than implying provenance it does not have.
+
+**Swiping between tabs is a first-party Instagram feature** (Mosseri, 2025-10-10: "you can now
+swipe between tabs"). That corroborates our own `HomeSwipeContainer`, which already pages
+between home panes — the pattern is validated, not a local invention.
+
+**A trap worth recording.** Instagram's own in-app promo card for the redesign renders an
+*illustration* of the nav as a white pill on a purple→magenta gradient field with a
+gradient-stroked paper plane. That is marketing art, not app chrome. A Figma kit or blog
+screenshot of that card would wrongly suggest the nav uses brand colour.
+
+**Badges:** small solid red dot, no numeral, lower-right of the glyph. Third corroboration of
+dot-not-number, after Slack and Rainbow.
+
+**Not verifiable:** no first-party design spec exists at all — Instagram's Help Center article
+on navigation is now an empty AI-chat shell, and there is no Newsroom or Meta design-blog post.
+Bar height is unpublished (icon ≈22pt and ≈79pt item pitch are measurements off a real iPhone
+screenshot). Exact dark hex is compression-contaminated. Hide-on-scroll is unestablished.
+Sources conflict on whether Liquid Glass has rolled out globally or is still in test.
