@@ -703,6 +703,42 @@ ul.tick li:before{content:"→";position:absolute;left:2px;color:var(--accent-in
 .phone.ext .notch,.phone.ext .mock::after{display:none}
 .phone.ext .mock{--safe-bottom:0px}
 .extbar{display:flex;align-items:center;gap:8px;padding:9px 0 12px;font-size:11px;color:var(--ink-2)}
+/* ── PAGE TRANSITIONS ────────────────────────────────────────────────────────
+   Values reconciled from: M3 published tokens, UIKit's measured 350ms, and
+   Ionic's shipped WebView reproduction of the iOS parallax (540ms /
+   cubic-bezier(.32,.72,0,1) — the same curve vaul already uses here).
+   transform + opacity ONLY; never left/top/width/height. */
+.ptstage{position:relative;height:180px;border-radius:var(--radius-md);overflow:hidden;
+  background:var(--surface-2);isolation:isolate}
+.ptpane{position:absolute;inset:0;background:var(--surface);padding:14px;display:flex;flex-direction:column;gap:7px;
+  will-change:transform,opacity}
+.ptpane .pth{font-family:var(--display);font-weight:800;font-size:15px}
+.ptpane .ptl{height:8px;border-radius:5px;background:var(--surface-3)}
+.ptb{height:34px;border-radius:var(--radius-full);background:var(--accent);margin-top:auto}
+/* PUSH — enter from trailing edge; outgoing parallaxes to -33% and dims (iOS model) */
+.pt-push .a{transform:translateX(0);opacity:1;transition:transform 540ms cubic-bezier(.32,.72,0,1),opacity 540ms linear}
+.pt-push .b{transform:translateX(100%);transition:transform 540ms cubic-bezier(.32,.72,0,1)}
+.pt-push.go .a{transform:translateX(-33%);opacity:.8}
+.pt-push.go .b{transform:translateX(0)}
+/* LATERAL — peers move in unison, one axis, no parallax, no cross-fade (M3 "Lateral") */
+.pt-lat .a,.pt-lat .b{transition:transform 280ms cubic-bezier(.2,0,0,1)}
+.pt-lat .a{transform:translateX(0)} .pt-lat .b{transform:translateX(100%)}
+.pt-lat.go .a{transform:translateX(-100%)} .pt-lat.go .b{transform:translateX(0)}
+/* TOP LEVEL — fade OUT fully, then fade IN. No translation. Material forbids sliding here. */
+.pt-tab .a{opacity:1;transition:opacity 90ms cubic-bezier(.3,0,1,1)}
+.pt-tab .b{opacity:0;transition:opacity 150ms cubic-bezier(0,0,0,1) 90ms}
+.pt-tab.go .a{opacity:0} .pt-tab.go .b{opacity:1}
+/* REDUCED MOTION — cross-fade only, <=100ms, zero translation */
+.pt-rm .a{opacity:1;transition:opacity 100ms linear}
+.pt-rm .b{opacity:0;transition:opacity 100ms linear}
+.pt-rm.go .a{opacity:0} .pt-rm.go .b{opacity:1}
+@media (prefers-reduced-motion: reduce){
+  /* collapse DURATION, never `animation:none` — transitionend must still fire */
+  .pt-push .a,.pt-push .b,.pt-lat .a,.pt-lat .b{transition-duration:1ms}
+  .pt-push.go .a{transform:none;opacity:0}
+  .pt-push.go .b,.pt-lat.go .b{transform:none}
+  .pt-lat.go .a{transform:none;opacity:0}
+}
 /* ── SHEET (shared component) ────────────────────────────────────────────────
    Standard vaul anatomy, NOT a bespoke skin: scrim + grab handle + one radius +
    elevation. The app's Drawer primitive already ships all of this
@@ -1152,6 +1188,69 @@ ul.tick li:before{content:"→";position:absolute;left:2px;color:var(--accent-in
       <tr><td>ease-standard</td><td>cubic-bezier(.25,.1,.25,1)</td><td>color &amp; hover feedback</td></tr>
       <tr><td>ease-spatial</td><td>cubic-bezier(.22,1,.36,1)</td><td>sheets &amp; things that travel (spring-ish)</td></tr>
     </table>
+    <h3 class="sh">Page transitions <span class="small">— tap Play on each</span></h3>
+    <div class="callout warn"><b>Two corrections from the research.</b> <b>(1)</b> Apple publishes <em>no</em> motion numbers — the HIG Motion page has zero durations and zero curves. iOS&rsquo;s 350ms push was <em>measured from the UIKit binary</em> (private <code>_UINavigationParallaxTransition</code>), so it is an observed constant, not a contract, and <b>its curve is genuinely unsourced</b> — anyone quoting &ldquo;UIKit uses easeInOut&rdquo; is guessing. <b>(2)</b> M3&rsquo;s duration/easing system is now <b>legacy</b>, superseded by spring physics; CSS cannot spring, so the token durations remain the right target for a WebView — a known divergence, not a mistake.</div>
+    <div class="cmgrid">
+      <div class="cm"><div class="cmh"><span class="cmt">Push · forward</span><span class="cmf rare">hierarchy</span></div>
+        <div class="ptstage pt-push">
+          <div class="ptpane a"><div class="pth">Screen A</div><div class="ptl" style="width:70%"></div><div class="ptl" style="width:45%"></div><div class="ptb"></div></div>
+          <div class="ptpane b"><div class="pth">Screen B</div><div class="ptl" style="width:55%"></div><div class="ptl" style="width:80%"></div><div class="ptb" style="background:var(--surface-3)"></div></div>
+        </div>
+        <button class="go" data-pt="pt-push">Play &#9654;</button>
+        <div class="cmd">Enter from the <b>trailing</b> edge (WWDC24&rsquo;s word — it auto-mirrors in RTL); the outgoing screen parallaxes to <code>-33%</code> and dims to <code>.8</code>. <b>540ms / cubic-bezier(.32,.72,0,1)</b> — Ionic&rsquo;s shipped WebView reproduction of the iOS parallax, and the same curve vaul already uses here. The curve is front-loaded, so it covers most of the distance early and <em>reads</em> faster than 540ms. Copy the duration without the curve and you get a sluggish app.</div>
+      </div>
+      <div class="cm"><div class="cmh"><span class="cmt">Lateral · peers / steps</span><span class="cmf freq">onboarding</span></div>
+        <div class="ptstage pt-lat">
+          <div class="ptpane a"><div class="pth">Screen A</div><div class="ptl" style="width:70%"></div><div class="ptl" style="width:45%"></div><div class="ptb"></div></div>
+          <div class="ptpane b"><div class="pth">Screen B</div><div class="ptl" style="width:55%"></div><div class="ptl" style="width:80%"></div><div class="ptb" style="background:var(--surface-3)"></div></div>
+        </div>
+        <button class="go" data-pt="pt-lat">Play &#9654;</button>
+        <div class="cmd">Peers at the same level move <b>in unison on one axis</b> — no parallax, no cross-fade. <b>280ms / cubic-bezier(.2,0,0,1)</b> (M3 <code>standard</code>). This is the onboarding step case. Material&rsquo;s don&rsquo;t: never use a full-width slide for <em>hierarchical</em> screens — &ldquo;excessive for a high frequency transition&rdquo;.</div>
+      </div>
+      <div class="cm"><div class="cmh"><span class="cmt">Top level · tab switch</span><span class="cmf freq">fade only</span></div>
+        <div class="ptstage pt-tab">
+          <div class="ptpane a"><div class="pth">Screen A</div><div class="ptl" style="width:70%"></div><div class="ptl" style="width:45%"></div><div class="ptb"></div></div>
+          <div class="ptpane b"><div class="pth">Screen B</div><div class="ptl" style="width:55%"></div><div class="ptl" style="width:80%"></div><div class="ptb" style="background:var(--surface-3)"></div></div>
+        </div>
+        <button class="go" data-pt="pt-tab">Play &#9654;</button>
+        <div class="cmd"><b>No translation at all.</b> Fade the old screen fully <em>out</em> (90ms accelerate), then the new one <em>in</em> (150ms decelerate) — never overlap two half-transparent screens. <b>Material explicitly forbids sliding here</b>: it implies a swipe gesture that conflicts with carousels and swipeable rows. Apple specifies nothing, so iOS&rsquo;s instant swap is observed behaviour, not spec. <b>Our app currently slides tabs from <code>x:8%</code></b> — that is the violation.</div>
+      </div>
+      <div class="cm"><div class="cmh"><span class="cmt">Reduced motion · all transitions</span><span class="cmf rare">WCAG AAA</span></div>
+        <div class="ptstage pt-rm">
+          <div class="ptpane a"><div class="pth">Screen A</div><div class="ptl" style="width:70%"></div><div class="ptl" style="width:45%"></div><div class="ptb"></div></div>
+          <div class="ptpane b"><div class="pth">Screen B</div><div class="ptl" style="width:55%"></div><div class="ptl" style="width:80%"></div><div class="ptb" style="background:var(--surface-3)"></div></div>
+        </div>
+        <button class="go" data-pt="pt-rm">Play &#9654;</button>
+        <div class="cmd">One rule, no exceptions: <b>no translate, scale, parallax or morph</b> — substitute a cross-fade of ≤100ms. Endorsed by <em>both</em> platform owners: Material says use &ldquo;subtle fades… disable parallax or shape morphing&rdquo;; Apple says replace &ldquo;transitions in x-, y-, and z-axes with fades&rdquo;. WCAG <b>2.3.3 is Level AAA</b> — don&rsquo;t confuse it with 2.2.2 (Level A), which covers &gt;5s automatic motion.</div>
+      </div>
+    </div>
+
+    <h3 class="sh">Recommended spec <span class="small">— graded by what actually backs it</span></h3>
+    <table class="map">
+      <tr><th>Transition</th><th>Duration</th><th>Easing</th><th>Direction</th><th>Grade</th></tr>
+      <tr><td>Push (forward)</td><td>540ms (Ionic) · iOS 350ms measured</td><td><code>cubic-bezier(.32,.72,0,1)</code></td><td>enter trailing → 0; outgoing −33% + dim .8</td><td>direction <b>[SPEC]</b> · duration [CONSENSUS] · <b>curve [CONTESTED]</b></td></tr>
+      <tr><td>Pop (back)</td><td>same, or ~15% shorter</td><td>same family</td><td><b>exact reverse</b>, RTL-mirrored</td><td>reverse [CONSENSUS] · RTL <b>[SPEC]</b></td></tr>
+      <tr><td>Lateral (steps/peers)</td><td>280ms</td><td><code>cubic-bezier(.2,0,0,1)</code></td><td>unison, one axis</td><td>pattern <b>[SPEC]</b> · numbers [CONSENSUS]</td></tr>
+      <tr><td>Top level (tabs)</td><td>90ms out → 150ms in</td><td>accelerate → decelerate</td><td><b>none</b></td><td>Material <b>[SPEC]</b> · cross-platform [CONTESTED]</td></tr>
+      <tr><td>Sheet up / down</td><td>250–300 in · 200–250 out</td><td>emphasized-decel / -accel</td><td>from its own edge</td><td><b>[SPEC]</b></td></tr>
+      <tr><td>Container transform</td><td>500 in / 400 out</td><td>emphasized</td><td>bounds morph</td><td>values <b>[SPEC]</b> · restraint [CONSENSUS]</td></tr>
+      <tr><td>Extension popup 360×600</td><td>150–200ms, or fade</td><td><code>standard</code></td><td>same rules, shorter travel</td><td>[CONSENSUS]</td></tr>
+      <tr><td>Reduced motion</td><td>≤100ms (or 1ms)</td><td><code>linear</code></td><td><b>none</b></td><td><b>[SPEC]</b> WCAG AAA + both platforms</td></tr>
+    </table>
+
+    <h3 class="sh">Don&rsquo;ts that bite in a WebView</h3>
+    <ul class="tick">
+      <li><b>Never animate <code>left/top/width/height</code>.</b> Google measured <b>50% dropped frames</b> vs 1% for <code>transform</code>. Same for <code>box-shadow</code> and large <code>blur</code> — paint-bound, not compositable.</li>
+      <li><b><code>position:fixed</code> children travel with a transformed ancestor.</b> Per CSS Transforms 1, any <code>transform</code> makes the element a containing block for fixed descendants, so a pinned tab bar inside the animated page slides with it. <span class="small">Checked: our <code>BottomNav</code> sits <em>outside</em> <code>TabLayout</code>&rsquo;s <code>motion.div</code>, so we are clear — but it is one refactor away from breaking.</span></li>
+      <li><b>Never <code>animation: none</code> under reduced motion</b> — collapse the duration to 1ms, or <code>transitionend</code>/<code>animationend</code> never fires and the router stalls.</li>
+      <li><b>Don&rsquo;t size transition containers in <code>vh</code></b> on Capacitor iOS: <code>KeyboardResize: native</code> resizes the WebView, and <code>vh</code> with it, mid-flight.</li>
+      <li><b>Don&rsquo;t cross-fade two half-transparent full screens</b> — Material: fade out fully <em>before</em> fading in, or you get &ldquo;messy and distracting frames&rdquo;.</li>
+      <li><b><code>will-change</code> is a last resort</b>, added before and removed after; parked permanently it burns GPU memory.</li>
+      <li><b>Reduced motion removes the movement, never the meaning</b> — the status colour change and the tick stay.</li>
+    </ul>
+
+    <div class="callout warn"><b>Numbers to keep out of the spec.</b> The UIKit push <b>curve</b> (no source anywhere) · <code>UINavigationControllerHideShowBarDuration = 0.33s</code> (universally repeated, absent from Apple&rsquo;s docs) · <b>&ldquo;Material shared axis = 300ms&rdquo;</b> — the most-repeated M-number on the web and <em>not</em> in the M2 or M3 text; Google&rsquo;s shipped Android defaults are <b>450ms</b> (shared axis, fade through) and <b>500/400ms</b> (container transform) · &ldquo;iOS Reduce Motion replaces pushes with a cross-dissolve&rdquo; (undocumented) · <code>translate3d()</code>/<code>backface-visibility</code> hacks (folklore from dead engines). And <code>cubic-bezier(.4,0,.2,1)</code> is M3 <b>legacy</b>, not &ldquo;the Material curve&rdquo; — one major version behind.</div>
+
     <h3 class="sh">Interactive — tap to feel it</h3>
     <p class="sub">Every motion below runs on the tokens above. Tap the controls; toggle the theme to feel it in dark.</p>
     <div class="grid2" style="margin-top:14px">
@@ -2597,6 +2696,15 @@ document.getElementById('theme').addEventListener('click',()=>{
   const stag0=$('stag'); if(stag0){[...stag0.children].forEach((r,i)=>r.style.animationDelay=(i*40)+'ms');stag0.classList.add('go');}
   const okw0=$('okw'); if(okw0) okw0.classList.add('go');
   runStepper();
+  // page-transition demos
+  document.querySelectorAll('[data-pt]').forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      const st=document.querySelector('.'+btn.dataset.pt);
+      if(!st) return;
+      st.classList.remove('go'); void st.offsetWidth; st.classList.add('go');
+      setTimeout(()=>st.classList.remove('go'),1400);
+    });
+  });
   // 04a -> 04b Face ID transition demo
   (function(){
     const fx=document.getElementById('fidx'), bt=document.getElementById('fidbtn'),
