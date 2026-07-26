@@ -812,10 +812,40 @@ pre.code code{background:none;padding:0;font-family:var(--mono);font-size:11.5px
 .cm .cmd{font-size:12px;color:var(--ink-2);margin-top:12px;line-height:1.45}
 .cm .go{margin-top:12px;font-size:12.5px;font-weight:700;color:var(--accent-ink);background:none;border:0;padding:0;cursor:pointer}
 .cu{font-family:var(--num);font-feature-settings:var(--num-feat);font-weight:800;font-size:30px;letter-spacing:-.02em}
-.copybtn{display:inline-flex;align-items:center;gap:8px;background:var(--surface-2);border:0;border-radius:var(--radius-md);padding:10px 13px;cursor:pointer;font-family:var(--mono);font-size:12px;color:var(--ink);transition:color var(--dur-base)}
+.copybtn{display:inline-flex;align-items:center;gap:8px;background:var(--surface-2);border:0;
+  border-radius:var(--radius-md);padding:10px 13px;cursor:pointer;font-family:var(--mono);font-size:12px;
+  color:var(--ink);min-height:44px;
+  /* the SIZE change is animated, not snapped. Width is measured once in JS and set as a
+     custom property, so the chip eases between its two natural widths instead of
+     reflowing instantly. In the app use framer-motion's `layout` prop — it FLIPs the
+     same delta using transforms only, which is compositor-safe. */
+  width:var(--cbw,auto);
+  transition:width var(--dur-normal) var(--ease-spatial),
+             color var(--dur-normal) var(--ease-standard),
+             transform var(--dur-fast) var(--ease-standard)}
+.copybtn:active{transform:scale(.97)}
 .copybtn.done{color:var(--pos)}
-.copybtn .ic2{transition:transform var(--dur-base) var(--ease-spatial)}
-.copybtn.done .ic2{transform:scale(1.25)}
+/* both icons and both labels are STACKED, so each cross-fades in place —
+   nothing is replaced with innerHTML, so nothing can pop. */
+.copybtn .cbico{position:relative;width:15px;height:15px;flex:none}
+.copybtn .cbi{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+  transition:opacity var(--dur-fast) var(--ease-standard),transform var(--dur-normal) var(--ease-spatial)}
+.copybtn .cbi-copy{opacity:1;transform:scale(1)}
+.copybtn .cbi-tick{opacity:0;transform:scale(.5);font-size:13px;font-weight:800}
+.copybtn.done .cbi-copy{opacity:0;transform:scale(.5)}
+.copybtn.done .cbi-tick{opacity:1;transform:scale(1)}
+.copybtn .cblab{position:relative;display:block;height:15px;overflow:hidden;flex:none;
+  width:var(--cbl,auto);transition:width var(--dur-normal) var(--ease-spatial)}
+.copybtn .cbt{position:absolute;left:0;top:0;white-space:nowrap;
+  transition:opacity var(--dur-fast) var(--ease-standard),transform var(--dur-normal) var(--ease-spatial)}
+.copybtn .cbt-b{opacity:0;transform:translateY(6px)}
+.copybtn.done .cbt-a{opacity:0;transform:translateY(-6px)}
+.copybtn.done .cbt-b{opacity:1;transform:translateY(0)}
+@media (prefers-reduced-motion: reduce){
+  .copybtn,.copybtn .cbi,.copybtn .cbt,.copybtn .cblab{transition-duration:1ms}
+  .copybtn .cbi-tick,.copybtn .cbt-b{transform:none}
+  .copybtn.done .cbi-copy,.copybtn.done .cbt-a{transform:none}
+}
 .spin{width:17px;height:17px;border-radius:50%;border:2.5px solid rgba(255,255,255,.4);border-top-color:var(--pure-white);animation:spin var(--dur-loop-spin) linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
 .morph{display:inline-flex;align-items:center;font-weight:700;font-size:19px;font-family:var(--ui);color:var(--on-accent);background:var(--accent);border:0;border-radius:var(--radius-full);padding:14px 26px;cursor:pointer}
@@ -1314,8 +1344,8 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
 
       <div class="cm">
         <div class="cmh"><span class="cmt">Copy confirmation</span><span class="cmf freq">frequent · subtle</span></div>
-        <button class="copybtn" id="copyb"><span class="ic2"><span class="svgic" style="--ic:url(assets/icons/copy.svg);width:15px;height:15px;display:block" aria-hidden="true"></span></span><span class="ctxt">mtst1ap8…r4fp</span></button>
-        <div class="cmd">The most-repeated action in a wallet. A 250ms icon pop and colour shift — enough to confirm, not enough to notice twice.</div>
+        <button class="copybtn" id="copyb"><span class="cbico"><span class="cbi cbi-copy"><span class="svgic" style="--ic:url(assets/icons/copy.svg);width:15px;height:15px;display:block" aria-hidden="true"></span></span><span class="cbi cbi-tick" aria-hidden="true">&#10003;</span></span><span class="cblab"><span class="cbt cbt-a">mtst1ap8&hellip;r4fp</span><span class="cbt cbt-b">Copied</span></span></button>
+        <div class="cmd">The most-repeated action in a wallet, so it stays subtle. Both icons and both labels are <b>stacked and cross-fade in place</b> — nothing is swapped via <code>innerHTML</code>, so nothing can pop. The chip <b>eases between its two natural widths</b> (94px → 44px, measured once then animated over 280ms) instead of snapping. In the app use framer-motion's <code>layout</code> prop — it FLIPs the same delta using transforms only, which is compositor-safe.</div>
       </div>
 
       <div class="cm">
@@ -2695,10 +2725,31 @@ document.getElementById('theme').addEventListener('click',()=>{
       el.textContent='$'+(to*e).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
       if(p<1)requestAnimationFrame(step);})(t0);}
   const cu=$('cu'); if(cu) countUp(cu,12480.5,900);
+  // Copy chip: measure both label widths ONCE, then animate between them so the size
+  // change eases instead of snapping. No innerHTML swapping — the layers cross-fade.
   const copyb=$('copyb');
-  copyb&&copyb.addEventListener('click',()=>{const t=copyb.querySelector('.ctxt'),i=copyb.querySelector('.ic2'),o=t.textContent;
-    copyb.classList.add('done');i.dataset.o=i.innerHTML;i.textContent='✓';t.textContent='Copied';
-    setTimeout(()=>{copyb.classList.remove('done');i.innerHTML=i.dataset.o;t.textContent=o;},1500);});
+  if(copyb){
+    const a=copyb.querySelector('.cbt-a'), bl=copyb.querySelector('.cbt-b'),
+          lab=copyb.querySelector('.cblab');
+    const measure=()=>{
+      const wa=Math.ceil(a.getBoundingClientRect().width),
+            wb=Math.ceil(bl.getBoundingClientRect().width);
+      lab.style.setProperty('--cbl', wa+'px');
+      copyb.dataset.wa=wa; copyb.dataset.wb=wb;
+    };
+    // fonts can land after first paint and change the measurement
+    measure(); if(document.fonts&&document.fonts.ready) document.fonts.ready.then(measure);
+    let busy=false;
+    copyb.addEventListener('click',()=>{
+      if(busy) return; busy=true;
+      lab.style.setProperty('--cbl', copyb.dataset.wb+'px');
+      copyb.classList.add('done');
+      setTimeout(()=>{
+        lab.style.setProperty('--cbl', copyb.dataset.wa+'px');
+        copyb.classList.remove('done'); busy=false;
+      },1500);
+    });
+  }
   const bs=$('bstate');
   bs&&bs.addEventListener('click',()=>{if(bs.dataset.busy)return;bs.dataset.busy=1;
     bs.innerHTML='<span class="spin" style="display:inline-block;vertical-align:-3px"></span>';
