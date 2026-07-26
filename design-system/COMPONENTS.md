@@ -267,23 +267,71 @@ After: **12 / 12 / 24 / 8 / 12 / 8**. Components no longer carry outer spacing; 
 that needs a different gap expresses it as `calc(tier - var(--stack))`, so the tier stays
 visible in the code.
 
-## Bottom nav — active state is NEUTRAL, not the accent
+## Bottom nav — Apple Liquid Glass is the foundation
+
+Per HIG, the iOS 26 tab bar "floats above content at the bottom of the screen. Its items rest
+on a Liquid Glass background that allows content beneath to peek through." It is a floating
+pill inset **21pt** on left, right and bottom, labels **11pt**, and the active tab is
+**"a colored glyph plus a highlighted shape."**
+
+**Four layers make the material. CSS can honestly do three:**
+
+| Layer | CSS | Fidelity |
+|---|---|---|
+| translucency + blur | `backdrop-filter: blur(24px) saturate(180%)` | faithful |
+| specular rim | inset hairlines — bright top, dark bottom | approximated |
+| adaptivity to content | falls out of the translucency | partly faithful |
+| **lensing / refraction** | **nothing** | **CSS cannot do this** |
+
+Real Liquid Glass *bends* the content behind its edges. `backdrop-filter` only blurs — the rim
+gradient fakes the read of a curved edge. **On device, use the native material rather than
+reproducing it**; this mock is a stand-in for review, not a spec to reimplement in CSS.
+
+The material also only reads **over content**. A translucent bar above empty space is just a
+grey panel, which is why the Components section demos it over real rows with one row visibly
+blurring through. In the screen mocks the bar sits in flow, so it looks flatter there than it
+will on device.
+
+**Motion — the bubble deforms.** It does not rigidly translate: it stretches along travel and
+settles (`scale: 1 → 1.09/0.93 → 0.98/1.02 → 1`). That deformation is what separates Liquid
+Glass from a segmented control. `scale` is an independent transform property so it composes
+with the `translateX` rather than overwriting it. One indicator, positioned by
+`translateX(calc(var(--i) * (100% + 6px)))` — `%` resolves against the bubble's own width, so
+no measurement is needed and it ports to native as a single number. CSS approximates
+`springs.pill` (320/30); the spring is the implementation spec.
+
+**`tabBarMinimizeBehavior`** — on scroll the bar collapses so "only the current tab item
+remains visible as a small circular button." Built as the `.mini` variant, demoed, not on by
+default.
+
+**The active glyph is tinted, per Apple** — but `--accent-ink` (5.55:1 light / 5.86:1 dark),
+never the raw brand orange, which measures **2.90:1** on paper. The highlighted shape carries
+the rest of the signal.
+
+### Superseded: the neutral-highlight step
+
+An intermediate version made the highlight fully neutral after observing Instagram (grey pill,
+filled black glyph, no brand colour in the nav), measuring 9.01:1 / 12.63:1. That is retained
+here as the fallback if the tinted glyph ever proves too quiet, and it is still the right
+reference for the *shape* and *width* — Instagram's capsule is ~87% of screen width and
+translucent, which is what corrected an earlier content-hugging capsule at 63.4%.
+
+### What the accent version cost, for the record
 
 Corrected after seeing Instagram's actual bar. Its active state is a **neutral grey pill with
 a filled black glyph, and no brand colour anywhere in the nav**; the capsule is translucent
 with content bleeding through, spans ~87% of the width, and is icon-only.
 
-Measured, which is what settles it:
-
 | Treatment | Light | Dark |
 |---|---|---|
-| accent ink on an accent wash/well | 5.08:1 | 5.86:1 |
-| **neutral pill + `--ink`** | **9.01:1** | **12.63:1** |
+| accent ink on an opaque accent wash/well | 5.08:1 | 5.86:1 |
+| neutral pill + `--ink` | 9.01:1 | 12.63:1 |
+| **glass bubble + `--accent-ink`** (current) | **passes, harness-verified** | **passes** |
 
-The accent version also needed a *theme-dependent fill direction* to pass at all — a wash in
-light, a recessed well in dark, because any wash in dark dragged the orange to 3.64:1. Going
-neutral removes that entire problem: one direction, both themes, with headroom. The accent
-stays for CTAs and the balance, where it is the point.
+The *opaque* accent wash needed a theme-dependent fill direction to pass at all — a wash in
+light, a recessed well in dark, because any wash in dark dragged the orange to 3.64:1. The
+glass bubble avoids that because it is a translucent lens over a translucent bar rather than a
+tinted chip, so the composite stays close to the surface in both themes.
 
 **One indicator, translated by index** — `translateX(calc(var(--i) * (100% + 6px)))`, where
 `%` resolves against the pill's own width (one item). No measurement, no `layoutId`, and it

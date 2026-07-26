@@ -107,7 +107,8 @@
   --tx-received:#A8BBA3; --tx-sent:#A3BCCF; --tx-swap:#C9BAD9; --tx-earn:#BDB9CC; --tx-faucet:#CDB0DE;
   --tx-glyph:#3F3F3F;
   --stack-tight:8px; --stack:12px; --stack-loose:24px;
-  --nav-pill:var(--surface-3); --nav-bg:rgba(255,255,255,.82);
+  --nav-pill:rgba(255,255,255,.78); --nav-bg:rgba(255,255,255,.62);
+  --nav-rim:rgba(255,255,255,.85); --nav-rim-lo:rgba(63,63,63,.06);
   --balance:#4F4F4F; --balance-deep:#3D3D3D; --balance-fg:#FFFFFF; --balance-fg-muted:rgba(255,255,255,.70);
   --shadow-1:0 1px 2px rgba(63,63,63,.06),0 1px 3px rgba(63,63,63,.05);
   --shadow-2:0 6px 16px rgba(63,63,63,.10),0 2px 6px rgba(63,63,63,.06);
@@ -130,7 +131,8 @@
   --tx-received:#A8BBA3; --tx-sent:#A3BCCF; --tx-swap:#C9BAD9; --tx-earn:#BDB9CC; --tx-faucet:#CDB0DE;
   --tx-glyph:#1C1A18;
   /* Balance card goes near-black in dark mode (colors are light-mode only). */
-  --nav-pill:var(--surface-3); --nav-bg:rgba(43,43,43,.82);
+  --nav-pill:rgba(255,255,255,.16); --nav-bg:rgba(38,38,38,.58);
+  --nav-rim:rgba(255,255,255,.16); --nav-rim-lo:rgba(0,0,0,.35);
   --balance:#101010; --balance-deep:#000000; --balance-fg:#FFFFFF; --balance-fg-muted:rgba(255,255,255,.70);
   --shadow-1:0 1px 2px rgba(0,0,0,.4); --shadow-2:0 8px 24px rgba(0,0,0,.5);
   --code-bg:#111111;
@@ -497,20 +499,72 @@ table.map td code{font-size:12px}
    into a well. Going neutral removes that whole problem -- one direction, both themes,
    9.01:1 and 12.63:1. The bar is also translucent with a backdrop blur, matching
    Instagram and the iOS 26 material; the blur is static and must never be animated. */
-.mnav{--i:0;margin:auto 24px max(16px,var(--safe-bottom,0px));min-height:61px;padding:6px;
+/* Backdrop for the glass demo: the material is only honest over content. */
+.glassdemo{position:relative;height:210px;border-radius:var(--radius-lg);overflow:hidden;
+  background:var(--paper);display:flex;flex-direction:column}
+.glassdemo.short{height:150px}
+.glassdemo .gd-bg{padding:12px 14px;display:flex;flex-direction:column;gap:10px}
+.glassdemo .gd-row{display:flex;align-items:center;gap:10px;font-size:12.5px}
+.glassdemo .gd-row b{flex:1;font-weight:700}
+.glassdemo .gd-row i{font-family:var(--num);font-style:normal;color:var(--ink-2);font-size:12px}
+.glassdemo .gd-sw{width:26px;height:26px;border-radius:var(--radius-sm);flex:none}
+.glassdemo .mnav{position:absolute;left:21px;right:21px;bottom:21px;margin:0}
+.glassdemo .mnav.mini{left:auto;right:21px}
+
+/* ---- Liquid Glass, as the foundation -------------------------------------------------
+   Apple's iOS 26 tab bar, per HIG: it "floats above content at the bottom of the screen.
+   Its items rest on a [Liquid Glass] background that allows content beneath to peek
+   through." Inset is 21pt L/R/bottom with 11pt labels; the bar is a floating pill sized to
+   its contents, and the active tab is "a colored glyph plus a highlighted shape".
+   Four layers make the material, and CSS can honestly do three of them:
+     1. translucency + blur   -> backdrop-filter: blur() saturate()   [faithful]
+     2. specular rim          -> inset hairlines, bright top / dark bottom  [approximated]
+     3. adaptivity to content -> falls out of the translucency        [partly faithful]
+     4. LENSING / refraction  -> CSS cannot do this at all. Real Liquid Glass bends the
+        content behind its edges; backdrop-filter only blurs. The rim gradient fakes the
+        read of a curved edge. This is the one place the mock is a stand-in, and on device
+        the native material should be used rather than reproduced.
+   The blur is static. Never animate it -- it is paint-bound. */
+.mnav{--i:0;margin:auto 21px max(21px,var(--safe-bottom,0px));min-height:61px;padding:6px;
   border-radius:var(--radius-full);display:flex;align-items:stretch;gap:6px;position:relative;
-  background:var(--nav-bg);-webkit-backdrop-filter:blur(20px) saturate(180%);
-  backdrop-filter:blur(20px) saturate(180%);box-shadow:var(--shadow-1)}
+  isolation:isolate;
+  background:linear-gradient(180deg,rgba(255,255,255,.10),rgba(255,255,255,0)),var(--nav-bg);
+  -webkit-backdrop-filter:blur(24px) saturate(180%);backdrop-filter:blur(24px) saturate(180%);
+  box-shadow:inset 0 1px 0 var(--nav-rim),inset 0 -1px 0 var(--nav-rim-lo),var(--shadow-1)}
 /* ONE indicator, translated by index -- not a per-item background. translateX(%) resolves
    against the pill's own width, which equals an item, so `var(--i) * (100% + 6px)` lands it
    exactly on any tab without measuring anything. That is also why this ports to native:
    it is one number, not DOM projection. CSS approximates springs.pill (320/30) with
    --ease-out-cubic; the real spring is the implementation spec. */
+/* The selection bubble is itself glass -- a brighter lens over the bar, not a flat fill.
+   Apple's own gesture is a long-press that turns the highlight into a bubble you can slide
+   across the bar, which only reads correctly if the highlight is a lens rather than a chip. */
 .mnav::before{content:'';position:absolute;top:6px;bottom:6px;left:6px;z-index:0;
-  width:calc((100% - 24px) / 3);border-radius:var(--radius-full);background:var(--nav-pill);
+  width:calc((100% - 24px) / 3);border-radius:var(--radius-full);
+  background:linear-gradient(180deg,rgba(255,255,255,.14),rgba(255,255,255,0)),var(--nav-pill);
+  box-shadow:inset 0 1px 0 var(--nav-rim),0 1px 3px rgba(0,0,0,.06);
   transform:translateX(calc(var(--i) * (100% + 6px)));
   transition:transform var(--dur-normal) var(--ease-out-cubic)}
-@media (prefers-reduced-motion: reduce){.mnav::before{transition-duration:.01ms}}
+/* The liquid part. The bubble does not rigidly translate -- it stretches along travel and
+   settles, which is what separates this from a segmented control. `scale` is an independent
+   transform property, so it composes with the translateX above instead of overwriting it. */
+.mnav.sliding::before{animation:navliquid var(--dur-normal) var(--ease-out-cubic)}
+@keyframes navliquid{
+  0%{scale:1 1}
+  40%{scale:1.09 .93}
+  70%{scale:.98 1.02}
+  100%{scale:1 1}}
+@media (prefers-reduced-motion: reduce){
+  .mnav::before{transition-duration:.01ms}
+  .mnav.sliding::before{animation:none}}
+/* tabBarMinimizeBehavior: on scroll the bar collapses so "only the current tab item remains
+   visible as a small circular button". Documented and demoed, not enabled by default. */
+.mnav.mini{margin-left:auto;margin-right:21px;width:61px;padding:6px}
+.mnav.mini::before{width:49px;transform:none}
+.mnav.mini .t:not(.on){display:none}
+.mnav.mini .t{min-width:49px;flex:none}
+.mnav.mini .t span:not(.svgic):not(.nbadge){position:absolute;width:1px;height:1px;
+  overflow:hidden;clip-path:inset(50%)}
 [data-theme="dark"] .mnav{box-shadow:none}   /* dark uses surface-step, not shadow */
 .mnav .t{flex:1;min-width:77px;min-height:49px;padding:5px 10px;border-radius:var(--radius-full);
   display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;
@@ -522,7 +576,10 @@ table.map td code{font-size:12px}
    orange-on-a-wash -- and it needs no theme-dependent fill direction to get there.
    Instagram does exactly this: neutral grey pill, filled black glyph, and no brand colour
    anywhere in the nav. The accent stays for CTAs and the balance, where it is the point. */
-.mnav .t.on{color:var(--ink)}
+/* Apple tints the active glyph -- "a colored glyph plus a highlighted shape" -- so the
+   accent comes back here, but as --accent-ink (5.55:1 light / 5.86:1 dark), never the raw
+   brand orange, which is 2.90:1 on paper. The highlighted shape carries the rest. */
+.mnav .t.on{color:var(--accent-ink)}
 .mnav .t .svgic{width:24px;height:24px}
 .mnav .t .nbadge{position:absolute;top:2px;right:12px;width:8px;height:8px;border-radius:50%;
   background:var(--neg);box-shadow:0 0 0 1.5px var(--surface)}
@@ -1956,6 +2013,23 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
         </div></div>
     </div>
 
+    <h3 class="sh">Liquid Glass <span class="small">&mdash; the material only reads with content behind it</span></h3>
+    <p class="sub">Apple&rsquo;s bar <em>floats above</em> content &mdash; HIG: its items &ldquo;rest on a Liquid Glass background that allows content beneath to peek through.&rdquo; A translucent bar over empty space is just a grey panel, so the material is demoed here over real content. Inset is Apple&rsquo;s <b>21pt</b> on all three sides, labels <b>11pt</b>. <b>Tap a tab</b> &mdash; the bubble stretches along travel and settles rather than rigidly sliding, which is the part that separates it from a segmented control.</p>
+    <div class="crow">
+      <div class="ccol" style="min-width:340px"><div class="clabel">over content &mdash; tap to see the liquid slide</div>
+        <div class="glassdemo">
+          <div class="gd-bg">
+            <div class="gd-row"><span class="gd-sw" style="background:var(--tx-received)"></span><b>Received</b><i>+120.00</i></div>
+            <div class="gd-row"><span class="gd-sw" style="background:var(--tx-sent)"></span><b>Sent</b><i>&minus;48.20</i></div>
+            <div class="gd-row"><span class="gd-sw" style="background:var(--tx-swap)"></span><b>Swap</b><i>1.4 &rarr; 980</i></div>
+            <div class="gd-row"><span class="gd-sw" style="background:var(--tx-earn)"></span><b>Earn deposit</b><i>500.00</i></div>
+          </div><div class="mnav"><button class="t on"><span class="svgic" style="--ic:url(assets/icons/home-new.svg)" aria-hidden="true"></span><span>Home</span></button><button class="t"><span class="svgic" style="--ic:url(assets/icons/explore.svg)" aria-hidden="true"></span><span>Explore</span></button><button class="t"><span class="svgic" style="--ic:url(assets/icons/activity.svg)" aria-hidden="true"></span><span>Activity</span></button></div>
+        </div></div>
+      <div class="ccol"><div class="clabel">minimized &mdash; <code>tabBarMinimizeBehavior</code></div>
+        <div class="glassdemo short"><div class="gd-bg"><div class="gd-row"><span class="gd-sw" style="background:var(--tx-sent)"></span><b>Sent</b><i>&minus;48.20</i></div><div class="gd-row"><span class="gd-sw" style="background:var(--tx-swap)"></span><b>Swap</b><i>1.4 &rarr; 980</i></div></div><div class="mnav mini"><button class="t on"><span class="svgic" style="--ic:url(assets/icons/home-new.svg)" aria-hidden="true"></span><span>Home</span></button><button class="t"><span class="svgic" style="--ic:url(assets/icons/explore.svg)" aria-hidden="true"></span><span>Explore</span></button><button class="t"><span class="svgic" style="--ic:url(assets/icons/activity.svg)" aria-hidden="true"></span><span>Activity</span></button></div></div>
+        <div class="small" style="margin-top:8px">On scroll the bar collapses so &ldquo;only the current tab item remains visible as a small circular button&rdquo;. Documented and demoed; not on by default.</div></div>
+    </div>
+
     <h3 class="sh">Bottom nav <span class="small">&mdash; ranked, with the evidence tier for each claim</span></h3>
     <p class="sub">The current bar was called &ldquo;too ugly&rdquo;. Three <em>measurable</em> problems sit underneath that, so this is not only taste:
       <b>(1)</b> its active state is <code>#E77537</code> on <code>#FBFBFB</code> = <b>2.90:1</b>, failing SC 1.4.3 for the label and SC 1.4.11 for the icon &mdash; and it is <b>5.86:1</b> in dark, so the defect is light-theme-only, which is how it survived review.
@@ -3114,9 +3188,13 @@ document.getElementById('theme').addEventListener('click',()=>{
   document.querySelectorAll('.mnav').forEach(nav=>{
     const tabs=[...nav.querySelectorAll('.t')];
     tabs.forEach((t,i)=>t.addEventListener('click',()=>{
+      if(t.classList.contains('on')) return;          // no squish on a re-tap
       nav.style.setProperty('--i',i);
       tabs.forEach(x=>x.classList.toggle('on',x===t));
+      // restart the liquid keyframe: remove, force reflow, re-add
+      nav.classList.remove('sliding'); void nav.offsetWidth; nav.classList.add('sliding');
     }));
+    nav.addEventListener('animationend',()=>nav.classList.remove('sliding'));
   });
   // ---- component motion library ----
   const $=id=>document.getElementById(id);
