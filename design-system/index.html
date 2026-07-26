@@ -703,6 +703,10 @@ ul.tick li:before{content:"→";position:absolute;left:2px;color:var(--accent-in
 .phone.ext .notch,.phone.ext .mock::after{display:none}
 .phone.ext .mock{--safe-bottom:0px}
 .extbar{display:flex;align-items:center;gap:8px;padding:9px 0 12px;font-size:11px;color:var(--ink-2)}
+pre.code{background:var(--code-bg);border-radius:var(--radius-md);padding:14px 16px;overflow-x:auto;
+  margin-top:12px;border:1px solid var(--rule)}
+pre.code code{background:none;padding:0;font-family:var(--mono);font-size:11.5px;line-height:1.65;
+  color:var(--ink);white-space:pre}
 /* ── PAGE TRANSITIONS ────────────────────────────────────────────────────────
    Values reconciled from: M3 published tokens, UIKit's measured 350ms, and
    Ionic's shipped WebView reproduction of the iOS parallax (540ms /
@@ -715,9 +719,14 @@ ul.tick li:before{content:"→";position:absolute;left:2px;color:var(--accent-in
 .ptpane .pth{font-family:var(--display);font-weight:800;font-size:15px}
 .ptpane .ptl{height:8px;border-radius:5px;background:var(--surface-3)}
 .ptb{height:34px;border-radius:var(--radius-full);background:var(--accent);margin-top:auto}
-/* PUSH — enter from trailing edge; outgoing parallaxes to -33% and dims (iOS model) */
+/* PUSH — APPLE DEFAULT (iOS parallax). Two layers move: the incoming slides
+   99.5%→0 from the trailing edge while the outgoing parallaxes 0→-33% and dims
+   to .8. Values are Ionic's shipped reproduction of UIKit's parallax, which is
+   RTL-aware; UIKit's own 350ms is measured-but-private and its curve is
+   unsourced, so a maintained implementation is the safer citation.
+   In the app express these through framer-motion (see the spec table). */
 .pt-push .a{transform:translateX(0);opacity:1;transition:transform 540ms cubic-bezier(.32,.72,0,1),opacity 540ms linear}
-.pt-push .b{transform:translateX(100%);transition:transform 540ms cubic-bezier(.32,.72,0,1)}
+.pt-push .b{transform:translateX(99.5%);transition:transform 540ms cubic-bezier(.32,.72,0,1)}
 .pt-push.go .a{transform:translateX(-33%);opacity:.8}
 .pt-push.go .b{transform:translateX(0)}
 /* LATERAL — peers move in unison, one axis, no parallax, no cross-fade (M3 "Lateral") */
@@ -1191,13 +1200,13 @@ ul.tick li:before{content:"→";position:absolute;left:2px;color:var(--accent-in
     <h3 class="sh">Page transitions <span class="small">— tap Play on each</span></h3>
     <div class="callout warn"><b>Two corrections from the research.</b> <b>(1)</b> Apple publishes <em>no</em> motion numbers — the HIG Motion page has zero durations and zero curves. iOS&rsquo;s 350ms push was <em>measured from the UIKit binary</em> (private <code>_UINavigationParallaxTransition</code>), so it is an observed constant, not a contract, and <b>its curve is genuinely unsourced</b> — anyone quoting &ldquo;UIKit uses easeInOut&rdquo; is guessing. <b>(2)</b> M3&rsquo;s duration/easing system is now <b>legacy</b>, superseded by spring physics; CSS cannot spring, so the token durations remain the right target for a WebView — a known divergence, not a mistake.</div>
     <div class="cmgrid">
-      <div class="cm"><div class="cmh"><span class="cmt">Push · forward</span><span class="cmf rare">hierarchy</span></div>
+      <div class="cm"><div class="cmh"><span class="cmt">Push · Apple default</span><span class="cmf rare">iOS parallax</span></div>
         <div class="ptstage pt-push">
           <div class="ptpane a"><div class="pth">Screen A</div><div class="ptl" style="width:70%"></div><div class="ptl" style="width:45%"></div><div class="ptb"></div></div>
           <div class="ptpane b"><div class="pth">Screen B</div><div class="ptl" style="width:55%"></div><div class="ptl" style="width:80%"></div><div class="ptb" style="background:var(--surface-3)"></div></div>
         </div>
         <button class="go" data-pt="pt-push">Play &#9654;</button>
-        <div class="cmd">Enter from the <b>trailing</b> edge (WWDC24&rsquo;s word — it auto-mirrors in RTL); the outgoing screen parallaxes to <code>-33%</code> and dims to <code>.8</code>. <b>540ms / cubic-bezier(.32,.72,0,1)</b> — Ionic&rsquo;s shipped WebView reproduction of the iOS parallax, and the same curve vaul already uses here. The curve is front-loaded, so it covers most of the distance early and <em>reads</em> faster than 540ms. Copy the duration without the curve and you get a sluggish app.</div>
+        <div class="cmd"><b>DECIDED: this is the app&rsquo;s page transition.</b> Apple&rsquo;s default push — <b>two layers move</b>: incoming slides <code>99.5% → 0</code> from the <b>trailing</b> edge (WWDC24&rsquo;s word; auto-mirrors in RTL) while the outgoing parallaxes <code>0 → −33%</code> and dims to <code>.8</code>. That second layer is what makes it read as Apple rather than a generic slide — and it is the part our app is missing today.<br><br><b>540ms / cubic-bezier(.32,.72,0,1)</b>, from Ionic&rsquo;s maintained reproduction of UIKit&rsquo;s parallax. UIKit&rsquo;s own 350ms is private and its curve is <em>unsourced</em>, so citing a shipped implementation is safer than guessing a curve. The curve is front-loaded, so it covers most of the distance early and <em>reads</em> faster than 540ms — copy the duration without the curve and the app feels sluggish.</div>
       </div>
       <div class="cm"><div class="cmh"><span class="cmt">Lateral · peers / steps</span><span class="cmf freq">onboarding</span></div>
         <div class="ptstage pt-lat">
@@ -1228,7 +1237,7 @@ ul.tick li:before{content:"→";position:absolute;left:2px;color:var(--accent-in
     <h3 class="sh">Recommended spec <span class="small">— graded by what actually backs it</span></h3>
     <table class="map">
       <tr><th>Transition</th><th>Duration</th><th>Easing</th><th>Direction</th><th>Grade</th></tr>
-      <tr><td>Push (forward)</td><td>540ms (Ionic) · iOS 350ms measured</td><td><code>cubic-bezier(.32,.72,0,1)</code></td><td>enter trailing → 0; outgoing −33% + dim .8</td><td>direction <b>[SPEC]</b> · duration [CONSENSUS] · <b>curve [CONTESTED]</b></td></tr>
+      <tr><td><b>Push (forward) — CHOSEN</b></td><td><b>540ms</b></td><td><code>cubic-bezier(.32,.72,0,1)</code></td><td>in <code>99.5%→0</code> trailing · out <code>0→−33%</code> + dim <code>.8</code></td><td>direction <b>[SPEC]</b> · duration+curve = shipped Ionic impl · <b>UIKit curve [CONTESTED]</b></td></tr>
       <tr><td>Pop (back)</td><td>same, or ~15% shorter</td><td>same family</td><td><b>exact reverse</b>, RTL-mirrored</td><td>reverse [CONSENSUS] · RTL <b>[SPEC]</b></td></tr>
       <tr><td>Lateral (steps/peers)</td><td>280ms</td><td><code>cubic-bezier(.2,0,0,1)</code></td><td>unison, one axis</td><td>pattern <b>[SPEC]</b> · numbers [CONSENSUS]</td></tr>
       <tr><td>Top level (tabs)</td><td>90ms out → 150ms in</td><td>accelerate → decelerate</td><td><b>none</b></td><td>Material <b>[SPEC]</b> · cross-platform [CONTESTED]</td></tr>
@@ -1237,6 +1246,25 @@ ul.tick li:before{content:"→";position:absolute;left:2px;color:var(--accent-in
       <tr><td>Extension popup 360×600</td><td>150–200ms, or fade</td><td><code>standard</code></td><td>same rules, shorter travel</td><td>[CONSENSUS]</td></tr>
       <tr><td>Reduced motion</td><td>≤100ms (or 1ms)</td><td><code>linear</code></td><td><b>none</b></td><td><b>[SPEC]</b> WCAG AAA + both platforms</td></tr>
     </table>
+
+    <h3 class="sh">Implementation — framer-motion, not CSS</h3>
+    <p class="sub">The app already ships framer-motion, so express Apple&rsquo;s parallax through it rather than adding a second animation system. This replaces all four of the competing &ldquo;push from right&rdquo; specs the audit found.</p>
+    <pre class="code"><code>// src/lib/animation/transitions.ts
+export const iosPush = { duration: 0.54, ease: [0.32, 0.72, 0, 1] } as const;
+
+// A push is TWO layers. Sign flips for RTL and for back.
+const dir = isRTL ? -1 : 1;
+const back = direction === 'backward';
+
+// incoming
+initial = { x: `${dir * (back ? -99.5 : 99.5)}%` };
+animate = { x: '0%' };
+// outgoing  ← the part we're missing today
+exit    = { x: `${dir * (back ? 99.5 : -33)}%`, opacity: back ? 1 : 0.8 };
+
+// reduced motion: no travel, cross-fade only
+if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = { opacity: 0 }; }</code></pre>
+    <div class="callout"><b>What has to change in the app.</b> <b>(1)</b> <code>Navigator</code>&rsquo;s <code>PushExitPosition</code> is byte-identical to <code>FocusPosition</code>, so the outgoing card animates <b>zero pixels</b> — there is no parallax and back is indistinguishable from forward. <b>(2)</b> Onboarding slides <code>±1vw ≈ 4px</code> on a 402pt screen, which costs 200ms and shows nothing. <b>(3)</b> Three other push specs (CSS <code>.mobile-page-enter</code>, <code>TabLayout</code>&rsquo;s spring, the framer tween) collapse into this one. <b>(4)</b> Apple&rsquo;s push is <em>interactive</em> — swipe-back, and an interrupted push converts to a pop rather than cancelling; that is a larger change than a tween swap and is not covered here.</div>
 
     <h3 class="sh">Don&rsquo;ts that bite in a WebView</h3>
     <ul class="tick">
