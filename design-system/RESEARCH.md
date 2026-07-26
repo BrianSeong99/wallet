@@ -724,3 +724,64 @@ on tab naming. Family's tab *names* beyond "activity tab" are read from glyphs. 
 and Cash App help pages 403 or sign-in-wall on fetch, so those quotes come from the search
 index rather than a first-hand read.
 
+### 8.9 Slack — a shipped Liquid Glass nav, and first-party evidence on labels
+
+Slack shipped a **Liquid Glass redesign for iOS 26 on 18 Nov 2025**
+(https://slack.com/blog/news/redesigning-slack-ios26). This is the most useful data point in
+the whole survey because it is a mature product doing exactly what we just built, and because
+Slack has now shipped *both* highlight treatments, which maps onto our own two options.
+
+**Two current answers, split by platform** — any claim that "Slack's nav looks like X" is wrong
+without saying which:
+
+| | 2023 design (Android, pre-iOS-26 iPhone) | iOS 26 design |
+|---|---|---|
+| Container | full-width, opaque `#FFFFFF`, 1px `#F2F2F2` hairline | **floating translucent capsule** + a detached circular Search button |
+| Active state | **neutral ink `#1D1C1D`**, outlined→filled icon, heavier label. **No pill, no brand colour in the nav at all** | **capsule highlight `#EEEEEE`–`#F0F0F0` + filled icon + purple tint `#762B7D`** |
+| Content | bar divides it | runs *under* the bar — "Extended content to reach the top and bottom vertical edges" |
+
+**The tint is a tuned step of the brand ramp, not the brand hex.** Measured `#762B7D`, while the
+same render shows header `#5D1E61` and the brand Aubergine `#611F69`. That is precisely the
+principle behind our `--accent-ink`: don't put the raw brand colour on the nav, put a step
+tuned to the surface. Ours moves darker because our orange is light-on-white; Slack's moves
+lighter because their purple is dark-on-white. Same move, opposite direction.
+
+**Theme-independence, proven for the 2023 design:** across six workspace themes the bar stays
+white and the active ink measures exactly `#1D1C1D` every time — only the *badge dots* take the
+theme accent. Whether the iOS 26 purple is theme-derived is unverified (one sample).
+
+**On labels — this is the strongest evidence we have, and it is first-party:**
+
+> "we even experimented with label-less tabs. But we soon realized it came at the expense of
+> two of Slack's non-negotiables: accessibility and comprehension."
+> — https://slack.design/articles/re-designing-slack-ios26 *(Re-designing Slack on Mobile, Oct 2023)*
+
+That is a named company reporting that they *tried* icon-only and reverted for comprehension.
+It outranks both the platform spec and the Family/Rainbow/Robinhood counter-observation in
+8.8, because it is an outcome rather than a preference. **The labels decision is now settled on
+evidence, not on "the spec says so"** — and my earlier "not close" was right for the wrong
+reason.
+
+**Corroborations for things we already built:**
+- Badges are **a dot at the icon's top-right, never a number**; numeric counts live in list
+  rows. Matches our `.nbadge`.
+- Content running under the bar is what makes the glass read — same conclusion we reached when
+  the bar over empty space looked like a grey panel.
+- The bar is **absent entirely on the search screen** (full-screen search + keyboard). Worth
+  adopting: a full-screen input surface should drop the nav, not float it over the keyboard.
+
+**One correction to our `.mini` variant.** `tabBarMinimizeBehavior` is Apple-provided, but
+Slack appears **not** to use it: diffing Slack's own scrolled and unscrolled screenshots, the
+active-tab highlight is byte-identical at the same coordinates, so their bar does not shrink on
+scroll. So minimize-on-scroll is available, not idiomatic-by-default — ours stays demoed and
+off, which is the right call.
+
+**Deliberately not adopted: the detached circular Search button.** Slack put Search outside the
+capsule as its own floating circle. That is the exact pattern Ryan Wesley criticised in 8.4 —
+it "fails to afford itself as a tab" and blurs navigation with action. We have no fifth
+destination, so there is nothing to gain and a known affordance cost.
+
+**Unverified, do not let these get filled in:** any height from a spec (only a ~52pt derivation
+from a marketing render), any animation duration or curve for the tab switch, the dark-mode
+appearance of the bar or highlight on either platform, and whether the iOS 26 purple is
+theme-derived. Slack's release notes never mention the nav change at all.

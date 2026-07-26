@@ -301,8 +301,24 @@ no measurement is needed and it ports to native as a single number. CSS approxim
 `springs.pill` (320/30); the spring is the implementation spec.
 
 **`tabBarMinimizeBehavior`** — on scroll the bar collapses so "only the current tab item
-remains visible as a small circular button." Built as the `.mini` variant, demoed, not on by
-default.
+remains visible as a small circular button." Built as the `.mini` variant, demoed, **not on by
+default** — and that default is now evidence-backed: Slack ships a Liquid Glass bar and appears
+*not* to enable it (diffing their own scrolled vs unscrolled screenshots, the active highlight
+is byte-identical at the same coordinates). Available, not idiomatic.
+
+**Labels are settled, and on first-party evidence rather than spec.** Slack: *"we even
+experimented with label-less tabs. But we soon realized it came at the expense of two of
+Slack's non-negotiables: accessibility and comprehension."* That is a company reporting an
+outcome, which outranks both the platform guidance and the Family/Rainbow/Robinhood icon-only
+counter-observation.
+
+**Not adopted: a detached circular button beside the capsule.** Slack puts Search outside its
+capsule as a floating circle; that is the pattern criticised for failing "to afford itself as a
+tab", blurring navigation with action. We have no fourth destination, so there is nothing to
+gain.
+
+**Adopted from Slack: drop the bar entirely on full-screen input surfaces.** Their search screen
+has no bar at all rather than floating one over the keyboard.
 
 **The active glyph is tinted, per Apple** — but `--accent-ink` (5.55:1 light / 5.86:1 dark),
 never the raw brand orange, which measures **2.90:1** on paper. The highlighted shape carries
