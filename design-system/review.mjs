@@ -102,7 +102,12 @@ const probe = () => {
           const bg = bgOf(el), ratio = cr(over(fg, bg), bg), px = parseFloat(cs.fontSize);
           const large = px >= 24 || (px >= 18.66 && parseInt(cs.fontWeight) >= 700);
           const need = large ? 3 : 4.5;
-          if (ratio < need - 0.05) f.contrast.push({ t: own.slice(0, 16), px, ratio: +ratio.toFixed(2), need });
+          if (ratio < need - 0.05) f.contrast.push({ t: own.slice(0, 16), px, ratio: +ratio.toFixed(2), need,
+            fg: cs.color, bg: `rgb(${Math.round(bg.r)},${Math.round(bg.g)},${Math.round(bg.b)})`,
+            theme: document.documentElement.dataset.theme || '(unset)',
+            path: (()=>{const q=[];let n=el;while(n&&n!==document.body&&q.length<6){
+              q.unshift(n.tagName.toLowerCase()+(n.className&&typeof n.className==='string'?'.'+n.className.trim().split(/\s+/).join('.'):''));
+              n=n.parentElement;}return q.join(' > ');})() });
           if (px < 11) f.tiny.push({ t: own.slice(0, 14), px });
         }
       }
@@ -123,10 +128,14 @@ const probe = () => {
 
 const run = async () => {
   const browser = await chromium.launch();
-  const page = await browser.newPage({ viewport: { width: 1500, height: 1000 } });
+  const ctx = await browser.newContext({ viewport: { width: 1500, height: 1000 }, bypassCSP: true });
+  const page = await ctx.newPage();
+  // ALWAYS bypass cache. A stale index.html silently reports OLD token values as
+  // failures (or hides real ones) — this cost real debugging time.
+  await ctx.route('**/*', r => r.continue({ headers: { ...r.request().headers(), 'cache-control': 'no-cache' } }));
   const errors = [];
   page.on('console', m => { if (m.type() === 'error') errors.push(m.text()); });
-  await page.goto(URL, { waitUntil: 'networkidle' });
+  await page.goto(`${URL}?cb=${Date.now()}`, { waitUntil: 'networkidle' });
 
   const results = {};
   for (const theme of ['light', 'dark']) {

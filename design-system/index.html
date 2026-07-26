@@ -29,10 +29,25 @@
   /* PRIMITIVES — the scale is only real if everything references it */
   --radius-sm:8px; --radius-md:12px; --radius-lg:16px; --radius-full:999px;
   --radius-device:36px; --radius-device-outer:44px;   /* illustrative phone frames only */
-  --dur-fast:.15s; --dur-base:.2s; --dur-spatial:.32s;
+  /* MOTION — these are the APP'S tokens, read from src/lib/animation/*.
+     I had invented fast 150 / base 200 / spatial 320 + ease-spatial
+     cubic-bezier(.22,1,.36,1); none of those exist in the codebase. The real
+     durations are .18/.28/.42/.6 and the real curves are the four below.
+     Springs are the app's PRIMARY mechanism for anything that travels — CSS
+     can't spring, so the curves here are the tween fallback. */
+  --dur-fast:.18s;            /* durations.fast */
+  --dur-normal:.28s;          /* durations.normal */
+  --dur-slow:.42s;            /* durations.slow */
+  --dur-xslow:.6s;            /* durations.extraSlow */
+  --dur-base:var(--dur-normal);   /* alias */
+  --dur-spatial:var(--dur-slow);  /* alias */
   --dur-loop-spin:.7s; --dur-loop-shimmer:1.4s;
-  --ease-standard:cubic-bezier(.25,.1,.25,1);
-  --ease-spatial:cubic-bezier(.22,1,.36,1);
+  --ease-in-cubic:cubic-bezier(.32,0,.67,0);   /* easings.easeInCubic */
+  --ease-out-cubic:cubic-bezier(.16,1,.3,1);   /* easings.easeOutCubic — iOS soft-out */
+  --ease-in-out:cubic-bezier(.65,0,.35,1);     /* easings.easeInOut */
+  --ease-out-back:cubic-bezier(.34,1.56,.64,1);/* easings.easeOutBack */
+  --ease-standard:var(--ease-in-out);
+  --ease-spatial:var(--ease-out-cubic);
   /* SIZING IS RELATIVE, NEVER HARD PX — the app must honour the user's text-size
      setting (iOS Dynamic Type / Android font scale / browser zoom). rem = root-relative.
      WCAG's "large text" floor of 18.66px bold == 1.1663rem at a 16px root; the CTA sits
@@ -688,6 +703,30 @@ ul.tick li:before{content:"→";position:absolute;left:2px;color:var(--accent-in
 .phone.ext .notch,.phone.ext .mock::after{display:none}
 .phone.ext .mock{--safe-bottom:0px}
 .extbar{display:flex;align-items:center;gap:8px;padding:9px 0 12px;font-size:11px;color:var(--ink-2)}
+/* ── SHEET (shared component) ────────────────────────────────────────────────
+   Standard vaul anatomy, NOT a bespoke skin: scrim + grab handle + one radius +
+   elevation. The app's Drawer primitive already ships all of this
+   (DrawerHeader/Title/Footer, hideHandle, default scrim bg-black/30 + blur) —
+   GuardianInfoDrawer is the only consumer that fights it, killing the scrim and
+   adding a 6px orange top border. Using the primitive as-is is simpler, more
+   maintainable, and consistent with every picker in the app. */
+.shdemo{position:relative;border-radius:var(--radius-lg);overflow:hidden;background:var(--surface-2);
+  height:360px;display:flex;align-items:flex-end}
+.shdemo .shscrim{position:absolute;inset:0;background:rgba(0,0,0,.3);backdrop-filter:blur(2px)}
+.sheetc{position:relative;width:100%;background:var(--surface);border-radius:var(--radius-lg) var(--radius-lg) 0 0;
+  box-shadow:var(--shadow-2);padding:8px 20px 18px;max-height:94%;overflow:hidden}
+.sheetc .shandle{width:40px;height:4px;border-radius:var(--radius-full);background:var(--rule-strong);margin:0 auto 12px}
+.sheetc .shttl{font-family:var(--display);font-weight:800;font-size:17px;color:var(--ink)}
+.sheetc .shsub{font-size:12.5px;color:var(--ink-2);line-height:1.45;margin-top:5px}
+.sheetc .shdiv{height:1px;background:var(--rule);margin:13px -20px}
+.sheetc .shrow{display:flex;align-items:center;gap:11px;padding:9px 0}
+.sheetc .shrow+.shrow{border-top:1px solid var(--rule)}
+.sheetc .shav{width:32px;height:32px;border-radius:50%;flex:none;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.sheetc .shav img{width:32px;height:32px}
+.sheetc .shnm{font-weight:700;font-size:13.5px}
+.sheetc .shmeta{font-size:11px;color:var(--ink-2)}
+.sheetc .shft{margin-top:14px}
+.sheetc .shft .btn{width:100%;min-height:52px}
 /* INFO SHEET — the canonical "additional info" surface. Bottom sheet, fit-to-content,
    so the screen behind stays visible: context preservation is the reason, NOT reach.
    Matches the shipped GuardianInfoDrawer: 6px orange top border, transparent overlay
@@ -1326,6 +1365,68 @@ ul.tick li:before{content:"→";position:absolute;left:2px;color:var(--accent-in
       </div>
     </div>
     <p class="small" style="margin-top:10px">Spec: full-width primary · <code>gutter 24 · bottom 24 + env(safe-area-inset-bottom)</code>. Scrollable screens use a sticky footer; short screens pin it. Ghost/secondary sits directly above the primary, never below.</p>
+
+    <h3 class="sh">Sheet <span class="small">— one shared overlay, four uses</span></h3>
+    <p class="sub">Every overlay in the app is this one component (<code>lib/ui/drawer</code>, vaul). It already ships the full anatomy — <b>scrim</b>, <b>grab handle</b>, <code>DrawerHeader/Title/Footer</code> — so consumers should pass content and padding, nothing else. Don&rsquo;t re-skin the primitive.</p>
+    <div class="crow" style="align-items:stretch">
+
+      <div class="ccol" style="flex:1;min-width:250px"><div class="clabel">anatomy &middot; scrim + handle + radius-lg + e2</div>
+        <div class="shdemo">
+          <div class="shscrim"></div>
+          <div class="sheetc">
+            <div class="shandle"></div>
+            <div class="shttl">Sheet title</div>
+            <div class="shsub">One short line of supporting copy. The scrim dims what&rsquo;s behind so the sheet reads as a layer, and the handle says &ldquo;draggable&rdquo; without a caption.</div>
+            <div class="shdiv"></div>
+            <div class="shsub" style="margin-top:0">Content sits between the header and the footer. Height fits content; it never becomes a full page.</div>
+            <div class="shft"><button class="btn btn-primary">Primary action</button></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="ccol" style="flex:1;min-width:250px"><div class="clabel">picker &middot; token / account select</div>
+        <div class="shdemo">
+          <div class="shscrim"></div>
+          <div class="sheetc">
+            <div class="shandle"></div>
+            <div class="shttl">Select token</div>
+            <div class="shrow"><span class="shav"><img src="assets/icons/miden.svg" alt=""></span><div style="flex:1"><div class="shnm">Miden</div><div class="shmeta">1,204.50 MIDEN</div></div><div class="shnm">$12,480.50</div></div>
+            <div class="shrow"><span class="shav"><img src="assets/icons/usdc.svg" alt="" style="background:#2775CA;border-radius:50%"></span><div style="flex:1"><div class="shnm">USDC</div><div class="shmeta">0.00 USDC</div></div><div class="shnm">$0.00</div></div>
+            <div class="shrow"><span class="shav" style="background:var(--surface-2)"><span class="svgic" style="--ic:url(assets/icons/search.svg);width:16px;height:16px"></span></span><div style="flex:1"><div class="shnm">Find another token</div></div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="ccol" style="flex:1;min-width:250px"><div class="clabel">info &middot; explainer (the Guardian case)</div>
+        <div class="shdemo">
+          <div class="shscrim"></div>
+          <div class="sheetc">
+            <div class="shandle"></div>
+            <div class="shttl" style="text-align:center">What is a Guardian?</div>
+            <img src="assets/icons/what-is-guardian-hero.svg" alt="" style="width:84px;display:block;margin:8px auto 0">
+            <div class="shsub" style="text-align:center">An independent service that <b>cosigns every transaction</b>, adding a safety net without giving up self-custody.</div>
+            <div class="shdiv"></div>
+            <div class="shrow" style="border:0;padding:6px 0"><span class="isb" style="background:var(--pos);width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:var(--paper);flex:none">&#10003;</span><div class="shmeta" style="flex:1"><b style="color:var(--ink);font-size:12px">What it does</b><br>Approves or rejects transactions based on your policy.</div></div>
+            <div class="shft"><button class="btn btn-secondary" style="width:100%;min-height:52px">Got it</button></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid2" style="margin-top:14px">
+      <div class="card"><h3 class="sh" style="margin-top:0">Do</h3><ul class="tick" style="margin-top:6px">
+        <li>Use the primitive&rsquo;s <b>default scrim</b> (<code>bg-black/30 + blur</code>, <code>/50</code> dark) — it&rsquo;s what makes the sheet read as a layer.</li>
+        <li>Show the <b>grab handle</b> when the sheet is drag-dismissible, so the affordance is visible.</li>
+        <li><b>Fit height to content.</b> Cap at <code>max-h-[80vh]</code>; if it needs more, it&rsquo;s a page.</li>
+        <li>Dismissing an explainer is a <b>secondary</b> action — a filled-grey &ldquo;Got it&rdquo;, not a primary CTA competing with the screen&rsquo;s real action.</li>
+      </ul></div>
+      <div class="card"><h3 class="sh" style="margin-top:0">Don&rsquo;t</h3><ul class="tick" style="margin-top:6px">
+        <li><b>Don&rsquo;t kill the scrim.</b> <code>GuardianInfoDrawer</code> sets <code>overlayClassName=&quot;bg-transparent backdrop-blur-0&quot;</code>, so the sheet floats with nothing behind it.</li>
+        <li><b>Don&rsquo;t add a coloured top border.</b> The same file adds <code>border-t-[6px] border-primary-500</code> — on dark it reads as a warning banner, and it duplicates the orange rule below the intro.</li>
+        <li><b>Don&rsquo;t stack two accent bars</b> in one sheet. Separate with a hairline; accent is for actions.</li>
+        <li><b>Don&rsquo;t hand-roll a sheet.</b> One library (vaul), one component — no second overlay language.</li>
+      </ul></div>
+    </div>
 
     <h3 class="sh">Chips, badges &amp; status</h3>
     <div class="demo">
