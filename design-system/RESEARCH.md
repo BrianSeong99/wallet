@@ -402,6 +402,32 @@ and below it should be roughly balanced. Large asymmetry (>55% skew) = top-ancho
 *(A naive "largest gap" metric does NOT work — it flags short screens with pinned CTAs, which are
 correct.)*
 
+## 6.9 Derive the spec from the shipped state machine, never invent it `[SPEC]`
+
+The design system is the spec, so a mock that contradicts the product is worse than a missing
+mock — anyone building from it regresses working behaviour. This happened here:
+
+| I had drawn | The app actually ships |
+|---|---|
+| a **7-step** progress bar, numbered inconsistently | `totalSteps = protectionChoiceSkipped ? 3 : 4`, driven by a `STEP_TO_PROGRESS` map |
+| no seed **verification** | `VerifySeedPhrase.tsx`, asking first + last word |
+| no passcode **mismatch** state | `passcodesDoNotMatch` in red, replacing the helper line |
+| no **forgot passcode** | `onForgotPasswordClick` in `Unlock.tsx` |
+| no **import** path | `import-from-seed` → `import-select-recovery-method` |
+| no **create-password** fallback | reached when `checkHardwareSecurityAvailable()` is false |
+| a biometric shortcut on passcode-confirm | **no bottom action at all** (I had copied Figma over the app) |
+
+**Rules that follow:**
+1. **Read the router/state machine first.** Step counts, ordering and branch conditions come from
+   code (`STEP_TO_PROGRESS`, `totalSteps`), not from counting screenshots.
+2. **A detour must not move the progress bar.** An explainer opened off step 3 stays 3/N.
+   A bar that reports a different step for a modal is lying, and a lying bar is worse than none.
+3. **Enumerate the enum.** Diff the `OnboardingStep` enum against the screens drawn; anything in
+   the enum with no screen is a coverage gap, including error and loading states.
+4. **When Figma and the implementation disagree, say so — do not silently pick.** Flag it as a
+   divergence for the designer. Copying Figma over shipped behaviour is how a spec starts
+   describing a product that does not exist.
+
 ## 7.0 Audit icons, not just text `[SPEC]`
 
 SC 1.4.11 requires **3:1 for meaningful non-text elements**, but a text-only contrast pass
