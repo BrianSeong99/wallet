@@ -546,3 +546,118 @@ Roselli on base font size: https://adrianroselli.com/2024/03/the-ultimate-ideal-
 Capacitor safe areas: https://capawesome.io/blog/capacitor-edge-to-edge-and-safe-areas-guide/ ·
 Hoober: https://alistapart.com/article/how-we-hold-our-gadgets/ ·
 Hara: https://www.designboom.com/design/kenya-hara-designing-design/
+
+---
+
+## 8. Bottom navigation — surveyed 2026-07-26
+
+### 8.1 What is actually specified `[SPEC]`
+
+**Apple HIG, Tab bars** (Liquid Glass guidance added 2025-07-28) —
+https://developer.apple.com/design/human-interface-guidelines/tab-bars
+- "Use a tab bar to support navigation, **not to provide actions**."
+- "**Include tab labels** to help with navigation... Use single words whenever possible."
+- "**Prefer filled symbols or icons** for consistency with the platform."
+- "**Don't disable or hide tab bar buttons**" — doing so "makes your app's interface appear unstable."
+- iOS 26: the bar "floats above content", a floating inset capsule sized to its contents,
+  inset ~21pt, labels 11pt, collapsing on scroll. APIs `tabBarMinimizeBehavior`,
+  `tabViewBottomAccessory`.
+
+**Material 3, Navigation bar** — https://m3.material.io/components/navigation-bar/guidelines
+- "three to five destinations"; "should ... **span the full length of the window**."
+- "**All navigation items require a label text**"; explicit *Don't*: "Don't remove the labels."
+- "Don't use a navigation bar for fewer than three destinations."
+- Filled icon active / outlined inactive; icons need **3:1** against the container.
+- FAB "**right-aligned above** the navigation bar"; "Don't cover the navigation bar with a FAB."
+- Android: nav bar 80dp (M3 Expressive 64dp), active indicator 56x32, icon 24dp.
+- `LABEL_VISIBILITY_AUTO` resolves to **always-labelled at <=3 items**.
+
+**WCAG** — SC 2.5.8 (AA) 24x24; SC 2.5.5 (AAA) 44x44; 1.4.3 4.5:1 text; 1.4.11 3:1 non-text.
+
+### 8.2 Three genuine conflicts — do not average them `[CONTESTED]`
+
+1. **Shape: iOS 26 vs Material 3 are opposed.** iOS 26 = floating inset capsule. M3 =
+   full-width edge-to-edge, and **M3 has no floating navigation-bar component at all**
+   (M3 Expressive added floating *toolbars*, not nav bars). A floating capsule on Android
+   is therefore off-spec for Material 3 — a legitimate brand choice, but tag it
+   `[CONSENSUS]`, never `[SPEC]`.
+2. **Does the iOS 26 bar show labels?** MacStories says glyphs "rather than text labels";
+   learnui.design says 11pt labels. The **HIG is normative and says label them**. MacStories
+   is describing the minimized state / visual emphasis.
+3. **M3's item-count floor.** We have exactly three — *at* the floor. Fine now; revisit if a
+   tab is removed.
+
+### 8.3 Claims to stop repeating `[UNVERIFIED]`
+
+- **"88% task success with labels vs 60% without"** (and "34% for app-unique icons"),
+  attributed to a UserTesting study across dozens of blogs. **No primary source reachable.**
+  Do not put this in a spec.
+- **NN/g's "Icon Usability"** asserts labels should always be visible but contains **no study
+  sizes or statistics** — `[CONSENSUS]`, not `[EVIDENCE]`.
+- **"3–5 items = 20–30% faster navigation"** — SEO content with fabricated-looking citations.
+- **Baymard figures** on menus/headers circulating in blogs are not traceable to Baymard,
+  which is e-commerce *web* checkout research.
+- Thumb-zone heatmaps: already graded folklore in 7.1. Leave them there.
+
+**Honest summary of the evidence tier: there is no good empirical study of bottom-nav labels
+vs no-labels.** The labels decision rests on two platform specs agreeing, not on data.
+
+### 8.4 Practitioner input `[CONSENSUS]`
+
+- **Benji Taylor (Family)** — after confirmation "a spinner moves into the bottom navigation
+  to indicate where the user can now find their pending transaction on the activity tab"
+  (https://benji.org/family-values). **Adopted**: our `showDot` becomes a pending-state
+  destination, not just an alert.
+- **Ryan Wesley** on the iOS 26 search tab: it "fails to afford itself as a tab"; "the line
+  between navigation and action is blurring — and with it, the predictability that makes iOS
+  feel coherent" (https://ryanwesley.com/ios-26-tab-bar-beef/).
+- **Dmytro Hanin** — avoid a "glass sandwich" of accessory + tab bar + floating buttons, and
+  avoid "actions disguised as tabs ('+', 'Scan', 'Pay')".
+- **Phantom** moved primary nav to *top* tabs with a lower-**right** composite money action.
+  **Cash App**'s centre item is a *destination tab*, not a FAB.
+- **Coinbase CDS publishes only a top NavigationBar; Robinhood's rebrand case study has no
+  navigation detail.** Nobody publishes a mobile bottom tab bar in a public design system —
+  which is why this section leans on platform spec rather than peer design systems.
+
+### 8.5 Library verdict — none `[EVIDENCE]`
+
+Radix docs: "Tabs should not be used for page navigation." shadcn has no bottom-nav block
+(requests #5730 and #8847 unanswered). Base UI / Headless UI Tabs are tabpanel widgets.
+Ionic's `IonTabBar` can run standalone but `@ionic/core` is ~20MB unpacked and
+`@ionic/react-router` still peer-deps React Router 5. `@react-navigation/bottom-tabs` needs
+the RN bridge and cannot run in a WebView.
+
+**Decisive constraint:** the mobile nav is redrawn as a native overlay (`UIWindow` /
+Android View), so the deliverable is a **portable spec** — geometry plus spring constants —
+not a DOM component. (Note: those native files are not in this worktree; CLAUDE.md documents
+them, so they live on another branch. The constraint is forward-looking.)
+
+**Avoid framer-motion `layoutId` here.** With three equal-width items the problem is a single
+translation. `layoutId` on a `position: fixed` bar needs `layoutRoot` or the pill jumps once
+content scrolls; it corrects `border-radius` only when set via `style`, not a utility class;
+and DOM projection has no UIKit/Android analogue. Use one persistent indicator translated by
+index with `springs.pill` (320/30, already documented as "footer tabbar pill"):
+`SpringForce().setStiffness(320f).setDampingRatio(0.839f)` /
+`.spring(response: 0.351, dampingFraction: 0.839)`.
+
+### 8.6 Codebase defects confirmed while researching this
+
+All verified directly, not taken on the agent's word:
+- `BottomNav.tsx:34` fires `shadow-[0_4px_12px...,0_12px_40px...]` in **both** themes,
+  contradicting SPEC.md's "dark uses surface-step + rule contrast, not shadow."
+- `BottomNav.tsx:59` switches `font-semibold -> font-bold` on active, reflowing the label.
+- Active accent `#E77537` on `#FBFBFB` = **2.90:1** — fails 1.4.3 and 1.4.11, light-theme only.
+- `SegmentedActionBar.tsx:49-57` uses `role="tablist"` / `role="tab"` / `aria-selected` while
+  `TabLayout.tsx:151` calls `navigate(to)` — it changes routes, so those roles misreport to
+  assistive tech. (`BottomNav`'s `aria-current="page"` is correct.) It also uses
+  `duration: 0.24, easeInOut` instead of `springs.pill`, against SPEC.md's springs-first rule.
+- `springs.ts:14` comments `standard` as "response 0.4 / 0.85", but `k=322, c=32` back-solves
+  to **response 0.350 / zeta 0.891**. Harmless until someone ports it to Swift.
+
+### 8.7 The project skill has nothing on navigation
+
+`ui-ux-pro-max --domain ux "bottom navigation tab bar mobile"` returns back-button behaviour,
+sticky-nav padding and mobile keyboards; `--domain product` returns unrelated archetypes.
+**There are no navigation rules in that skill to comply with** — worth knowing before anyone
+cites it as authority.
+

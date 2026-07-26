@@ -106,6 +106,7 @@
   --act-send:#748A9A; --act-receive:#7C8B78; --act-swap:#8F829F; --act-earn:#777487;
   --tx-received:#A8BBA3; --tx-sent:#A3BCCF; --tx-swap:#C9BAD9; --tx-earn:#BDB9CC; --tx-faucet:#CDB0DE;
   --tx-glyph:#3F3F3F;
+  --nav-pill:rgba(231,117,55,.12);
   --balance:#4F4F4F; --balance-deep:#3D3D3D; --balance-fg:#FFFFFF; --balance-fg-muted:rgba(255,255,255,.70);
   --shadow-1:0 1px 2px rgba(63,63,63,.06),0 1px 3px rgba(63,63,63,.05);
   --shadow-2:0 6px 16px rgba(63,63,63,.10),0 2px 6px rgba(63,63,63,.06);
@@ -128,6 +129,7 @@
   --tx-received:#A8BBA3; --tx-sent:#A3BCCF; --tx-swap:#C9BAD9; --tx-earn:#BDB9CC; --tx-faucet:#CDB0DE;
   --tx-glyph:#1C1A18;
   /* Balance card goes near-black in dark mode (colors are light-mode only). */
+  --nav-pill:#191919;   /* dark: a recessed WELL, not a wash -- see note in .mnav */
   --balance:#101010; --balance-deep:#000000; --balance-fg:#FFFFFF; --balance-fg-muted:rgba(255,255,255,.70);
   --shadow-1:0 1px 2px rgba(0,0,0,.4); --shadow-2:0 8px 24px rgba(0,0,0,.5);
   --code-bg:#111111;
@@ -426,10 +428,60 @@ table.map td code{font-size:12px}
 .mprompt .fn{font-weight:700;font-size:12.5px;color:var(--accent-ink)}
 .mprompt .cl{color:var(--ink-3);font-size:15px}
 /* bottom nav — floating labeled pill, 3 tabs (Home/Explore/Activity) */
-.mnav{margin:auto 10px 12px;height:62px;border-radius:var(--radius-lg);display:flex;align-items:center;justify-content:space-around;background:var(--surface);box-shadow:var(--shadow-1);border:1px solid var(--rule)}
-.mnav .t{display:flex;flex-direction:column;align-items:center;gap:3px;color:var(--ink-3);font-size:11px;font-weight:600}
-.mnav .t.on{color:var(--accent-ink)}
-.mnav .t svg{width:22px;height:22px}
+/* ---- Bottom nav: content-hugging inset capsule ----------------------------------
+   Replaces a 16px-radius, near-full-width, bordered bar. Four graded reasons:
+   [SPEC]  Apple HIG (Liquid Glass, 2025-07-28) makes the iOS tab bar a floating inset
+           capsule sized to its contents, not glued to the edge. HIG also says "Include
+           tab labels" and "Prefer filled symbols", and warns that hiding tab items
+           "makes your app's interface appear unstable".
+   [SPEC]  Material 3 requires a label on every item and forbids removing them; Android's
+           own LABEL_VISIBILITY_AUTO resolves to always-labelled at <=3 items. We have 3.
+   [SPEC]  WCAG 2.5.5 (AAA) 44x44 -- item is 77x61.
+   [MEASURED] The shipped nav marks active with #E77537 on #FBFBFB = 2.90:1, failing both
+           1.4.3 (4.5:1 text) and 1.4.11 (3:1 icon). Dark is 5.86:1, so the defect is
+           light-only, which is how it survived review.
+   Deliberate deviation: the research recommended dropping hue from the active state
+   entirely. Not needed -- --accent-ink measures 5.55:1 light / 5.86:1 dark, so Bread's
+   orange can stay AS the active signal and still pass. Active is carried by three things
+   at once (ink + pill wash + filled icon), so it never depends on colour alone.
+   Shadow is light-only: SPEC.md says dark uses surface-step and rule contrast, not
+   shadow, and the shipped nav fires a 40px black shadow in both themes.
+   The active pill's fill DIRECTION flips by theme, and this is measured, not taste: in
+   dark, any accent wash lifts the surface and drags --accent-ink #E77537 down to
+   3.64:1 at .18 alpha and still only 4.35:1 at .06. A lifted neutral is worse
+   (surface-3 = 4.21:1). So light steps UP into a warm accent wash (5.08:1) and dark
+   steps DOWN into a recessed well at the page colour (5.86:1). Same shape language in
+   both themes; only the direction of the step changes -- the surface-step idiom. */
+.mnav{margin:auto auto max(12px,var(--safe-bottom,0px));min-height:61px;padding:6px;border-radius:var(--radius-full);
+  display:flex;align-items:stretch;gap:6px;width:max-content;
+  background:var(--surface);box-shadow:var(--shadow-1);position:relative}
+[data-theme="dark"] .mnav{box-shadow:none;background:var(--surface-2)}
+.mnav .t{min-width:77px;min-height:49px;padding:5px 14px;border-radius:var(--radius-full);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;
+  color:var(--ink-2);font-size:11px;line-height:13px;font-weight:600;
+  background:none;border:0;cursor:pointer;position:relative}
+/* One weight, never switched: the shipped nav goes semibold -> bold on activation, which
+   reflows the label on every tab change. */
+.mnav .t.on{color:var(--accent-ink);background:var(--nav-pill)}
+.mnav .t .svgic{width:24px;height:24px}
+.mnav .t .nbadge{position:absolute;top:2px;right:12px;width:8px;height:8px;border-radius:50%;
+  background:var(--neg);box-shadow:0 0 0 1.5px var(--surface)}
+[data-theme="dark"] .mnav .t .nbadge{box-shadow:0 0 0 1.5px var(--surface-2)}
+/* ---- Alternate B: full-width Material 3 bar ---- */
+.mnav.m3{width:auto;margin:auto 0 0;min-height:64px;border-radius:0;padding:0;gap:0;
+  box-shadow:none;background:var(--surface);border-top:1px solid var(--rule)}
+.mnav.m3 .t{flex:1;min-width:0;border-radius:0;padding:8px 0 10px}
+.mnav.m3 .t.on{background:none}
+.mnav.m3 .t.on .svgic{background-color:var(--accent-ink)}
+.mnav.m3 .t.on .m3ind{position:absolute;top:6px;left:50%;transform:translateX(-50%);
+  width:56px;height:32px;border-radius:var(--radius-full);background:var(--nav-pill);z-index:0}
+.mnav.m3 .t .svgic,.mnav.m3 .t span{position:relative;z-index:1}
+/* ---- The current build, kept for side-by-side comparison ---- */
+.mnav.legacy{width:290px;min-height:62px;border-radius:var(--radius-lg);padding:0;gap:0;
+  justify-content:space-around;border:1px solid var(--rule);background:var(--surface)}
+[data-theme="dark"] .mnav.legacy{box-shadow:var(--shadow-1);background:var(--surface)}
+.mnav.legacy .t{min-width:0;padding:0;border-radius:0;color:var(--ink-3)}
+.mnav.legacy .t.on{color:var(--accent);background:none}
 /* welcome mock */
 /* KEPT AS SHIPPED — 130px mark, 72px display headline, 20px body, vertically centred.
    The only change is the bottom: the system action zone (52px CTA + safe-area clearance). */
@@ -1828,6 +1880,27 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
         </div></div>
     </div>
 
+    <h3 class="sh">Bottom nav <span class="small">&mdash; ranked, with the evidence tier for each claim</span></h3>
+    <p class="sub">The current bar was called &ldquo;too ugly&rdquo;. Three <em>measurable</em> problems sit underneath that, so this is not only taste:
+      <b>(1)</b> its active state is <code>#E77537</code> on <code>#FBFBFB</code> = <b>2.90:1</b>, failing SC 1.4.3 for the label and SC 1.4.11 for the icon &mdash; and it is <b>5.86:1</b> in dark, so the defect is light-theme-only, which is how it survived review.
+      <b>(2)</b> it fires a <code>40px</code> black shadow in <em>both</em> themes, contradicting this system&rsquo;s own rule that dark uses surface-step, not shadow.
+      <b>(3)</b> it switches the label <code>semibold&nbsp;&rarr;&nbsp;bold</code> on activation, reflowing the text on every tab change.
+      Its <code>px-13.5</code> padding also makes it ~367px wide on a 375px viewport &mdash; a near-full-width bar wearing rounded corners, which is why it reads neither as a bar nor as a capsule.</p>
+    <div class="crow">
+      <div class="ccol"><div class="clabel">recommended &mdash; content-hugging inset capsule</div><div class="mnav" style="margin:0"><button class="t on"><span class="svgic" style="--ic:url(assets/icons/home-new.svg)" aria-hidden="true"></span><span>Home</span></button><button class="t"><span class="svgic" style="--ic:url(assets/icons/explore.svg)" aria-hidden="true"></span><span>Explore</span></button><button class="t"><span class="svgic" style="--ic:url(assets/icons/activity.svg)" aria-hidden="true"></span><span>Activity</span></button></div>
+        <div class="small" style="margin-top:8px">Item <b>77&times;49</b> (44 floor cleared) &middot; capsule <b>min-height 61</b>, radius <code>full</code>, <code>width:max-content</code> &middot; icon <b>24</b>, label <b>11/13</b> at <b>one weight</b> &middot; bottom <code>max(12px, safe-area)</code>. Active = ink + pill + filled icon, so never colour alone.</div></div>
+      <div class="ccol"><div class="clabel">alternate B &mdash; full-width Material 3</div><div class="mnav m3" style="margin:0"><button class="t on"><span class="m3ind"></span><span class="svgic" style="--ic:url(assets/icons/home-new.svg)" aria-hidden="true"></span><span>Home</span></button><button class="t"><span class="svgic" style="--ic:url(assets/icons/explore.svg)" aria-hidden="true"></span><span>Explore</span></button><button class="t"><span class="svgic" style="--ic:url(assets/icons/activity.svg)" aria-hidden="true"></span><span>Activity</span></button></div>
+        <div class="small" style="margin-top:8px"><b>64</b> tall, <b>56&times;32</b> active indicator, edge-to-edge per M3&rsquo;s &ldquo;span the full length of the window&rdquo;. The only <em>Material-3-compliant</em> option and the easiest fit in the 360px popup &mdash; but generic, and it contradicts iOS 26.</div></div>
+      <div class="ccol"><div class="clabel">current build &mdash; for comparison</div><div class="mnav legacy" style="margin:0"><button class="t on"><span class="svgic" style="--ic:url(assets/icons/home-new.svg)" aria-hidden="true"></span><span>Home</span></button><button class="t"><span class="svgic" style="--ic:url(assets/icons/explore.svg)" aria-hidden="true"></span><span>Explore</span></button><button class="t"><span class="svgic" style="--ic:url(assets/icons/activity.svg)" aria-hidden="true"></span><span>Activity</span></button></div>
+        <div class="small" style="margin-top:8px">16px radius, 290px fixed width, bordered <em>and</em> shadowed, active carried by hue alone at 2.90:1.</div></div>
+      <div class="ccol"><div class="clabel">pending state lives in the nav</div><div class="mnav" style="margin:0"><button class="t on"><span class="svgic" style="--ic:url(assets/icons/home-new.svg)" aria-hidden="true"></span><span>Home</span></button><button class="t"><span class="svgic" style="--ic:url(assets/icons/explore.svg)" aria-hidden="true"></span><span>Explore</span></button><button class="t"><span class="svgic" style="--ic:url(assets/icons/activity.svg)" aria-hidden="true"></span><span>Activity</span><span class="nbadge nti"></span></button></div>
+        <div class="small" style="margin-top:8px">Borrowed from Family: after a send, the pending indicator <b>migrates into the Activity tab</b> &mdash; the nav becomes the answer to &ldquo;where did my transaction go?&rdquo; rather than just an alert. The badge is a status token with a 1.5px ring in the surface colour so it reads on both themes.</div></div>
+    </div>
+    <p class="sub"><b>What the platforms actually say</b> &mdash; <span class="tag survive">SPEC</span> Apple HIG: &ldquo;Use a tab bar to support navigation, <em>not</em> to provide actions&rdquo;, &ldquo;Include tab labels&rdquo;, &ldquo;Prefer filled symbols&rdquo;, and don&rsquo;t hide tab items because it &ldquo;makes your app&rsquo;s interface appear unstable&rdquo;. <span class="tag survive">SPEC</span> Material 3: three-to-five destinations, &ldquo;All navigation items require a label text&rdquo;, and a rendered <em>Don&rsquo;t</em> for removing them; Android&rsquo;s own <code>LABEL_VISIBILITY_AUTO</code> resolves to always-labelled at &le;3 items, and we have exactly 3 &mdash; at M3&rsquo;s floor, so note it if a tab is ever removed.</p>
+    <p class="sub"><b>Labels: always visible.</b> This is the one question where both specs agree, so it is not a judgement call. Icon-only would be the worst option here &mdash; of our three, only <em>Home</em> is in NN/g&rsquo;s near-universal icon set; &ldquo;Explore&rdquo; is precisely the ambiguous case. Active-only labels are right for <code>SegmentedActionBar</code>, which filters <em>within</em> a page where reflow is the affordance, and wrong for app-level nav, which should be geometrically stable.</p>
+    <p class="sub"><b>No centre FAB for Send</b> &mdash; the clearest call in the research, and spec-backed on both platforms (HIG&rsquo;s &ldquo;not to provide actions&rdquo;; M3 puts the FAB <em>right-aligned above</em> the bar and says don&rsquo;t cover the bar with it). Phantom, the closest comparable, put its composite money action lower-<em>right</em>, not centre. And sends are irreversible: a mis-tap on a nav control costs a tap, a mis-tap next to an irreversible money action costs money. Cash App looks like a counterexample and isn&rsquo;t &mdash; its centre item is a <em>destination tab</em> in an app where paying is the product.</p>
+    <p class="sub"><b>No library, and that is a real finding.</b> Radix&rsquo;s own docs say &ldquo;Tabs should not be used for page navigation&rdquo;; shadcn has no bottom-nav block (two requests sit unanswered); Ionic&rsquo;s tab bar drags in a 20MB core and React&nbsp;Router&nbsp;5; <code>@react-navigation/bottom-tabs</code> is impossible in a WebView. And because the mobile nav is redrawn as a <em>native overlay</em> in <code>UIWindow</code> / Android View land, the deliverable has to be a portable spec &mdash; numbers and spring constants &mdash; not a DOM component. We also deliberately avoid framer-motion&rsquo;s <code>layoutId</code>: with three equal items the problem is a single translation, and <code>layoutId</code> on a <code>position:fixed</code> bar needs <code>layoutRoot</code> or the pill jumps once content scrolls, plus it only corrects <code>border-radius</code> when set via <code>style</code>, not a utility class. One persistent indicator translated by index, driven by the existing <code>springs.pill</code> (<code>320/30</code>, already documented as &ldquo;footer tabbar pill&rdquo;), ports to <code>SpringForce().setStiffness(320f).setDampingRatio(0.839f)</code> and <code>.spring(response: 0.351, dampingFraction: 0.839)</code> almost mechanically.</p>
+
     <h3 class="sh">Headers &amp; navigation</h3>
     <div class="crow">
       <div class="ccol"><div class="clabel">TabHeader — top-level page</div>
@@ -1835,11 +1908,7 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
       <div class="ccol"><div class="clabel">ScreenHeader — back / close</div>
         <div class="hdr"><span class="bk">‹</span><span class="ht">Review transaction</span></div></div>
       <div class="ccol"><div class="clabel">bottom nav</div>
-        <div class="mnav" style="margin:0;width:290px">
-          <div class="t on"><span class="svgic" style="--ic:url(assets/icons/home-new.svg);width:21px;height:21px" aria-hidden="true"></span>Home</div>
-          <div class="t"><span class="svgic" style="--ic:url(assets/icons/explore.svg);width:21px;height:21px" aria-hidden="true"></span>Explore</div>
-          <div class="t"><span class="svgic" style="--ic:url(assets/icons/activity.svg);width:21px;height:21px" aria-hidden="true"></span>Activity</div>
-        </div></div>
+        <div class="mnav"><button class="t on"><span class="svgic" style="--ic:url(assets/icons/home-new.svg)" aria-hidden="true"></span><span>Home</span></button><button class="t"><span class="svgic" style="--ic:url(assets/icons/explore.svg)" aria-hidden="true"></span><span>Explore</span></button><button class="t"><span class="svgic" style="--ic:url(assets/icons/activity.svg)" aria-hidden="true"></span><span>Activity</span></button></div></div>
     </div>
 
     <h3 class="sh">Banners &amp; alerts <span class="small">— each pairs colour with an icon and a label (SC 1.4.1)</span></h3>
@@ -1996,7 +2065,7 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
             <div class="msearch">Search for tokens</div>
             <div class="mrow"><div class="ic"><img src="assets/icons/miden.svg" alt=""></div><div><div class="nm">Miden</div><div class="ad">0.00 MIDEN</div></div><div class="rt"><div class="f">$0.00</div><div class="b" style="color:var(--pos)">+0.00%</div></div></div>
           </div>
-          <div class="mnav"><div class="t on"><span class="svgic" style="--ic:url(assets/icons/home-new.svg);" aria-hidden="true"></span>Home</div><div class="t"><span class="svgic" style="--ic:url(assets/icons/explore.svg);" aria-hidden="true"></span>Explore</div><div class="t"><span class="svgic" style="--ic:url(assets/icons/activity.svg);" aria-hidden="true"></span>Activity</div></div>
+          <div class="mnav"><button class="t on"><span class="svgic" style="--ic:url(assets/icons/home-new.svg)" aria-hidden="true"></span><span>Home</span></button><button class="t"><span class="svgic" style="--ic:url(assets/icons/explore.svg)" aria-hidden="true"></span><span>Explore</span></button><button class="t"><span class="svgic" style="--ic:url(assets/icons/activity.svg)" aria-hidden="true"></span><span>Activity</span></button></div>
         </div></div></div>
       </div>
     </div>
@@ -2523,7 +2592,7 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
             <div class="mrow"><div class="ic"><img src="assets/icons/miden.svg" alt=""></div><div><div class="nm">Miden</div><div class="ad">1,204.50 MIDEN</div></div><div class="rt"><div class="f">$12,480.50</div><div class="b" style="color:var(--pos)">+0.32%</div></div></div>
             <div class="mrow"><div class="ic"><img src="assets/icons/usdc.svg" alt=""></div><div><div class="nm">USDC</div><div class="ad">0.00 USDC</div></div><div class="rt"><div class="f">$0.00</div><div class="b">—</div></div></div>
           </div>
-          <div class="mnav"><div class="t on"><span class="svgic" style="--ic:url(assets/icons/home-new.svg);" aria-hidden="true"></span>Home</div><div class="t"><span class="svgic" style="--ic:url(assets/icons/explore.svg);" aria-hidden="true"></span>Explore</div><div class="t"><span class="svgic" style="--ic:url(assets/icons/activity.svg);" aria-hidden="true"></span>Activity</div></div>
+          <div class="mnav"><button class="t on"><span class="svgic" style="--ic:url(assets/icons/home-new.svg)" aria-hidden="true"></span><span>Home</span></button><button class="t"><span class="svgic" style="--ic:url(assets/icons/explore.svg)" aria-hidden="true"></span><span>Explore</span></button><button class="t"><span class="svgic" style="--ic:url(assets/icons/activity.svg)" aria-hidden="true"></span><span>Activity</span></button></div>
         </div></div></div>
         <div class="scrnote">Funded state. Balance and amounts in Nunito tabular; addresses in Geist Mono.</div></div>
 
@@ -2628,7 +2697,7 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
             <div class="mrow"><div class="ic sq"><span class="svgic" style="--ic:url(assets/icons/earn.svg);" aria-hidden="true"></span></div><div><div class="nm">Earn deposit</div><div class="ad">Aave · MIDEN</div></div><div class="rt"><div class="f">−500.00</div><div class="b">Confirmed</div></div></div>
             <div class="mrow"><div class="ic sq"><span class="svgic" style="--ic:url(assets/icons/send-new.svg);" aria-hidden="true"></span></div><div><div class="nm">Sent</div><div class="ad addr">mtst1zz9…41mn</div></div><div class="rt"><div class="f" style="color:var(--neg)">Failed</div><div class="b">Not sent</div></div></div>
           </div>
-          <div class="mnav"><div class="t"><span class="svgic" style="--ic:url(assets/icons/home-new.svg);" aria-hidden="true"></span>Home</div><div class="t"><span class="svgic" style="--ic:url(assets/icons/explore.svg);" aria-hidden="true"></span>Explore</div><div class="t on"><span class="svgic" style="--ic:url(assets/icons/activity.svg);" aria-hidden="true"></span>Activity</div></div>
+          <div class="mnav"><button class="t on"><span class="svgic" style="--ic:url(assets/icons/home-new.svg)" aria-hidden="true"></span><span>Home</span></button><button class="t"><span class="svgic" style="--ic:url(assets/icons/explore.svg)" aria-hidden="true"></span><span>Explore</span></button><button class="t"><span class="svgic" style="--ic:url(assets/icons/activity.svg)" aria-hidden="true"></span><span>Activity</span></button></div>
         </div></div></div>
         <div class="scrnote">Failed rows say <b>"Not sent"</b> in the value column — status is never colour-only, and never ambiguous about the money.</div></div>
 
@@ -2669,7 +2738,7 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
             <div class="vaultrow"><img src="assets/icons/aave.svg" alt=""><div><div class="vn">Aave · MIDEN</div><div class="vs">Deposited 500.00</div></div><div class="vapy"><div class="p">4.82%</div><div class="pl">APY</div></div></div>
             <div class="vaultrow"><img src="assets/icons/usdc.svg" alt=""><div><div class="vn">Aave · USDC</div><div class="vs">Not deposited</div></div><div class="vapy"><div class="p">5.14%</div><div class="pl">APY</div></div></div>
           </div>
-          <div class="mnav"><div class="t on"><span class="svgic" style="--ic:url(assets/icons/home-new.svg);" aria-hidden="true"></span>Home</div><div class="t"><span class="svgic" style="--ic:url(assets/icons/explore.svg);" aria-hidden="true"></span>Explore</div><div class="t"><span class="svgic" style="--ic:url(assets/icons/activity.svg);" aria-hidden="true"></span>Activity</div></div>
+          <div class="mnav"><button class="t on"><span class="svgic" style="--ic:url(assets/icons/home-new.svg)" aria-hidden="true"></span><span>Home</span></button><button class="t"><span class="svgic" style="--ic:url(assets/icons/explore.svg)" aria-hidden="true"></span><span>Explore</span></button><button class="t"><span class="svgic" style="--ic:url(assets/icons/activity.svg)" aria-hidden="true"></span><span>Activity</span></button></div>
         </div></div></div>
         <div class="scrnote"><b>Kept, but gated.</b> <code>isEarnEnabled()</code> returns <b>false</b> in <code>src/lib/feature-flags.ts</code> — the single source of truth for both the home swipe pane and the top action-bar segment — so Earn is built and routed (<code>/earn</code> exists) but unreachable until the feature ships. These screens are therefore <em>spec for a shipped-but-hidden feature</em>, not speculation, and stay. The action bar here shows the <b>earn-enabled</b> five-segment state (overview · send · receive · earn · swap); every other screen shows the four-segment shipped state, which ends in <b>Swap</b> because <code>isSwapEnabled()</code> is <b>true</b>. <b>Measured consequence:</b> five segments overflow the 360pt extension popup by <b>9.1pt</b>, because the collapsed chips already sit on their 44pt tap-target floor. Gap tightens 7px → 4px below 380pt, which reclaims 12pt and fits at 312/312 with the smallest chip at 44.7pt. That defect only appears when the flag flips, so it would have shipped with Earn.</div></div>
 
@@ -2748,7 +2817,7 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
               <div class="setrow"><span class="svgic" style="--ic:url(assets/icons/coins.svg);" aria-hidden="true"></span>About<span class="ch">›</span></div>
             </div>
           </div>
-          <div class="mnav"><div class="t"><span class="svgic" style="--ic:url(assets/icons/home-new.svg);" aria-hidden="true"></span>Home</div><div class="t"><span class="svgic" style="--ic:url(assets/icons/explore.svg);" aria-hidden="true"></span>Explore</div><div class="t"><span class="svgic" style="--ic:url(assets/icons/activity.svg);" aria-hidden="true"></span>Activity</div></div>
+          <div class="mnav"><button class="t on"><span class="svgic" style="--ic:url(assets/icons/home-new.svg)" aria-hidden="true"></span><span>Home</span></button><button class="t"><span class="svgic" style="--ic:url(assets/icons/explore.svg)" aria-hidden="true"></span><span>Explore</span></button><button class="t"><span class="svgic" style="--ic:url(assets/icons/activity.svg)" aria-hidden="true"></span><span>Activity</span></button></div>
         </div></div></div>
         <div class="scrnote">Grouped soft blocks rather than a divided table — the same stacking idiom as everywhere else.</div></div>
 
@@ -2784,7 +2853,7 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
             </div>
             <div class="notice" style="background:var(--surface-2);color:var(--ink-2);margin-top:16px"><span>ⓘ</span><span>Connected sites can request signatures. You approve every transaction.</span></div>
           </div>
-          <div class="mnav"><div class="t"><span class="svgic" style="--ic:url(assets/icons/home-new.svg);" aria-hidden="true"></span>Home</div><div class="t on"><span class="svgic" style="--ic:url(assets/icons/explore.svg);" aria-hidden="true"></span>Explore</div><div class="t"><span class="svgic" style="--ic:url(assets/icons/activity.svg);" aria-hidden="true"></span>Activity</div></div>
+          <div class="mnav"><button class="t on"><span class="svgic" style="--ic:url(assets/icons/home-new.svg)" aria-hidden="true"></span><span>Home</span></button><button class="t"><span class="svgic" style="--ic:url(assets/icons/explore.svg)" aria-hidden="true"></span><span>Explore</span></button><button class="t"><span class="svgic" style="--ic:url(assets/icons/activity.svg)" aria-hidden="true"></span><span>Activity</span></button></div>
         </div></div></div>
         <div class="scrnote">Browser rejoins the app: same header scale, same tiles, same nav. The trust statement is on the surface, not buried.</div></div>
 
