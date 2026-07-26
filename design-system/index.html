@@ -827,7 +827,7 @@ ul.tick li:before{content:"→";position:absolute;left:2px;color:var(--accent-in
   <main class="main">
 
   <!-- OVERVIEW -->
-  <section class="section active" id="overview">
+  <section class="section" id="overview">
     <div class="eyebrow">Bread Wallet · Visual language v1</div>
     <h1 class="title">Finish the loaf.<br>Then keep the crust firm.</h1>
     <p class="lede">Bread doesn't need a new look. It needs <b>one</b> look. The identity is already here — warm paper, graphite ink, a single confident orange, a playful hand-made mark. The wallet feels amateur because three half-built visual generations are speaking at once. <b>Crust</b> is the governing system that finishes the migration already underway and holds every surface — including Earn, Bridge and Browser — to one language.</p>
@@ -1642,7 +1642,7 @@ ul.tick li:before{content:"→";position:absolute;left:2px;color:var(--accent-in
   </section>
 
   <!-- ALL SCREENS -->
-  <section class="section" id="allscreens">
+  <section class="section active" id="allscreens">
     <div class="eyebrow">Applied · iPhone 17 · 402×874</div>
     <h1 class="title">All screens</h1>
     <p class="lede">The whole wallet, designed on the system. Every screen is composed from the documented components — graphite money surface, grey content blocks, the action zone, real in-repo icons and illustrations — at true iPhone 17 dimensions. Nothing here is a bespoke layout.</p>
@@ -2431,7 +2431,16 @@ function go(id){
   links.forEach(a=>a.classList.toggle('active',a.dataset.go===id));
   document.querySelector('.main').scrollTo(0,0);window.scrollTo(0,0);
 }
-links.forEach(a=>a.addEventListener('click',()=>go(a.dataset.go)));
+links.forEach(a=>a.addEventListener('click',()=>{go(a.dataset.go);
+  history.replaceState(null,'','#'+a.dataset.go);}));
+// Land on All screens by default, and survive a refresh: the hash wins if it names
+// a real section, otherwise fall back to allscreens.
+(function(){
+  const want=(location.hash||'').replace('#','');
+  const target=secs.some(x=>x.id===want)?want:'allscreens';
+  go(target);
+  if(!location.hash) history.replaceState(null,'','#'+target);
+})();
 document.getElementById('theme').addEventListener('click',()=>{
   const h=document.documentElement;h.dataset.theme=h.dataset.theme==='dark'?'light':'dark';
 });
