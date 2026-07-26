@@ -335,6 +335,15 @@ table.map td code{font-size:12px}
    COLLAPSE to icon squares. Size change is the signal (Benji: make the progression
    unmistakable), so it rides dur-spatial var(--dur-spatial) on ease-spatial. */
 .mseg{display:flex;align-items:center;gap:7px;padding:2px 0 9px}
+/* Five segments only exist once isEarnEnabled() flips true (overview·send·receive·
+   earn·swap). At the 360pt extension width that overflows by 9.1pt: the collapsed
+   chips are already sitting on their 44pt tap-target floor and cannot compress
+   further, so the gap is the only slack left. 7px -> 4px reclaims 12pt across the
+   four gaps and fits with 2.9pt spare. Narrowing the page gutter instead would have
+   worked too, but it would move every other component on the screen to fix one.
+   In the mocks this is scoped to .phone.ext because a media query cannot see a
+   fixed-width frame; in production key it off a container query or isExtension(). */
+.phone.ext .mseg{gap:4px}
 /* Collapsed chips may compress (never below a 40px tap area) so the active chip always
    wins the space it needs; min-width:max-content on the active chip makes clipping
    structurally impossible at any viewport, including long localised labels. */
@@ -1416,7 +1425,7 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
         <div class="seg on"><span class="svgic" style="--ic:url(assets/icons/wallet.svg);" aria-hidden="true"></span><span class="lbl">Overview</span></div>
         <div class="seg"><span class="svgic" style="--ic:url(assets/icons/send-new.svg);" aria-hidden="true"></span><span class="lbl">Send</span></div>
         <div class="seg"><span class="svgic" style="--ic:url(assets/icons/receive-new.svg);" aria-hidden="true"></span><span class="lbl">Receive</span></div>
-        <div class="seg"><span class="svgic" style="--ic:url(assets/icons/earn.svg);" aria-hidden="true"></span><span class="lbl">Earn</span></div>
+        <div class="seg"><span class="svgic" style="--ic:url(assets/icons/convert.svg);" aria-hidden="true"></span><span class="lbl">Swap</span></div>
       </div>
       <p class="small" style="margin-top:12px"><b>Why size carries the signal:</b> the width change makes the active surface unmistakable at a glance, and the label only exists while it's needed — no permanent clutter. The tab's hue arrives <em>on activation</em>, so colour is confirmation, not decoration. Collapsed tabs stay 46×38px, well above the 24×24 AA target floor, and the label fades in <code>80ms</code> behind the width so text never stretches.</p>
     </div>
@@ -1916,7 +1925,7 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
               <div class="seg on"><span class="svgic" style="--ic:url(assets/icons/wallet.svg);" aria-hidden="true"></span><span class="lbl">Overview</span></div>
               <div class="seg"><span class="svgic" style="--ic:url(assets/icons/send-new.svg);" aria-hidden="true"></span><span class="lbl">Send</span></div>
               <div class="seg"><span class="svgic" style="--ic:url(assets/icons/receive-new.svg);" aria-hidden="true"></span><span class="lbl">Receive</span></div>
-              <div class="seg"><span class="svgic" style="--ic:url(assets/icons/earn.svg);" aria-hidden="true"></span><span class="lbl">Earn</span></div>
+              <div class="seg"><span class="svgic" style="--ic:url(assets/icons/convert.svg);" aria-hidden="true"></span><span class="lbl">Swap</span></div>
             </div>
             <div class="mbc">
               <div class="top" data-surface="graphite"><div class="tl">Total Balance</div>
@@ -2442,7 +2451,7 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
               <div class="seg on"><span class="svgic" style="--ic:url(assets/icons/wallet.svg);" aria-hidden="true"></span><span class="lbl">Overview</span></div>
               <div class="seg"><span class="svgic" style="--ic:url(assets/icons/send-new.svg);" aria-hidden="true"></span><span class="lbl">Send</span></div>
               <div class="seg"><span class="svgic" style="--ic:url(assets/icons/receive-new.svg);" aria-hidden="true"></span><span class="lbl">Receive</span></div>
-              <div class="seg"><span class="svgic" style="--ic:url(assets/icons/earn.svg);" aria-hidden="true"></span><span class="lbl">Earn</span></div>
+              <div class="seg"><span class="svgic" style="--ic:url(assets/icons/convert.svg);" aria-hidden="true"></span><span class="lbl">Swap</span></div>
             </div>
             <div class="mbc">
               <div class="top" data-surface="graphite"><div class="tl">Total Balance</div>
@@ -2462,7 +2471,7 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
       <div><div class="scrcap"><i></i>Accounts sheet</div>
         <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
           <div class="stat"><span>9:41</span><span class="r">✦ ▪ ▪</span></div>
-          <div class="mpad" style="flex:1;opacity:.4"><div class="mseg"><div class="seg on"><span class="svgic" style="--ic:url(assets/icons/wallet.svg);" aria-hidden="true"></span><span class="lbl">Overview</span></div><div class="seg"><span class="svgic" style="--ic:url(assets/icons/send-new.svg);" aria-hidden="true"></span></div><div class="seg"><span class="svgic" style="--ic:url(assets/icons/receive-new.svg);" aria-hidden="true"></span></div><div class="seg"><span class="svgic" style="--ic:url(assets/icons/earn.svg);" aria-hidden="true"></span></div></div>
+          <div class="mpad" style="flex:1;opacity:.4"><div class="mseg"><div class="seg on"><span class="svgic" style="--ic:url(assets/icons/wallet.svg);" aria-hidden="true"></span><span class="lbl">Overview</span></div><div class="seg"><span class="svgic" style="--ic:url(assets/icons/send-new.svg);" aria-hidden="true"></span></div><div class="seg"><span class="svgic" style="--ic:url(assets/icons/receive-new.svg);" aria-hidden="true"></span></div><div class="seg"><span class="svgic" style="--ic:url(assets/icons/convert.svg);" aria-hidden="true"></span></div></div>
             <div class="mbc"><div class="top" data-surface="graphite"><div class="tl">Total Balance</div><div class="amt">$12,480.50 <small>USD</small></div></div></div></div>
           <div style="position:absolute;inset:0;background:rgba(0,0,0,.45)"></div>
           <div style="position:absolute;left:0;right:0;bottom:0;background:var(--surface);border-radius:var(--radius-lg) var(--radius-lg) 0 0;padding:12px 20px max(16px,var(--safe-bottom))">
@@ -2585,7 +2594,7 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
         </div></div></div>
         <div class="scrnote">Same review card, reused as a receipt — one component, two moments in the flow.</div></div>
 
-      <div><div class="scrcap"><i></i>Earn · vaults</div>
+      <div><div class="scrcap"><i></i>Earn · vaults <span class="tag merge">gated off</span></div>
         <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
           <div class="stat"><span>9:41</span><span class="r">✦ ▪ ▪</span></div>
           <div class="mpad" style="flex:1;display:flex;flex-direction:column">
@@ -2593,7 +2602,7 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
               <div class="seg"><span class="svgic" style="--ic:url(assets/icons/wallet.svg);" aria-hidden="true"></span><span class="lbl">Overview</span></div>
               <div class="seg"><span class="svgic" style="--ic:url(assets/icons/send-new.svg);" aria-hidden="true"></span><span class="lbl">Send</span></div>
               <div class="seg"><span class="svgic" style="--ic:url(assets/icons/receive-new.svg);" aria-hidden="true"></span><span class="lbl">Receive</span></div>
-              <div class="seg on"><span class="svgic" style="--ic:url(assets/icons/earn.svg);" aria-hidden="true"></span><span class="lbl">Earn</span></div>
+              <div class="seg on"><span class="svgic" style="--ic:url(assets/icons/earn.svg);" aria-hidden="true"></span><span class="lbl">Earn</span></div><div class="seg"><span class="svgic" style="--ic:url(assets/icons/convert.svg);" aria-hidden="true"></span></div>
             </div>
             <div class="mbc"><div class="top" data-surface="graphite"><div class="tl">Earning</div><div class="amt">$500.00 <small>USD</small></div>
               <div class="delta" style="background:var(--pos-wash);color:var(--pos)">+$4.10 all time</div></div></div>
@@ -2603,9 +2612,9 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
           </div>
           <div class="mnav"><div class="t on"><span class="svgic" style="--ic:url(assets/icons/home-new.svg);" aria-hidden="true"></span>Home</div><div class="t"><span class="svgic" style="--ic:url(assets/icons/explore.svg);" aria-hidden="true"></span>Explore</div><div class="t"><span class="svgic" style="--ic:url(assets/icons/activity.svg);" aria-hidden="true"></span>Activity</div></div>
         </div></div></div>
-        <div class="scrnote">Earn rebuilt on the kit — the same graphite hero and grey rows as Home. No bespoke header, no charting dependency.</div></div>
+        <div class="scrnote"><b>Kept, but gated.</b> <code>isEarnEnabled()</code> returns <b>false</b> in <code>src/lib/feature-flags.ts</code> — the single source of truth for both the home swipe pane and the top action-bar segment — so Earn is built and routed (<code>/earn</code> exists) but unreachable until the feature ships. These screens are therefore <em>spec for a shipped-but-hidden feature</em>, not speculation, and stay. The action bar here shows the <b>earn-enabled</b> five-segment state (overview · send · receive · earn · swap); every other screen shows the four-segment shipped state, which ends in <b>Swap</b> because <code>isSwapEnabled()</code> is <b>true</b>. <b>Measured consequence:</b> five segments overflow the 360pt extension popup by <b>9.1pt</b>, because the collapsed chips already sit on their 44pt tap-target floor. Gap tightens 7px → 4px below 380pt, which reclaims 12pt and fits at 312/312 with the smallest chip at 44.7pt. That defect only appears when the flag flips, so it would have shipped with Earn.</div></div>
 
-      <div><div class="scrcap"><i></i>Vault detail</div>
+      <div><div class="scrcap"><i></i>Vault detail <span class="tag merge">gated off</span></div>
         <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
           <div class="stat"><span>9:41</span><span class="r">✦ ▪ ▪</span></div>
           <div class="mpad" style="flex:1;display:flex;flex-direction:column">
@@ -2624,7 +2633,7 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
         </div></div></div>
         <div class="scrnote">Yield is stated as variable and risk-bearing — a financial-credibility requirement, not a disclaimer bolted on.</div></div>
 
-      <div><div class="scrcap"><i></i>Earn · deposit</div>
+      <div><div class="scrcap"><i></i>Earn · deposit <span class="tag merge">gated off</span></div>
         <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
           <div class="stat"><span>9:41</span><span class="r">✦ ▪ ▪</span></div>
           <div class="mpad" style="flex:1;display:flex;flex-direction:column">

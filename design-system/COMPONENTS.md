@@ -129,6 +129,28 @@ Reconcile the three title sizes (1.75rem extrabold / xl medium / 28px bold) into
 
 Factor the shared animated-pill mechanic (TabPicker + SegmentedActionBar) into one primitive.
 
+### The action bar is feature-gated — draw the shipped state, spec the future one
+
+`TabLayout.tsx:103-137` composes it as **overview · send · receive · [earn] · [swap]**, where the
+last two are conditional on `isEarnEnabled()` and `isSwapEnabled()` (`src/lib/feature-flags.ts`).
+Today those are **false** and **true**, so the shipped bar is **four** segments ending in **Swap**.
+
+An earlier version of these mocks drew Earn and omitted Swap — i.e. it drew the gated-off feature
+and left out the enabled one. Corrected: every screen shows the four-segment shipped state, and
+only the Earn screens (themselves tagged *gated off*) show the five-segment earn-enabled state.
+
+**Measured constraint for when Earn ships.** Five segments overflow the **360pt extension popup by
+9.1pt**. The collapsed chips are already on their 44pt tap-target floor and cannot compress, so the
+gap is the only slack: **7px → 4px below 380pt** reclaims 12pt and fits at 312/312 with the smallest
+chip at 44.7pt. Verified at 360 / 375 / 402 / 440 × 4 and 5 segments.
+
+Narrowing the page gutter would also have worked, and was rejected: it moves every other component
+on the screen to fix one. In the mocks the rule is scoped to `.phone.ext` because a media query
+cannot see a fixed-width frame; in production key it off a container query or `isExtension()`.
+
+This defect only appears when the flag flips, so it would have shipped *with* Earn — which is the
+argument for specifying gated features rather than deleting them from the system.
+
 ## Cards / surfaces
 | Impl | File | Verdict |
 |---|---|---|
