@@ -463,6 +463,48 @@ ul.tick li:before{content:"→";position:absolute;left:2px;color:var(--accent-in
 .fid b:nth-child(4){bottom:0;right:0;border-left:0;border-top:0;border-radius:0 0 8px 0}
 .fid .gl{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:34px;color:var(--ink-2)}
 .fid.ok b{border-color:var(--pos)}
+
+/* ── 04a → 04b TRANSITION ──────────────────────────────────────────────────
+   Benji's rules applied literally:
+   · The brackets are ALREADY on screen in both states, so they must NOT re-draw
+     or re-appear — they only recolour and pull in, like a lens locking focus.
+   · The face glyph is what genuinely changes, so it carries the motion: it
+     scales down and out while the tick scales up and in (a cross-fade, never a
+     hard swap).
+   · The tick STROKE draws. This is a rare, high-stakes confirmation, so per the
+     Delight–Impact Curve it earns the big moment — the only step here that does.
+   Sequenced from the existing tokens (200 / 320 / 350ms), never one long tween. */
+.fid{transition:transform var(--dur-base) var(--ease-spatial)}
+.fid b{transition:border-color var(--dur-base) var(--ease-standard),
+                  transform var(--dur-base) var(--ease-spatial)}
+.fid .gl>*{transition:opacity var(--dur-base) var(--ease-standard),
+                      transform var(--dur-spatial) var(--ease-spatial)}
+/* state: scanning */
+.fidx .face{opacity:1;transform:scale(1)}
+.fidx .tick{opacity:0;transform:scale(.55);position:absolute}
+/* state: confirmed */
+.fidx.done b{border-color:var(--pos);transform:scale(.92)}
+.fidx.done .face{opacity:0;transform:scale(.7)}
+.fidx.done .tick{opacity:1;transform:scale(1)}
+.fidx .tick svg{width:56px;height:56px;display:block}
+.fidx .tick circle{fill:var(--pos)}
+.fidx .tick path{stroke:var(--paper);stroke-width:5;fill:none;stroke-linecap:round;
+  stroke-linejoin:round;stroke-dasharray:44;stroke-dashoffset:44}
+.fidx.done .tick path{animation:tickdraw 350ms var(--ease-spatial) 180ms forwards}
+@keyframes tickdraw{to{stroke-dashoffset:0}}
+/* labels cross-fade in place — no layout shift */
+.fidlab{position:relative;height:44px;margin-top:22px}
+.fidlab>div{position:absolute;inset:0;text-align:center;
+  transition:opacity var(--dur-base) var(--ease-standard)}
+.fidlab .l1{opacity:1}.fidlab .l2{opacity:0}
+.fidx.done ~ .fidlab .l1,.done-scope .fidlab .l1{opacity:0}
+.done-scope .fidlab .l2{opacity:1}
+@media (prefers-reduced-motion: reduce){
+  /* colour still changes (it carries meaning); all travel and the draw collapse */
+  .fid,.fid b,.fid .gl>*,.fidlab>div{transition-duration:.01ms}
+  .fidx.done b{transform:none}
+  .fidx.done .tick path{animation-duration:.01ms;animation-delay:0ms}
+}
 .fid.ok .gl span{width:56px;height:56px;border-radius:10px;background:var(--pos);color:var(--paper);display:flex;align-items:center;justify-content:center;font-size:26px}
 /* guardian picker — 2-up grid, "Default" band, orange outline = selected */
 /* All four cards must be IDENTICAL in size. The "Default" band is absolutely
@@ -1699,6 +1741,28 @@ ul.tick li:before{content:"→";position:absolute;left:2px;color:var(--accent-in
           </div>
         </div></div></div>
         <div class="scrnote">Brackets flip orange &rarr; green. Colour is paired with a tick and a word, never colour alone (SC 1.4.1).</div></div>
+      <div><div class="scrcap"><i></i>04a &rarr; 04b &middot; Transition <span class="tag survive">live</span></div>
+        <div class="phone"><div class="screen"><div class="notch"></div><div class="mock" id="fidmock">
+          <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>
+          <div class="mpad" style="flex:1;display:flex;flex-direction:column">
+            <div class="obtop"><button class="obback" aria-label="Go back">&lsaquo;</button><div class="progdots"><i class="on"></i><i class="on"></i><i></i><i></i></div></div>
+            <div class="obmid">
+              <div class="fid fidx" id="fidx">
+                <b></b><b></b><b></b><b></b>
+                <span class="gl">
+                  <span class="face svgic" style="--ic:url(assets/icons/face.svg);width:52px;height:52px"></span>
+                  <span class="tick"><svg viewBox="0 0 56 56"><circle cx="28" cy="28" r="28"/><path d="M16 29l8 8 16-17"/></svg></span>
+                </span>
+              </div>
+              <div class="fidlab">
+                <div class="l1"><div style="font-family:var(--display);font-weight:800;font-size:15px">Face ID set up</div></div>
+                <div class="l2"><div style="font-family:var(--display);font-weight:800;font-size:15px">Confirmed!</div><p class="obp" style="margin-top:4px">Only one more step!</p></div>
+              </div>
+            </div>
+            <div class="zone"><button class="btn btn-primary" style="width:100%" id="fidbtn">Simulate scan &#9654;</button></div>
+          </div>
+        </div></div></div>
+        <div class="scrnote"><b>Tap &ldquo;Simulate scan&rdquo; to watch it.</b> The brackets are on screen in <em>both</em> states, so they never re-draw &mdash; they only recolour and pull in 8&percnt;, like a lens locking focus. The glyph carries the motion: the face scales out as the tick scales in, then the tick <b>stroke draws</b>. Sequenced from the tokens &mdash; brackets <code>200ms</code>, glyph <code>320ms</code>, draw <code>350ms</code> at <code>+180ms</code> &mdash; never one long tween. Reduced motion keeps the colour change (it carries meaning) and drops all travel.</div></div>
       <div><div class="scrcap"><i></i>06 &middot; Choose your Guardian <span class="tag survive">3/4</span></div>
         <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
           <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>
@@ -2418,6 +2482,24 @@ document.getElementById('theme').addEventListener('click',()=>{
   const stag0=$('stag'); if(stag0){[...stag0.children].forEach((r,i)=>r.style.animationDelay=(i*40)+'ms');stag0.classList.add('go');}
   const okw0=$('okw'); if(okw0) okw0.classList.add('go');
   runStepper();
+  // 04a -> 04b Face ID transition demo
+  (function(){
+    const fx=document.getElementById('fidx'), bt=document.getElementById('fidbtn'),
+          mk=document.getElementById('fidmock');
+    if(!fx||!bt||!mk) return;
+    let busy=false;
+    bt.addEventListener('click',()=>{
+      if(busy) return; busy=true;
+      fx.classList.remove('done'); mk.classList.remove('done-scope');
+      void fx.offsetWidth;                       // restart the stroke draw
+      bt.textContent='Scanning\u2026';
+      setTimeout(()=>{
+        fx.classList.add('done'); mk.classList.add('done-scope');
+        bt.textContent='Continue';
+      },700);
+      setTimeout(()=>{ bt.textContent='Replay \u21ba'; busy=false; },1900);
+    });
+  })();
   // segmented action bar: active tab expands + reveals label, others collapse to icons
   document.querySelectorAll('[data-seg]').forEach(bar=>{
     const segs=[...bar.querySelectorAll('.seg')];
