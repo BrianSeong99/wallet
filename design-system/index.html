@@ -464,6 +464,11 @@ ul.tick li:before{content:"→";position:absolute;left:2px;color:var(--accent-in
 .fid .gl{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:34px;color:var(--ink-2)}
 .fid.ok b{border-color:var(--pos)}
 
+/* SHAPE RULE — status is always a CIRCLE. Every status indicator in the system
+   (.ok2 success, .isb info badges, .dots passcode, .stp stepper) is 50%. The
+   rounded square is reserved for CONTAINERS — the scan viewport, icon squares,
+   cards. Keeping the badge circular inside the square viewport is what makes the
+   two read as different things rather than one ambiguous shape. */
 /* ── 04a → 04b TRANSITION ──────────────────────────────────────────────────
    Benji's rules applied literally:
    · The brackets are ALREADY on screen in both states, so they must NOT re-draw
@@ -505,7 +510,7 @@ ul.tick li:before{content:"→";position:absolute;left:2px;color:var(--accent-in
   .fidx.done b{transform:none}
   .fidx.done .tick path{animation-duration:.01ms;animation-delay:0ms}
 }
-.fid.ok .gl span{width:56px;height:56px;border-radius:10px;background:var(--pos);color:var(--paper);display:flex;align-items:center;justify-content:center;font-size:26px}
+.fid.ok .gl span{width:56px;height:56px;border-radius:50%;background:var(--pos);color:var(--paper);display:flex;align-items:center;justify-content:center;font-size:26px}
 /* guardian picker — 2-up grid, "Default" band, orange outline = selected */
 /* All four cards must be IDENTICAL in size. The "Default" band is absolutely
    positioned and its height is reserved as padding-top on EVERY card, so a card
