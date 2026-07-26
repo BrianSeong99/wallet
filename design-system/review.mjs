@@ -18,6 +18,15 @@
 // The theme switch MUST happen in a separate evaluate() call from the measurement —
 // doing both in one synchronous block yields stale computed styles and silently
 // fabricates failures.
+//
+// Same trap, second form — and the cause of a false failure that survived three
+// investigations. getComputedStyle returns the INTERPOLATED value while a transition is
+// running. `.mseg .seg` is the only component that transitions `background` and `color`,
+// so flipping data-theme started a 280ms colour transition on it; measuring 120ms later
+// read white-on-#232323 (15.7:1) as rgb(187,187,187) on rgb(113,113,113) — 2.54:1.
+// Every other component passed simply because it doesn't transition colour.
+// prep() therefore disables ALL animation and transition for the duration of the audit,
+// which makes both the theme flip and the section reveal resolve instantly.
 
 import { chromium } from 'playwright';
 
@@ -25,6 +34,24 @@ const URL = process.env.DS_URL ?? 'http://localhost:4599';
 const SHOT = process.argv.includes('--shot') ? process.argv[process.argv.indexOf('--shot') + 1] : null;
 const SAFE_BOTTOM = 34; // iPhone 17 home-indicator reserve, in points
 const SAFE_TOP = 62;
+
+// Reveal every section and freeze all motion, so every measurement sees the settled
+// value instead of a frame partway through a transition or keyframe.
+const prep = () => {
+  if (!document.getElementById('audit-style')) {
+    const st = document.createElement('style');
+    st.id = 'audit-style';
+    st.textContent = '*,*::before,*::after{animation:none!important;transition:none!important}' +
+                     '.section{opacity:1!important}';
+    document.head.appendChild(st);
+  }
+  document.querySelectorAll('.section').forEach(s => s.classList.add('active'));
+};
+
+const cleanup = () => {
+  document.getElementById('audit-style')?.remove();
+  document.querySelectorAll('.section').forEach(s => s.classList.toggle('active', s.id === 'allscreens'));
+};
 
 const probe = () => {
   const parse = c => {
@@ -48,7 +75,6 @@ const probe = () => {
     return base;
   };
 
-  document.querySelectorAll('.section').forEach(s => s.classList.add('active'));
   const out = [];
   document.querySelectorAll('.phone').forEach(ph => {
     const scr = ph.querySelector('.screen');
@@ -122,7 +148,6 @@ const probe = () => {
     });
     out.push(f);
   });
-  document.querySelectorAll('.section').forEach(s => s.classList.toggle('active', s.id === 'allscreens'));
   return out;
 };
 
@@ -138,12 +163,14 @@ const run = async () => {
   await page.goto(`${URL}?cb=${Date.now()}`, { waitUntil: 'networkidle' });
 
   const results = {};
+  await page.evaluate(prep);
   for (const theme of ['light', 'dark']) {
     // separate call — see header note about stale computed styles
     await page.evaluate(t => { document.documentElement.dataset.theme = t; }, theme);
     await page.waitForTimeout(120);
     results[theme] = await page.evaluate(probe);
   }
+  await page.evaluate(cleanup);
 
   let total = 0;
   const tally = { inSafeArea: 0, clipped: 0, overflow: 0, contrast: 0, icons: 0, targets: 0, tiny: 0 };
@@ -177,8 +204,8 @@ const run = async () => {
 
   if (SHOT) {
     await page.evaluate(t => { document.documentElement.dataset.theme = t; }, 'light');
+    await page.evaluate(prep);
     const n = await page.evaluate(q => {
-      document.querySelectorAll('.section').forEach(s => s.classList.add('active'));
       const m = [...document.querySelectorAll('.phone')].filter(p =>
         (p.parentElement?.querySelector('.scrcap,.caphead')?.textContent || '').includes(q));
       m.forEach((p, i) => p.setAttribute('data-shot', i));
