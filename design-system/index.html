@@ -1313,6 +1313,28 @@ exit    = { x: `${dir * (back ? 99.5 : -33)}%`, opacity: back ? 1 : 0.8 };
 if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = { opacity: 0 }; }</code></pre>
     <div class="callout"><b>What has to change in the app.</b> <b>(1)</b> <code>Navigator</code>&rsquo;s <code>PushExitPosition</code> is byte-identical to <code>FocusPosition</code>, so the outgoing card animates <b>zero pixels</b> — there is no parallax and back is indistinguishable from forward. <b>(2)</b> Onboarding slides <code>±1vw ≈ 4px</code> on a 402pt screen, which costs 200ms and shows nothing. <b>(3)</b> Three other push specs (CSS <code>.mobile-page-enter</code>, <code>TabLayout</code>&rsquo;s spring, the framer tween) collapse into this one. <b>(4)</b> Apple&rsquo;s push is <em>interactive</em> — swipe-back, and an interrupted push converts to a pop rather than cancelling; that is a larger change than a tween swap and is not covered here.</div>
 
+    <h3 class="sh">App consolidation <span class="small">— survive / merge / retire, per transition</span></h3>
+    <p class="sub">Audited from the shipped code. Same verdict model as the component map: what becomes canonical, what folds into it, what gets deleted.</p>
+    <table class="map">
+      <tr><th>Transition</th><th>Today</th><th>Verdict</th></tr>
+      <tr><td><code>SegmentedActionBar</code> pill</td><td><code>layoutId</code> FLIP, .24s <code>easeInOut</code></td><td><span class="tag survive">SURVIVE</span> canonical pill — but move to <code>springs.pill</code></td></tr>
+      <tr><td><code>HomeSwipeContainer</code> drag</td><td>framer <code>drag</code> + <code>springs.standard</code></td><td><span class="tag survive">SURVIVE</span> — <b>add <code>useSprings()</code></b> (ignores reduced motion today)</td></tr>
+      <tr><td>vaul drawer</td><td>500ms <code>cubic-bezier(.32,.72,0,1)</code></td><td><span class="tag survive">SURVIVE</span> — <b>add a reduced-motion rule</b> (vaul ships none)</td></tr>
+      <tr><td><code>Navigator</code> push/pop</td><td><code>x:8%</code>, 150ms; <b>exit configs are byte-identical to resting</b></td><td><span class="tag merge">MERGE</span> → <code>iosPush</code>. <b>Back animates zero pixels — fix first</b></td></tr>
+      <tr><td>CSS <code>.mobile-page-enter</code></td><td><code>translateX(8%)</code>, 150ms <code>ease-out</code>, enter-only, 17 routes</td><td><span class="tag retire">RETIRE</span> → <code>iosPush</code> (no exit animation exists at route level)</td></tr>
+      <tr><td>Onboarding step</td><td><code>±1vw</code> (&asymp;4px!), 200ms <code>easeInOut</code></td><td><span class="tag merge">MERGE</span> → Lateral 280ms. <b>4px is invisible — it costs 200ms and shows nothing</b></td></tr>
+      <tr><td><code>TabLayout</code> tab switch</td><td><code>x:8%</code> + spring, no <code>AnimatePresence</code></td><td><span class="tag retire">REPLACE</span> → <b>fade</b>. Material forbids sliding top-level; also ignores reduced motion</td></tr>
+      <tr><td><code>TabPicker</code> pill</td><td>framer <em>default</em> spring 550/30 (bouncier than everything else)</td><td><span class="tag merge">MERGE</span> → <code>springs.pill</code></td></tr>
+      <tr><td><code>TokenDetail</code> timeframe pill</td><td><code>spring bounce .15 duration .4</code> — a 3rd pill spec</td><td><span class="tag merge">MERGE</span> → <code>springs.pill</code></td></tr>
+      <tr><td><code>BottomNav</code></td><td>colour crossfade only, no indicator</td><td><span class="tag merge">DECIDE</span> — inconsistent with the pill directly above it</td></tr>
+      <tr><td><code>ProgressIndicator</code></td><td>0.3s <code>[.4,0,.2,1]</code> (M3 <b>legacy</b> curve)</td><td><span class="tag merge">MERGE</span> → <code>durations.normal</code> + <code>easeInOut</code></td></tr>
+      <tr><td><code>DappExpanderOverlay</code></td><td>390ms bespoke curve, animates <b><code>left/top/width/height</code></b></td><td><span class="tag retire">REWRITE</span> — layout-animating; use FLIP/<code>layout</code></td></tr>
+      <tr><td><code>Navigator</code> <code>present</code>/<code>dismiss</code></td><td><code>y:25vw</code> path — <b>no route registers it</b></td><td><span class="tag retire">RETIRE</span> dead code</td></tr>
+      <tr><td><code>TransactionProgressModal</code></td><td>headless — returns no markup</td><td><span class="tag retire">RETIRE</span> from docs; the live equivalent is the routed page</td></tr>
+      <tr><td>Onboarding <code>&lt;Header&gt;</code> <code>AnimatePresence</code></td><td>wraps a non-motion component — inert</td><td><span class="tag retire">RETIRE</span> dead wrapper</td></tr>
+    </table>
+    <div class="callout warn"><b>Ranked, if you only do some of it.</b> <b>1.</b> <code>Navigator</code>&rsquo;s back direction — a back navigation that looks identical to forward is the one defect users feel as &ldquo;confusing&rdquo; rather than &ldquo;plain&rdquo;. <b>2.</b> Tab switch &rarr; fade; highest-traffic transition in the app and currently against Material&rsquo;s explicit don&rsquo;t. <b>3.</b> Route the two highest-traffic transitions through <code>useSprings()</code> so reduced motion actually applies. <b>4.</b> Collapse the four push specs into <code>iosPush</code>. <b>5.</b> The three pill specs into <code>springs.pill</code>. Everything else is cleanup.</div>
+
     <h3 class="sh">Don&rsquo;ts that bite in a WebView</h3>
     <ul class="tick">
       <li><b>Never animate <code>left/top/width/height</code>.</b> Google measured <b>50% dropped frames</b> vs 1% for <code>transform</code>. Same for <code>box-shadow</code> and large <code>blur</code> — paint-bound, not compositable.</li>
