@@ -308,14 +308,30 @@ table.map td code{font-size:12px}
 .mpill .g{width:7px;height:7px;border-radius:50%;background:var(--pos)}
 /* balance card */
 .mbc{border-radius:var(--radius-lg);overflow:hidden;box-shadow:var(--shadow-1)}
-.mbc .top{padding:11px 16px 11px}
+.mbc .top{padding:10px 16px 11px}
+/* Label and delta share one row. Previously the delta sat on its own line below the
+   amount, costing a full ~20px band on the screen the user called top-heavy; the delta
+   is an attribute OF the balance, so it reads fine beside its label. */
+.mbc .balrow{display:flex;align-items:center;justify-content:space-between;gap:10px}
 .mbc .tl{font-size:11px;font-weight:600;color:var(--ink-2)}
-.mbc .amt{font-family:var(--num);font-feature-settings:var(--num-feat);font-weight:800;font-size:29px;letter-spacing:-.02em;margin-top:3px;display:flex;align-items:baseline;gap:6px}
+.mbc .amt{font-family:var(--num);font-feature-settings:var(--num-feat);font-weight:800;font-size:32px;letter-spacing:-.02em;margin-top:5px;display:flex;align-items:baseline;gap:6px}
 .mbc .amt small{font-size:12px;color:var(--ink-2);font-weight:500}
-.mbc .delta{display:inline-block;margin-top:7px;font-size:11px;font-weight:700;background:rgba(255,255,255,.16);color:var(--pure-white);padding:2px 9px;border-radius:var(--radius-full);font-family:var(--num);font-feature-settings:var(--num-feat)}
-.mbc .bot{border-top:1px dashed var(--rule-strong);padding:7px 16px;display:flex;align-items:center;justify-content:between;gap:8px}
-.mbc .bot .acc{font-family:var(--mono);font-size:11px;font-weight:500;flex:1}
-.mbc .bot .m{width:20px;height:20px;border-radius:50%;background:rgba(255,255,255,.16);display:flex;align-items:center;justify-content:center;font-size:11px}
+/* Delta uses the data-status scope rather than a per-instance colour. The shipped card
+   hardcodes bg-[#A8BBA3] with white text = 2.04:1; the wash+ink pair measures >5:1. */
+.mbc .delta{font-size:11px;font-weight:700;padding:3px 9px;border-radius:var(--radius-full);
+  font-family:var(--num);font-feature-settings:var(--num-feat);
+  background:var(--st-wash);color:var(--st);white-space:nowrap}
+/* Solid hairline, not dashed: the dashed rule read as a receipt tear and is the one
+   decorative flourish left on an otherwise restrained surface. */
+.mbc .bot{border-top:1px solid var(--rule);padding:0 6px 0 16px;display:flex;align-items:center;justify-content:space-between;gap:8px;min-height:44px}
+.mbc .bot .acc{font-family:var(--mono);font-size:11px;font-weight:500;flex:1;min-width:0;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+/* 44pt hit area, 24pt visible dot. The shipped button is w-5 h-5 = 20pt, and it slipped
+   past the audit because it is a <span>, not a <button>. */
+.mbc .bot .m{min-width:44px;min-height:44px;border:0;background:none;padding:0;
+  display:flex;align-items:center;justify-content:center;color:inherit;cursor:pointer}
+.mbc .bot .m i{width:24px;height:24px;border-radius:50%;background:var(--rule-strong);
+  display:flex;align-items:center;justify-content:center;font-size:11px;font-style:normal}
 /* action bar */
 .mactions{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:16px}
 .mact{display:flex;flex-direction:column;align-items:center;gap:6px}
@@ -388,7 +404,22 @@ table.map td code{font-size:12px}
 .mseg .seg.on .lbl{max-width:12rem;opacity:1;margin-left:8px}
 @media (prefers-reduced-motion: reduce){.mseg .seg,.mseg .seg .lbl{transition-duration:.01ms}}
 /* fund-wallet prompt */
-.mprompt{margin-top:10px;background:var(--surface-2);border-radius:var(--radius-md);padding:10px 14px;display:flex;align-items:center;gap:8px}
+.mprompt{display:flex;align-items:center;gap:10px;background:var(--surface-2);
+  border-radius:var(--radius-md);padding:10px 6px 10px 13px}
+/* Variant = the wash from data-status plus a status dot. Title and body stay ink so
+   legibility never depends on the tint. The SHIPPED PromptCard declares
+   variant: 'default' | 'warning' | 'critical' and HomePrompts passes 'warning', but the
+   component never destructures `variant` -- so every prompt renders identically today. */
+.mprompt[data-status]{background:var(--st-wash)}
+.mprompt .pdot{width:8px;height:8px;border-radius:50%;background:var(--st);flex:none}
+.mprompt .ptx{flex:1;min-width:0}
+.mprompt .pt{font-family:var(--display);font-weight:800;font-size:13px;line-height:1.25}
+.mprompt .pb{font-size:11.5px;color:var(--ink-2);margin-top:2px;line-height:1.4}
+.mprompt .pdis{min-width:44px;min-height:44px;border:0;background:none;padding:0;flex:none;
+  display:flex;align-items:center;justify-content:center;color:var(--ink-2);font-size:13px;cursor:pointer}
+.mpdots{display:flex;justify-content:center;gap:5px;margin-top:7px}
+.mpdots i{width:5px;height:5px;border-radius:50%;background:var(--rule-strong);display:block}
+.mpdots i.on{background:var(--ink-3)}
 .mprompt .tx{flex:1}
 .mprompt .tt{font-family:var(--display);font-weight:800;font-size:14px}
 .mprompt .ds{font-size:11.5px;color:var(--ink-2);margin-top:1px}
@@ -1955,12 +1986,12 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
               <div class="seg" data-act="swap"><span class="svgic" style="--ic:url(assets/icons/convert.svg);" aria-hidden="true"></span><span class="lbl">Swap</span></div>
             </div>
             <div class="mbc">
-              <div class="top" data-surface="graphite"><div class="tl">Total Balance</div>
-                <div class="amt">$0.00 <small>USD</small></div>
-                <div class="delta" style="background:var(--pos-wash);color:var(--pos)">+0.00 (0.00%)</div></div>
-              <div class="bot" data-surface="graphite-deep"><span class="acc">Account #: mtst1ap8…r4fp</span><span class="m">⋯</span></div>
+              <div class="top" data-surface="graphite">
+                <div class="balrow"><div class="tl">Total Balance</div><div class="delta" data-status="pos">+0.00 (0.00%)</div></div>
+                <div class="amt">$0.00 <small>USD</small></div></div>
+              <div class="bot" data-surface="graphite-deep"><span class="acc">Account #: mtst1ap8…r4fp</span><button class="m" aria-label="Account options"><i>⋯</i></button></div>
             </div>
-            <div class="mprompt"><div style="flex:1"><div style="font-family:var(--display);font-weight:800;font-size:13px">Fund your wallet</div><div style="font-size:11.5px;color:var(--ink-2);margin-top:1px">Add tokens to get started.</div></div><span style="font-weight:700;font-size:12px;color:var(--accent-ink)">Fund now</span><span style="color:var(--ink-3)">✕</span></div>
+            <div class="mprompt" data-status="warn"><span class="pdot nti"></span><div class="ptx"><div class="pt">Verify your recovery phrase</div><div class="pb">Confirm you saved your recovery phrase so you can restore this wallet later.</div></div><button class="pdis" aria-label="Dismiss">&#10005;</button></div>
             <div class="masset-h">Assets</div>
             <div class="msearch">Search for tokens</div>
             <div class="mrow"><div class="ic"><img src="assets/icons/miden.svg" alt=""></div><div><div class="nm">Miden</div><div class="ad">0.00 MIDEN</div></div><div class="rt"><div class="f">$0.00</div><div class="b" style="color:var(--pos)">+0.00%</div></div></div>
@@ -2481,11 +2512,12 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
               <div class="seg" data-act="swap"><span class="svgic" style="--ic:url(assets/icons/convert.svg);" aria-hidden="true"></span><span class="lbl">Swap</span></div>
             </div>
             <div class="mbc">
-              <div class="top" data-surface="graphite"><div class="tl">Total Balance</div>
-                <div class="amt">$12,480.50 <small>USD</small></div>
-                <div class="delta" style="background:var(--pos-wash);color:var(--pos)">+$40.00 (0.32%)</div></div>
-              <div class="bot" data-surface="graphite-deep"><span class="acc">Account #: mtst1ap8…r4fp</span><span class="m">⋯</span></div>
+              <div class="top" data-surface="graphite">
+                <div class="balrow"><div class="tl">Total Balance</div><div class="delta" data-status="pos">+$40.00 (0.32%)</div></div>
+                <div class="amt">$12,480.50 <small>USD</small></div></div>
+              <div class="bot" data-surface="graphite-deep"><span class="acc">Account #: mtst1ap8…r4fp</span><button class="m" aria-label="Account options"><i>⋯</i></button></div>
             </div>
+            <div class="mprompt" data-status="warn"><span class="pdot nti"></span><div class="ptx"><div class="pt">Verify your recovery phrase</div><div class="pb">Confirm you saved your recovery phrase so you can restore this wallet later.</div></div><button class="pdis" aria-label="Dismiss">&#10005;</button></div>
             <div class="masset-h">Assets</div>
             <div class="msearch">Search for tokens</div>
             <div class="mrow"><div class="ic"><img src="assets/icons/miden.svg" alt=""></div><div><div class="nm">Miden</div><div class="ad">1,204.50 MIDEN</div></div><div class="rt"><div class="f">$12,480.50</div><div class="b" style="color:var(--pos)">+0.32%</div></div></div>
