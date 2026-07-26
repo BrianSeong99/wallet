@@ -407,12 +407,11 @@ ul.tick li:before{content:"→";position:absolute;left:2px;color:var(--accent-in
 .sheetwrap.open{pointer-events:auto}
 .sheetback{position:absolute;inset:0;background:rgba(0,0,0,.45);opacity:0;transition:opacity var(--dur-spatial) ease}
 .sheetwrap.open .sheetback{opacity:1}
-.sheet{position:absolute;left:0;right:0;bottom:0;margin:0 auto;max-width:520px;background:var(--surface);border-radius:var(--radius-lg) var(--radius-lg) 0 0;padding:14px 20px 30px;transform:translateY(105%);transition:transform var(--dur-spatial) var(--ease-spatial);box-shadow:var(--shadow-2)}
-.sheetwrap.open .sheet{transform:translateY(0)}
-.sheet .handle{width:40px;height:5px;border-radius:var(--radius-full);background:var(--rule-strong);margin:0 auto 14px}
-.sheet .sttl{font-family:var(--display);font-weight:800;font-size:17px;margin-bottom:6px}
-.sheet .srow{display:flex;align-items:center;gap:12px;padding:11px 0;border-top:1px solid var(--rule)}
-.sheet .srow .d{width:34px;height:34px;border-radius:50%;background:var(--accent);color:var(--on-accent);display:flex;align-items:center;justify-content:center;font-weight:800;font-family:var(--display)}
+/* the live sheet demo reuses the SHARED anatomy (.sheetc) rather than a second
+   sheet design — one overlay language in the document, same as in the app. */
+.sheetwrap .sheetc{position:absolute;left:0;right:0;bottom:0;margin:0 auto;max-width:520px;
+  transform:translateY(105%);transition:transform var(--dur-spatial) var(--ease-spatial)}
+.sheetwrap.open .sheetc{transform:translateY(0)}
 @media (prefers-reduced-motion: reduce){.btn.press,.segdemo .ind,.toggle .knob,.sheet,.sheetback{transition-duration:.01ms}.skel,.replay.go .box{animation-duration:.01ms}}
 /* ---------- full screen set ---------- */
 .scrgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-top:16px;--ps:.5}
@@ -1218,15 +1217,36 @@ pre.code code{background:none;padding:0;font-family:var(--mono);font-size:11.5px
   <section class="section" id="motion">
     <div class="eyebrow">Foundations</div>
     <h1 class="title">Motion</h1>
-    <p class="lede">Motion is spatial and quick — it explains where things come from, then gets out of the way. Three durations, two easings.</p>
+    <p class="lede">Motion explains where things come from, then gets out of the way. <b>Springs are the primary mechanism</b> — the app's presets are derived from iOS UIKit (<code>response</code>/<code>dampingRatio</code> → stiffness/damping). Tweens are the fallback for opacity and colour, where a spring adds nothing.</p>
+
+    <div class="callout warn"><b>Corrected — I had invented these tokens.</b> This table previously published <code>dur-fast 150ms</code> / <code>base 200ms</code> / <code>spatial 320ms</code> and <code>ease-spatial cubic-bezier(.22,1,.36,1)</code>. <b>None of those exist in the codebase.</b> The real values below are read from <code>src/lib/animation/{durations,easings,springs}.ts</code>. The app has a well-built motion system that its own components bypass — the fix is to use it, not to invent a parallel one.</div>
+
+    <h3 class="sh">Springs <span class="small">— <code>src/lib/animation/springs.ts</code>, use these first</span></h3>
+    <table class="map">
+      <tr><th>Preset</th><th>stiffness / damping / mass</th><th>Use</th></tr>
+      <tr><td><code>snappy</code></td><td>500 / 38 / 1</td><td>button presses, taps, capsule chrome</td></tr>
+      <tr><td><b><code>standard</code></b></td><td><b>322 / 32 / 1</b></td><td><b>default screen &amp; sheet motion</b> (≈ response .4, damping .89)</td></tr>
+      <tr><td><code>sheetPresent</code></td><td>380 / 34 / 1</td><td>bottom sheet present / dismiss</td></tr>
+      <tr><td><code>morph</code></td><td>220 / 30 / 1.2</td><td>shared-element transitions (slow, soft)</td></tr>
+      <tr><td><code>pill</code></td><td>320 / 30</td><td>tab-bar pill</td></tr>
+      <tr><td><code>magnetic</code> · <code>settle</code> · <code>dragRelease</code></td><td>380/26 · 260/30 · 420/40</td><td>bubble fly-to-corner · final landing · post-drag rebound</td></tr>
+    </table>
+
+    <h3 class="sh">Tweens <span class="small">— <code>durations.ts</code> + <code>easings.ts</code>, for opacity &amp; colour</span></h3>
     <table class="map">
       <tr><th>Token</th><th>Value</th><th>Use</th></tr>
-      <tr><td>dur-fast</td><td>150ms</td><td>hover, color, tap feedback, page slide-in</td></tr>
-      <tr><td>dur-base</td><td>200ms</td><td>modal fade, toggle, tab pill</td></tr>
-      <tr><td>dur-spatial</td><td>320ms</td><td>bottom-sheet in/out, dApp bubble park</td></tr>
-      <tr><td>ease-standard</td><td>cubic-bezier(.25,.1,.25,1)</td><td>color &amp; hover feedback</td></tr>
-      <tr><td>ease-spatial</td><td>cubic-bezier(.22,1,.36,1)</td><td>sheets &amp; things that travel (spring-ish)</td></tr>
+      <tr><td><code>fast</code></td><td><b>180ms</b></td><td>colour, hover, tap feedback, cross-fades</td></tr>
+      <tr><td><code>normal</code></td><td><b>280ms</b></td><td>label swaps, size eases, progress</td></tr>
+      <tr><td><code>slow</code></td><td><b>420ms</b></td><td>larger area changes</td></tr>
+      <tr><td><code>extraSlow</code></td><td><b>600ms</b></td><td>ambient, non-input-driven</td></tr>
+      <tr><td><code>easeOutCubic</code></td><td>cubic-bezier(.16, 1, .3, 1)</td><td>iOS soft-out — entering content</td></tr>
+      <tr><td><code>easeInOut</code></td><td>cubic-bezier(.65, 0, .35, 1)</td><td>symmetrical, balanced</td></tr>
+      <tr><td><code>easeInCubic</code></td><td>cubic-bezier(.32, 0, .67, 0)</td><td>exits, small state changes</td></tr>
+      <tr><td><code>easeOutBack</code></td><td>cubic-bezier(.34, 1.56, .64, 1)</td><td>slight overshoot (bubble pop-in)</td></tr>
     </table>
+    <p class="sub" style="margin-top:10px">Page transitions use their own pair — <b>540ms / cubic-bezier(.32,.72,0,1)</b>, Apple's iOS parallax — see below. That curve is also what <code>vaul</code> already uses for sheets, so the two agree.</p>
+
+    <div class="callout warn"><b>The drift this system is meant to stop.</b> The audit found <b>11 raw durations</b> inlined across the app (<code>.12 .15 .18 .2 .24 .28 .3 .32 .39 .4 .5</code>) with only <em>one</em> component using a duration token; <b>six easing curves</b> for equivalent work; <b>four different specs</b> for &ldquo;push a screen in from the right&rdquo;; <b>four</b> different animated-pill specs; and <code>prefers-reduced-motion</code> honoured in roughly <b>half</b> the app — with the two highest-traffic transitions (tab switch, home carousel) importing <code>springs</code> directly instead of <code>useSprings()</code>, so they run at full amplitude for users who asked for less.</div>
     <h3 class="sh">Page transitions <span class="small">— tap Play on each</span></h3>
     <div class="callout warn"><b>Two corrections from the research.</b> <b>(1)</b> Apple publishes <em>no</em> motion numbers — the HIG Motion page has zero durations and zero curves. iOS&rsquo;s 350ms push was <em>measured from the UIKit binary</em> (private <code>_UINavigationParallaxTransition</code>), so it is an observed constant, not a contract, and <b>its curve is genuinely unsourced</b> — anyone quoting &ldquo;UIKit uses easeInOut&rdquo; is guessing. <b>(2)</b> M3&rsquo;s duration/easing system is now <b>legacy</b>, superseded by spring physics; CSS cannot spring, so the token durations remain the right target for a WebView — a known divergence, not a mistake.</div>
     <div class="cmgrid">
@@ -1403,12 +1423,14 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
   <!-- motion demo: bottom sheet overlay -->
   <div class="sheetwrap" id="sheetwrap">
     <div class="sheetback"></div>
-    <div class="sheet">
-      <div class="handle"></div>
-      <div class="sttl">Select token</div>
-      <div class="srow"><span class="d"><img src="assets/icons/miden.svg" alt=""></span><div><div style="font-weight:700">Miden</div><div class="small mono">0.00 MIDEN</div></div></div>
-      <div class="srow"><span class="d"><img src="assets/icons/usdc.svg" alt=""></span><div><div style="font-weight:700">USDC</div><div class="small mono">0.00 USDC</div></div></div>
-      <button class="btn btn-secondary" id="closesheet" style="margin-top:16px;width:100%">Close</button>
+    <div class="sheetc">
+      <div class="shandle"></div>
+      <div class="shttl">Select token</div>
+      <div class="shsub">Choose which asset to send.</div>
+      <div class="shdiv"></div>
+      <div class="shrow"><span class="shav"><img src="assets/icons/miden.svg" alt=""></span><div style="flex:1"><div class="shnm">Miden</div><div class="shmeta">1,204.50 MIDEN</div></div><div class="shnm">$12,480.50</div></div>
+      <div class="shrow"><span class="shav"><img src="assets/icons/usdc.svg" alt="" style="background:#2775CA;border-radius:50%"></span><div style="flex:1"><div class="shnm">USDC</div><div class="shmeta">0.00 USDC</div></div><div class="shnm">$0.00</div></div>
+      <div class="shft"><button class="btn btn-secondary" id="closesheet">Close</button></div>
     </div>
   </div>
 
