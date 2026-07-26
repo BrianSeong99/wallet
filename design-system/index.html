@@ -106,7 +106,8 @@
   --act-send:#748A9A; --act-receive:#7C8B78; --act-swap:#8F829F; --act-earn:#777487;
   --tx-received:#A8BBA3; --tx-sent:#A3BCCF; --tx-swap:#C9BAD9; --tx-earn:#BDB9CC; --tx-faucet:#CDB0DE;
   --tx-glyph:#3F3F3F;
-  --nav-pill:rgba(231,117,55,.12);
+  --stack-tight:8px; --stack:12px; --stack-loose:24px;
+  --nav-pill:var(--surface-3); --nav-bg:rgba(255,255,255,.82);
   --balance:#4F4F4F; --balance-deep:#3D3D3D; --balance-fg:#FFFFFF; --balance-fg-muted:rgba(255,255,255,.70);
   --shadow-1:0 1px 2px rgba(63,63,63,.06),0 1px 3px rgba(63,63,63,.05);
   --shadow-2:0 6px 16px rgba(63,63,63,.10),0 2px 6px rgba(63,63,63,.06);
@@ -129,7 +130,7 @@
   --tx-received:#A8BBA3; --tx-sent:#A3BCCF; --tx-swap:#C9BAD9; --tx-earn:#BDB9CC; --tx-faucet:#CDB0DE;
   --tx-glyph:#1C1A18;
   /* Balance card goes near-black in dark mode (colors are light-mode only). */
-  --nav-pill:#191919;   /* dark: a recessed WELL, not a wash -- see note in .mnav */
+  --nav-pill:var(--surface-3); --nav-bg:rgba(43,43,43,.82);
   --balance:#101010; --balance-deep:#000000; --balance-fg:#FFFFFF; --balance-fg-muted:rgba(255,255,255,.70);
   --shadow-1:0 1px 2px rgba(0,0,0,.4); --shadow-2:0 8px 24px rgba(0,0,0,.5);
   --code-bg:#111111;
@@ -301,7 +302,7 @@ table.map td code{font-size:12px}
 .mock::after{content:'';position:absolute;left:50%;transform:translateX(-50%);bottom:9px;width:134px;height:5px;border-radius:var(--radius-full);background:var(--ink);opacity:.28;pointer-events:none}
 .mock .stat{height:var(--safe-top);flex:none;display:flex;align-items:flex-end;justify-content:space-between;padding:0 20px 8px;font-family:var(--mono);font-size:12px;font-weight:600;color:var(--ink)}
 .mock .stat .r{display:flex;gap:5px;align-items:center}
-.mpad{padding:6px 16px 0;overflow:hidden}
+.mpad{padding:6px 16px 0;overflow:hidden;gap:var(--stack)}
 .macct{display:flex;align-items:center;justify-content:space-between;padding:8px 4px 14px}
 .macct .l{display:flex;align-items:center;gap:9px}
 .macct .av{width:30px;height:30px;border-radius:50%;background:var(--pos);display:flex;align-items:center;justify-content:center;color:var(--paper);font-weight:800;font-size:13px;font-family:var(--display)}
@@ -340,9 +341,12 @@ table.map td code{font-size:12px}
 .mact .sq{width:46px;height:46px;border-radius:var(--radius-md);display:flex;align-items:center;justify-content:center;color:var(--pure-white);font-size:18px}
 .mact .lb{font-size:11px;font-weight:600;color:var(--ink-2)}
 /* assets */
-.masset-h{font-family:var(--display);font-weight:800;font-size:17px;margin:20px 0 10px}
-.msearch{background:var(--surface-2);border-radius:var(--radius-full);height:38px;display:flex;align-items:center;padding:0 16px;color:var(--ink-3);font-size:13px;margin-bottom:10px}
+.masset-h{font-family:var(--display);font-weight:800;font-size:17px;margin-top:calc(var(--stack-loose) - var(--stack));margin-bottom:calc(var(--stack-tight) - var(--stack))}
+.msearch{background:var(--surface-2);border-radius:var(--radius-full);height:38px;display:flex;align-items:center;padding:0 16px;color:var(--ink-3);font-size:13px}
 .mrow{display:flex;align-items:center;gap:12px;padding:11px 4px}
+/* Consecutive rows are one list, so they use the tight tier rather than the
+   component tier -- 12px between list items reads as separate cards. */
+.mrow + .mrow{margin-top:calc(var(--stack-tight) - var(--stack))}
 /* Token rows use the real self-coloured token logo — no tinted circle behind it.
    Activity rows use a neutral square + the real directional icon (same treatment as a
    collapsed action tab), so the icon's own colour is never flattened against its chip. */
@@ -418,12 +422,22 @@ table.map td code{font-size:12px}
    chevron, never both -- so a dismissible prompt has no affordance saying it is tappable.
    Showing both fixes that. The wash is reserved for `critical`, where an irreversible
    consequence genuinely warrants colour. */
-.mprompt{display:flex;align-items:center;gap:11px;background:var(--surface-2);
-  border-radius:var(--radius-md);padding:11px 4px 11px 13px}
+/* Vertical rhythm lives on the CONTAINER, not inside each component.
+   Before: .mpad was a flex column with `gap: normal`, so every child invented its own
+   spacing via padding/margins -- measured values in play were 2, 4, 6, 9, 10, 11, 13, 16,
+   20, almost none on the 4px grid, and rect-to-rect gaps came out 0/0/20/10/10/0. That is
+   the skill's named anti-pattern: "similar UI levels with inconsistent spacing".
+   Three tiers by hierarchy, all on the grid:
+     --stack-tight  8  within a group (section header -> search -> rows)
+     --stack        12 between stacked components in one group (bar -> card -> prompt)
+     --stack-loose  24 before a new section
+   Components stop carrying their own outer spacing; .mpad owns it. */
+.mprompt{display:flex;align-items:center;gap:12px;background:var(--surface-2);
+  border-radius:var(--radius-md);padding:12px}
 .mprompt[data-status="neg"]{background:var(--st-wash)}
 .mprompt .pic{width:32px;height:32px;border-radius:var(--radius-sm);flex:none;
   background:var(--surface-3);display:flex;align-items:center;justify-content:center;color:var(--ink-2)}
-.mprompt .pic .svgic{width:17px;height:17px}
+.mprompt .pic .svgic{width:20px;height:20px}   /* token size, not an arbitrary 17 */
 .mprompt .ptx{flex:1;min-width:0}
 .mprompt .pt{font-family:var(--display);font-weight:800;font-size:12.5px;line-height:1.3}
 /* Two lines, clamped -- not nowrap+ellipsis. The shipped body copy
@@ -435,9 +449,15 @@ table.map td code{font-size:12px}
    against longer localisations rather than as the normal state. */
 .mprompt .pb{font-size:11.5px;color:var(--ink-2);margin-top:2px;line-height:1.35;
   display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
-.mprompt .pch{color:var(--ink-3);font-size:13px;flex:none;line-height:1}
-.mprompt .pdis{min-width:44px;min-height:44px;border:0;background:none;padding:0;flex:none;
-  display:flex;align-items:center;justify-content:center;color:var(--ink-2);font-size:12px;cursor:pointer}
+/* 44pt hit area WITHOUT forcing asymmetric card padding: negative margin lets the target
+   overhang the 12px padding instead of the padding shrinking to 4px to accommodate it.
+   The chevron that used to sit here is gone -- a 5px glyph 11px from a 44px dismiss target
+   put two trailing affordances inside one thumb-width, which is the crowding the skill's
+   8px-between-targets rule is about. The card is role="button"; the directive title
+   carries the affordance, exactly as the shipped component does. */
+.mprompt .pdis{min-width:44px;min-height:44px;margin:-12px -6px -12px 0;border:0;background:none;
+  padding:0;flex:none;display:flex;align-items:center;justify-content:center;
+  color:var(--ink-2);font-size:12px;cursor:pointer}
 /* Dots appear at 2+ only, matching PromptCarousel, which renders a lone slide bare. */
 .mpdots{display:flex;justify-content:center;gap:5px;margin-top:8px}
 .mpdots i{width:5px;height:5px;border-radius:50%;background:var(--rule-strong);display:block}
@@ -471,22 +491,38 @@ table.map td code{font-size:12px}
    at once (ink + pill wash + filled icon), so it never depends on colour alone.
    Shadow is light-only: SPEC.md says dark uses surface-step and rule contrast, not
    shadow, and the shipped nav fires a 40px black shadow in both themes.
-   The active pill's fill DIRECTION flips by theme, and this is measured, not taste: in
-   dark, any accent wash lifts the surface and drags --accent-ink #E77537 down to
-   3.64:1 at .18 alpha and still only 4.35:1 at .06. A lifted neutral is worse
-   (surface-3 = 4.21:1). So light steps UP into a warm accent wash (5.08:1) and dark
-   steps DOWN into a recessed well at the page colour (5.86:1). Same shape language in
-   both themes; only the direction of the step changes -- the surface-step idiom. */
-.mnav{margin:auto 24px max(16px,var(--safe-bottom,0px));min-height:61px;padding:6px;border-radius:var(--radius-full);
-  display:flex;align-items:stretch;gap:6px;background:var(--surface);box-shadow:var(--shadow-1);position:relative}
-[data-theme="dark"] .mnav{box-shadow:none;background:var(--surface-2)}
+   Earlier this carried the accent, which forced a theme-dependent fill direction: a wash
+   in dark drags --accent-ink to 3.64:1 at .18 alpha and 4.35:1 even at .06, and a lifted
+   neutral was worse at 4.21:1, so light had to step UP into a wash while dark stepped DOWN
+   into a well. Going neutral removes that whole problem -- one direction, both themes,
+   9.01:1 and 12.63:1. The bar is also translucent with a backdrop blur, matching
+   Instagram and the iOS 26 material; the blur is static and must never be animated. */
+.mnav{--i:0;margin:auto 24px max(16px,var(--safe-bottom,0px));min-height:61px;padding:6px;
+  border-radius:var(--radius-full);display:flex;align-items:stretch;gap:6px;position:relative;
+  background:var(--nav-bg);-webkit-backdrop-filter:blur(20px) saturate(180%);
+  backdrop-filter:blur(20px) saturate(180%);box-shadow:var(--shadow-1)}
+/* ONE indicator, translated by index -- not a per-item background. translateX(%) resolves
+   against the pill's own width, which equals an item, so `var(--i) * (100% + 6px)` lands it
+   exactly on any tab without measuring anything. That is also why this ports to native:
+   it is one number, not DOM projection. CSS approximates springs.pill (320/30) with
+   --ease-out-cubic; the real spring is the implementation spec. */
+.mnav::before{content:'';position:absolute;top:6px;bottom:6px;left:6px;z-index:0;
+  width:calc((100% - 24px) / 3);border-radius:var(--radius-full);background:var(--nav-pill);
+  transform:translateX(calc(var(--i) * (100% + 6px)));
+  transition:transform var(--dur-normal) var(--ease-out-cubic)}
+@media (prefers-reduced-motion: reduce){.mnav::before{transition-duration:.01ms}}
+[data-theme="dark"] .mnav{box-shadow:none}   /* dark uses surface-step, not shadow */
 .mnav .t{flex:1;min-width:77px;min-height:49px;padding:5px 10px;border-radius:var(--radius-full);
   display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;
   color:var(--ink-2);font-size:11px;line-height:13px;font-weight:600;
-  background:none;border:0;cursor:pointer;position:relative}
+  background:none;border:0;cursor:pointer;position:relative;z-index:1}
 /* One weight, never switched: the shipped nav goes semibold -> bold on activation, which
-   reflows the label on every tab change. */
-.mnav .t.on{color:var(--accent-ink);background:var(--nav-pill)}
+   reflows the label on every tab change. Active is --ink, NOT the accent: a neutral pill
+   plus full-contrast ink measures 9.01:1 light / 12.63:1 dark, against 5.08/5.86 for
+   orange-on-a-wash -- and it needs no theme-dependent fill direction to get there.
+   Instagram does exactly this: neutral grey pill, filled black glyph, and no brand colour
+   anywhere in the nav. The accent stays for CTAs and the balance, where it is the point. */
+.mnav .t.on{color:var(--ink)}
 .mnav .t .svgic{width:24px;height:24px}
 .mnav .t .nbadge{position:absolute;top:2px;right:12px;width:8px;height:8px;border-radius:50%;
   background:var(--neg);box-shadow:0 0 0 1.5px var(--surface)}
@@ -2104,7 +2140,7 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
                 <div class="amt">$0.00 <small>USD</small></div></div>
               <div class="bot" data-surface="graphite-deep"><span class="acc">Account #: mtst1ap8…r4fp</span><button class="m" aria-label="Account options"><i>⋯</i></button></div>
             </div>
-            <div class="mprompt"><span class="pic"><span class="svgic" style="--ic:url(assets/icons/key.svg)" aria-hidden="true"></span></span><div class="ptx"><div class="pt">Verify your recovery phrase</div><div class="pb">Confirm you saved your recovery phrase so you can restore this wallet later.</div></div><span class="pch">&rsaquo;</span><button class="pdis" aria-label="Dismiss">&#10005;</button></div>
+            <div class="mprompt"><span class="pic"><span class="svgic" style="--ic:url(assets/icons/key.svg)" aria-hidden="true"></span></span><div class="ptx"><div class="pt">Verify your recovery phrase</div><div class="pb">Confirm you saved your recovery phrase so you can restore this wallet later.</div></div><button class="pdis" aria-label="Dismiss">&#10005;</button></div>
             <div class="masset-h">Assets</div>
             <div class="msearch">Search for tokens</div>
             <div class="mrow"><div class="ic"><img src="assets/icons/miden.svg" alt=""></div><div><div class="nm">Miden</div><div class="ad">0.00 MIDEN</div></div><div class="rt"><div class="f">$0.00</div><div class="b" style="color:var(--pos)">+0.00%</div></div></div>
@@ -2630,7 +2666,7 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
                 <div class="amt">$12,480.50 <small>USD</small></div></div>
               <div class="bot" data-surface="graphite-deep"><span class="acc">Account #: mtst1ap8…r4fp</span><button class="m" aria-label="Account options"><i>⋯</i></button></div>
             </div>
-            <div class="mprompt"><span class="pic"><span class="svgic" style="--ic:url(assets/icons/key.svg)" aria-hidden="true"></span></span><div class="ptx"><div class="pt">Verify your recovery phrase</div><div class="pb">Confirm you saved your recovery phrase so you can restore this wallet later.</div></div><span class="pch">&rsaquo;</span><button class="pdis" aria-label="Dismiss">&#10005;</button></div>
+            <div class="mprompt"><span class="pic"><span class="svgic" style="--ic:url(assets/icons/key.svg)" aria-hidden="true"></span></span><div class="ptx"><div class="pt">Verify your recovery phrase</div><div class="pb">Confirm you saved your recovery phrase so you can restore this wallet later.</div></div><button class="pdis" aria-label="Dismiss">&#10005;</button></div>
             <div class="masset-h">Assets</div>
             <div class="msearch">Search for tokens</div>
             <div class="mrow"><div class="ic"><img src="assets/icons/miden.svg" alt=""></div><div><div class="nm">Miden</div><div class="ad">1,204.50 MIDEN</div></div><div class="rt"><div class="f">$12,480.50</div><div class="b" style="color:var(--pos)">+0.32%</div></div></div>
@@ -3073,6 +3109,15 @@ document.getElementById('theme').addEventListener('click',()=>{
       dots.forEach((d,i)=>d.classList.toggle('f',i<n));});}
   const tgl=document.getElementById('tgl');
   if(tgl) tgl.addEventListener('click',()=>tgl.classList.toggle('on'));
+  // Bottom nav: tap a tab, the single indicator slides. --i is the only state; the pill's
+  // translate is derived, which is exactly how the native overlay would do it.
+  document.querySelectorAll('.mnav').forEach(nav=>{
+    const tabs=[...nav.querySelectorAll('.t')];
+    tabs.forEach((t,i)=>t.addEventListener('click',()=>{
+      nav.style.setProperty('--i',i);
+      tabs.forEach(x=>x.classList.toggle('on',x===t));
+    }));
+  });
   // ---- component motion library ----
   const $=id=>document.getElementById(id);
   function countUp(el,to,ms){const t0=performance.now();

@@ -246,3 +246,63 @@ every check inside it passes vacuously while the summary still counts it as a sc
 version of this hid three screens from the audit and still reported "50 screens, 0 failures".
 And flag-on is the superset: it is the only state containing the five-segment bar. A zero-sized
 frame is now a hard failure that names the frames, verified by forcing the flag off.
+
+## Vertical rhythm lives on the container, not inside components
+
+Measured on Home before the fix, rect-to-rect: **0 / 0 / 20 / 10 / 10 / 0**. `.mpad` was a
+flex column with `gap: normal`, so every child invented its own spacing through padding and
+margins — the values in play were 2, 4, 6, 9, 10, 11, 13, 16, 20, almost none on the 4px
+grid. The action bar, balance card and prompt were literally touching. This is the named
+anti-pattern from the UI/UX skill: *"similar UI levels with inconsistent spacing."*
+
+Three tiers, all on the grid, owned by the container:
+
+| Token | Value | Use |
+|---|---|---|
+| `--stack-tight` | 8px | within a group — section header → search → rows |
+| `--stack` | 12px | between stacked components in one group — bar → card → prompt |
+| `--stack-loose` | 24px | before a new section |
+
+After: **12 / 12 / 24 / 8 / 12 / 8**. Components no longer carry outer spacing; a component
+that needs a different gap expresses it as `calc(tier - var(--stack))`, so the tier stays
+visible in the code.
+
+## Bottom nav — active state is NEUTRAL, not the accent
+
+Corrected after seeing Instagram's actual bar. Its active state is a **neutral grey pill with
+a filled black glyph, and no brand colour anywhere in the nav**; the capsule is translucent
+with content bleeding through, spans ~87% of the width, and is icon-only.
+
+Measured, which is what settles it:
+
+| Treatment | Light | Dark |
+|---|---|---|
+| accent ink on an accent wash/well | 5.08:1 | 5.86:1 |
+| **neutral pill + `--ink`** | **9.01:1** | **12.63:1** |
+
+The accent version also needed a *theme-dependent fill direction* to pass at all — a wash in
+light, a recessed well in dark, because any wash in dark dragged the orange to 3.64:1. Going
+neutral removes that entire problem: one direction, both themes, with headroom. The accent
+stays for CTAs and the balance, where it is the point.
+
+**One indicator, translated by index** — `translateX(calc(var(--i) * (100% + 6px)))`, where
+`%` resolves against the pill's own width (one item). No measurement, no `layoutId`, and it
+ports to native as a single number. CSS approximates `springs.pill` (320/30) with
+`--ease-out-cubic`; the spring is the implementation spec.
+
+**Known asset gap:** Instagram also swaps outlined → filled icons on activation. Our set
+ships **one weight per glyph**, so that signal is unavailable — active differentiation rests
+on the pill plus a modest `--ink-2` → `--ink` step. Fixing it properly means authoring filled
+variants of the three nav glyphs.
+
+## Prompt card — internal spacing
+
+Was `padding: 11px 4px 11px 13px` with a uniform 11px gap, a 32px icon square holding a 17px
+glyph, and a 5px chevron sitting 11px from a 44px dismiss target. Now `padding: 12px`,
+`gap: 12px`, a 20px glyph (token size), and **no chevron** — two trailing affordances inside
+one thumb-width is the crowding the skill's 8px-between-targets rule exists to prevent. The
+dismiss keeps its 44pt target via `margin: -12px -6px -12px 0`, so the hit area overhangs the
+padding instead of the padding collapsing to 4px to fit it.
+
+Body clamps at 3 lines because that is what the real 76-character i18n string needs in a
+~200pt column. Card height went 86.8pt → 73.3pt.
