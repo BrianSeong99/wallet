@@ -148,3 +148,78 @@ are four meanings and now four tokens.
 |---|---|
 | ad-hoc `shadow-*`, `xs-white`, `top-light` | `flat` (none, rule border) · `--shadow-1` (e1) · `--shadow-2` (e2) |
 | `shadow.outline` (3px accent) | `--focus-ring` — keep, apply on all interactives |
+
+---
+
+# The `main.css` port — measured, and it is not a token swap
+
+Every value below was measured against the **shipping** `src/main.css`, not estimated.
+Reproduce with the checker in the session notes; page is `#ffffff` light / `#191919` dark.
+
+## Confirmed failures, with usage verified
+
+| Token | Light | Dark | Used as | Verdict |
+|---|---|---|---|---|
+| `--surface-balance-fg-muted` | **2.71** | **2.71** | `text-sm` + `text-base` in `BalanceCard.tsx:131,145` | **Real.** Small text, no test coupling. Safe to fix. |
+| `--status-negative` | **3.21** | **2.95** | `text-` *and* `bg-` *and* `bg-…/15` | Real, but dual-role — see below |
+| `--status-positive` | **2.19** | 8.01 | `text-` *and* `bg-` *and* `bg-…/15` | Real, but dual-role — see below |
+| white glyph on `--tx-received/-sent/-swap` | **2.42 / 2.37 / 2.10** | same | `text-pure-white` on `bg-tx-*`, `ActivityRow.tsx:99` | Real, but **test-coupled** — see below |
+| `--color-text-tertiary`, `--color-text-muted`, `--text-gray`, `--text-secondary` | 2.12 / 2.30 / 3.95 / 3.83 | ok | unaudited | **Do not touch yet** — a token failing in isolation is not a defect until its usage is known (disabled and decorative text are exempt) |
+
+`--accent-primary` as text is 3.00:1 light, which is the known-and-accepted case: it
+conforms as **large text only**, which is why the CTA label is spec'd at 19px/700.
+
+## Blocker 1 — the status tokens have the dual-role bug this doc already solved for accent
+
+`--status-positive` / `--status-negative` are each used **three ways**: `text-status-*`
+(needs 4.5:1), `bg-status-*` (a fill, needs 3:1 against its surround), and
+`bg-status-*/15` (a wash *behind* text). One value cannot serve all three — darkening
+`--status-positive` to `#4A6B44` fixes the text at 5.9:1 but turns the confirmed-status
+dot dark green and muddies the wash.
+
+This is exactly the fill-vs-text split already resolved for the accent
+(`--accent` fill / `--accent-ink` text), and **this document missed it** — the map above
+sends `status-positive` and `status-negative` to single `--pos` / `--neg` values with no
+note that each carries two jobs. Fix: add `--pos-ink` / `--neg-ink` for the `text-`
+usages, leave the fills alone. Call sites: `HistoryItem.tsx:37-43`,
+`HistoryDetails.tsx:121-158,788`, `Earn.tsx:118`.
+
+## Blocker 2 — the tx glyph fix would break tests
+
+The design decision (keep the pastel squares, darken the glyph to `--tx-glyph`) requires
+changing `text-pure-white` on `ActivityRow.tsx:99`. But `TransactionIcon.test.tsx`
+asserts `text-pure-white` and `[&_path]:fill-pure-white` in **four** places
+(`:78, :110, :140, :169`). Changing the glyph is therefore a **tested-behaviour change**,
+which the current phase forbids. It needs its own change with the test updates in the
+same commit.
+
+## Blocker 3 — the dark "grey box" is not `--surface-balance`
+
+The balance card's background is **not** `--surface-balance` when a colour is picked; it
+is `bg-card-{slate,orange,blue,green,purple}` with **`dark:bg-card-*/50`**
+(`BalanceCard.tsx:27-31`). At 50% alpha over `#191919` those composite to:
+
+| Card | Dark composite | vs page |
+|---|---|---|
+| slate | `rgb(72,70,80)` | 1.90:1 |
+| orange | `rgb(128,71,40)` | 2.39:1 |
+| blue | `rgb(85,98,109)` | 2.82:1 |
+| green | `rgb(96,106,94)` | 3.12:1 |
+| purple | `rgb(108,98,118)` | 3.06:1 |
+
+That desaturated mid-grey **is** the "grey box floating in dark mode" — the 50% wash is
+the mechanism. The agreed fix (dark card → near-black `#101010` + hairline, card colours
+light-mode only) means editing that class map, not a token value.
+
+## Consequence for sequencing
+
+Only one item — `--surface-balance-fg-muted` — is a genuine pure-token change. The other
+three each need either a new token plus call-site edits, or a test update. So the port is
+**four changes, not one**, and three of them touch components. Do them as separate
+commits in this order: muted-fg token → `--pos-ink`/`--neg-ink` split → dark card class
+map → tx glyph with its tests.
+
+**Correction to an earlier claim:** I previously listed "`--accent-critical` undefined in
+dark, so the irreversible-confirm button is invisible" as a shipping defect. It is not —
+`--accent-critical` does not exist anywhere in `src/`. That bug was only ever in the
+design-system mock, where it is already fixed.
