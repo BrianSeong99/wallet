@@ -542,10 +542,6 @@ ul.tick li:before{content:"→";position:absolute;left:2px;color:var(--accent-in
 .gcard .gname{font-family:var(--display);font-weight:800;font-size:12px}
 .gcard .gmeta{font-size:11px;color:var(--ink-2);padding:0 4px 7px;line-height:1.4}
 /* guardian explainer sheet */
-.isheet{border:2px solid var(--accent);border-radius:var(--radius-lg);padding:12px 12px 0;margin-top:10px;background:var(--surface)}
-.isheet .ih{font-family:var(--display);font-weight:800;font-size:15px;text-align:center}
-.isheet .ip{font-size:11px;color:var(--ink-2);text-align:center;line-height:1.45;margin-top:8px}
-.isheet .irule{height:3px;background:var(--accent);border-radius:var(--radius-full);margin:11px 0 9px}
 .isec{padding:8px 0}
 .isec+.isec{border-top:1px solid var(--rule)}
 .isec .it{display:flex;align-items:center;gap:6px;justify-content:center;font-family:var(--display);font-weight:800;font-size:11.5px}
@@ -756,13 +752,19 @@ pre.code code{background:none;padding:0;font-family:var(--mono);font-size:11.5px
    maintainable, and consistent with every picker in the app. */
 .shdemo{position:relative;border-radius:var(--radius-lg);overflow:hidden;background:var(--surface-2);
   height:360px;display:flex;align-items:flex-end}
-.shdemo .shscrim{position:absolute;inset:0;background:rgba(0,0,0,.3);backdrop-filter:blur(2px)}
+/* SCRIM — dim is load-bearing, blur is depth. The skill's rule is 40–60% black to
+   isolate foreground content; the app's own primitive uses bg-black/30 in light, which
+   is BELOW that floor, and /50 in dark. Spec'd at 40% / 55% here.
+   Blur stays small: large backdrop-blur is paint-bound, and it must never be animated. */
+.shscrim{position:absolute;inset:0;background:rgba(0,0,0,.40);
+  -webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px)}
+[data-theme="dark"] .shscrim{background:rgba(0,0,0,.55)}
 .sheetc{position:relative;width:100%;background:var(--surface);border-radius:var(--radius-lg) var(--radius-lg) 0 0;
   box-shadow:var(--shadow-2);padding:8px 20px 18px;max-height:94%;overflow:hidden}
 .sheetc .shandle{width:40px;height:4px;border-radius:var(--radius-full);background:var(--rule-strong);margin:0 auto 12px}
 .sheetc .shttl{font-family:var(--display);font-weight:800;font-size:17px;color:var(--ink)}
-.sheetc .shsub{font-size:12.5px;color:var(--ink-2);line-height:1.45;margin-top:5px}
-.sheetc .shdiv{height:1px;background:var(--rule);margin:13px -20px}
+.sheetc .shsub{font-size:12.5px;color:var(--ink-2);line-height:1.5;margin-top:7px}
+.sheetc .shdiv{height:1px;background:var(--rule);margin:15px -20px}
 .sheetc .shrow{display:flex;align-items:center;gap:11px;padding:9px 0}
 .sheetc .shrow+.shrow{border-top:1px solid var(--rule)}
 .sheetc .shav{width:32px;height:32px;border-radius:50%;flex:none;display:flex;align-items:center;justify-content:center;overflow:hidden}
@@ -775,19 +777,14 @@ pre.code code{background:none;padding:0;font-family:var(--mono);font-size:11.5px
    so the screen behind stays visible: context preservation is the reason, NOT reach.
    Matches the shipped GuardianInfoDrawer: 6px orange top border, transparent overlay
    (no dim scrim), 6px orange rule under the intro, coloured circular badges. */
-.isheet2{position:absolute;left:0;right:0;bottom:0;background:var(--surface);
   border-top:6px solid var(--accent);border-radius:28px 28px 0 0;
   padding:14px 20px max(16px,var(--safe-bottom,0px));max-height:78%;overflow:hidden;z-index:5}
-.isheet2 .ist{font-family:var(--display);font-weight:600;font-size:26px;line-height:1.1;text-align:center;color:var(--ink)}
-.isheet2 .ishero{display:block;margin:8px auto 0;width:100px;height:auto}
-.isheet2 .isd{text-align:center;font-size:13px;line-height:1.3;color:var(--ink);margin-top:10px}
-.isheet2 .isrule{height:6px;border-radius:var(--radius-full);background:var(--accent);margin:14px 0 4px}
-.isheet2 .isrow{padding:9px 0}
-.isheet2 .isrow+.isrow{border-top:1px solid var(--rule)}
-.isheet2 .ish{display:flex;align-items:center;gap:8px;font-family:var(--display);font-weight:800;font-size:13px}
-.isheet2 .isb{width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;
-  flex:none;font-size:11px;font-weight:800;color:var(--paper)}
-.isheet2 .isdd{font-size:11px;color:var(--ink-2);line-height:1.45;margin-top:3px}
+.isrow{padding:11px 0}
+.isrow+.isrow{border-top:1px solid var(--rule)}
+.ish{display:flex;align-items:center;gap:8px;font-family:var(--display);font-weight:800;font-size:13px}
+.isb{width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  flex:none;font-size:11px;font-weight:800;color:var(--paper);line-height:1}
+.isdd{font-size:11px;color:var(--ink-2);line-height:1.45;margin-top:3px}
 .extbar .dot0{width:7px;height:7px;border-radius:50%;background:var(--pos);display:block;flex:none}
 .pad button{width:76px;height:76px;border:0;border-radius:50%;background:var(--surface-2);font-family:var(--ui);font-size:26px;font-weight:500;color:var(--ink);cursor:pointer;justify-self:center;
   transition:transform var(--dur-fast) ease,background var(--dur-fast) ease}
@@ -2073,23 +2070,25 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
             <div class="obtop"><button class="obback" aria-label="Go back">&lsaquo;</button><div class="progdots"><i class="on"></i><i class="on"></i><i class="on"></i><i></i></div></div>
             <h2 class="obh" style="text-align:left">Choose your Guardian</h2>
             <p class="obp" style="text-align:left">Select an option below</p>
-            <div class="gguard" style="opacity:.55">
+            <div class="gguard">
               <div class="gcard sel"><span class="band">Default</span><div class="glogo"><img src="assets/icons/miden.svg" alt="" style="width:14px;height:19px"><span style="font-family:var(--display);font-weight:800;font-size:12px">Miden</span></div><div class="gmeta">Operated by Miden<br>Location: US-EAST</div></div>
               <div class="gcard"><div class="glogo"><img src="assets/icons/gateway.svg" alt=""></div><div class="gmeta">Operated by Gateway FM<br>Location: EU-NORTH</div></div>
             </div>
           </div>
-          <div class="isheet2">
-            <div class="ist">What is a Guardian?</div>
-            <img class="ishero" src="assets/icons/what-is-guardian-hero.svg" alt="">
-            <div class="isd">A Guardian is an independent service that <b>cosigns every transaction</b> from your wallet, adding a safety net without giving up self-custody.</div>
-            <div class="isrule"></div>
+          <div class="shscrim" style="position:absolute;inset:0"></div>
+          <div class="sheetc" style="position:absolute;left:0;right:0;bottom:0;max-height:82%;padding-bottom:max(16px,var(--safe-bottom))">
+            <div class="shandle"></div>
+            <div class="shttl" style="text-align:center">What is a Guardian?</div>
+            <img src="assets/icons/what-is-guardian-hero.svg" alt="" style="width:92px;display:block;margin:8px auto 0">
+            <div class="shsub" style="text-align:center">An independent service that <b>cosigns every transaction</b> from your wallet &mdash; a safety net without giving up self-custody.</div>
+            <div class="shdiv"></div>
             <div class="isrow"><div class="ish"><span class="isb" style="background:var(--pos)">&#10003;</span>What it does</div><div class="isdd">Approves or rejects transactions based on your security policy. Helps you recover if you lose your device.</div></div>
-            <div class="isrow"><div class="ish"><span class="isb" style="background:var(--accent);color:var(--on-accent-sm)">!</span>Switching is easy</div><div class="isdd">You can rotate to a different Guardian &mdash; or remove one entirely &mdash; at any time using your recovery phrase.</div></div>
+            <div class="isrow"><div class="ish"><span class="isb" style="background:var(--accent);color:var(--on-accent-sm)">!</span>Switching is easy</div><div class="isdd">Rotate to a different Guardian &mdash; or remove one entirely &mdash; at any time with your recovery phrase.</div></div>
             <div class="isrow"><div class="ish"><span class="isb" style="background:var(--neg)">&#10005;</span>What it cannot do</div><div class="isdd">Move your funds on its own. Access your private state. See your balances unless you share them.</div></div>
-            <button class="btn btn-primary" style="width:100%;min-height:52px;margin-top:12px">Got it</button>
+            <div class="shft"><button class="btn btn-secondary">Got it</button></div>
           </div>
         </div></div></div>
-        <div class="scrnote"><b>Corrected twice.</b> The app ships this as <code>GuardianInfoDrawer</code> &mdash; a <b>vaul bottom sheet</b>, not the inline card I had drawn. Fit-to-content so the Guardian cards stay visible behind it: the justification is <b>context preservation</b>, not reachability (NN/g explicitly refutes the reach argument for bottom sheets). Signature details from the shipped component: 6px orange top border, 6px orange rule under the intro, transparent overlay with no dim scrim, and the real hero illustration. The bar still holds at 3/4.</div></div>
+        <div class="scrnote"><b>Rebuilt on the shared Sheet.</b> It now uses the primitive&rsquo;s own anatomy &mdash; <b>scrim</b>, <b>grab handle</b>, hairline divider, and a <b>secondary</b> dismiss (closing an explainer isn&rsquo;t a primary action competing with &ldquo;Continue&rdquo;). Fit-to-content, so the Guardian cards stay readable behind it: the justification is <b>context preservation</b>, not reachability &mdash; NN/g explicitly refutes the reach argument for bottom sheets. <b>The spec deliberately differs from the shipped component here:</b> <code>GuardianInfoDrawer</code> kills the scrim (<code>bg-transparent backdrop-blur-0</code>), adds a 6px orange top border, and stacks a second orange rule under the intro. Those three fight the primitive and read as a warning banner on dark &mdash; see <b>Components &rarr; Sheet</b> for the Do/Don&rsquo;t.</div></div>
       <div><div class="scrcap"><i></i>06b &middot; Create password <span class="tag retire">was missing</span></div>
         <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
           <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>

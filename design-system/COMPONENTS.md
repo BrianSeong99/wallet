@@ -42,6 +42,12 @@ hero illustration · centred intro · 6px accent rule · divider-separated rows 
 circular badges · one full-width dismiss button · `padding-bottom: max(16px, safe-area)`.
 Overlay is transparent — no dim scrim — because the sheet does not block the flow.
 
+**Scrim spec — dim is load-bearing, blur is depth.** `rgba(0,0,0,.40)` light / `.55` dark, plus
+`backdrop-filter: blur(4px)`. The guidance is **40–60% black** to isolate foreground content, so
+the app's own primitive at `bg-black/30` (light) is **below the floor** — `/50` dark is fine.
+Keep the blur radius small: large `backdrop-filter` is paint-bound, and it must **never be
+animated**. Blur alone is not a substitute — the dim is what guarantees legibility.
+
 **Note the badge contrast trap:** a small glyph on the accent fill must use `--on-accent-sm`
 (near-black, 5.78:1). The shipped component uses `text-pure-white` on `primary-500`, which is
 **2.9:1 and fails** — the spec here is deliberately stricter than the current implementation.
