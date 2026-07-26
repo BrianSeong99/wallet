@@ -210,3 +210,39 @@ Note: there is **no shadcn Dialog/Sheet** anywhere despite the shadcn button/bad
 4. Headers (`NavigationHeader → ScreenHeader`; keep `TabHeader`).
 5. Rows/cards (`ListItem → CardItem`, `DetailRow ↔ ReviewRow`).
 6. Palette hygiene (remap shadcn badge/button tokens; delete dead `AccountTypeBadge`; de-hardcode earn-flow).
+
+### Action identity — each action glyph keeps its own hue
+
+`send-new.svg` `#91ACC1`, `receive-new.svg` `#99AC94`, `convert.svg` `#BEACD2` (stroke) and
+`earn.svg` `#777487` ship their colour **inside the SVG**; they are the same family as the
+`--tx-*` activity hues, which is why an Activity row and its action-bar glyph read as the same
+thing. `wallet.svg` (Overview) is genuinely `currentColor` and must follow the ink.
+
+Converting all 65 icons to `currentColor` masks for dark-mode adaptivity **flattened those four
+to a single ink and destroyed the identity.** Fix keeps the mask — so the hue stays theme-aware —
+but tints it per action via `data-act` on the segment:
+
+| Token | Light | Dark | inactive-chip contrast |
+|---|---|---|---|
+| `--act-send` | `#748A9A` | `#91ACC1` | 3.29 / 5.98 |
+| `--act-receive` | `#7C8B78` | `#99AC94` | 3.28 / 5.85 |
+| `--act-swap` | `#8F829F` | `#BEACD2` | 3.27 / 6.76 |
+| `--act-earn` | `#777487` | `#777487` | 4.13 / 3.12 |
+
+Light values are **darkened** from the shipped pastels: the originals measure **2.37–2.42:1** on
+the chip, and a *collapsed* segment is icon-only with no label to fall back on, so SC 1.4.11's
+3:1 genuinely applies. Dark keeps the pastels exactly as shipped. **Hue is preserved in both
+themes; only lightness moves.** Overview carries no `data-act`, so it stays `currentColor`.
+
+### Earn is hidden here too, mirroring the flag
+
+`isEarnEnabled()` is `false`, so the site defaults to `data-earn="off"` and the three earn
+screens are `display:none`. Hidden, **not deleted** — the feature is built and routed, so the
+design has to survive until the flag flips. The sidebar control toggles it to review the
+earn-enabled product, including the five-segment action bar that exists only in that state.
+
+**The harness audits the flag-ON state**, for two reasons. A hidden `.phone` measures 0×0, so
+every check inside it passes vacuously while the summary still counts it as a screen — the first
+version of this hid three screens from the audit and still reported "50 screens, 0 failures".
+And flag-on is the superset: it is the only state containing the five-segment bar. A zero-sized
+frame is now a hard failure that names the frames, verified by forcing the flag off.

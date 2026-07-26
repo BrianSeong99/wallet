@@ -46,10 +46,16 @@ const prep = () => {
     document.head.appendChild(st);
   }
   document.querySelectorAll('.section').forEach(s => s.classList.add('active'));
+  // Audit with the Earn flag ON. The site mirrors isEarnEnabled()=false, which display:none's
+  // the three earn screens -- and a hidden .phone measures 0x0, so every check inside it
+  // silently passes while the summary still counts it as a screen. Auditing the flag-on state
+  // is also the superset: it includes the five-segment action bar that ONLY exists there.
+  document.documentElement.dataset.earn = 'on';
 };
 
 const cleanup = () => {
   document.getElementById('audit-style')?.remove();
+  document.documentElement.dataset.earn = 'off';   // back to the shipped state
   document.querySelectorAll('.section').forEach(s => s.classList.toggle('active', s.id === 'allscreens'));
 };
 
@@ -76,9 +82,14 @@ const probe = () => {
   };
 
   const out = [];
+  const hidden = [];
   document.querySelectorAll('.phone').forEach(ph => {
     const scr = ph.querySelector('.screen');
     if (!scr) return;
+    // A zero-sized frame means it is hidden; every check below would vacuously pass.
+    // Surface it instead of counting it as a clean screen.
+    if (ph.getBoundingClientRect().width < 2) { hidden.push(
+      ph.parentElement?.querySelector('.scrcap,.caphead')?.textContent.trim().slice(0, 40) || '?'); return; }
     const zoom = parseFloat(getComputedStyle(ph).zoom) || 1;
     const sr = scr.getBoundingClientRect();
     const pt = v => v / zoom;
@@ -189,6 +200,8 @@ const probe = () => {
       .push({ el: label, ratio: +ratio.toFixed(2) });
   });
   out.push(spec);
+  if (hidden.length) out.push({ screen: `!! ${hidden.length} HIDDEN frame(s) not audited: ${hidden.join(', ')}`,
+    inSafeArea: [], clipped: [], overflow: true, contrast: [], icons: [], fills: [], targets: [], tiny: [] });
   return out;
 };
 

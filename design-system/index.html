@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="light">
+<html lang="en" data-theme="light" data-earn="off">
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -95,6 +95,15 @@
   --warn-wash:#F6EEDC; --neg-wash:#F7EAE7;
   /* tx hues: soft pastel SQUARE FILLS carry the personality; the dark glyph carries the
      accessibility (5.2–5.8:1). Never put a white glyph on these. */
+  /* Action identity — each action-bar glyph ships its OWN brand hue in its SVG
+     (send #91ACC1, receive #99AC94, swap #BEACD2 stroke, earn #777487). Converting all
+     65 icons to currentColor masks for dark-mode adaptivity flattened those four to a
+     single ink, losing the identity. Fix keeps the mask (so the hue is theme-aware) but
+     tints it per action. Light values are darkened from the shipped pastels because the
+     originals measure 2.4-2.5:1 on the chip and a COLLAPSED segment is icon-only, with
+     no label to fall back on, so SC 1.4.11's 3:1 genuinely applies. Dark keeps the
+     pastels as shipped. Hue is preserved in both; only lightness moves. */
+  --act-send:#748A9A; --act-receive:#7C8B78; --act-swap:#8F829F; --act-earn:#777487;
   --tx-received:#A8BBA3; --tx-sent:#A3BCCF; --tx-swap:#C9BAD9; --tx-earn:#BDB9CC; --tx-faucet:#CDB0DE;
   --tx-glyph:#3F3F3F;
   --balance:#4F4F4F; --balance-deep:#3D3D3D; --balance-fg:#FFFFFF; --balance-fg-muted:rgba(255,255,255,.70);
@@ -115,6 +124,7 @@
   --on-accent-sm:#191919;
   --pos:#90BA89; --pos-wash:#26301F; --pend:#E85D2F; --neg:#F5736B; --warn:#E8B33F;
   --warn-wash:#33290F; --neg-wash:#3A1F1C;
+  --act-send:#91ACC1; --act-receive:#99AC94; --act-swap:#BEACD2; --act-earn:#777487;
   --tx-received:#A8BBA3; --tx-sent:#A3BCCF; --tx-swap:#C9BAD9; --tx-earn:#BDB9CC; --tx-faucet:#CDB0DE;
   --tx-glyph:#1C1A18;
   /* Balance card goes near-black in dark mode (colors are light-mode only). */
@@ -344,6 +354,16 @@ table.map td code{font-size:12px}
    In the mocks this is scoped to .phone.ext because a media query cannot see a
    fixed-width frame; in production key it off a container query or isExtension(). */
 .phone.ext .mseg{gap:4px}
+/* Earn mirrors the shipped flag: isEarnEnabled() is false, so earn surfaces are hidden
+   here by default too. Hidden, NOT deleted — the feature is built and routed, so the
+   design has to survive until the flag flips. Toggle it to review the earn-enabled
+   product, including the five-segment action bar that only exists in that state. */
+[data-earn="off"] [data-earn-surface]{display:none}
+.flagdot{width:8px;height:8px;border-radius:50%;background:var(--ink-3);display:inline-block;vertical-align:middle;flex:none}
+[data-earn="on"] .flagdot{background:var(--pos)}
+.themebtn .flagval{font-family:var(--mono);font-size:10.5px}
+.earnnote{margin:10px 0 4px;padding:11px 13px;border-radius:var(--radius-md);background:var(--surface-2);color:var(--ink-2);font-size:12px;line-height:1.5}
+[data-earn="on"] .earnnote{display:none}
 /* Collapsed chips may compress (never below a 40px tap area) so the active chip always
    wins the space it needs; min-width:max-content on the active chip makes clipping
    structurally impossible at any viewport, including long localised labels. */
@@ -357,6 +377,12 @@ table.map td code{font-size:12px}
   background:var(--surface);color:var(--ink);box-shadow:var(--shadow-1)}
 .mseg .seg svg{width:19px;height:19px;flex:none}
 .mseg .seg img,.mseg .seg .svgic{width:20px;height:20px;flex:none;display:block}
+/* Overview deliberately has no data-act: wallet.svg really is currentColor in the
+   source, so it should follow the ink and flip with the theme. */
+.mseg .seg[data-act="send"]    .svgic{background-color:var(--act-send)}
+.mseg .seg[data-act="receive"] .svgic{background-color:var(--act-receive)}
+.mseg .seg[data-act="swap"]    .svgic{background-color:var(--act-swap)}
+.mseg .seg[data-act="earn"]    .svgic{background-color:var(--act-earn)}
 .mseg .seg .lbl{max-width:0;opacity:0;overflow:hidden;white-space:nowrap;
   transition:max-width var(--dur-spatial) var(--ease-spatial),opacity var(--dur-fast) ease var(--dur-fast),margin-left var(--dur-spatial) var(--ease-spatial)}
 .mseg .seg.on .lbl{max-width:12rem;opacity:1;margin-left:8px}
@@ -980,6 +1006,7 @@ pre.code code{background:none;padding:0;font-family:var(--mono);font-size:11.5px
       </div>
     </nav>
     <button class="themebtn" id="theme">◐ <span>Toggle theme</span></button>
+    <button class="themebtn" id="earnflag" aria-pressed="false"><span class="flagdot"></span> <span>isEarnEnabled() <b class="flagval">false</b></span></button>
   </aside>
 
   <!-- ============ MAIN ============ -->
@@ -1423,9 +1450,9 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
       <div class="mlabel">Segmented tabs · expand + collapse · 320ms spatial — tap through them</div>
       <div class="mseg" data-seg style="max-width:380px;padding:0">
         <div class="seg on"><span class="svgic" style="--ic:url(assets/icons/wallet.svg);" aria-hidden="true"></span><span class="lbl">Overview</span></div>
-        <div class="seg"><span class="svgic" style="--ic:url(assets/icons/send-new.svg);" aria-hidden="true"></span><span class="lbl">Send</span></div>
-        <div class="seg"><span class="svgic" style="--ic:url(assets/icons/receive-new.svg);" aria-hidden="true"></span><span class="lbl">Receive</span></div>
-        <div class="seg"><span class="svgic" style="--ic:url(assets/icons/convert.svg);" aria-hidden="true"></span><span class="lbl">Swap</span></div>
+        <div class="seg" data-act="send"><span class="svgic" style="--ic:url(assets/icons/send-new.svg);" aria-hidden="true"></span><span class="lbl">Send</span></div>
+        <div class="seg" data-act="receive"><span class="svgic" style="--ic:url(assets/icons/receive-new.svg);" aria-hidden="true"></span><span class="lbl">Receive</span></div>
+        <div class="seg" data-act="swap"><span class="svgic" style="--ic:url(assets/icons/convert.svg);" aria-hidden="true"></span><span class="lbl">Swap</span></div>
       </div>
       <p class="small" style="margin-top:12px"><b>Why size carries the signal:</b> the width change makes the active surface unmistakable at a glance, and the label only exists while it's needed — no permanent clutter. The tab's hue arrives <em>on activation</em>, so colour is confirmation, not decoration. Collapsed tabs stay 46×38px, well above the 24×24 AA target floor, and the label fades in <code>80ms</code> behind the width so text never stretches.</p>
     </div>
@@ -1923,9 +1950,9 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
           <div class="mpad" style="flex:1;display:flex;flex-direction:column">
             <div class="mseg" data-seg>
               <div class="seg on"><span class="svgic" style="--ic:url(assets/icons/wallet.svg);" aria-hidden="true"></span><span class="lbl">Overview</span></div>
-              <div class="seg"><span class="svgic" style="--ic:url(assets/icons/send-new.svg);" aria-hidden="true"></span><span class="lbl">Send</span></div>
-              <div class="seg"><span class="svgic" style="--ic:url(assets/icons/receive-new.svg);" aria-hidden="true"></span><span class="lbl">Receive</span></div>
-              <div class="seg"><span class="svgic" style="--ic:url(assets/icons/convert.svg);" aria-hidden="true"></span><span class="lbl">Swap</span></div>
+              <div class="seg" data-act="send"><span class="svgic" style="--ic:url(assets/icons/send-new.svg);" aria-hidden="true"></span><span class="lbl">Send</span></div>
+              <div class="seg" data-act="receive"><span class="svgic" style="--ic:url(assets/icons/receive-new.svg);" aria-hidden="true"></span><span class="lbl">Receive</span></div>
+              <div class="seg" data-act="swap"><span class="svgic" style="--ic:url(assets/icons/convert.svg);" aria-hidden="true"></span><span class="lbl">Swap</span></div>
             </div>
             <div class="mbc">
               <div class="top" data-surface="graphite"><div class="tl">Total Balance</div>
@@ -2449,9 +2476,9 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
           <div class="mpad" style="flex:1;display:flex;flex-direction:column">
             <div class="mseg" data-seg>
               <div class="seg on"><span class="svgic" style="--ic:url(assets/icons/wallet.svg);" aria-hidden="true"></span><span class="lbl">Overview</span></div>
-              <div class="seg"><span class="svgic" style="--ic:url(assets/icons/send-new.svg);" aria-hidden="true"></span><span class="lbl">Send</span></div>
-              <div class="seg"><span class="svgic" style="--ic:url(assets/icons/receive-new.svg);" aria-hidden="true"></span><span class="lbl">Receive</span></div>
-              <div class="seg"><span class="svgic" style="--ic:url(assets/icons/convert.svg);" aria-hidden="true"></span><span class="lbl">Swap</span></div>
+              <div class="seg" data-act="send"><span class="svgic" style="--ic:url(assets/icons/send-new.svg);" aria-hidden="true"></span><span class="lbl">Send</span></div>
+              <div class="seg" data-act="receive"><span class="svgic" style="--ic:url(assets/icons/receive-new.svg);" aria-hidden="true"></span><span class="lbl">Receive</span></div>
+              <div class="seg" data-act="swap"><span class="svgic" style="--ic:url(assets/icons/convert.svg);" aria-hidden="true"></span><span class="lbl">Swap</span></div>
             </div>
             <div class="mbc">
               <div class="top" data-surface="graphite"><div class="tl">Total Balance</div>
@@ -2471,7 +2498,7 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
       <div><div class="scrcap"><i></i>Accounts sheet</div>
         <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
           <div class="stat"><span>9:41</span><span class="r">✦ ▪ ▪</span></div>
-          <div class="mpad" style="flex:1;opacity:.4"><div class="mseg"><div class="seg on"><span class="svgic" style="--ic:url(assets/icons/wallet.svg);" aria-hidden="true"></span><span class="lbl">Overview</span></div><div class="seg"><span class="svgic" style="--ic:url(assets/icons/send-new.svg);" aria-hidden="true"></span></div><div class="seg"><span class="svgic" style="--ic:url(assets/icons/receive-new.svg);" aria-hidden="true"></span></div><div class="seg"><span class="svgic" style="--ic:url(assets/icons/convert.svg);" aria-hidden="true"></span></div></div>
+          <div class="mpad" style="flex:1;opacity:.4"><div class="mseg"><div class="seg on"><span class="svgic" style="--ic:url(assets/icons/wallet.svg);" aria-hidden="true"></span><span class="lbl">Overview</span></div><div class="seg" data-act="send"><span class="svgic" style="--ic:url(assets/icons/send-new.svg);" aria-hidden="true"></span></div><div class="seg" data-act="receive"><span class="svgic" style="--ic:url(assets/icons/receive-new.svg);" aria-hidden="true"></span></div><div class="seg" data-act="swap"><span class="svgic" style="--ic:url(assets/icons/convert.svg);" aria-hidden="true"></span></div></div>
             <div class="mbc"><div class="top" data-surface="graphite"><div class="tl">Total Balance</div><div class="amt">$12,480.50 <small>USD</small></div></div></div></div>
           <div style="position:absolute;inset:0;background:rgba(0,0,0,.45)"></div>
           <div style="position:absolute;left:0;right:0;bottom:0;background:var(--surface);border-radius:var(--radius-lg) var(--radius-lg) 0 0;padding:12px 20px max(16px,var(--safe-bottom))">
@@ -2594,15 +2621,15 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
         </div></div></div>
         <div class="scrnote">Same review card, reused as a receipt — one component, two moments in the flow.</div></div>
 
-      <div><div class="scrcap"><i></i>Earn · vaults <span class="tag merge">gated off</span></div>
+      <div data-earn-surface><div class="scrcap"><i></i>Earn · vaults <span class="tag merge">gated off</span></div>
         <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
           <div class="stat"><span>9:41</span><span class="r">✦ ▪ ▪</span></div>
           <div class="mpad" style="flex:1;display:flex;flex-direction:column">
             <div class="mseg" data-seg>
               <div class="seg"><span class="svgic" style="--ic:url(assets/icons/wallet.svg);" aria-hidden="true"></span><span class="lbl">Overview</span></div>
-              <div class="seg"><span class="svgic" style="--ic:url(assets/icons/send-new.svg);" aria-hidden="true"></span><span class="lbl">Send</span></div>
-              <div class="seg"><span class="svgic" style="--ic:url(assets/icons/receive-new.svg);" aria-hidden="true"></span><span class="lbl">Receive</span></div>
-              <div class="seg on"><span class="svgic" style="--ic:url(assets/icons/earn.svg);" aria-hidden="true"></span><span class="lbl">Earn</span></div><div class="seg"><span class="svgic" style="--ic:url(assets/icons/convert.svg);" aria-hidden="true"></span></div>
+              <div class="seg" data-act="send"><span class="svgic" style="--ic:url(assets/icons/send-new.svg);" aria-hidden="true"></span><span class="lbl">Send</span></div>
+              <div class="seg" data-act="receive"><span class="svgic" style="--ic:url(assets/icons/receive-new.svg);" aria-hidden="true"></span><span class="lbl">Receive</span></div>
+              <div class="seg on" data-act="earn"><span class="svgic" style="--ic:url(assets/icons/earn.svg);" aria-hidden="true"></span><span class="lbl">Earn</span></div><div class="seg" data-act="swap"><span class="svgic" style="--ic:url(assets/icons/convert.svg);" aria-hidden="true"></span></div>
             </div>
             <div class="mbc"><div class="top" data-surface="graphite"><div class="tl">Earning</div><div class="amt">$500.00 <small>USD</small></div>
               <div class="delta" style="background:var(--pos-wash);color:var(--pos)">+$4.10 all time</div></div></div>
@@ -2614,7 +2641,7 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
         </div></div></div>
         <div class="scrnote"><b>Kept, but gated.</b> <code>isEarnEnabled()</code> returns <b>false</b> in <code>src/lib/feature-flags.ts</code> — the single source of truth for both the home swipe pane and the top action-bar segment — so Earn is built and routed (<code>/earn</code> exists) but unreachable until the feature ships. These screens are therefore <em>spec for a shipped-but-hidden feature</em>, not speculation, and stay. The action bar here shows the <b>earn-enabled</b> five-segment state (overview · send · receive · earn · swap); every other screen shows the four-segment shipped state, which ends in <b>Swap</b> because <code>isSwapEnabled()</code> is <b>true</b>. <b>Measured consequence:</b> five segments overflow the 360pt extension popup by <b>9.1pt</b>, because the collapsed chips already sit on their 44pt tap-target floor. Gap tightens 7px → 4px below 380pt, which reclaims 12pt and fits at 312/312 with the smallest chip at 44.7pt. That defect only appears when the flag flips, so it would have shipped with Earn.</div></div>
 
-      <div><div class="scrcap"><i></i>Vault detail <span class="tag merge">gated off</span></div>
+      <div data-earn-surface><div class="scrcap"><i></i>Vault detail <span class="tag merge">gated off</span></div>
         <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
           <div class="stat"><span>9:41</span><span class="r">✦ ▪ ▪</span></div>
           <div class="mpad" style="flex:1;display:flex;flex-direction:column">
@@ -2633,7 +2660,7 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
         </div></div></div>
         <div class="scrnote">Yield is stated as variable and risk-bearing — a financial-credibility requirement, not a disclaimer bolted on.</div></div>
 
-      <div><div class="scrcap"><i></i>Earn · deposit <span class="tag merge">gated off</span></div>
+      <div data-earn-surface><div class="scrcap"><i></i>Earn · deposit <span class="tag merge">gated off</span></div>
         <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
           <div class="stat"><span>9:41</span><span class="r">✦ ▪ ▪</span></div>
           <div class="mpad" style="flex:1;display:flex;flex-direction:column">
@@ -2875,6 +2902,16 @@ links.forEach(a=>a.addEventListener('click',()=>{go(a.dataset.go);
 document.getElementById('theme').addEventListener('click',()=>{
   const h=document.documentElement;h.dataset.theme=h.dataset.theme==='dark'?'light':'dark';
 });
+// Earn feature flag — mirrors isEarnEnabled() in src/lib/feature-flags.ts (currently false).
+(function(){
+  const h=document.documentElement, btn=document.getElementById('earnflag');
+  if(!h.dataset.earn) h.dataset.earn='off';
+  const sync=()=>{const on=h.dataset.earn==='on';
+    btn.setAttribute('aria-pressed',String(on));
+    btn.querySelector('.flagval').textContent=String(on);};
+  sync();
+  btn.addEventListener('click',()=>{h.dataset.earn=h.dataset.earn==='on'?'off':'on';sync();});
+})();
 // motion playground
 (function(){
   document.querySelectorAll('.segdemo').forEach(seg=>{
