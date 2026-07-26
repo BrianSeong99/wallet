@@ -69,8 +69,17 @@ marketing type), a shadcn dashboard (zinc neutrals, generic radius), or an indus
   (balance hero/sheets/modals) · `full` (buttons/pills/avatars). Retires 7+ others.
 - **Elevation:** flat (rule-bordered) · e1 raised (prompts, nav pill) · e2 overlay (sheets, modals,
   balance card). Dark mode uses surface-step + rule contrast, not shadow.
-- **Motion:** `fast 150ms` · `base 200ms` · `spatial 320ms`; `ease-standard` for feedback,
-  `ease-spatial` (`cubic-bezier(.22,1,.36,1)`) for things that travel. All respect `prefers-reduced-motion`.
+- **Motion — read `src/lib/animation/` first; do not invent these.** Durations
+  `fast .18s · normal .28s · slow .42s · extraSlow .6s`. Easings `easeInCubic [.32,0,.67,0]`,
+  `easeOutCubic [.16,1,.3,1]` (iOS soft-out), `easeInOut [.65,0,.35,1]`,
+  `easeOutBack [.34,1.56,.64,1]`. **Springs are the primary mechanism** — 8 of them, derived
+  from UIKit response/dampingRatio (`standard 322/32/1` for screen moves, `sheetPresent
+  380/34/1`, `snappy 500/38`, `morph 220/30/1.2`, `pill 320/30`, `magnetic 380/26`,
+  `settle 260/30`, `dragRelease 420/40`). All respect `prefers-reduced-motion`.
+  *An earlier draft of this file specified `fast 150 / base 200 / spatial 320` and
+  `ease-spatial cubic-bezier(.22,1,.36,1)`. None of those exist in the codebase.*
+  `--dur-base` / `--dur-spatial` / `--ease-spatial` survive in `index.html` purely as
+  aliases onto the real tokens.
 
 ## Implementation spec (research-corrected)
 
@@ -106,7 +115,7 @@ the **extension popup 360×600 (hardest case — check it first)**.
 ## Automated review — run this, don't eyeball it
 
 ```bash
-node design-system/review.mjs              # 45 screens x both themes
+node design-system/review.mjs              # 49 screens x both themes
 node design-system/review.mjs --shot 04    # + PNGs for captions matching "04"
 ```
 
@@ -121,11 +130,18 @@ Playwright, exits non-zero on any failure. Per screen, in **both themes**, it ch
 | Targets | every interactive element >= 44pt |
 | Type | nothing below the 11pt floor |
 
-**Two harness rules learned the hard way.** The theme switch must happen in a *separate*
-`evaluate()` call from the measurement — doing both in one synchronous block yields stale
-computed styles and fabricates failures. And the safe-area floor is **per frame**: an iPhone
-reserves 34pt for the home indicator, the extension popup reserves nothing, so a global 34
-produces false positives on every extension screen.
+**Three harness rules learned the hard way.** (1) The theme switch must happen in a
+*separate* `evaluate()` call from the measurement — doing both in one synchronous block
+yields stale computed styles and fabricates failures. (2) The safe-area floor is **per
+frame**: an iPhone reserves 34pt for the home indicator, the extension popup reserves
+nothing, so a global 34 produces false positives on every extension screen. (3) **Freeze
+all motion before measuring** — `getComputedStyle` returns the *interpolated* value while a
+transition runs. `.mseg .seg` is the only component that transitions `background` and
+`color`, so flipping `data-theme` started a 280ms colour transition and a 120ms wait read
+white-on-`#232323` (15.7:1) as `rgb(187,187,187)` on `rgb(113,113,113)` — 2.54:1. That one
+false failure survived three separate investigations, and every other component passed only
+because it doesn't transition colour. `prep()` now disables all animation and transition for
+the duration of the audit.
 
 This script found two defects that manual screenshot review had missed repeatedly: the
 keypad overlapping the home indicator, and the action-bar segments sitting at 38pt against

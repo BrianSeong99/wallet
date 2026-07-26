@@ -52,7 +52,60 @@ animated**. Blur alone is not a substitute — the dim is what guarantees legibi
 (near-black, 5.78:1). The shipped component uses `text-pure-white` on `primary-500`, which is
 **2.9:1 and fails** — the spec here is deliberately stricter than the current implementation.
 
-**Design rule — one action zone.** The primary action sits in a **fixed bottom action zone** — full-width primary, `gutter 24 · bottom 24 + env(safe-area-inset-bottom)` — at the **same Y on every screen**, so it never jumps as the user moves between screens (today's builds drift). Secondary/ghost actions stack **above** the primary, never below, so they never shift it. Scrollable screens use a sticky footer; short screens pin it. Migration: normalize every screen's footer to this zone during the per-screen re-skin.
+**Design rule — one action zone.** The primary action sits in a **fixed bottom action zone** — full-width primary, `gutter 24 · bottom max(16px, env(safe-area-inset-bottom))`, CTA min-height 52px — at the **same Y on every screen**, so it never jumps as the user moves between screens (today's builds drift). Scrollable screens use a sticky footer; short screens pin it. Migration: normalize every screen's footer to this zone during the per-screen re-skin.
+
+**Secondary/ghost actions sit directly BENEATH the primary.** This line previously said
+"above"; that was wrong and contradicted both `index.html` and all 49 rendered screens.
+Beneath is correct for two reasons: it matches the shipped Welcome screen, and on
+irreversible actions it is a safety property — an accidental tap at the very bottom edge
+hits *Cancel*, never "send funds permanently". The layout-stability worry that motivated
+"above" doesn't apply, because the zone's height is fixed by its own padding, not by its
+contents.
+
+## Password strength — four tiers, one component
+
+`data-tier="low|medium|strong"` on a `.strength` wrapper drives **both** the filled-segment
+count and the label colour; the absent attribute is the empty/default state. Shipped copy:
+`low` / `medium` / `veryStrong` ("Very strong!") plus the `8chars1number` hint. Because the
+tier is also spelled out in words, colour is never the sole carrier (**SC 1.4.1**, Level A).
+
+Amber is the **new `--warn` token**, *not* `--pend`. Reusing `--pend` failed in dark mode:
+`--accent` (hue 21°), `--pend` (15°) and the then-current `--neg` (9°) were all the same
+orange at the same lightness (L .300 / .252 / .265), so *low* and *medium* rendered
+identically **and both read as brand colour**. Dark `--neg` moved to `#F5736B` (hue 3.5°)
+and `--warn` is `#8A5A00` light / `#E8B33F` dark. Pending, warning, error and success are
+four distinct meanings — the status set is four values, not three.
+
+No error ring while a password is being typed: incomplete is not invalid, and premature
+error styling is its own defect. Rings (`--neg`, 1.5px) are for settled validation
+failures only — mismatch, bad seed word.
+
+## Two shipped bugs found in the import path
+
+`src/screens/onboarding/import-wallet-flow/ImportSeedPhrase.tsx`:
+
+1. **`:85` renders `t('importSeedPhraseError')` and that key does not exist in
+   `public/_locales/en/en.json`** — the error paragraph resolves to the raw key or to
+   nothing.
+2. **`:31` `errorsMap` already computes per-word validity** against the word list, but is
+   only reduced to a single boolean; the individual fields are never marked.
+
+Net effect today: a mistyped seed word gives a **dead Continue button and no explanation**.
+The fix is nearly free since the per-word data already exists — ring the offending field and
+name the index in the message ("Word 3 isn't in the Miden word list").
+
+Separately, `VerifySeedPhrase.tsx` has **no error state at all** — no `error`/`invalid`
+handling anywhere in the file. A screen whose only job is to catch a mistake currently
+cannot tell you that you made one. That needs a new i18n key, so it is a product decision,
+not a spec gap.
+
+## Dead onboarding enum members — do not build
+
+| `OnboardingStep` member | Status |
+|---|---|
+| `SelectWalletType` | Not a screen. `onWelcomeAction` maps `'select-wallet-type'` straight to `{id:'choose-protection'}` (`navigator.tsx:126-132`). |
+| `SelectTransactionType` | Component exists (`create-wallet-flow/SelectTransactionType.tsx`) but **routed: 0, navigated-to: 0**. |
+| `BiometricSetup` | No component, not routed. |
 
 ## Headers — 5 → 2
 | Impl | File | Verdict |
