@@ -321,7 +321,7 @@ table.map td code{font-size:12px}
 /* Collapsed chips may compress (never below a 40px tap area) so the active chip always
    wins the space it needs; min-width:max-content on the active chip makes clipping
    structurally impossible at any viewport, including long localised labels. */
-.mseg .seg{flex:0 1 46px;min-width:40px;height:38px;border-radius:var(--radius-md);display:flex;align-items:center;justify-content:center;
+.mseg .seg{flex:0 1 46px;min-width:44px;height:44px;border-radius:var(--radius-md);display:flex;align-items:center;justify-content:center;
   background:var(--surface-2);color:var(--ink);cursor:pointer;overflow:hidden;font-family:var(--ui);
   transition:flex-grow var(--dur-spatial) var(--ease-spatial),flex-basis var(--dur-spatial) var(--ease-spatial),
              background var(--dur-base) ease,box-shadow var(--dur-base) ease,color var(--dur-base) ease}
@@ -632,6 +632,16 @@ ul.tick li:before{content:"→";position:absolute;left:2px;color:var(--accent-in
 .stbox .st{font-family:var(--display);font-weight:800;font-size:14.5px}
 .stbox .ss{font-size:12px;color:var(--ink-2);margin-top:5px;line-height:1.4}
 .pad{display:grid;grid-template-columns:repeat(3,76px);justify-content:center;gap:14px 26px;margin-inline:auto}
+/* keypad as the last element must clear the home indicator itself */
+.pad.pinned{margin-top:auto;padding-bottom:max(16px,var(--safe-bottom,0px))}
+/* EXTENSION POPUP — 360x600, the hardest viewport. No notch, no home indicator,
+   so --safe-bottom collapses to 0 and env() would too. */
+.phone.ext{width:360px;border-radius:var(--radius-lg);padding:0;box-shadow:var(--shadow-2)}
+.phone.ext .screen{aspect-ratio:360/600;border-radius:var(--radius-lg)}
+.phone.ext .notch,.phone.ext .mock::after{display:none}
+.phone.ext .mock{--safe-bottom:0px}
+.extbar{display:flex;align-items:center;gap:8px;padding:9px 0 12px;font-size:11px;color:var(--ink-2)}
+.extbar .dot0{width:7px;height:7px;border-radius:50%;background:var(--pos);display:block;flex:none}
 .pad button{width:76px;height:76px;border:0;border-radius:50%;background:var(--surface-2);font-family:var(--ui);font-size:26px;font-weight:500;color:var(--ink);cursor:pointer;justify-self:center;
   transition:transform var(--dur-fast) ease,background var(--dur-fast) ease}
 .pad button:active{transform:scale(.94);background:var(--surface-3)}
@@ -1617,7 +1627,7 @@ ul.tick li:before{content:"→";position:absolute;left:2px;color:var(--accent-in
             <h2 class="obh" style="margin-top:2%">Set up your passcode</h2>
             <p class="obp">Create a 6 digit code</p>
             <div class="dots" style="margin:20px 0 22px"><i></i><i></i><i></i><i></i><i></i><i></i></div>
-            <div class="pad" style="width:100%;margin-top:auto;padding-bottom:2px"><button>1</button><button>2</button><button>3</button><button>4</button><button>5</button><button>6</button><button>7</button><button>8</button><button>9</button><span></span><button>0</button><button>&#9003;</button></div>
+            <div class="pad pinned" style="width:100%"><button>1</button><button>2</button><button>3</button><button>4</button><button>5</button><button>6</button><button>7</button><button>8</button><button>9</button><span></span><button>0</button><button>&#9003;</button></div>
           </div>
         </div></div></div>
         <div class="scrnote"><b>Corrected:</b> the shipped screen has <em>no bottom action</em> &mdash; headline, dots, numpad only. I had added a biometric shortcut copied from Figma; that is a Figma-vs-app divergence, so the spec now follows the app.</div></div>
@@ -1629,7 +1639,7 @@ ul.tick li:before{content:"→";position:absolute;left:2px;color:var(--accent-in
             <h2 class="obh" style="margin-top:2%">Confirm your passcode</h2>
             <p class="obp">Re-enter the same 6 digits</p>
             <div class="dots" style="margin:20px 0 22px"><i class="f"></i><i class="f"></i><i class="f"></i><i></i><i></i><i></i></div>
-            <div class="pad" style="width:100%;margin-top:auto;padding-bottom:2px"><button>1</button><button>2</button><button>3</button><button>4</button><button>5</button><button>6</button><button>7</button><button>8</button><button>9</button><span></span><button>0</button><button>&#9003;</button></div>
+            <div class="pad pinned" style="width:100%"><button>1</button><button>2</button><button>3</button><button>4</button><button>5</button><button>6</button><button>7</button><button>8</button><button>9</button><span></span><button>0</button><button>&#9003;</button></div>
           </div>
         </div></div></div>
         <div class="scrnote">Still <b>2 of 4</b> &mdash; enter and confirm are the same <code>SetupPasscode</code> step, so the bar must not advance between them.</div></div>
@@ -1641,7 +1651,7 @@ ul.tick li:before{content:"→";position:absolute;left:2px;color:var(--accent-in
             <h2 class="obh" style="margin-top:2%">Confirm your passcode</h2>
             <p class="obp" style="color:var(--neg);font-weight:700">Passcodes don&rsquo;t match. Try again.</p>
             <div class="dots" style="margin:20px 0 22px"><i></i><i></i><i></i><i></i><i></i><i></i></div>
-            <div class="pad" style="width:100%;margin-top:auto;padding-bottom:2px"><button>1</button><button>2</button><button>3</button><button>4</button><button>5</button><button>6</button><button>7</button><button>8</button><button>9</button><span></span><button>0</button><button>&#9003;</button></div>
+            <div class="pad pinned" style="width:100%"><button>1</button><button>2</button><button>3</button><button>4</button><button>5</button><button>6</button><button>7</button><button>8</button><button>9</button><span></span><button>0</button><button>&#9003;</button></div>
           </div>
         </div></div></div>
         <div class="scrnote"><b>Was missing.</b> The most likely error in the whole flow. The app swaps the helper line for <code>passcodesDoNotMatch</code> in red and clears the dots &mdash; the error sits <em>at</em> the field, never in a banner.</div></div>
@@ -1832,13 +1842,80 @@ ul.tick li:before{content:"→";position:absolute;left:2px;color:var(--accent-in
               <img src="assets/bread-logo.svg" alt="" style="width:52px">
               <h2 class="obh" style="margin-top:12px">Enter your passcode</h2>
               <div class="dots" style="margin:20px 0 22px"><i class="f"></i><i class="f"></i><i></i><i></i><i></i><i></i></div>
-              <div class="pad" style="width:100%;margin-top:auto;padding-bottom:2px"><button>1</button><button>2</button><button>3</button><button>4</button><button>5</button><button>6</button><button>7</button><button>8</button><button>9</button><span></span><button>0</button><button>&#9003;</button></div>
+              <div class="pad pinned" style="width:100%"><button>1</button><button>2</button><button>3</button><button>4</button><button>5</button><button>6</button><button>7</button><button>8</button><button>9</button><span></span><button>0</button><button>&#9003;</button></div>
             </div>
             <div class="zone"><button class="btn btn-secondary" style="width:100%;min-height:52px">Use Face ID</button><div class="gh">Forgot passcode?</div></div>
           </div>
         </div></div></div>
         <div class="scrnote"><b>Added &ldquo;Forgot passcode?&rdquo;</b> &mdash; the app has <code>onForgotPasswordClick</code> and my mock had dropped it, leaving the lock screen a dead end. No progress bar: not part of onboarding.</div></div>
     </div>
+
+    <h3 class="sh">Chrome / Firefox extension &mdash; password-only <span class="small">360&times;600</span></h3>
+    <p class="sub">On the extension there is no biometric hardware and no passcode, so the app sets <code>protectionChoiceSkipped = Create &amp;&amp; !isMobile()</code> &rarr; <b>3 steps</b>, and <code>CreatePassword</code> takes the passcode position (so it reads <b>1 of 3</b>, not 3). Frame is the popup&rsquo;s real <b>360&times;600</b> &mdash; the shortest viewport we support, with no notch and no home indicator.</p>
+    <div class="scrgrid">
+      <div><div class="scrcap"><i></i>E1 &middot; Create password <span class="tag survive">1/3</span></div>
+        <div class="phone ext"><div class="screen"><div class="mock">
+          <div class="extbar" style="padding-left:16px"><span class="dot0"></span>Bread &middot; Miden Testnet</div>
+          <div class="mpad" style="flex:1;display:flex;flex-direction:column">
+            <div class="obtop"><button class="obback" aria-label="Go back">&lsaquo;</button><div class="progdots"><i class="on"></i><i></i><i></i></div></div>
+            <h2 class="obh" style="text-align:left">Create password</h2>
+            <p class="obp" style="text-align:left">Set a password to unlock your wallet</p>
+            <div style="margin-top:12px">
+              <input class="opw" type="password" value="0000000000" aria-label="Enter password">
+              <div class="opwbar"><i class="on"></i><i class="on"></i><i class="on"></i></div>
+              <div class="opwmeta"><span>Minimum 8 characters with at least 1 number</span><span style="color:var(--pos);font-weight:700">Strong</span></div>
+              <input class="opw ok" type="password" value="0000000000" aria-label="Enter password again" style="margin-top:12px">
+              <div class="opwmeta"><span style="color:var(--pos);font-weight:700">&#10003; It&rsquo;s a match!</span></div>
+            </div>
+            <div class="zone"><button class="btn btn-primary" style="width:100%">Continue</button></div>
+          </div>
+        </div></div></div>
+        <div class="scrnote">Replaces both the protection choice and the passcode. <code>currentProgress = raw - 1</code>, which is why this is <b>1/3</b> and not 3/3 &mdash; a detail easy to get wrong by reading the map alone.</div></div>
+      <div><div class="scrcap"><i></i>E2 &middot; Choose your Guardian <span class="tag survive">2/3</span></div>
+        <div class="phone ext"><div class="screen"><div class="mock">
+          <div class="extbar" style="padding-left:16px"><span class="dot0"></span>Bread &middot; Miden Testnet</div>
+          <div class="mpad" style="flex:1;display:flex;flex-direction:column">
+            <div class="obtop"><button class="obback" aria-label="Go back">&lsaquo;</button><div class="progdots"><i class="on"></i><i class="on"></i><i></i></div></div>
+            <h2 class="obh" style="text-align:left">Choose your Guardian</h2>
+            <p class="obp" style="text-align:left">Select an option below</p>
+            <div class="gguard">
+              <div class="gcard sel"><span class="band">Default</span><div class="glogo"><img src="assets/icons/miden.svg" alt="" style="width:14px;height:19px"><span style="font-family:var(--display);font-weight:800;font-size:12px">Miden</span></div><div class="gmeta">Operated by Miden<br>Location: US-EAST</div></div>
+              <div class="gcard"><div class="glogo"><img src="assets/icons/gateway.svg" alt=""></div><div class="gmeta">Operated by Gateway FM<br>Location: EU-NORTH</div></div>
+            </div>
+            <div class="zone"><button class="btn btn-primary" style="width:100%">Continue</button></div>
+          </div>
+        </div></div></div>
+        <div class="scrnote">Same component as mobile, but the 2-up grid has to survive a 360pt-wide popup &mdash; this is the case that breaks first, so it is the one worth checking.</div></div>
+      <div><div class="scrcap"><i></i>E3 &middot; Wallet ready <span class="tag survive">3/3</span></div>
+        <div class="phone ext"><div class="screen"><div class="mock">
+          <div class="extbar" style="padding-left:16px"><span class="dot0"></span>Bread &middot; Miden Testnet</div>
+          <div class="mpad" style="flex:1;display:flex;flex-direction:column">
+            <div class="obtop"><button class="obback" aria-label="Go back">&lsaquo;</button><div class="progdots"><i class="on"></i><i class="on"></i><i class="on"></i></div></div>
+            <div class="obmid">
+              <img class="obillus" src="assets/icons/confirmation-illustrantion.svg" alt="" style="width:110px">
+              <h2 class="obh">Your <span style="color:var(--accent-ink)">Wallet</span> is ready!</h2>
+              <p class="obp">Write down your recovery phrase within 7 days to fully secure your wallet.</p>
+            </div>
+            <div class="zone"><button class="btn btn-primary" style="width:100%">Open wallet</button></div>
+          </div>
+        </div></div></div>
+        <div class="scrnote">Final step of the shortened flow. Same copy as mobile; the illustration scales down rather than the type, so the heading stays on the 26px step.</div></div>
+      <div><div class="scrcap"><i></i>E4 &middot; Unlock <span class="tag merge">app-only</span></div>
+        <div class="phone ext"><div class="screen"><div class="mock">
+          <div class="extbar" style="padding-left:16px"><span class="dot0"></span>Bread &middot; Miden Testnet</div>
+          <div class="mpad" style="flex:1;display:flex;flex-direction:column">
+            
+            <div class="obmid">
+              <img src="assets/bread-logo.svg" alt="" style="width:44px;margin:0 auto;display:block">
+              <h2 class="obh" style="margin-top:10px">Welcome back</h2>
+              <input class="opw" type="password" value="0000000000" aria-label="Password" style="margin-top:16px">
+            </div>
+            <div class="zone"><button class="btn btn-primary" style="width:100%">Unlock</button><div class="gh">Forgot password?</div></div>
+          </div>
+        </div></div></div>
+        <div class="scrnote">Extension unlock is a <b>password field</b>, not a numpad &mdash; there is no passcode on this platform. Keeps &ldquo;Forgot password?&rdquo; so the screen is never a dead end.</div></div>
+    </div>
+
     <div class="callout"><b>What changed.</b> The bar now derives from the shipped <code>STEP_TO_PROGRESS</code> map instead of an invented 7-step model; detours hold their step; and <b>six screens the app already ships</b> are represented for the first time &mdash; passcode-mismatch, create-password, account-recovery, creating-wallet, verify-seed, and the whole import path. The spec no longer describes behaviour the product lacks, nor omits behaviour it has.</div>
 
     <h2 class="h">Wallet</h2>

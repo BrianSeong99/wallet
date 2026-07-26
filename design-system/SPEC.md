@@ -103,6 +103,35 @@ floor resolves to **0** on SE and in the extension popup — the flush-to-edge b
 **Viewports:** reference **iPhone 17 402×874**; must hold **SE 375×667 → Pro Max 440×956**, plus
 the **extension popup 360×600 (hardest case — check it first)**.
 
+## Automated review — run this, don't eyeball it
+
+```bash
+node design-system/review.mjs              # 45 screens x both themes
+node design-system/review.mjs --shot 04    # + PNGs for captions matching "04"
+```
+
+Playwright, exits non-zero on any failure. Per screen, in **both themes**, it checks:
+
+| Check | Rule |
+|---|---|
+| Safe area | nothing interactive within `max(16px, this frame's --safe-bottom)` of the bottom |
+| Clipped | nothing outside the frame |
+| Overflow | content not taller than the frame |
+| Contrast | text 4.5:1 (3:1 large); `currentColor` icons 3:1 |
+| Targets | every interactive element >= 44pt |
+| Type | nothing below the 11pt floor |
+
+**Two harness rules learned the hard way.** The theme switch must happen in a *separate*
+`evaluate()` call from the measurement — doing both in one synchronous block yields stale
+computed styles and fabricates failures. And the safe-area floor is **per frame**: an iPhone
+reserves 34pt for the home indicator, the extension popup reserves nothing, so a global 34
+produces false positives on every extension screen.
+
+This script found two defects that manual screenshot review had missed repeatedly: the
+keypad overlapping the home indicator, and the action-bar segments sitting at 38pt against
+the 44pt floor (32 instances) — the latter because my hand-written check only looked at
+`button,.gh,.azghost` and never included `.seg`.
+
 ## Deliverables in this folder
 
 | File | What |
