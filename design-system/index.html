@@ -576,10 +576,18 @@ table.map td code{font-size:12px}
    orange-on-a-wash -- and it needs no theme-dependent fill direction to get there.
    Instagram does exactly this: neutral grey pill, filled black glyph, and no brand colour
    anywhere in the nav. The accent stays for CTAs and the balance, where it is the point. */
-/* Apple tints the active glyph -- "a colored glyph plus a highlighted shape" -- so the
-   accent comes back here, but as --accent-ink (5.55:1 light / 5.86:1 dark), never the raw
-   brand orange, which is 2.90:1 on paper. The highlighted shape carries the rest. */
-.mnav .t.on{color:var(--accent-ink)}
+/* DECIDED: neutral active glyph, no brand colour in the nav.
+   Apple's HIG describes "a colored glyph plus a highlighted shape", and Slack's Liquid Glass
+   bar does tint (#762B7D) -- but Instagram's Liquid Glass bar uses no brand colour at all,
+   confirmed across four images including two Meta press assets. Both ship the same material,
+   so the tint is a choice. Neutral wins on measurement: --ink on the bubble is 9.01:1 light
+   and 12.63:1 dark, against --accent-ink's narrower pass. The accent stays for CTAs and the
+   balance, where it is the point rather than decoration.
+   Consequence to keep in view: we cannot do the outlined->filled glyph swap that every
+   reference uses (one weight per glyph in our set), so with the tint gone the BUBBLE is
+   carrying almost all of the active signal and the --ink-2 -> --ink step is subtle. That is
+   the argument for authoring filled nav glyphs. */
+.mnav .t.on{color:var(--ink)}
 .mnav .t .svgic{width:24px;height:24px}
 .mnav .t .nbadge{position:absolute;top:2px;right:12px;width:8px;height:8px;border-radius:50%;
   background:var(--neg);box-shadow:0 0 0 1.5px var(--surface)}

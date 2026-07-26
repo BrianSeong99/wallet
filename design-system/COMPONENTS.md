@@ -360,12 +360,21 @@ set ships **one weight per glyph**, so the most widely-used active-state mechani
 category is unavailable to us, and the pill is doing work the icon should share. Authoring
 filled variants of the three nav glyphs is the single highest-leverage asset task.
 
-**The tint is a live decision, not settled.** Among shipping Liquid Glass adopters, Slack tints
-its active glyph (`#762B7D`) and **Instagram uses no brand colour at all** — neutral ink in both
-themes, confirmed across four images including Meta press assets. Apple's HIG says "a colored
-glyph plus a highlighted shape", so tinted is HIG-faithful; neutral is reference-faithful and
-measures better (9.01:1 / 12.63:1 versus `--accent-ink`'s narrower pass). Both variants are
-built; pick one deliberately.
+**DECIDED — neutral active glyph. No brand colour in the nav.** Among shipping Liquid Glass
+adopters the tint is a choice: Slack tints (`#762B7D`), Instagram uses none, and both ship the
+same material. Neutral wins on measurement — `--ink` on the bubble is **9.01:1** light /
+**12.63:1** dark, against `--accent-ink`'s narrower pass. Apple's HIG does describe "a colored
+glyph plus a highlighted shape", so this is a deliberate departure from HIG in favour of the
+reference apps and the contrast headroom. The accent stays for CTAs and the balance, where it is
+the point rather than decoration.
+
+**The consequence, stated so it is not forgotten.** With the tint gone and no filled-glyph
+variant available, the **bubble is carrying almost the entire active signal**. The ink step
+between states is only **1.65:1** (light) and **1.92:1** (dark) — both states are perfectly
+legible against their backgrounds, but they are close to *each other*. Every reference app
+closes that gap with an outlined→filled swap, which we cannot do. So the nav is correct and
+accessible today, and it will be materially better once filled nav glyphs exist. That is now the
+top asset task, not a footnote.
 
 ## Prompt card — internal spacing
 
