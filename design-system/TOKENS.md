@@ -163,7 +163,7 @@ Reproduce with the checker in the session notes; page is `#ffffff` light / `#191
 | `--surface-balance-fg-muted` | **2.71** | **2.71** | `text-sm` + `text-base` in `BalanceCard.tsx:131,145` | **Real.** Small text, no test coupling. Safe to fix. |
 | `--status-negative` | **3.21** | **2.95** | `text-` *and* `bg-` *and* `bg-…/15` | Real, but dual-role — see below |
 | `--status-positive` | **2.19** | 8.01 | `text-` *and* `bg-` *and* `bg-…/15` | Real, but dual-role — see below |
-| white glyph on `--tx-received/-sent/-swap` | **2.42 / 2.37 / 2.10** | same | `text-pure-white` on `bg-tx-*`, `ActivityRow.tsx:99` | Real, but **test-coupled** — see below |
+| white glyph on `--tx-received/-sent/-swap` | **2.42 / 2.37 / 2.10** | same | `text-pure-white` on `bg-tx-*`, `ActivityRow.tsx:94,102` | Real, but **test-coupled** — see below |
 | `--color-text-tertiary`, `--color-text-muted`, `--text-gray`, `--text-secondary` | 2.12 / 2.30 / 3.95 / 3.83 | ok | unaudited | **Do not touch yet** — a token failing in isolation is not a defect until its usage is known (disabled and decorative text are exempt) |
 
 `--accent-primary` as text is 3.00:1 light, which is the known-and-accepted case: it
@@ -217,9 +217,9 @@ not colour, has to separate.
 ## Blocker 2 — the tx glyph fix would break tests
 
 The design decision (keep the pastel squares, darken the glyph to `--tx-glyph`) requires
-changing `text-pure-white` on `ActivityRow.tsx:99`. But `TransactionIcon.test.tsx`
-asserts `text-pure-white` and `[&_path]:fill-pure-white` in **four** places
-(`:78, :110, :140, :169`). Changing the glyph is therefore a **tested-behaviour change**,
+changing `text-pure-white` on `ActivityRow.tsx:94,102`. But `TransactionIcon.test.tsx`
+asserts `text-pure-white` / `fill-pure-white` / `stroke-pure-white` in **five** places
+(`:65, :97, :127, :156, :172`). Changing the glyph is therefore a **tested-behaviour change**,
 which the current phase forbids. It needs its own change with the test updates in the
 same commit.
 
