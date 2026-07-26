@@ -423,7 +423,31 @@ ul.tick li:before{content:"→";position:absolute;left:2px;color:var(--accent-in
   transition:background var(--dur-fast) var(--ease-standard)}
 .obtop .obback:active{background:var(--surface-2)}
 .obtop .progdots{flex:1;padding:0}
-/* Figma uses a SEGMENTED BAR, not dots — and the flow is 7 steps, not 4. */
+/* Onboarding progress mirrors the SHIPPED model: STEP_TO_PROGRESS in
+   screens/onboarding/navigator.tsx, totalSteps = protectionChoiceSkipped ? 3 : 4.
+   ChooseProtection 1 · Passcode|Biometric 2 · ChooseGuardian 3 · Confirmation 4.
+   Backup sub-flow: BackupSeed 1 · VerifySeed 2 · CreatePassword 3 · RecoveryMethod 4.
+   Import: ImportFromSeed 1 · ImportRecoveryMethod 4. Detours never move the bar. */
+/* onboarding form bits */
+.opw{width:100%;background:var(--surface-2);border:0;border-radius:var(--radius-md);padding:13px 14px;
+  font-family:var(--ui);font-size:16px;color:var(--ink);margin-top:9px}
+.opw.ok{box-shadow:0 0 0 1.5px var(--pos)}
+.opwmeta{display:flex;align-items:center;justify-content:space-between;margin-top:8px;font-size:11px;color:var(--ink-2)}
+.opwbar{display:flex;gap:4px;margin-top:8px}
+.opwbar i{height:4px;flex:1;border-radius:var(--radius-full);background:var(--surface-3);display:block}
+.opwbar i.on{background:var(--pos)}
+.ropt{text-align:left;background:var(--surface-2);border-radius:var(--radius-md);padding:12px 13px;margin-top:9px;position:relative}
+.ropt.sel{box-shadow:0 0 0 2px var(--accent)}
+.ropt .rt2{font-family:var(--display);font-weight:800;font-size:14px;display:flex;align-items:center;gap:7px}
+.ropt .rd{font-size:11px;color:var(--ink-2);line-height:1.45;margin-top:4px}
+.ropt .rbadge{font-size:11px;font-weight:800;background:var(--accent);color:var(--on-accent-sm);
+  padding:1px 7px;border-radius:var(--radius-sm);letter-spacing:.02em}
+.sword{background:var(--surface-2);border-radius:var(--radius-sm);padding:7px 8px;font-size:11px;
+  display:flex;gap:6px;align-items:baseline}
+.sword i{color:var(--ink-2);font-style:normal;font-family:var(--num);font-size:11px;min-width:13px}
+.sword span{color:var(--ink-3)}
+.spin2{width:26px;height:26px;border-radius:50%;border:3px solid var(--surface-3);
+  border-top-color:var(--accent);animation:spin var(--dur-loop-spin) linear infinite;margin:0 auto}
 .progdots{display:flex;gap:5px;justify-content:center;padding:4px 0 14px}
 .progdots i{height:5px;border-radius:var(--radius-full);background:var(--surface-3);flex:1;display:block}
 .progdots i.on{background:var(--accent)}
@@ -1550,193 +1574,272 @@ ul.tick li:before{content:"→";position:absolute;left:2px;color:var(--accent-in
     <p class="lede">The whole wallet, designed on the system. Every screen is composed from the documented components — graphite money surface, grey content blocks, the action zone, real in-repo icons and illustrations — at true iPhone 17 dimensions. Nothing here is a bespoke layout.</p>
 
     <h2 class="h">Onboarding</h2>
+    <p class="sub">Mirrors the shipped <code>STEP_TO_PROGRESS</code> model: <b>4 steps</b> (3 when the protection choice is skipped) &mdash; not the 7 I had invented. Detours never move the bar. Every screen the app ships is now represented, including the import path, the biometric fallback and the error states.</p>
     <div class="scrgrid">
-
-      <div><div class="scrcap"><i></i>01 · Splash</div>
+      <div><div class="scrcap"><i></i>01 &middot; Splash</div>
         <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
-          <div class="splash"><img src="assets/bread-logo.svg" alt="Bread"></div>
-        </div></div></div>
-        <div class="scrnote"><b>Was missing from my build.</b> Full-bleed brand orange with the mark knocked out white — the one place <code>--accent-brand</code> is a full-screen fill.</div></div>
-
-      <div><div class="scrcap"><i></i>02 · Welcome</div>
-        <div class="phone"><div class="screen"><div class="notch"></div><div class="mwel">
-          <div class="mid">
-            <img class="logo" src="assets/bread-logo.svg" alt="bread"/>
-            <h2>Welcome<br>to Bread!</h2>
-            <p>Bread Wallet is a simple and secure way to manage your digital money privately.</p>
-          </div>
-          <div class="zone" style="width:100%"><button class="btn btn-primary" style="width:100%">Get started</button><div class="gh">Recover your account ›</div></div>
-        </div></div></div>
-        <div class="scrnote">Already matched Figma. Kept as shipped; only the action zone gained safe-area clearance.</div></div>
-
-      <div><div class="scrcap"><i></i>03 · Protection method</div>
-        <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
-          <div class="stat"><span>9:41</span><span class="r">✦ ▪ ▪</span></div>
+          
           <div class="mpad" style="flex:1;display:flex;flex-direction:column">
-            <div class="obtop"><button class="obback" aria-label="Go back">‹</button><div class="progdots"><i class="on"></i><i></i><i></i><i></i><i></i><i></i><i></i></div></div>
+            
+            <div class="splash"><img src="assets/bread-logo.svg" alt="Bread"></div>
+          </div>
+        </div></div></div>
+        <div class="scrnote">Full-bleed brand orange with the mark knocked out &mdash; the one place <code>--accent-brand</code> is a full-screen fill.</div></div>
+      <div><div class="scrcap"><i></i>02 &middot; Welcome</div>
+        <div class="phone"><div class="screen"><div class="notch"></div>
+          <div class="mwel">
+            <div class="mid">
+              <img class="logo" src="assets/bread-logo.svg" alt="bread"/>
+              <h2>Welcome<br>to Bread!</h2>
+              <p>Bread Wallet is a simple and secure way to manage your digital money privately.</p>
+            </div>
+            <div class="zone" style="width:100%"><button class="btn btn-primary" style="width:100%">Get started</button><div class="gh">Recover your account &rsaquo;</div></div>
+          </div></div></div>
+        <div class="scrnote">Kept as shipped. The ghost link is the entry to the <b>import path</b> &mdash; now designed below rather than dead-ending.</div></div>
+      <div><div class="scrcap"><i></i>03 &middot; Choose protection <span class="tag survive">1/4</span></div>
+        <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
+          <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>
+          <div class="mpad" style="flex:1;display:flex;flex-direction:column">
+            <div class="obtop"><button class="obback" aria-label="Go back">&lsaquo;</button><div class="progdots"><i class="on"></i><i></i><i></i><i></i></div></div>
             <div class="obmid">
               <img class="obillus" src="assets/icons/protected-illustration.svg" alt="">
               <h2 class="obh">Choose how you want to protect your wallet</h2>
             </div>
-            <div class="zone">
-              <button class="btn btn-primary" style="width:100%">Use FaceID or Biometric</button>
-              <button class="btn btn-secondary" style="width:100%;margin-top:10px;min-height:52px">Set up your passcode</button>
-            </div>
+            <div class="zone"><button class="btn btn-primary" style="width:100%">Use FaceID or Biometric</button><button class="btn btn-secondary" style="width:100%;min-height:52px;margin-top:10px">Set up your passcode</button></div>
           </div>
         </div></div></div>
-        <div class="scrnote"><b>Correction:</b> the second action is a <b>filled grey button</b>, not the ghost text link I had. This is the systematic difference — Figma uses filled secondaries throughout.</div></div>
-
-      <div><div class="scrcap"><i></i>04 · Passcode create</div>
+        <div class="scrnote">First real step, so the bar reads <b>1 of 4</b>. Both options are filled buttons &mdash; Figma uses filled secondaries throughout.</div></div>
+      <div><div class="scrcap"><i></i>04 &middot; Passcode create <span class="tag survive">2/4</span></div>
         <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
-          <div class="stat"><span>9:41</span><span class="r">✦ ▪ ▪</span></div>
+          <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>
           <div class="mpad" style="flex:1;display:flex;flex-direction:column">
-            <div class="obtop"><button class="obback" aria-label="Go back">‹</button><div class="progdots"><i class="on"></i><i class="on"></i><i></i><i></i><i></i><i></i><i></i></div></div>
+            <div class="obtop"><button class="obback" aria-label="Go back">&lsaquo;</button><div class="progdots"><i class="on"></i><i class="on"></i><i></i><i></i></div></div>
             <h2 class="obh" style="margin-top:2%">Set up your passcode</h2>
             <p class="obp">Create a 6 digit code</p>
             <div class="dots" style="margin:20px 0 22px"><i></i><i></i><i></i><i></i><i></i><i></i></div>
-            <div class="pad" style="width:100%;margin-top:auto;padding-bottom:2px">
-              <button>1</button><button>2</button><button>3</button><button>4</button><button>5</button><button>6</button>
-                <button>7</button><button>8</button><button>9</button><span></span><button>0</button><button>⌫</button></div>
-            <div class="zone"><button class="btn btn-secondary" style="width:100%;min-height:52px">Use FaceID or Biometric</button></div>
+            <div class="pad" style="width:100%;margin-top:auto;padding-bottom:2px"><button>1</button><button>2</button><button>3</button><button>4</button><button>5</button><button>6</button><button>7</button><button>8</button><button>9</button><span></span><button>0</button><button>&#9003;</button></div>
           </div>
         </div></div></div>
-        <div class="scrnote"><b>Correction:</b> mine had no bottom action. Figma pins a filled-grey biometric shortcut below the numpad.</div></div>
-
-      <div><div class="scrcap"><i></i>05 · Passcode confirm</div>
+        <div class="scrnote"><b>Corrected:</b> the shipped screen has <em>no bottom action</em> &mdash; headline, dots, numpad only. I had added a biometric shortcut copied from Figma; that is a Figma-vs-app divergence, so the spec now follows the app.</div></div>
+      <div><div class="scrcap"><i></i>05 &middot; Passcode confirm <span class="tag survive">2/4</span></div>
         <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
-          <div class="stat"><span>9:41</span><span class="r">✦ ▪ ▪</span></div>
+          <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>
           <div class="mpad" style="flex:1;display:flex;flex-direction:column">
-            <div class="obtop"><button class="obback" aria-label="Go back">‹</button><div class="progdots"><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i><i></i><i></i></div></div>
+            <div class="obtop"><button class="obback" aria-label="Go back">&lsaquo;</button><div class="progdots"><i class="on"></i><i class="on"></i><i></i><i></i></div></div>
             <h2 class="obh" style="margin-top:2%">Confirm your passcode</h2>
             <p class="obp">Re-enter the same 6 digits</p>
             <div class="dots" style="margin:20px 0 22px"><i class="f"></i><i class="f"></i><i class="f"></i><i></i><i></i><i></i></div>
-            <div class="pad" style="width:100%;margin-top:auto;padding-bottom:2px">
-              <button>1</button><button>2</button><button>3</button><button>4</button><button>5</button><button>6</button>
-                <button>7</button><button>8</button><button>9</button><span></span><button>0</button><button>⌫</button></div>
-            <div class="zone"><button class="btn btn-secondary" style="width:100%;min-height:52px">Use FaceID or Biometric</button></div>
+            <div class="pad" style="width:100%;margin-top:auto;padding-bottom:2px"><button>1</button><button>2</button><button>3</button><button>4</button><button>5</button><button>6</button><button>7</button><button>8</button><button>9</button><span></span><button>0</button><button>&#9003;</button></div>
           </div>
         </div></div></div>
-        <div class="scrnote">Identical layout to 04 — only the heading, helper copy and filled-dot state differ.</div></div>
-
-      <div><div class="scrcap"><i></i>04a · Face ID scan</div>
+        <div class="scrnote">Still <b>2 of 4</b> &mdash; enter and confirm are the same <code>SetupPasscode</code> step, so the bar must not advance between them.</div></div>
+      <div><div class="scrcap"><i></i>05e &middot; Passcode mismatch <span class="tag retire">error</span></div>
         <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
-          <div class="stat"><span>9:41</span><span class="r">✦ ▪ ▪</span></div>
+          <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>
           <div class="mpad" style="flex:1;display:flex;flex-direction:column">
-            <div class="obtop"><button class="obback" aria-label="Go back">‹</button><div class="progdots"><i class="on"></i><i class="on"></i><i></i><i></i><i></i><i></i><i></i></div></div>
+            <div class="obtop"><button class="obback" aria-label="Go back">&lsaquo;</button><div class="progdots"><i class="on"></i><i class="on"></i><i></i><i></i></div></div>
+            <h2 class="obh" style="margin-top:2%">Confirm your passcode</h2>
+            <p class="obp" style="color:var(--neg);font-weight:700">Passcodes don&rsquo;t match. Try again.</p>
+            <div class="dots" style="margin:20px 0 22px"><i></i><i></i><i></i><i></i><i></i><i></i></div>
+            <div class="pad" style="width:100%;margin-top:auto;padding-bottom:2px"><button>1</button><button>2</button><button>3</button><button>4</button><button>5</button><button>6</button><button>7</button><button>8</button><button>9</button><span></span><button>0</button><button>&#9003;</button></div>
+          </div>
+        </div></div></div>
+        <div class="scrnote"><b>Was missing.</b> The most likely error in the whole flow. The app swaps the helper line for <code>passcodesDoNotMatch</code> in red and clears the dots &mdash; the error sits <em>at</em> the field, never in a banner.</div></div>
+      <div><div class="scrcap"><i></i>04a &middot; Face ID scan <span class="tag survive">2/4</span></div>
+        <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
+          <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>
+          <div class="mpad" style="flex:1;display:flex;flex-direction:column">
+            <div class="obtop"><button class="obback" aria-label="Go back">&lsaquo;</button><div class="progdots"><i class="on"></i><i class="on"></i><i></i><i></i></div></div>
             <div class="obmid">
-              <div class="fid"><b></b><b></b><b></b><b></b><span class="gl"><span class="svgic" style="--ic:url(assets/icons/face.svg);width:52px;height:52px" aria-hidden="true"></span></span></div>
+              <div class="fid"><b></b><b></b><b></b><b></b><span class="gl"><span class="svgic" style="--ic:url(assets/icons/face.svg);width:52px;height:52px"></span></span></div>
               <div style="text-align:center;font-family:var(--display);font-weight:800;font-size:15px;margin-top:24px">Face ID set up</div>
             </div>
             <div class="zone"><button class="btn btn-secondary" style="width:100%;min-height:52px">Use passcode instead</button></div>
           </div>
         </div></div></div>
-        <div class="scrnote">Orange corner brackets frame the scan. Escape hatch is again a filled-grey secondary.</div></div>
-
-      <div><div class="scrcap"><i></i>04b · Face ID success</div>
+        <div class="scrnote">Biometric branch of the same step, so also <b>2 of 4</b>. Escape hatch is a filled-grey secondary.</div></div>
+      <div><div class="scrcap"><i></i>04b &middot; Face ID success <span class="tag survive">2/4</span></div>
         <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
-          <div class="stat"><span>9:41</span><span class="r">✦ ▪ ▪</span></div>
+          <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>
           <div class="mpad" style="flex:1;display:flex;flex-direction:column">
-            <div class="obtop"><button class="obback" aria-label="Go back">‹</button><div class="progdots"><i class="on"></i><i class="on"></i><i></i><i></i><i></i><i></i><i></i></div></div>
+            <div class="obtop"><button class="obback" aria-label="Go back">&lsaquo;</button><div class="progdots"><i class="on"></i><i class="on"></i><i></i><i></i></div></div>
             <div class="obmid">
-              <div class="fid ok"><b></b><b></b><b></b><b></b><span class="gl"><span>✓</span></span></div>
+              <div class="fid ok"><b></b><b></b><b></b><b></b><span class="gl"><span>&#10003;</span></span></div>
               <div style="text-align:center;font-family:var(--display);font-weight:800;font-size:15px;margin-top:24px">Confirmed!</div>
               <p class="obp" style="margin-top:6px">Only one more step!</p>
             </div>
             <div class="zone"><button class="btn btn-primary" style="width:100%">Continue</button></div>
           </div>
         </div></div></div>
-        <div class="scrnote">Brackets flip <b>orange → green</b> on success. Colour is paired with a tick and a word, never colour alone.</div></div>
-
-      <div><div class="scrcap"><i></i>06 · Choose your Guardian</div>
+        <div class="scrnote">Brackets flip orange &rarr; green. Colour is paired with a tick and a word, never colour alone (SC 1.4.1).</div></div>
+      <div><div class="scrcap"><i></i>06 &middot; Choose your Guardian <span class="tag survive">3/4</span></div>
         <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
-          <div class="stat"><span>9:41</span><span class="r">✦ ▪ ▪</span></div>
+          <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>
           <div class="mpad" style="flex:1;display:flex;flex-direction:column">
-            <div class="obtop"><button class="obback" aria-label="Go back">‹</button><div class="progdots"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i><i></i></div></div>
+            <div class="obtop"><button class="obback" aria-label="Go back">&lsaquo;</button><div class="progdots"><i class="on"></i><i class="on"></i><i class="on"></i><i></i></div></div>
             <h2 class="obh" style="text-align:left">Choose your Guardian</h2>
-            <p class="obp" style="text-align:left;margin-top:5px">Select an option below</p>
-            <div style="font-size:11px;font-weight:700;color:var(--accent-ink);margin-top:6px">Learn more about the Guardian</div>
+            <p class="obp" style="text-align:left">Select an option below</p>
+            <div style="font-size:11px;font-weight:700;color:var(--accent-ink);margin-top:8px">Learn more about the Guardian</div>
             <div class="gguard">
-              <div class="gcard"><div class="band">Default</div><div class="glogo"><img src="assets/icons/miden.svg" alt=""><span class="gname" style="margin-left:5px">Miden</span></div><div class="gmeta">Operated by Miden<br>Location: US-EAST</div></div>
-              <div class="gcard sel"><div class="glogo"><img src="assets/icons/gateway.svg" data-mono alt=""></div><div class="gmeta">Operated by Gateway FM<br>Location: EU-NORTH</div></div>
-              <div class="gcard"><div class="glogo"><img src="assets/icons/lambdaclass.svg" data-mono alt=""></div><div class="gmeta">Operated by Lambda Class<br>Location: EU-CENTRAL</div></div>
-              <div class="gcard"><div class="glogo"><img src="assets/icons/open-zeppelin.svg" data-mono alt=""></div><div class="gmeta">Operated by OpenZeppelin<br>Location: US-EAST</div></div>
+              <div class="gcard sel"><span class="band">Default</span><div class="glogo"><img src="assets/icons/miden.svg" alt="" style="width:14px;height:19px"><span style="font-family:var(--display);font-weight:800;font-size:12px">Miden</span></div><div class="gmeta">Operated by Miden<br>Location: US-EAST</div></div>
+              <div class="gcard"><div class="glogo"><img src="assets/icons/gateway.svg" alt=""></div><div class="gmeta">Operated by Gateway FM<br>Location: EU-NORTH</div></div>
+              <div class="gcard"><div class="glogo"><img src="assets/icons/lambdaclass.svg" alt=""></div><div class="gmeta">Operated by Lambda Class<br>Location: EU-CENTRAL</div></div>
+              <div class="gcard"><div class="glogo"><img src="assets/icons/open-zeppelin.svg" alt=""></div><div class="gmeta">Operated by OpenZeppelin<br>Location: US-EAST</div></div>
             </div>
             <div class="zone"><button class="btn btn-primary" style="width:100%">Continue</button></div>
           </div>
         </div></div></div>
-        <div class="scrnote"><b>2-up grid with a "Default" band; selection is an orange outline.</b> Note the band sits <em>above</em> the logo in its own row — it must never overlay or compress the wordmark (the original bug). <b>Contrast flag:</b> Figma's disabled Continue is <code>#dfd8d3</code> with white text ≈ <b>1.4:1</b> — I've kept it enabled here rather than ship a non-conformant disabled state.</div></div>
-
-      <div><div class="scrcap"><i></i>06a · What is a Guardian?</div>
+        <div class="scrnote">A default is pre-selected so the step is answerable before the concept is understood. All four cards are identical boxes &mdash; the Default band is absolutely positioned with its height reserved on every card.</div></div>
+      <div><div class="scrcap"><i></i>06a &middot; What is a Guardian? <span class="tag merge">detour</span></div>
         <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
-          <div class="stat"><span>9:41</span><span class="r">✦ ▪ ▪</span></div>
+          <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>
           <div class="mpad" style="flex:1;display:flex;flex-direction:column">
-            <div class="obtop"><button class="obback" aria-label="Go back">‹</button><div class="progdots"><i class="on"></i><i class="on"></i><i></i><i></i><i></i><i></i><i></i></div></div>
+            <div class="obtop"><button class="obback" aria-label="Go back">&lsaquo;</button><div class="progdots"><i class="on"></i><i class="on"></i><i class="on"></i><i></i></div></div>
             <h2 class="obh" style="text-align:left">Choose your Guardian</h2>
-            <p class="obp" style="text-align:left;margin-top:4px">For the last step, choose your Miden Guardian. This will serve as a protective layer</p>
+            <p class="obp" style="text-align:left">For the last step, choose your Miden Guardian. This will serve as a protective layer</p>
             <div class="isheet">
-              <div class="ih">What is a Guardian?</div>
-              <img src="assets/icons/guardian-avatar.svg" alt="" style="display:block;margin:8px auto 0;max-width:78px">
+              <div class="sttl" style="text-align:center">What is a Guardian?</div>
+              <div style="text-align:center"><img src="assets/icons/guardian-avatar.svg" alt="" style="width:34px"></div>
               <div class="ip">A Guardian is an independent service that <b>cosigns every transaction</b> from your wallet, adding a safety net without giving up self-custody.</div>
-              <div class="irule"></div>
-              <div class="isec"><div class="it"><i style="background:var(--pos)">✓</i>What it does</div><div class="id2">Approves or rejects transactions based on your security policy. Helps you recover if you lose your device.</div></div>
-              <div class="isec"><div class="it"><i style="background:var(--accent-ink)">⊙</i>Switching is easy</div><div class="id2">You can rotate to a different Guardian — or remove one entirely — at any time using your recovery phrase.</div></div>
-              <div class="isec"><div class="it"><i style="background:var(--neg)">✕</i>What it cannot do</div><div class="id2">Move your funds on its own. Access your private state. See your balances unless you share them.</div></div>
+              <div class="isec"><div class="it"><i style="background:var(--pos)">&#10003;</i>What it does</div><div class="id2">Approves or rejects transactions based on your security policy. Helps you recover if you lose your device.</div></div>
+              <div class="isec"><div class="it"><i style="background:var(--accent-ink)">&#8857;</i>Switching is easy</div><div class="id2">You can rotate to a different Guardian &mdash; or remove one entirely &mdash; at any time using your recovery phrase.</div></div>
+              <div class="isec"><div class="it"><i style="background:var(--neg)">&#10005;</i>What it cannot do</div><div class="id2">Move your funds on its own. Access your private state. See your balances unless you share them.</div></div>
             </div>
             <div class="zone"><button class="btn btn-primary" style="width:100%">Got it</button></div>
           </div>
         </div></div></div>
-        <div class="scrnote">The explainer is an orange-outlined sheet. Its three sections are the clearest statement of the trust model in the whole product — worth protecting in copy review.</div></div>
-
-      <div><div class="scrcap"><i></i>07 · Wallet ready</div>
+        <div class="scrnote"><b>Corrected:</b> a detour off step 3, so the bar <em>holds</em> at 3/4. It previously reported 2/7 here, which is what made the indicator lie.</div></div>
+      <div><div class="scrcap"><i></i>06b &middot; Create password <span class="tag retire">was missing</span></div>
         <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
-          <div class="stat"><span>9:41</span><span class="r">✦ ▪ ▪</span></div>
+          <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>
           <div class="mpad" style="flex:1;display:flex;flex-direction:column">
+            <div class="obtop"><button class="obback" aria-label="Go back">&lsaquo;</button><div class="progdots"><i class="on"></i><i class="on"></i><i class="on"></i><i></i></div></div>
+            <h2 class="obh" style="text-align:left">Create password</h2>
+            <p class="obp" style="text-align:left">Set a password to unlock your wallet</p>
+            <div style="margin-top:14px">
+              <input class="opw" type="password" value="0000000000" aria-label="Enter password">
+              <div class="opwbar"><i class="on"></i><i class="on"></i><i class="on"></i></div>
+              <div class="opwmeta"><span>Minimum 8 characters with at least 1 number</span><span style="color:var(--pos);font-weight:700">Strong</span></div>
+              <input class="opw ok" type="password" value="0000000000" aria-label="Enter password again" style="margin-top:14px">
+              <div class="opwmeta"><span style="color:var(--pos);font-weight:700">&#10003; It&rsquo;s a match!</span></div>
+            </div>
+            <div class="zone"><button class="btn btn-primary" style="width:100%">Continue</button></div>
+          </div>
+        </div></div></div>
+        <div class="scrnote"><b>Was missing entirely.</b> The biometric branch reaches this only when <code>checkHardwareSecurityAvailable()</code> is false &mdash; otherwise the key lives in the Secure Enclave (<code>__HARDWARE_ONLY__</code>) and this screen is skipped. Without it the spec implied biometric users had no fallback.</div></div>
+      <div><div class="scrcap"><i></i>06c &middot; Set up account recovery <span class="tag retire">was missing</span></div>
+        <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
+          <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>
+          <div class="mpad" style="flex:1;display:flex;flex-direction:column">
+            <div class="obtop"><button class="obback" aria-label="Go back">&lsaquo;</button><div class="progdots"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i></div></div>
+            <h2 class="obh" style="text-align:left">Set Up Account Recovery</h2>
+            <p class="obp" style="text-align:left">Choose how you want to recover your account if you lose access.</p>
+            <div class="ropt sel"><div class="rt2">Guardian <span class="rbadge">DEFAULT</span></div><div class="rd">Recommended. Guardian-based recovery for your account, but the guardian operator can see your state.</div></div>
+            <div class="ropt"><div class="rt2">Fully Private</div><div class="rd">Local only, no one sees your state except you &mdash; but no recovery. Losing your device will result in permanent loss of your funds.</div></div>
+            <div class="zone"><button class="btn btn-primary" style="width:100%">Continue</button></div>
+          </div>
+        </div></div></div>
+        <div class="scrnote"><b>Was missing.</b> Step 4. The trade-off is stated on the option itself &mdash; Fully Private says losing the device means permanent loss. This is the clearest irreversibility cue in onboarding.</div></div>
+      <div><div class="scrcap"><i></i>07a &middot; Creating wallet <span class="tag retire">loading</span></div>
+        <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
+          <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>
+          <div class="mpad" style="flex:1;display:flex;flex-direction:column">
+            <div class="obtop"><div class="progdots"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i></div></div>
+            <div class="obmid">
+              <div class="spin2"></div>
+              <h2 class="obh">Creating your wallet&hellip;</h2>
+              <p class="obp">This takes a few seconds. Keep the app open.</p>
+            </div>
+          </div>
+        </div></div></div>
+        <div class="scrnote"><b>Was missing.</b> Wallet creation is slow, so the step needs a loading state &mdash; the skill rates missing submit feedback <b>High</b>. Copy is the shipped <code>creatingYourWallet</code>.</div></div>
+      <div><div class="scrcap"><i></i>07b &middot; Wallet ready <span class="tag survive">4/4</span></div>
+        <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
+          <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>
+          <div class="mpad" style="flex:1;display:flex;flex-direction:column">
+            <div class="obtop"><div class="progdots"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i></div></div>
             <div class="obmid">
               <img class="obillus" src="assets/icons/confirmation-illustrantion.svg" alt="">
               <h2 class="obh">Your <span style="color:var(--accent-ink)">Wallet</span> is ready!</h2>
               <p class="obp">Write down your recovery phrase within 7 days to fully secure your wallet.</p>
-              <p class="obp" style="margin-top:10px">We'll remind you daily on the home screen.</p>
+              <p class="obp" style="margin-top:10px">We&rsquo;ll remind you daily on the home screen.</p>
             </div>
-            <div class="zone"><button class="btn btn-primary" style="width:100%">Open Wallet</button></div>
+            <div class="zone"><button class="btn btn-primary" style="width:100%">Open wallet</button></div>
           </div>
         </div></div></div>
-        <div class="scrnote">Copy corrected to Figma, with <em>Wallet</em> accented. Uses <code>--accent-ink</code> so the orange word clears AA as text.</div></div>
-
-      <div><div class="scrcap"><i></i>Recovery phrase <span class="small" style="font-weight:400">· app-only</span></div>
+        <div class="scrnote">Now correctly <b>4 of 4</b> &mdash; it previously showed no progress at all. A rare earned moment, where the delight budget is spent.</div></div>
+      <div><div class="scrcap"><i></i>08 &middot; Back up your wallet <span class="tag survive">1/4</span></div>
         <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
-          <div class="stat"><span>9:41</span><span class="r">✦ ▪ ▪</span></div>
+          <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>
           <div class="mpad" style="flex:1;display:flex;flex-direction:column">
-            <div class="obtop"><button class="obback" aria-label="Go back">‹</button><div class="progdots"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i></div></div>
-            <h2 class="obh" style="text-align:left">Write this down</h2>
-            <p class="obp" style="text-align:left">12 words, in order. This is the only way to restore your wallet.</p>
-            <div class="seedgrid" style="margin-top:12px">
-              <div class="seedw"><i>1</i>ripple</div><div class="seedw"><i>2</i>canvas</div><div class="seedw"><i>3</i>orbit</div>
-              <div class="seedw"><i>4</i>meadow</div><div class="seedw"><i>5</i>tunnel</div><div class="seedw"><i>6</i>crisp</div>
-              <div class="seedw"><i>7</i>lantern</div><div class="seedw"><i>8</i>harbor</div><div class="seedw"><i>9</i>velvet</div>
-              <div class="seedw"><i>10</i>pigeon</div><div class="seedw"><i>11</i>amber</div><div class="seedw"><i>12</i>quartz</div>
-            </div>
-            <div class="notice" style="margin-top:10px"><span>⛔</span><span>Never share these words. Anyone with them can take your funds.</span></div>
-            <div class="zone"><button class="btn btn-primary" style="width:100%">I've written it down</button></div>
+            <div class="obtop"><button class="obback" aria-label="Go back">&lsaquo;</button><div class="progdots"><i class="on"></i><i></i><i></i><i></i></div></div>
+            <h2 class="obh" style="text-align:left">Back up your wallet</h2>
+            <p class="obp" style="text-align:left">Save these 12 words and store in a secure place.</p>
+<div class="seedgrid" style="margin-top:14px"><div class="seedw"><i>1</i>ripple</div><div class="seedw"><i>2</i>canvas</div><div class="seedw"><i>3</i>orbit</div><div class="seedw"><i>4</i>meadow</div><div class="seedw"><i>5</i>tunnel</div><div class="seedw"><i>6</i>crisp</div><div class="seedw"><i>7</i>lantern</div><div class="seedw"><i>8</i>harbor</div><div class="seedw"><i>9</i>velvet</div><div class="seedw"><i>10</i>pigeon</div><div class="seedw"><i>11</i>amber</div><div class="seedw"><i>12</i>quartz</div></div>
+            <div class="notice" style="margin-top:12px"><span>&#9940;</span><span>Anyone who knows your recovery phrase can access your wallet and funds.</span></div>
+            <div class="zone"><button class="btn btn-primary" style="width:100%">I&rsquo;ve written it down</button><div class="gh">Copy to clipboard</div></div>
           </div>
         </div></div></div>
-        <div class="scrnote"><b>Not in this Figma page</b> — carried from the shipped app. Tier-2: deliberately not password-shaped (no masking, no strength meter, no autofill).</div></div>
-
-      <div><div class="scrcap"><i></i>Unlock <span class="small" style="font-weight:400">· app-only</span></div>
+        <div class="scrnote">Backup is its own 4-step sub-flow (<code>BackupSeed 1 &middot; VerifySeed 2 &middot; CreatePassword 3 &middot; RecoveryMethod 4</code>). Deliberately <em>not</em> password-shaped: no masking, no strength meter, no autofill.</div></div>
+      <div><div class="scrcap"><i></i>09 &middot; Verify seed phrase <span class="tag retire">was missing</span></div>
         <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
-          <div class="stat"><span>9:41</span><span class="r">✦ ▪ ▪</span></div>
-          <div class="mpad" style="flex:1;display:flex;flex-direction:column;align-items:center">
-            <img src="assets/bread-logo.svg" alt="" style="width:52px;margin-top:2%">
-            <h2 class="obh">Enter your passcode</h2>
-            <div class="dots" style="margin:20px 0 22px"><i class="f"></i><i class="f"></i><i></i><i></i><i></i><i></i></div>
-            <div class="pad" style="width:100%;margin-top:auto;padding-bottom:2px">
-              <button>1</button><button>2</button><button>3</button><button>4</button><button>5</button><button>6</button>
-                <button>7</button><button>8</button><button>9</button><span></span><button>0</button><button>⌫</button></div>
-            <div class="zone" style="width:100%"><button class="btn btn-secondary" style="width:100%;min-height:52px">Use Face ID</button></div>
+          <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>
+          <div class="mpad" style="flex:1;display:flex;flex-direction:column">
+            <div class="obtop"><button class="obback" aria-label="Go back">&lsaquo;</button><div class="progdots"><i class="on"></i><i class="on"></i><i></i><i></i></div></div>
+            <h2 class="obh" style="text-align:left">Verify Seed Phrase</h2>
+            <p class="obp" style="text-align:left">Confirm you&rsquo;ve saved your recovery phrase.</p>
+            <div style="margin-top:16px">
+              <div style="font-size:11px;font-weight:700;color:var(--ink-2)">First word</div>
+              <input class="opw" value="ripple" aria-label="First word">
+              <div style="font-size:11px;font-weight:700;color:var(--ink-2);margin-top:14px">Last word</div>
+              <input class="opw" value="" placeholder="Enter the 12th word" aria-label="Last word">
+            </div>
+            <div class="zone"><button class="btn btn-primary" style="width:100%">Continue</button></div>
           </div>
         </div></div></div>
-        <div class="scrnote">Same numpad component, third context. Biometric shortcut now matches Figma's filled-grey treatment.</div></div>
-
+        <div class="scrnote"><b>Was missing &mdash; the important one.</b> Without it, &ldquo;I&rsquo;ve written it down&rdquo; is self-attested, and that is the button users tap while lying. The app ships <code>VerifySeedPhrase.tsx</code> and asks for the <b>first</b> and <b>last</b> words.</div></div>
+      <div><div class="scrcap"><i></i>10 &middot; Import with seed phrase <span class="tag retire">path was missing</span></div>
+        <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
+          <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>
+          <div class="mpad" style="flex:1;display:flex;flex-direction:column">
+            <div class="obtop"><button class="obback" aria-label="Go back">&lsaquo;</button><div class="progdots"><i class="on"></i><i></i><i></i><i></i></div></div>
+            <h2 class="obh" style="text-align:left">Import Wallet</h2>
+            <p class="obp" style="text-align:left">Enter your wallet&rsquo;s 12-word Seed phrase.</p>
+<div class="seedgrid" style="margin-top:14px"><div class="sword"><i>1</i>ripple</div><div class="sword"><i>2</i>canvas</div><div class="sword"><i>3</i>orbit</div><div class="sword"><i>4</i><span>&mdash;</span></div><div class="sword"><i>5</i><span>&mdash;</span></div><div class="sword"><i>6</i><span>&mdash;</span></div><div class="sword"><i>7</i><span>&mdash;</span></div><div class="sword"><i>8</i><span>&mdash;</span></div><div class="sword"><i>9</i><span>&mdash;</span></div><div class="sword"><i>10</i><span>&mdash;</span></div><div class="sword"><i>11</i><span>&mdash;</span></div><div class="sword"><i>12</i><span>&mdash;</span></div></div>
+            <div class="notice" style="margin-top:12px;background:var(--surface-2);color:var(--ink-2)"><span>&#9432;</span><span>You can paste your entire seed phrase into any field. Only Miden seed phrases are supported.</span></div>
+            <div class="zone"><button class="btn btn-primary" style="width:100%">Continue Import</button></div>
+          </div>
+        </div></div></div>
+        <div class="scrnote"><b>The entire import path was undesigned</b> &mdash; &ldquo;Recover your account&rdquo; on Welcome led nowhere. Import is step 1 of its own flow. Pasting fills all 12 fields at once (<code>seedPhraseTip</code>).</div></div>
+      <div><div class="scrcap"><i></i>11 &middot; Import recovery method <span class="tag retire">was missing</span></div>
+        <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
+          <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>
+          <div class="mpad" style="flex:1;display:flex;flex-direction:column">
+            <div class="obtop"><button class="obback" aria-label="Go back">&lsaquo;</button><div class="progdots"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i></div></div>
+            <h2 class="obh" style="text-align:left">How would you like to recover this wallet?</h2>
+            <div class="ropt sel"><div class="rt2">Import via Guardian <span class="rbadge">DEFAULT</span></div><div class="rd">Use a guardian to recover and co-sign for this account.</div></div>
+            <div class="ropt"><div class="rt2">Import public account</div><div class="rd">Import the public account derived from your seed phrase.</div></div>
+            <div class="zone"><button class="btn btn-primary" style="width:100%">Continue</button></div>
+          </div>
+        </div></div></div>
+        <div class="scrnote"><b>Was missing.</b> Step 4 of the import flow (<code>importRecoveryMethodTitle</code>). Same option-card component as create, so both paths converge.</div></div>
+      <div><div class="scrcap"><i></i>12 &middot; Unlock <span class="tag merge">app-only</span></div>
+        <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
+          <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>
+          <div class="mpad" style="flex:1;display:flex;flex-direction:column">
+            
+            <div style="flex:1;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;width:100%">
+              <img src="assets/bread-logo.svg" alt="" style="width:52px">
+              <h2 class="obh" style="margin-top:12px">Enter your passcode</h2>
+              <div class="dots" style="margin:20px 0 22px"><i class="f"></i><i class="f"></i><i></i><i></i><i></i><i></i></div>
+              <div class="pad" style="width:100%;margin-top:auto;padding-bottom:2px"><button>1</button><button>2</button><button>3</button><button>4</button><button>5</button><button>6</button><button>7</button><button>8</button><button>9</button><span></span><button>0</button><button>&#9003;</button></div>
+            </div>
+            <div class="zone"><button class="btn btn-secondary" style="width:100%;min-height:52px">Use Face ID</button><div class="gh">Forgot passcode?</div></div>
+          </div>
+        </div></div></div>
+        <div class="scrnote"><b>Added &ldquo;Forgot passcode?&rdquo;</b> &mdash; the app has <code>onForgotPasswordClick</code> and my mock had dropped it, leaving the lock screen a dead end. No progress bar: not part of onboarding.</div></div>
     </div>
+    <div class="callout"><b>What changed.</b> The bar now derives from the shipped <code>STEP_TO_PROGRESS</code> map instead of an invented 7-step model; detours hold their step; and <b>six screens the app already ships</b> are represented for the first time &mdash; passcode-mismatch, create-password, account-recovery, creating-wallet, verify-seed, and the whole import path. The spec no longer describes behaviour the product lacks, nor omits behaviour it has.</div>
 
     <h2 class="h">Wallet</h2>
     <div class="scrgrid">
