@@ -23,6 +23,29 @@ Legend: **SURVIVE** = canonical · **MERGE** = fold into survivor behind its API
 
 **Design rule — no outlined buttons.** Actions are filled-primary (orange), filled-secondary (`surface-2`), or borderless-ghost (text + accent). Borders are for structural separation (cards/rows/dividers), never tap targets — extends to chips and pills.
 
+**Pattern — InfoSheet is the only "additional info" surface.** Explanatory / utility content
+(what a Guardian is, why a fee applies, what an APY risk means, address-format help) always
+appears as a **fit-to-content bottom sheet** on the app's single overlay primitive
+(`lib/ui/drawer`, vaul). Never an inline card, never a second modal language.
+
+*Why a sheet, specifically:* it overlays the current screen so the thing being explained stays
+visible behind it — **context preservation**, which is Benji's tray argument. It is explicitly
+**not** justified by reachability; NN/g refutes that rationale for bottom sheets, and citing it
+would be folklore.
+
+*When NOT to use it:* a **blocking decision** that must be answered → dialog (not swipe-dismissible).
+**Long reference content** → routed page. A **one-line clarification** → inline hint text, no
+overlay at all.
+
+*Anatomy (from the shipped `GuardianInfoDrawer`):* 6px accent top border · centred 26px title ·
+hero illustration · centred intro · 6px accent rule · divider-separated rows with coloured
+circular badges · one full-width dismiss button · `padding-bottom: max(16px, safe-area)`.
+Overlay is transparent — no dim scrim — because the sheet does not block the flow.
+
+**Note the badge contrast trap:** a small glyph on the accent fill must use `--on-accent-sm`
+(near-black, 5.78:1). The shipped component uses `text-pure-white` on `primary-500`, which is
+**2.9:1 and fails** — the spec here is deliberately stricter than the current implementation.
+
 **Design rule — one action zone.** The primary action sits in a **fixed bottom action zone** — full-width primary, `gutter 24 · bottom 24 + env(safe-area-inset-bottom)` — at the **same Y on every screen**, so it never jumps as the user moves between screens (today's builds drift). Secondary/ghost actions stack **above** the primary, never below, so they never shift it. Scrollable screens use a sticky footer; short screens pin it. Migration: normalize every screen's footer to this zone during the per-screen re-skin.
 
 ## Headers — 5 → 2

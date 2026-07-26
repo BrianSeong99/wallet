@@ -641,6 +641,23 @@ ul.tick li:before{content:"→";position:absolute;left:2px;color:var(--accent-in
 .phone.ext .notch,.phone.ext .mock::after{display:none}
 .phone.ext .mock{--safe-bottom:0px}
 .extbar{display:flex;align-items:center;gap:8px;padding:9px 0 12px;font-size:11px;color:var(--ink-2)}
+/* INFO SHEET — the canonical "additional info" surface. Bottom sheet, fit-to-content,
+   so the screen behind stays visible: context preservation is the reason, NOT reach.
+   Matches the shipped GuardianInfoDrawer: 6px orange top border, transparent overlay
+   (no dim scrim), 6px orange rule under the intro, coloured circular badges. */
+.isheet2{position:absolute;left:0;right:0;bottom:0;background:var(--surface);
+  border-top:6px solid var(--accent);border-radius:28px 28px 0 0;
+  padding:14px 20px max(16px,var(--safe-bottom,0px));max-height:78%;overflow:hidden;z-index:5}
+.isheet2 .ist{font-family:var(--display);font-weight:600;font-size:26px;line-height:1.1;text-align:center;color:var(--ink)}
+.isheet2 .ishero{display:block;margin:8px auto 0;width:100px;height:auto}
+.isheet2 .isd{text-align:center;font-size:13px;line-height:1.3;color:var(--ink);margin-top:10px}
+.isheet2 .isrule{height:6px;border-radius:var(--radius-full);background:var(--accent);margin:14px 0 4px}
+.isheet2 .isrow{padding:9px 0}
+.isheet2 .isrow+.isrow{border-top:1px solid var(--rule)}
+.isheet2 .ish{display:flex;align-items:center;gap:8px;font-family:var(--display);font-weight:800;font-size:13px}
+.isheet2 .isb{width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  flex:none;font-size:11px;font-weight:800;color:var(--paper)}
+.isheet2 .isdd{font-size:11px;color:var(--ink-2);line-height:1.45;margin-top:3px}
 .extbar .dot0{width:7px;height:7px;border-radius:50%;background:var(--pos);display:block;flex:none}
 .pad button{width:76px;height:76px;border:0;border-radius:50%;background:var(--surface-2);font-family:var(--ui);font-size:26px;font-weight:500;color:var(--ink);cursor:pointer;justify-self:center;
   transition:transform var(--dur-fast) ease,background var(--dur-fast) ease}
@@ -1700,25 +1717,30 @@ ul.tick li:before{content:"→";position:absolute;left:2px;color:var(--accent-in
           </div>
         </div></div></div>
         <div class="scrnote">A default is pre-selected so the step is answerable before the concept is understood. All four cards are identical boxes &mdash; the Default band is absolutely positioned with its height reserved on every card.</div></div>
-      <div><div class="scrcap"><i></i>06a &middot; What is a Guardian? <span class="tag merge">detour</span></div>
+      <div><div class="scrcap"><i></i>06a &middot; What is a Guardian? <span class="tag merge">info sheet</span></div>
         <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
           <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>
           <div class="mpad" style="flex:1;display:flex;flex-direction:column">
             <div class="obtop"><button class="obback" aria-label="Go back">&lsaquo;</button><div class="progdots"><i class="on"></i><i class="on"></i><i class="on"></i><i></i></div></div>
             <h2 class="obh" style="text-align:left">Choose your Guardian</h2>
-            <p class="obp" style="text-align:left">For the last step, choose your Miden Guardian. This will serve as a protective layer</p>
-            <div class="isheet">
-              <div class="sttl" style="text-align:center">What is a Guardian?</div>
-              <div style="text-align:center"><img src="assets/icons/guardian-avatar.svg" alt="" style="width:34px"></div>
-              <div class="ip">A Guardian is an independent service that <b>cosigns every transaction</b> from your wallet, adding a safety net without giving up self-custody.</div>
-              <div class="isec"><div class="it"><i style="background:var(--pos)">&#10003;</i>What it does</div><div class="id2">Approves or rejects transactions based on your security policy. Helps you recover if you lose your device.</div></div>
-              <div class="isec"><div class="it"><i style="background:var(--accent-ink)">&#8857;</i>Switching is easy</div><div class="id2">You can rotate to a different Guardian &mdash; or remove one entirely &mdash; at any time using your recovery phrase.</div></div>
-              <div class="isec"><div class="it"><i style="background:var(--neg)">&#10005;</i>What it cannot do</div><div class="id2">Move your funds on its own. Access your private state. See your balances unless you share them.</div></div>
+            <p class="obp" style="text-align:left">Select an option below</p>
+            <div class="gguard" style="opacity:.55">
+              <div class="gcard sel"><span class="band">Default</span><div class="glogo"><img src="assets/icons/miden.svg" alt="" style="width:14px;height:19px"><span style="font-family:var(--display);font-weight:800;font-size:12px">Miden</span></div><div class="gmeta">Operated by Miden<br>Location: US-EAST</div></div>
+              <div class="gcard"><div class="glogo"><img src="assets/icons/gateway.svg" alt=""></div><div class="gmeta">Operated by Gateway FM<br>Location: EU-NORTH</div></div>
             </div>
-            <div class="zone"><button class="btn btn-primary" style="width:100%">Got it</button></div>
+          </div>
+          <div class="isheet2">
+            <div class="ist">What is a Guardian?</div>
+            <img class="ishero" src="assets/icons/what-is-guardian-hero.svg" alt="">
+            <div class="isd">A Guardian is an independent service that <b>cosigns every transaction</b> from your wallet, adding a safety net without giving up self-custody.</div>
+            <div class="isrule"></div>
+            <div class="isrow"><div class="ish"><span class="isb" style="background:var(--pos)">&#10003;</span>What it does</div><div class="isdd">Approves or rejects transactions based on your security policy. Helps you recover if you lose your device.</div></div>
+            <div class="isrow"><div class="ish"><span class="isb" style="background:var(--accent);color:var(--on-accent-sm)">!</span>Switching is easy</div><div class="isdd">You can rotate to a different Guardian &mdash; or remove one entirely &mdash; at any time using your recovery phrase.</div></div>
+            <div class="isrow"><div class="ish"><span class="isb" style="background:var(--neg)">&#10005;</span>What it cannot do</div><div class="isdd">Move your funds on its own. Access your private state. See your balances unless you share them.</div></div>
+            <button class="btn btn-primary" style="width:100%;min-height:52px;margin-top:12px">Got it</button>
           </div>
         </div></div></div>
-        <div class="scrnote"><b>Corrected:</b> a detour off step 3, so the bar <em>holds</em> at 3/4. It previously reported 2/7 here, which is what made the indicator lie.</div></div>
+        <div class="scrnote"><b>Corrected twice.</b> The app ships this as <code>GuardianInfoDrawer</code> &mdash; a <b>vaul bottom sheet</b>, not the inline card I had drawn. Fit-to-content so the Guardian cards stay visible behind it: the justification is <b>context preservation</b>, not reachability (NN/g explicitly refutes the reach argument for bottom sheets). Signature details from the shipped component: 6px orange top border, 6px orange rule under the intro, transparent overlay with no dim scrim, and the real hero illustration. The bar still holds at 3/4.</div></div>
       <div><div class="scrcap"><i></i>06b &middot; Create password <span class="tag retire">was missing</span></div>
         <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
           <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>
