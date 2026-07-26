@@ -467,6 +467,22 @@ table.map td code{font-size:12px}
 .mnav .t .nbadge{position:absolute;top:2px;right:12px;width:8px;height:8px;border-radius:50%;
   background:var(--neg);box-shadow:0 0 0 1.5px var(--surface)}
 [data-theme="dark"] .mnav .t .nbadge{box-shadow:0 0 0 1.5px var(--surface-2)}
+/* ---- Alternate C: icon-only capsule (Family / Robinhood / Rainbow) ----
+   Observed, not theorised: Family ships 3 icon-only items in a floating white capsule,
+   Robinhood 5 icon-only edge-to-edge, Rainbow 4 icon-only in a glass capsule. All three
+   are the apps this team most admires -- and all three contradict the platform spec that
+   says label every item. Included so the trade-off is visible rather than asserted.
+   Note the cost is OUR labels specifically: "Explore" has no conventional glyph. */
+.mnav.iconly .t{min-width:56px;min-height:49px;padding:0;gap:0}
+.mnav.iconly .t span:not(.svgic):not(.nbadge){position:absolute;width:1px;height:1px;
+  overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+.mnav.iconly .t .svgic{width:26px;height:26px}
+/* ---- Alternate D: pill-only active state (Wise) ----
+   Wise's icons never change colour or fill; the pill IS the entire active state. Worth
+   noting because it sidesteps the contrast problem that forced the wash/well flip -- if
+   ink stays constant, it can sit at full contrast in both themes. */
+.mnav.pillonly .t.on{color:var(--ink)}
+.mnav.pillonly .t.on .svgic{background-color:var(--ink)}
 /* ---- Alternate B: full-width Material 3 bar ---- */
 .mnav.m3{width:auto;margin:auto 0 0;min-height:64px;border-radius:0;padding:0;gap:0;
   box-shadow:none;background:var(--surface);border-top:1px solid var(--rule)}
@@ -1893,6 +1909,10 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
         <div class="small" style="margin-top:8px"><b>64</b> tall, <b>56&times;32</b> active indicator, edge-to-edge per M3&rsquo;s &ldquo;span the full length of the window&rdquo;. The only <em>Material-3-compliant</em> option and the easiest fit in the 360px popup &mdash; but generic, and it contradicts iOS 26.</div></div>
       <div class="ccol"><div class="clabel">current build &mdash; for comparison</div><div class="mnav legacy" style="margin:0"><button class="t on"><span class="svgic" style="--ic:url(assets/icons/home-new.svg)" aria-hidden="true"></span><span>Home</span></button><button class="t"><span class="svgic" style="--ic:url(assets/icons/explore.svg)" aria-hidden="true"></span><span>Explore</span></button><button class="t"><span class="svgic" style="--ic:url(assets/icons/activity.svg)" aria-hidden="true"></span><span>Activity</span></button></div>
         <div class="small" style="margin-top:8px">16px radius, 290px fixed width, bordered <em>and</em> shadowed, active carried by hue alone at 2.90:1.</div></div>
+      <div class="ccol"><div class="clabel">alternate C &mdash; icon-only <span class="tag merge">what Family ships</span></div><div class="mnav iconly" style="margin:0"><button class="t on"><span class="svgic" style="--ic:url(assets/icons/home-new.svg)" aria-hidden="true"></span><span>Home</span></button><button class="t"><span class="svgic" style="--ic:url(assets/icons/explore.svg)" aria-hidden="true"></span><span>Explore</span></button><button class="t"><span class="svgic" style="--ic:url(assets/icons/activity.svg)" aria-hidden="true"></span><span>Activity</span></button></div>
+        <div class="small" style="margin-top:8px"><b>Observed, and it contradicts the spec.</b> Family (3), Robinhood (5) and Rainbow (4) all ship <em>icon-only</em> capsules &mdash; the three apps this team most admires. Labels remain the safer call for <em>our</em> set, because &ldquo;Explore&rdquo; has no conventional glyph, but this is a real trade-off, not a settled question.</div></div>
+      <div class="ccol"><div class="clabel">alternate D &mdash; pill-only active <span class="tag merge">Wise</span></div><div class="mnav pillonly" style="margin:0"><button class="t on"><span class="svgic" style="--ic:url(assets/icons/home-new.svg)" aria-hidden="true"></span><span>Home</span></button><button class="t"><span class="svgic" style="--ic:url(assets/icons/explore.svg)" aria-hidden="true"></span><span>Explore</span></button><button class="t"><span class="svgic" style="--ic:url(assets/icons/activity.svg)" aria-hidden="true"></span><span>Activity</span></button></div>
+        <div class="small" style="margin-top:8px">Wise&rsquo;s icons never change colour or fill &mdash; the pill <em>is</em> the active state. Sidesteps the contrast problem that forced our wash/well flip: with ink constant it sits at full contrast in both themes.</div></div>
       <div class="ccol"><div class="clabel">pending state lives in the nav</div><div class="mnav" style="margin:0"><button class="t on"><span class="svgic" style="--ic:url(assets/icons/home-new.svg)" aria-hidden="true"></span><span>Home</span></button><button class="t"><span class="svgic" style="--ic:url(assets/icons/explore.svg)" aria-hidden="true"></span><span>Explore</span></button><button class="t"><span class="svgic" style="--ic:url(assets/icons/activity.svg)" aria-hidden="true"></span><span>Activity</span><span class="nbadge nti"></span></button></div>
         <div class="small" style="margin-top:8px">Borrowed from Family: after a send, the pending indicator <b>migrates into the Activity tab</b> &mdash; the nav becomes the answer to &ldquo;where did my transaction go?&rdquo; rather than just an alert. The badge is a status token with a 1.5px ring in the surface colour so it reads on both themes.</div></div>
     </div>

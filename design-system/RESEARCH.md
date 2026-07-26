@@ -600,7 +600,10 @@ https://developer.apple.com/design/human-interface-guidelines/tab-bars
 - Thumb-zone heatmaps: already graded folklore in 7.1. Leave them there.
 
 **Honest summary of the evidence tier: there is no good empirical study of bottom-nav labels
-vs no-labels.** The labels decision rests on two platform specs agreeing, not on data.
+vs no-labels.** The labels decision rests on two platform specs agreeing, not on data --
+**and a survey of shipping apps contradicts the spec.** See 8.8. An earlier draft of this
+section called labels "not close"; that was wrong, or at least overstated. It was written
+from platform guidance before the app survey landed.
 
 ### 8.4 Practitioner input `[CONSENSUS]`
 
@@ -660,4 +663,64 @@ All verified directly, not taken on the agent's word:
 sticky-nav padding and mobile keyboards; `--domain product` returns unrelated archetypes.
 **There are no navigation rules in that skill to comply with** — worth knowing before anyone
 cites it as authority.
+
+### 8.8 What shipping apps ACTUALLY do — surveyed 2026-07-26
+
+Method note worth keeping: **modern App Store / Play galleries almost always crop the tab bar
+out** (confirmed for Family, Coinbase, Robinhood, Cash App, Revolut). What worked instead was
+frame-grabbing videos from designers' own essays, reading open-source repos, accessibility
+reviews, and official press renders.
+
+| App | Tabs | Labels | Shape | Active state | Centre FAB |
+|---|---|---|---|---|---|
+| **Family** | 3 | **none** | floating inset capsule | solid black filled icon | no — separate black `+` bottom-**right** |
+| **Rainbow** | 4 | **none** | floating glass capsule, 52pt, r=26 | translucent accent pill slides behind icon (spring) | no |
+| **Robinhood** | 5 | **none** | full-width, flush, opaque | white filled icon | no |
+| **Monzo** | 4 | always | floating capsule (iOS) / full-width (Android) | grey pill **and** blue tint | no |
+| **Wise** | 4 | always | floating capsule | **pill only** — icons never recolour | no |
+| **Cash App** | 5 | always (Money's label **is the balance**) | full-width | not sourced | no |
+| **MetaMask** | 5 | always | full-width, 54pt | filled-icon swap only | **yes**, 56pt, `+` rotates 45° |
+| **Venmo** | 5 | always | full-width opaque | colour only | **yes** |
+| **Phantom** | 4 at the **top** | text | bottom holds only Search | — | `+` bottom-right |
+| **Coinbase** | 4-5 | labels | full-width | not sourced | no (middle slot = dapp browser) |
+
+**The labels conflict is real and unresolved.** Platform spec (HIG + M3) says label every item.
+But **the three wallets this team most admires -- Family, Rainbow, Robinhood -- all ship
+icon-only.** Family was verified by frame-grabbing the videos in Benji Taylor's own essay
+(https://benji.org/media/family-values/34.mp4 at ~96%): left grey clock outline, centre solid
+black wallet glyph, right grey compass outline, evenly spaced, no labels. Rainbow is verifiable
+from source (`src/navigation/SwipeNavigator.tsx`, `src/components/tab-bar/dimensions.ts`).
+
+Our position: **keep labels**, but on a narrower argument than "the spec says so" -- it is our
+specific label set that needs them. Of *Home / Explore / Activity*, only Home has a
+conventional glyph; "Explore" is exactly the ambiguous case. An icon-only variant is built in
+Components so the trade-off is visible rather than asserted. If the tab set ever became
+Wallet / Activity / Settings, icon-only would be defensible.
+
+**Two patterns worth stealing, both verified:**
+
+1. **Family's dynamic tray.** The same floating capsule slot is reused as the **primary action
+   button** mid-flow -- `11.mp4` and `34.mp4` show it rendering "Continue" and a Face-ID
+   confirm as a full-width pill in the tab bar's exact position. Taylor: components "housed
+   within trays that can effortlessly expand, contract, and adapt in response to a user's
+   actions... Trays can appear on the fly and function as a condensed version of the app."
+   This is a bigger idea than a nav restyle and interacts with our one-action-zone rule.
+   **Deferred, not rejected** -- it would mean the nav and the action zone become one surface.
+2. **Rainbow's Activity tab becomes a spinner with a pending-transaction count**
+   (`src/components/tab-bar/ActivityTabIcon.tsx`), the same idea as Family's migrating
+   spinner. Corroborates the badge treatment we adopted -- and suggests the next step is a
+   count, not just a dot.
+
+**Wise's pill-only active state deserves a second look.** Because its icons never recolour,
+the ink can sit at full contrast in both themes -- which would have sidestepped the problem
+that forced our wash/well flip entirely. Built as alternate D.
+
+**Honest gaps in this survey:** Revolut's entire visual treatment is unverified (it crops the
+bar from all ~25 store screenshots; a 5-tab naming is confirmed from four separate help
+articles, but shape/blur/active state are not). Coinbase's current bar is not first-party
+sourced. Cash App's and Coinbase's chrome (shape, blur, active state) is unsourced even where
+structure is solid. Robinhood's observed capture is ~early-2023 and one 2026 review disagrees
+on tab naming. Family's tab *names* beyond "activity tab" are read from glyphs. Phantom, Gate
+and Cash App help pages 403 or sign-in-wall on fetch, so those quotes come from the search
+index rather than a first-hand read.
 
