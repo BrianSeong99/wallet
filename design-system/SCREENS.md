@@ -102,7 +102,7 @@ documents, and which screens document a given file.
 | 54 | Send · success | shipped | `receipt.ts:30–65` |
 | 55 | Contacts · picker | gap / sheet — sheet | `SendManager.tsx:488` `SendManager.tsx:87–108` |
 | 56 | Contacts · picker, empty | gap / sheet — sheet | `AccountsList.tsx:46–47` |
-| 57 | Address book | gap / sheet — sheet | `Settings.tsx:420–431` `Settings.tsx:303` `AddressBook.tsx:77–78` |
+| 57 | Address book | gap / sheet — sheet | `Settings.tsx:420–431` `Settings.tsx:303` `AddressBook.tsx:77–78` `AddressBook.tsx:23–37` |
 | 58 | Address book · duplicate | gap / sheet — sheet | `AddressBook.tsx:128` |
 | 59 | Address book · empty | gap / sheet — sheet | `AddressBook.tsx:68` |
 
