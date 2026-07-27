@@ -7,6 +7,8 @@ import { ReactComponent as ConfirmationHero } from 'app/icons/onboarding/confirm
 import { Button, ButtonVariant } from 'components/Button';
 import { ActionZone } from 'components/ui/ActionZone';
 
+import { OnboardingBody, OnboardingHeading, OnboardingHero, OnboardingSubcopy } from './layout';
+
 const MAX_BIOMETRIC_ATTEMPTS = 3;
 
 export interface ConfirmationScreenProps extends React.ButtonHTMLAttributes<HTMLDivElement> {
@@ -43,10 +45,16 @@ export const ConfirmationScreen: React.FC<ConfirmationScreenProps> = ({
   // otherwise the user sees "Your wallet is ready" before it actually is.
   if (creating) {
     return (
-      <div className="w-full h-full pt-11.5">
-        <div {...props} className="flex flex-col items-center justify-center h-full gap-y-4 bg-app-bg w-full px-6">
+      // The wrapper used to carry `pt-11.5` above an `h-full` child, which made
+      // the column 46px taller than the viewport and pushed the "centred"
+      // spinner off centre. The zone here is one centred block, per `07a`.
+      <div className="w-full h-full">
+        <div
+          {...props}
+          className="flex flex-col items-center justify-center h-full gap-stack-loose bg-app-bg w-full px-6"
+        >
           <Spinner />
-          <p className="text-text-muted text-sm">{t('creatingYourWallet')}</p>
+          <p className="text-label text-ink-2">{t('creatingYourWallet')}</p>
         </div>
       </div>
     );
@@ -56,46 +64,46 @@ export const ConfirmationScreen: React.FC<ConfirmationScreenProps> = ({
 
   return (
     <div {...props} className="bg-app-bg max-w-full h-full overflow-hidden" data-testid="onboarding-confirmation">
-      <div className="min-h-full flex flex-col items-center px-6">
-        <div className="flex-1 flex flex-col items-center justify-center w-full text-center py-8">
-          <ConfirmationHero style={{ width: 240, height: 'auto' }} />
-          <h1 className="mt-6 text-5xl font-semibold font-heading text-heading-gray leading-[100%] tracking-tight">
-            <Trans i18nKey="yourWalletIsReady" components={{ highlight: <span className="text-primary-500" /> }} />
-          </h1>
-          {/* TODO: Wrap in a single class and then have child components */}
-          <p className="mt-3 text-lg text-heading-gray leading-[130%] font-medium">
-            {t('recoveryPhraseSevenDayReminder')}
-          </p>
-          <p className="mt-4 text-lg font-medium text-heading-gray leading-[130%]">
-            {t('recoveryPhraseDailyReminder')}
-          </p>
+      <div className="min-h-full flex flex-col px-6">
+        {/* The success illustration and headline stay even in the error state:
+            the wallet genuinely was created and only the unlock method failed,
+            so re-framing the screen as a failure would misreport what happened.
+            The error is added to the block, not substituted for it. */}
+        <OnboardingBody>
+          <OnboardingHero>
+            <ConfirmationHero />
+          </OnboardingHero>
+          <OnboardingHeading>
+            {/* `--accent-ink`, not `--accent`: the brand orange is 2.90:1 on
+                paper and fails SC 1.4.3 as body-weight display text. */}
+            <Trans i18nKey="yourWalletIsReady" components={{ highlight: <span className="text-accent-ink" /> }} />
+          </OnboardingHeading>
+          <OnboardingSubcopy>{t('recoveryPhraseSevenDayReminder')}</OnboardingSubcopy>
+          <OnboardingSubcopy>{t('recoveryPhraseDailyReminder')}</OnboardingSubcopy>
 
           {hasError && (
-            <div className="mt-4">
-              <p className="text-red-500 text-sm mb-2">{t('biometricFailed')}</p>
+            <div className="flex flex-col items-center gap-stack-tight">
+              <p className="text-caption font-bold leading-[1.45] text-neg text-center">{t('biometricFailed')}</p>
               {!showPasswordFallback && (
-                <p className="text-text-muted text-xs">
+                <p className="text-caption leading-[1.45] text-ink-2 text-center">
                   {t('biometricAttemptsRemaining', { count: MAX_BIOMETRIC_ATTEMPTS - biometricAttempts })}
                 </p>
               )}
             </div>
           )}
-        </div>
+        </OnboardingBody>
 
         <ActionZone>
           {showPasswordFallback ? (
             <>
-              <Button
-                tabIndex={0}
-                title={t('continueWithPassword')}
-                className="self-center"
-                onClick={onSwitchToPassword}
-              />
+              {/* The escape hatch is primary and retry sits beneath it: a user
+                  whose face or finger has just failed three times needs the way
+                  out more than another attempt. */}
+              <Button tabIndex={0} title={t('continueWithPassword')} onClick={onSwitchToPassword} />
               <Button
                 tabIndex={0}
                 title={t('tryBiometricAgain')}
                 variant={ButtonVariant.Secondary}
-                className="self-center"
                 onClick={onSubmit}
                 isLoading={isLoading}
               />
@@ -106,7 +114,6 @@ export const ConfirmationScreen: React.FC<ConfirmationScreenProps> = ({
               title={primaryButtonTitle}
               // No text-base override here: it would beat Button's text-cta and
               // put the label back below the size white-on-accent needs.
-              className="self-center w-full"
               onClick={onSubmit}
               isLoading={isLoading}
               data-testid="onboarding-confirmation-submit"

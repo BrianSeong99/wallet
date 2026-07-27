@@ -6,32 +6,42 @@ import { ReactComponent as ProtectedIllustration } from 'app/icons/onboarding/pr
 import { Button, ButtonVariant } from 'components/Button';
 import { ActionZone } from 'components/ui/ActionZone';
 
+import { OnboardingBody, OnboardingHeading, OnboardingHero, OnboardingScreen } from './layout';
+
 export interface ChooseProtectionScreenProps {
   onSelectBiometric?: () => void;
   onSelectPasscode?: () => void;
 }
 
+/**
+ * Step 1 of 4 and the first screen after Welcome, so it sets the shape every
+ * other step copies: `.obmid` (illustration + headline, optically centred) over
+ * the action zone.
+ *
+ * The illustration used to render at an inline `width: 278` against a 140px
+ * spec — nearly double — which is what made the flow read as illustration-heavy
+ * rather than calm, and made the headline fight the artwork for the eye.
+ * `OnboardingHero` puts it back on `--hero-w`.
+ */
 export const ChooseProtectionScreen: React.FC<ChooseProtectionScreenProps> = ({
   onSelectBiometric,
   onSelectPasscode
 }) => {
   const { t } = useTranslation();
   return (
-    <div className="bg-app-bg h-full overflow-y-auto" data-testid="onboarding-choose-protection">
-      <div className="min-h-full flex flex-col items-center px-6">
-        <div className="flex-1 flex flex-col items-center w-full pt-20 py-8">
-          <ProtectedIllustration style={{ width: 278, height: 'auto' }} />
-          <h1 className="text-title-lg font-bold font-heading text-heading-gray text-center mt-8 leading-[105%] tracking-tight">
-            {t('chooseHowToProtect')}
-          </h1>
-        </div>
+    <OnboardingScreen testId="onboarding-choose-protection">
+      <OnboardingBody className="gap-stack-loose">
+        <OnboardingHero>
+          <ProtectedIllustration />
+        </OnboardingHero>
+        <OnboardingHeading>{t('chooseHowToProtect')}</OnboardingHeading>
+      </OnboardingBody>
 
-        <ActionZone>
-          <Button title={t('useFaceIdOrBiometric')} onClick={onSelectBiometric} />
-          <Button title={t('setUpYourPasscode')} variant={ButtonVariant.Secondary} onClick={onSelectPasscode} />
-        </ActionZone>
-      </div>
-    </div>
+      <ActionZone>
+        <Button title={t('useFaceIdOrBiometric')} onClick={onSelectBiometric} />
+        <Button title={t('setUpYourPasscode')} variant={ButtonVariant.Secondary} onClick={onSelectPasscode} />
+      </ActionZone>
+    </OnboardingScreen>
   );
 };
 

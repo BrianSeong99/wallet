@@ -534,6 +534,11 @@ body[data-hide-navbar] [data-tabbar-footer='true'] {
     --t-balance: 2rem; /* 32 */
     --t-display: 4.5rem; /* 72 */
 
+    /* Onboarding step-illustration width. In rem so it scales with the user's
+     * text size along with everything around it — the illustration is part of
+     * the composition, not device chrome. */
+    --hero-w: 8.75rem; /* 140 */
+
     /* Radius. sm/md/lg already ship as --radius-sm (8px) and the
      * --radius-{md,lg}-token pair (12/16) — i.e. the Crust scale under older
      * names — so only `full` is new here. --radius-md is deliberately NOT

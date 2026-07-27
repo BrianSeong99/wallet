@@ -12,6 +12,8 @@ import { hapticLight } from 'lib/mobile/haptics';
 import { isIOS, isMobile } from 'lib/platform';
 import { cn } from 'lib/ui/util';
 
+import { OnboardingBody, OnboardingHeading, OnboardingScreen, OnboardingSubcopy } from './layout';
+
 type Phase = 'prompt' | 'success';
 
 export interface SetupBiometricScreenProps {
@@ -19,39 +21,42 @@ export interface SetupBiometricScreenProps {
   onContinue?: () => void;
 }
 
-const CORNER_SIZE = 56;
-const FRAME_SIZE = 224;
-
 type FrameColor = 'primary' | 'positive';
 
+/**
+ * Corner placement + rotation for the four brackets, in visual order
+ * (top-left, top-right, bottom-right, bottom-left). This was four inline style
+ * objects computing `top`/`left`/`transform` from a numeric `rotate` prop and
+ * sizing the frame at a hardcoded 224×56px; as utilities the whole frame scales
+ * with the user's text size like every other illustration on the flow.
+ */
+const BRACKET_CORNERS = [
+  'top-0 left-0',
+  'top-0 right-0 rotate-90',
+  'bottom-0 right-0 rotate-180',
+  'bottom-0 left-0 -rotate-90'
+] as const;
+
+/**
+ * The scan frame is this step's illustration, so it sits at `--hero-w` — the
+ * same optical scale as the `OnboardingHero` artwork on every neighbouring
+ * step, instead of the 224px that made it the largest element in onboarding.
+ *
+ * Colour is never the sole carrier of the state change (SC 1.4.1): the brackets
+ * go accent → positive at the same moment the glyph swaps to a tick and the
+ * headline changes word.
+ */
 const ScanFrame: React.FC<{ color: FrameColor; children: React.ReactNode }> = ({ color, children }) => {
-  const stroke = color === 'primary' ? 'text-primary-500' : 'text-status-positive';
-  // Quarter-circle "L" bracket. Rotated 0/90/180/270 to land at each corner.
-  const Bracket = ({ rotate }: { rotate: 0 | 90 | 180 | 270 }) => (
-    <svg
-      className={cn('absolute', stroke)}
-      style={{
-        width: CORNER_SIZE,
-        height: CORNER_SIZE,
-        transform: `rotate(${rotate}deg)`,
-        top: rotate === 0 || rotate === 90 ? 0 : undefined,
-        bottom: rotate === 180 || rotate === 270 ? 0 : undefined,
-        left: rotate === 0 || rotate === 270 ? 0 : undefined,
-        right: rotate === 90 || rotate === 180 ? 0 : undefined
-      }}
-      viewBox="0 0 56 56"
-      fill="none"
-    >
-      <path d="M4 54V20C4 11.1634 11.1634 4 20 4H54" stroke="currentColor" strokeWidth="5" strokeLinecap="round" />
-    </svg>
-  );
+  const stroke = color === 'primary' ? 'text-accent' : 'text-pos';
 
   return (
-    <div className="relative flex items-center justify-center" style={{ width: FRAME_SIZE, height: FRAME_SIZE }}>
-      <Bracket rotate={0} />
-      <Bracket rotate={90} />
-      <Bracket rotate={180} />
-      <Bracket rotate={270} />
+    <div className="relative flex size-35 shrink-0 items-center justify-center">
+      {BRACKET_CORNERS.map(corner => (
+        // Quarter-circle "L" bracket, rotated to land at each corner.
+        <svg key={corner} className={cn('absolute size-8', stroke, corner)} viewBox="0 0 56 56" fill="none">
+          <path d="M4 54V20C4 11.1634 11.1634 4 20 4H54" stroke="currentColor" strokeWidth="7" strokeLinecap="round" />
+        </svg>
+      ))}
       {children}
     </div>
   );
@@ -109,45 +114,50 @@ export const SetupBiometricScreen: React.FC<SetupBiometricScreenProps> = ({ onSw
   };
 
   return (
-    <div className="bg-app-bg h-full overflow-y-auto" data-testid="onboarding-setup-biometric">
-      <div className="min-h-full flex flex-col items-center px-6">
-        <div className="flex-1 flex flex-col items-center justify-center w-full">
-          {phase === 'prompt' ? (
-            <>
-              <button type="button" aria-label={promptTitle} onClick={handleRetry} className="outline-none">
-                <ScanFrame color="primary">
-                  <InnerIcon className="w-16 h-16 text-heading-gray" />
-                </ScanFrame>
-              </button>
-              <h1 className="text-2xl font-semibold font-heading text-heading-gray text-center mt-8">{promptTitle}</h1>
-              {error && <p className="text-sm text-status-negative text-center mt-3 px-4">{error}</p>}
-            </>
-          ) : (
-            <>
-              <ScanFrame color="positive">
-                <div className="size-20 rounded-2xl bg-status-positive flex items-center justify-center">
-                  <div className="size-14 rounded-full bg-pure-white/20 flex items-center justify-center">
-                    <Icon name={IconName.Checkmark} size="lg" fill="currentColor" className="text-pure-white" />
-                  </div>
-                </div>
+    <OnboardingScreen testId="onboarding-setup-biometric">
+      <OnboardingBody className="gap-stack-loose">
+        {phase === 'prompt' ? (
+          <>
+            <button
+              type="button"
+              aria-label={promptTitle}
+              onClick={handleRetry}
+              // `outline-none` alone left keyboard users with no focus
+              // indicator on the one control that re-triggers the OS prompt.
+              className="outline-none focus-visible:ring-3 focus-visible:ring-accent/50 rounded-lg-token"
+            >
+              <ScanFrame color="primary">
+                <InnerIcon className="size-14 text-ink" />
               </ScanFrame>
-              <h1 className="text-2xl font-semibold font-heading text-heading-gray text-center mt-8">
-                {t('biometricConfirmed')}
-              </h1>
-              <p className="text-base text-text-tertiary-token text-center mt-2">{t('onlyOneMoreStep')}</p>
-            </>
-          )}
-        </div>
+            </button>
+            <OnboardingHeading>{promptTitle}</OnboardingHeading>
+            {/* `.ferr` — the field-level error treatment: 11px/700 in `--neg`,
+                never a banner. */}
+            {error && <p className="text-caption font-bold leading-[1.45] text-neg text-center">{error}</p>}
+          </>
+        ) : (
+          <>
+            <ScanFrame color="positive">
+              {/* `--paper` rather than `pure-white`: on dark the positive token
+                  is a light green, and white-on-it is unreadable. */}
+              <div className="size-14 rounded-full bg-pos flex items-center justify-center">
+                <Icon name={IconName.Checkmark} size="lg" fill="currentColor" className="text-paper" />
+              </div>
+            </ScanFrame>
+            <OnboardingHeading>{t('biometricConfirmed')}</OnboardingHeading>
+            <OnboardingSubcopy>{t('onlyOneMoreStep')}</OnboardingSubcopy>
+          </>
+        )}
+      </OnboardingBody>
 
-        <ActionZone>
-          {phase === 'prompt' ? (
-            <Button title={t('usePasscodeInstead')} variant={ButtonVariant.Ghost} onClick={onSwitchToPasscode} />
-          ) : (
-            <Button title={t('continue')} onClick={onContinue} />
-          )}
-        </ActionZone>
-      </div>
-    </div>
+      <ActionZone>
+        {phase === 'prompt' ? (
+          <Button title={t('usePasscodeInstead')} variant={ButtonVariant.Secondary} onClick={onSwitchToPasscode} />
+        ) : (
+          <Button title={t('continue')} onClick={onContinue} />
+        )}
+      </ActionZone>
+    </OnboardingScreen>
   );
 };
 

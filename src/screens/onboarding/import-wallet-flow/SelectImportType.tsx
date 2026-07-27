@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 
 import { ReactComponent as ArrowRightIcon } from 'app/icons/arrow-right.svg';
 
+import { OnboardingHeading, OnboardingScreen, OnboardingSubcopy } from '../common/layout';
 import { ImportType } from '../types';
 
 export interface SelectImportTypeScreenProps extends Omit<React.ButtonHTMLAttributes<HTMLDivElement>, 'onSubmit'> {
@@ -37,30 +38,35 @@ export const SelectImportTypeScreen = ({ onSubmit }: SelectImportTypeScreenProps
     [t]
   );
 
+  // No ActionZone here on purpose: this screen has no bottom action. The two
+  // option cards ARE the actions — tapping one advances the flow — so there is
+  // nothing to pin. The screen previously carried its own bottom padding in two
+  // disagreeing values (`pb-6` on the header, `pb-4` on the list); both are gone
+  // in favour of the container-owned `gap-stack-*` rhythm.
   return (
-    <div
-      className="flex-1 flex flex-col items-center bg-transparent text-heading-gray px-4 pt-6 overflow-y-auto"
-      data-testid="import-select-type"
-    >
-      <div className="flex flex-col items-center pb-6">
-        <h1 className="font-semibold text-2xl leading-tight">{t('chooseImportType')}</h1>
-        <p className="text-sm text-center leading-snug mt-2 text-text-muted">{t('chooseImportTypeDescription')}</p>
-      </div>
-      <div className="flex flex-col gap-3 w-full pb-4">
-        {ImportTypeOptions.map(option => (
-          <div
-            key={option.id}
-            className="flex flex-col border border-border-card w-full p-4 rounded-xl cursor-pointer hover:bg-gray-50 transition-colors"
-            onClick={() => onSubmit?.(option.id)}
-          >
-            <div className="flex flex-row justify-between items-center">
-              <h2 className="font-medium text-sm">{option.title}</h2>
-              <ArrowRightIcon fill="currentColor" height={'16px'} width={'16px'} className="flex-shrink-0 ml-2" />
+    <OnboardingScreen testId="import-select-type">
+      <div className="flex w-full flex-col gap-stack-loose py-stack-loose">
+        <div className="flex flex-col gap-stack-tight">
+          <OnboardingHeading>{t('chooseImportType')}</OnboardingHeading>
+          <OnboardingSubcopy>{t('chooseImportTypeDescription')}</OnboardingSubcopy>
+        </div>
+
+        <div className="flex flex-col gap-stack-tight">
+          {ImportTypeOptions.map(option => (
+            <div
+              key={option.id}
+              className="flex w-full cursor-pointer flex-col rounded-md-token bg-surface-2 p-3 text-left transition-colors hover:bg-surface-3"
+              onClick={() => onSubmit?.(option.id)}
+            >
+              <div className="flex flex-row items-center justify-between gap-2">
+                <h2 className="font-heading text-body font-extrabold text-ink">{option.title}</h2>
+                <ArrowRightIcon fill="currentColor" className="size-4 shrink-0 text-ink-3" />
+              </div>
+              <p className="mt-1 text-caption leading-[1.45] text-ink-2">{option.description}</p>
             </div>
-            <p className="text-xs text-text-muted mt-1">{option.description}</p>
-          </div>
-        ))}
+          ))}
+        </div>
       </div>
-    </div>
+    </OnboardingScreen>
   );
 };

@@ -31,7 +31,12 @@ export default {
         'border-light': 'var(--color-border-light)',
         'text-muted': 'var(--color-text-muted)',
         'border-subtle': 'var(--color-border-subtle)',
-        'heading-gray': 'var(--color-text-secondary)',
+        // Normalised to --ink. This token is named "secondary" but is used as
+        // PRIMARY text across the app (26 usages in onboarding alone), and it
+        // resolved to #484848 where the ink is #3F3F3F. TOKENS.md calls this out
+        // explicitly. Pointing it at --ink fixes the body/heading colour
+        // everywhere at once rather than per call site.
+        'heading-gray': 'var(--ink)',
         gray: {
           DEFAULT: 'var(--text-gray)',
           25: 'var(--color-surface-secondary)',
@@ -220,10 +225,21 @@ export default {
     },
 
     extend: {
-      // Custom spacing values not in Tailwind defaults
+      // Custom spacing values not in Tailwind defaults.
+      // The `stack-*` trio is the vertical rhythm, and it belongs to the
+      // CONTAINER (gap-stack on a flex column), never as outer margin on a
+      // component — that is what stops every child inventing its own spacing.
+      // All rem, so the rhythm scales with the user's text size.
       spacing: {
         15: '3.75rem',
-        35: '8.75rem'
+        35: '8.75rem',
+        'stack-tight': 'var(--stack-tight)',
+        stack: 'var(--stack)',
+        'stack-loose': 'var(--stack-loose)'
+      },
+      // Step-illustration width, so screens stop hardcoding pixel sizes.
+      width: {
+        hero: 'var(--hero-w)'
       },
       // Custom shadows
       boxShadow: {

@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next';
 
 import { Button, ButtonVariant } from 'components/Button';
 import { ProgressIndicator } from 'components/ProgressIndicator';
+import { ActionZone } from 'components/ui/ActionZone';
 import { isMobile } from 'lib/platform';
 import type { WalletAccount } from 'lib/shared/types';
 
@@ -67,7 +68,13 @@ const Header: React.FC<{
   onboardingType?: 'import' | 'create' | null;
 }> = ({ currentStep, totalSteps }) => {
   return (
-    <div className="w-full flex items-center px-4 pt-4">
+    // The design system's `.obtop`: the step chrome row, gap 0.625rem, padded
+    // 0.25rem above / 0.875rem below, inside the onboarding gutter (`px-6`,
+    // same as `OnboardingScreen`) so the bar lines up with the content and the
+    // action zone underneath it. Was `px-4 pt-4` with no bottom padding, which
+    // both sat on a different gutter to the screens and dumped the whole gap
+    // onto whatever the step rendered first.
+    <div className="w-full flex items-center gap-2.5 px-6 pt-1 pb-3.5">
       <div className="flex-1 flex justify-center">
         <ProgressIndicator
           currentStep={currentStep ?? 1}
@@ -286,10 +293,12 @@ export const OnboardingFlow: FC<OnboardingFlowProps> = ({
   };
 
   return (
+    // `max-w-105` is 26.25rem — the same 420px the inline `maxWidth` used to
+    // hardcode, but on the rem scale, so the shell grows with the user's text
+    // size instead of clipping the content it frames.
     <div
       data-onboarding-root="true"
-      className={classNames('flex flex-col', 'bg-app-bg', 'overflow-hidden', 'w-full h-full mx-auto')}
-      style={{ maxWidth: 420 }}
+      className={classNames('flex flex-col', 'bg-app-bg', 'overflow-hidden', 'w-full h-full mx-auto max-w-105')}
     >
       <div className="flex flex-col flex-1 min-h-0">
         <AnimatePresence mode={'wait'} initial={false}>
@@ -337,9 +346,29 @@ export const OnboardingFlow: FC<OnboardingFlowProps> = ({
               step !== OnboardingStep.SetupBiometric &&
               step !== OnboardingStep.ChooseGuardian &&
               step !== OnboardingStep.Confirmation && (
-                <div className="px-4 pt-2 pb-4">
-                  <Button title={t('back')} variant={ButtonVariant.Secondary} onClick={onBack} className="w-full" />
-                </div>
+                // The shell's own bottom action, so it gets the shared zone
+                // geometry (16 above / 16 below, centred) rather than the
+                // hand-rolled `pt-2 pb-4` it had — that was the only bottom
+                // action in onboarding still setting its own padding, and it
+                // sat 8px higher than every other one. `px-6` matches the
+                // onboarding gutter so it aligns with the step's own zone
+                // directly above it. Button is already `w-full`, so the
+                // explicit `w-full` was redundant.
+                // `pt-0` because this zone stacks directly under the step's own
+                // one. Each zone pads 16 above and below, so leaving both tops
+                // in put 32px between Continue and Back where the system's
+                // primary-to-secondary gap is 12. Zeroing the top of the LOWER
+                // zone leaves the upper zone's 16px bottom as the single gap.
+                //
+                // This is a mitigation, not the shape the system draws: the
+                // mocks put back as the `‹` chevron in `.obtop`, and `Header`
+                // here already accepts an `onBack` it drops on the floor. Moving
+                // it there would also add a back affordance to four steps that
+                // currently have none, which is a navigation change rather than
+                // a restyle — so it needs a decision, not a refactor.
+                <ActionZone className="px-6 pt-0">
+                  <Button title={t('back')} variant={ButtonVariant.Secondary} onClick={onBack} />
+                </ActionZone>
               )}
           </motion.div>
         </AnimatePresence>

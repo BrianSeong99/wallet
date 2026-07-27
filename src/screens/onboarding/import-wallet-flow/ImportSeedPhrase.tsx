@@ -1,13 +1,14 @@
 import React, { useCallback, useMemo, useState } from 'react';
 
 import { validateMnemonic } from 'bip39';
-import classNames from 'clsx';
 import { useTranslation } from 'react-i18next';
 
 import { formatMnemonic } from 'app/defaults';
 import { Button } from 'components/Button';
 import { Input } from 'components/Input';
 import { ActionZone } from 'components/ui/ActionZone';
+
+import { OnboardingHeading, OnboardingScreen, OnboardingSubcopy } from '../common/layout';
 
 const DELIMITERS = /[\s,;.\-:/\\_|]+/;
 const PHRASE_LENGTH = 12;
@@ -68,47 +69,59 @@ export const ImportSeedPhraseScreen: React.FC<ImportSeedPhraseScreenProps> = ({
   );
 
   return (
-    <div
-      className={classNames(
-        'flex-1',
-        'flex flex-col justify-start items-center',
-        'bg-app-bg text-heading-gray px-4 pt-6',
-        className
-      )}
-      data-testid="import-seed-phrase"
-    >
-      <h1 className="text-2xl font-semibold">{t('importWallet')}</h1>
-      <p className="mt-2 text-sm">{t('enterYourWalletSeedPhrase')}</p>
-      <p className="text-sm">{t('onlyMidenSeedPhrasesAreSupported')}</p>
+    <OnboardingScreen className={className} testId="import-seed-phrase">
+      <div className="flex w-full flex-col gap-stack-loose py-stack-loose">
+        <div className="flex flex-col gap-stack-tight">
+          <OnboardingHeading>{t('importWallet')}</OnboardingHeading>
+          <OnboardingSubcopy>{t('enterYourWalletSeedPhrase')}</OnboardingSubcopy>
+        </div>
 
-      <div className="grid grid-cols-3 mt-8 gap-2">
-        {Array.from({ length: PHRASE_LENGTH }).map((_, index) => (
-          <Input
-            id={`seed-phrase-input-${index}`}
-            key={index}
-            value={seedPhrase[index]}
-            prefix={`${index + 1}.`}
-            onPaste={onInputPaste}
-            onChange={event => {
-              const newSeedPhrase = [...seedPhrase];
-              newSeedPhrase[index] = event.target.value;
-              setSeedPhrase(newSeedPhrase);
-            }}
-          />
-        ))}
+        <div className="flex flex-col gap-stack-tight">
+          <div className="grid grid-cols-3 gap-stack-tight">
+            {Array.from({ length: PHRASE_LENGTH }).map((_, index) => (
+              <Input
+                id={`seed-phrase-input-${index}`}
+                key={index}
+                value={seedPhrase[index]}
+                prefix={`${index + 1}.`}
+                onPaste={onInputPaste}
+                onChange={event => {
+                  const newSeedPhrase = [...seedPhrase];
+                  newSeedPhrase[index] = event.target.value;
+                  setSeedPhrase(newSeedPhrase);
+                }}
+              />
+            ))}
+          </div>
+
+          {/* The wordlist constraint is a standing condition of the field, not
+              a failure, so it reads as a neutral notice under the grid rather
+              than as a third line of centred subcopy competing with the title.
+              Errors below it use --neg; this deliberately does not. */}
+          <p className="rounded-md-token bg-surface-2 px-3 py-2 text-caption font-semibold leading-[1.4] text-ink-2">
+            {t('onlyMidenSeedPhrasesAreSupported')}
+          </p>
+
+          {/* NOT FIXED HERE, deliberately: `importSeedPhraseError` does not
+              exist in public/_locales/en/en.json, so this paragraph resolves to
+              nothing and a mistyped word gives a dead Continue button with no
+              explanation. The design system's copy for it ("Word 3 isn't in the
+              Miden word list. Check the spelling.") needs a NEW key with a word
+              -index placeholder, and inventing product copy is out of scope for
+              a re-skin. Styled correctly so it lands right the moment the key
+              lands. The sibling defect — `errorsMap` already knows WHICH word is
+              wrong but is collapsed to one boolean, so no field is ringed —
+              depends on the same copy decision. */}
+          {isError && <p className="text-caption font-bold leading-[1.45] text-neg">{t('importSeedPhraseError')}</p>}
+          {isChecksumError && (
+            <p className="text-caption font-bold leading-[1.45] text-neg">{t('justValidPreGeneratedMnemonic')}</p>
+          )}
+        </div>
       </div>
-      {isError && <p className="text-red-500 text-xs mt-4">{t('importSeedPhraseError')}</p>}
-      {isChecksumError && <p className="text-red-500 text-xs mt-4">{t('justValidPreGeneratedMnemonic')}</p>}
 
       <ActionZone>
-        <Button
-          id={'submit-button'}
-          title={t('continue')}
-          onClick={handleSubmit}
-          disabled={!isValid}
-          className="w-full"
-        />
+        <Button id={'submit-button'} title={t('continue')} onClick={handleSubmit} disabled={!isValid} />
       </ActionZone>
-    </div>
+    </OnboardingScreen>
   );
 };

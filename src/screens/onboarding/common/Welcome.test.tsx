@@ -69,11 +69,17 @@ describe('WelcomeScreen', () => {
     expect(screen.getByTestId('onboarding-welcome')).toBeInTheDocument();
   });
 
-  it('renders the bread logo svg with the fixed width sizing', () => {
+  // The logo used to be sized by an inline `style={{ width: 130 }}`. It is now
+  // wrapped in `OnboardingHero`, which sizes it from `--hero-w`, so the
+  // assertion moves from the pixel value to the token that produces it — the
+  // invariant being checked is unchanged: the mark has ONE system-defined
+  // width, not a per-screen number.
+  it('renders the bread logo svg at the system hero width, with no inline sizing', () => {
     const { container } = renderComponent();
     const svg = container.querySelector('svg');
     expect(svg).toBeInTheDocument();
-    expect(svg).toHaveStyle({ width: '130px' });
+    expect(svg).not.toHaveAttribute('style');
+    expect(svg?.parentElement).toHaveClass('w-hero');
   });
 
   it('renders the translated heading copy across its spans', () => {

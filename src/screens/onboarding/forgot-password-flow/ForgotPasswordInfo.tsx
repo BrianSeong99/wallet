@@ -1,55 +1,68 @@
 import React, { FC } from 'react';
 
-import classNames from 'clsx';
 import { useTranslation } from 'react-i18next';
 
-import { IconName } from 'app/icons/v2';
+import { Icon, IconName } from 'app/icons/v2';
 import { Button, ButtonVariant } from 'components/Button';
-import { Message } from 'components/Message';
 import { ScreenHeader } from 'components/ScreenHeader';
+import { ActionZone } from 'components/ui/ActionZone';
+
+import { OnboardingBody, OnboardingHeading, OnboardingScreen, OnboardingSubcopy } from '../common/layout';
 
 interface ForgotPasswordInfoScreenProps {
   onClose: () => void;
   onSignOut: () => void;
 }
 
+/**
+ * The most destructive route in the product: signing out clears client storage
+ * and the only way back is a 12-word seed phrase. The design system draws it
+ * with the lock badged in `--warn` and the "do not sign out unless…" sentence
+ * promoted to `--ink` at weight 700, because that sentence is what decides
+ * whether the user should be on this screen at all — as ordinary body text it
+ * read as a footnote to the explanation above it. Copy is unchanged; only its
+ * weight and colour are.
+ */
 const ForgotPasswordInfoScreen: FC<ForgotPasswordInfoScreenProps> = ({ onClose, onSignOut }) => {
   const { t } = useTranslation();
 
   return (
-    <div
-      className={classNames(
-        'w-[22.5rem] h-[37.5rem] md:w-[37.5rem] md:h-[46.875rem]',
-        'border border-gray-100',
-        'mx-auto md:rounded-3xl',
-        'flex flex-1 flex-col bg-app-bg',
-        'overflow-hidden relative'
-      )}
-    >
+    <OnboardingScreen>
       <ScreenHeader
         align="center"
         showBorder={false}
-        className="px-4 bg-app-bg"
         title={t('forgotPassword')}
         closeLabel={t('close')}
         onClose={onClose}
       />
-      <div className="flex flex-col flex-1 p-4 justify-between md:w-[460px] md:mx-auto">
-        <div className="flex flex-col grow items-center justify-center">
-          <Message
-            className="flex-1"
-            title={t('forgotPassword')}
-            description={t('forgotPasswordDescription')}
-            secondDescription={t('forgotPasswordSecondDescription')}
-            icon={IconName.Lock}
-            descriptionClasses="text-sm"
-          />
+
+      <OnboardingBody>
+        {/* `.eic` — the status badge, 3.125rem, wash behind the glyph. Both
+            halves are tokens, so it flips with the theme: in dark mode
+            --warn-wash is a deep amber and --warn is the bright one. */}
+        <div className="flex h-12.5 w-12.5 shrink-0 items-center justify-center rounded-full bg-warn-wash text-warn">
+          <Icon name={IconName.Lock} size="md" fill="currentColor" />
         </div>
-        <div className="flex flex-col">
-          <Button className="mx-4 mt-4 mb-2" title={t('signOut')} variant={ButtonVariant.Primary} onClick={onSignOut} />
+
+        {/* The rhythm belongs to this column, not to the three children. */}
+        <div className="flex flex-col gap-stack-tight">
+          <OnboardingHeading>{t('forgotPassword')}</OnboardingHeading>
+          <OnboardingSubcopy>{t('forgotPasswordDescription')}</OnboardingSubcopy>
+          {/* Subcopy type, promoted to `--ink` at 700. Deliberately NOT
+              `<OnboardingSubcopy className="text-ink">`: the primitive bakes in
+              `text-ink-2`, and Tailwind emits `.text-ink` BEFORE `.text-ink-2`,
+              so the override loses on source order no matter how the class
+              attribute is written. */}
+          <p className="text-label font-bold leading-[1.45] text-center text-ink">
+            {t('forgotPasswordSecondDescription')}
+          </p>
         </div>
-      </div>
-    </div>
+      </OnboardingBody>
+
+      <ActionZone>
+        <Button title={t('signOut')} variant={ButtonVariant.Primary} onClick={onSignOut} />
+      </ActionZone>
+    </OnboardingScreen>
   );
 };
 

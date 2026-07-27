@@ -14,9 +14,12 @@ jest.mock('react-i18next', () => ({
   useTranslation: () => ({ t: (key: string) => key })
 }));
 
-// Icon barrel — expose only the `IconName` members the screen references.
+// Icon barrel — expose the `IconName` members the screen references plus an
+// `Icon` stub that echoes the name, so the badged glyph stays assertable
+// without the real SVG set.
 jest.mock('app/icons/v2', () => ({
-  IconName: { Lock: 'Lock' }
+  IconName: { Lock: 'Lock' },
+  Icon: ({ name }: { name: string }) => <span data-testid="status-icon" data-icon={name} />
 }));
 
 // `ScreenHeader` — surface the title, the affordance the header was given
@@ -29,37 +32,6 @@ jest.mock('components/ScreenHeader', () => ({
       <button data-testid="nav-header-close" onClick={onClose}>
         close
       </button>
-    </div>
-  )
-}));
-
-// `Message` — echo every prop the screen threads through as data attributes /
-// text so each one can be asserted individually.
-jest.mock('components/Message', () => ({
-  Message: ({
-    title,
-    description,
-    secondDescription,
-    icon,
-    descriptionClasses,
-    className
-  }: {
-    title: string;
-    description: string;
-    secondDescription?: string;
-    icon: string;
-    descriptionClasses?: string;
-    className?: string;
-  }) => (
-    <div
-      data-testid="message"
-      data-icon={icon}
-      data-description-classes={descriptionClasses}
-      data-classname={className}
-    >
-      <span data-testid="message-title">{title}</span>
-      <span data-testid="message-description">{description}</span>
-      <span data-testid="message-second-description">{secondDescription}</span>
     </div>
   )
 }));
@@ -91,16 +63,24 @@ describe('ForgotPasswordInfo', () => {
     expect(header).toHaveAttribute('data-mode', 'close');
   });
 
-  it('renders the Message with the forgot-password copy, lock icon and description sizing', () => {
+  it('renders the forgot-password copy, badged lock icon and the promoted warning', () => {
     renderComponent();
 
-    const message = screen.getByTestId('message');
-    expect(screen.getByTestId('message-title')).toHaveTextContent('forgotPassword');
-    expect(screen.getByTestId('message-description')).toHaveTextContent('forgotPasswordDescription');
-    expect(screen.getByTestId('message-second-description')).toHaveTextContent('forgotPasswordSecondDescription');
-    expect(message).toHaveAttribute('data-icon', 'Lock');
-    expect(message).toHaveAttribute('data-description-classes', 'text-sm');
-    expect(message).toHaveAttribute('data-classname', 'flex-1');
+    // Same three strings the `Message` block used to be handed, now asserted on
+    // the heading / subcopy primitives that replaced it.
+    expect(screen.getByRole('heading')).toHaveTextContent('forgotPassword');
+    expect(screen.getByText('forgotPasswordDescription')).toBeInTheDocument();
+
+    const icon = screen.getByTestId('status-icon');
+    expect(icon).toHaveAttribute('data-icon', 'Lock');
+    // The glyph now sits in the design system's warn-wash status badge.
+    expect(icon.parentElement).toHaveClass('bg-warn-wash', 'text-warn');
+
+    // The "do not sign out unless…" sentence carried `text-sm` before; it is the
+    // sentence that decides whether the user should be here at all, so it is
+    // promoted to full-ink bold rather than sized down.
+    const warning = screen.getByText('forgotPasswordSecondDescription');
+    expect(warning).toHaveClass('text-label', 'font-bold', 'text-ink');
   });
 
   it('renders the primary sign-out button', () => {

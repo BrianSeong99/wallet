@@ -1,48 +1,57 @@
 import React, { FC } from 'react';
 
-import classNames from 'clsx';
 import { useTranslation } from 'react-i18next';
 
-import { IconName } from 'app/icons/v2';
+import { Icon, IconName } from 'app/icons/v2';
 import { Button, ButtonVariant } from 'components/Button';
-import { Message } from 'components/Message';
 import { ScreenHeader } from 'components/ScreenHeader';
+import { ActionZone } from 'components/ui/ActionZone';
+
+import {
+  OnboardingBody,
+  OnboardingHeading,
+  OnboardingHero,
+  OnboardingScreen,
+  OnboardingSubcopy
+} from './common/layout';
 
 interface ResetRequiredScreenProps {
   onConfirm: () => void;
 }
 
-const ForgotPasswordInfoScreen: FC<ResetRequiredScreenProps> = ({ onConfirm }) => {
+/**
+ * Dead-end screen: the stored account can no longer be read, so the only route
+ * forward is a reset. Composed from the shared onboarding primitives rather
+ * than the generic `Message` block, because `Message` fixes its own heading at
+ * 24px — a size that is not on the type ramp — and its own icon box, which is
+ * what let this screen render the logo at 218px against a 140px hero spec.
+ */
+const ResetRequiredScreen: FC<ResetRequiredScreenProps> = ({ onConfirm }) => {
   const { t } = useTranslation();
 
   return (
-    <div
-      className={classNames(
-        'w-[22.5rem] h-[37.5rem] md:w-[37.5rem] md:h-[46.875rem]',
-        'border border-gray-100',
-        'mx-auto md:rounded-3xl',
-        'flex flex-1 flex-col bg-app-bg',
-        'overflow-hidden relative'
-      )}
-    >
-      <ScreenHeader align="center" showBorder={false} className="px-4 bg-app-bg" title={t('resetRequired')} />
-      <div className="flex flex-col flex-1 p-4 justify-between md:w-[460px] md:mx-auto">
-        <div className="flex flex-col grow items-center justify-center">
-          <Message
-            className="flex-1"
-            title={t('resetRequired')}
-            description={t('resetRequiredDescription')}
-            icon={IconName.MidenLogo}
-            iconClassName="w-[218px] h-[218px]"
-            secondDescription={t('resetRequiredSecondDescription')}
-          />
+    <OnboardingScreen>
+      <ScreenHeader align="center" showBorder={false} title={t('resetRequired')} />
+
+      <OnboardingBody>
+        <OnboardingHero>
+          <Icon name={IconName.MidenLogo} size="3xl" />
+        </OnboardingHero>
+
+        {/* The rhythm belongs to this column, not to the three children —
+            that is what keeps the block spaced the same as every other step. */}
+        <div className="flex flex-col gap-stack-tight">
+          <OnboardingHeading>{t('resetRequired')}</OnboardingHeading>
+          <OnboardingSubcopy>{t('resetRequiredDescription')}</OnboardingSubcopy>
+          <OnboardingSubcopy>{t('resetRequiredSecondDescription')}</OnboardingSubcopy>
         </div>
-        <div className="flex flex-col">
-          <Button className="mx-4 mt-4 mb-2" title={t('reset')} variant={ButtonVariant.Primary} onClick={onConfirm} />
-        </div>
-      </div>
-    </div>
+      </OnboardingBody>
+
+      <ActionZone>
+        <Button title={t('reset')} variant={ButtonVariant.Primary} onClick={onConfirm} />
+      </ActionZone>
+    </OnboardingScreen>
   );
 };
 
-export default ForgotPasswordInfoScreen;
+export default ResetRequiredScreen;

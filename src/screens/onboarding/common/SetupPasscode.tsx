@@ -3,6 +3,9 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { Numpad } from 'components/Numpad';
+import { cn } from 'lib/ui/util';
+
+import { OnboardingHeading, OnboardingScreen } from './layout';
 
 const PASSCODE_LENGTH = 6;
 
@@ -67,42 +70,49 @@ export const SetupPasscodeScreen: React.FC<SetupPasscodeScreenProps> = ({ onSubm
   }, [phase, enteredCode, confirmCode, onSubmit]);
 
   return (
-    <div className="bg-app-bg h-full overflow-y-auto" data-testid="onboarding-setup-passcode">
-      <div className="min-h-full flex flex-col items-center px-6">
-        <div className="flex flex-col items-center w-full mt-8 shrink-0">
-          <h1 className="text-3xl font-semibold font-heading text-heading-gray text-center leading-[100%] tracking-tight">
-            {phase === 'enter' ? t('setUpYourPasscode') : t('confirmYourPasscode')}
-          </h1>
-          <p className={`text-lg text-center mt-3 ${mismatch ? 'text-red-500' : 'text-gray-secondary'}`}>
-            {mismatch
-              ? t('passcodesDoNotMatch')
-              : phase === 'enter'
-                ? t('createA6DigitCode')
-                : t('reEnterTheSame6Digits')}
-          </p>
+    <OnboardingScreen testId="onboarding-setup-passcode">
+      {/* Headline / helper / dots ride at the top and the pad is pinned to the
+          bottom (`.pad.pinned`), so the keys stay under the thumb while the
+          block above stays put between the enter and confirm phases. */}
+      <div className="flex flex-col items-center w-full shrink-0 gap-stack pt-8">
+        <OnboardingHeading>{phase === 'enter' ? t('setUpYourPasscode') : t('confirmYourPasscode')}</OnboardingHeading>
 
-          <div className="flex items-center gap-3.5 mt-6">
-            {Array.from({ length: PASSCODE_LENGTH }).map((_, index) => {
-              const filled = index < activeCode.length;
-              return (
-                <div
-                  key={index}
-                  className={
-                    filled
-                      ? 'w-3.5 h-3.5 rounded-full bg-[#C7C7CC] border-2 border-[#C7C7CC]'
-                      : 'w-3.5 h-3.5 rounded-full border-2 border-[#C7C7CC]'
-                  }
-                />
-              );
-            })}
-          </div>
-        </div>
+        {/* `.obp`, plus the design system's error variant: the same 13px centred
+            line turns `--neg` at 700 rather than moving into a banner, so the
+            message stays at the field it is about. */}
+        <p className={cn('text-label leading-[1.45] text-center', mismatch ? 'font-bold text-neg' : 'text-ink-2')}>
+          {mismatch
+            ? t('passcodesDoNotMatch')
+            : phase === 'enter'
+              ? t('createA6DigitCode')
+              : t('reEnterTheSame6Digits')}
+        </p>
 
-        <div className="w-full pt-13">
-          <Numpad onDigit={handleDigit} onDelete={handleDelete} />
+        {/* `.dots`: filled is `--accent`, empty is `--surface-3`. Both states
+            used to be the same hardcoded grey — identical fill and border — so a
+            filled dot was indistinguishable from an empty one by colour, and
+            neither flipped in dark mode. The 1.12 scale on the filled dot keeps
+            the distinction working without relying on hue (SC 1.4.1). */}
+        <div className="flex items-center gap-stack pt-stack-tight">
+          {Array.from({ length: PASSCODE_LENGTH }).map((_, index) => {
+            const filled = index < activeCode.length;
+            return (
+              <div
+                key={index}
+                className={cn(
+                  'size-3 rounded-full transition-transform duration-150',
+                  filled ? 'bg-accent scale-110' : 'bg-surface-3'
+                )}
+              />
+            );
+          })}
         </div>
       </div>
-    </div>
+
+      <div className="w-full mt-auto pb-4">
+        <Numpad onDigit={handleDigit} onDelete={handleDelete} />
+      </div>
+    </OnboardingScreen>
   );
 };
 

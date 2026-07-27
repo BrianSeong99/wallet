@@ -115,7 +115,11 @@ const allOptions = () => [{ ...OZ }, { ...GATEWAY }, { ...LAMBDA }];
 const optionButtons = (container: HTMLElement): HTMLButtonElement[] =>
   Array.from(container.querySelectorAll('button')).filter(b => b.querySelector('svg')) as HTMLButtonElement[];
 
-const isHighlighted = (btn: HTMLElement) => btn.className.includes('border-primary-500');
+// Selection is now a ring held OFF the card (`outline` + `outline-offset`)
+// rather than the card's own border thickening from 2px to 4px, so the selector
+// tracks the ring colour. Same invariant: exactly one card carries the
+// selected treatment.
+const isHighlighted = (btn: HTMLElement) => btn.className.includes('outline-accent-ink');
 
 beforeEach(() => {
   jest.clearAllMocks();

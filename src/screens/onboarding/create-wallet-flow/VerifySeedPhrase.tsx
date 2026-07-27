@@ -7,7 +7,10 @@ import { Trans, useTranslation } from 'react-i18next';
 import { Button } from 'components/Button';
 import { Chip } from 'components/Chip';
 import { Toggle } from 'components/Toggle';
+import { ActionZone } from 'components/ui/ActionZone';
 import { hapticLight } from 'lib/mobile/haptics';
+
+import { OnboardingHeading, OnboardingSubcopy } from '../common/layout';
 
 export interface VerifySeedPhraseScreenProps extends React.ButtonHTMLAttributes<HTMLDivElement> {
   seedPhrase: string[];
@@ -67,38 +70,36 @@ export const VerifySeedPhraseScreen: React.FC<VerifySeedPhraseScreenProps> = ({
 
   return (
     <div
-      className={classNames('flex flex-col flex-1', 'bg-app-bg gap-6 px-4 pt-4', className)}
+      className={classNames('flex flex-col flex-1', 'bg-app-bg gap-stack-loose px-6 pt-4', className)}
       data-testid="verify-seed-phrase"
       {...props}
     >
       {showIntro && (
-        <div className="flex flex-col items-center gap-2 text-heading-gray">
-          <header className="text-title-lg font-medium ">{t('verifySeedPhrase')}</header>
-          <div className="text-[10px] font-normal text-center">
-            <p>{t('verifyMessagePrefix')}</p>
-            <p>
-              <Trans i18nKey="verifyMessageSuffix" components={{ b: <span className="font-bold" /> }} />
-            </p>
-          </div>
+        <div className="flex flex-col gap-stack-tight">
+          <OnboardingHeading>{t('verifySeedPhrase')}</OnboardingHeading>
+          <OnboardingSubcopy>{t('verifyMessagePrefix')}</OnboardingSubcopy>
+          <OnboardingSubcopy>
+            <Trans i18nKey="verifyMessageSuffix" components={{ b: <span className="font-bold" /> }} />
+          </OnboardingSubcopy>
         </div>
       )}
 
-      <article className="grid grid-cols-3 gap-2 w-full">
+      <article className="grid grid-cols-3 gap-stack-tight w-full">
         {shuffledWords.map((word, index) => (
           <div className="relative" key={`seed-word-${index}`}>
             {(!!firstSelectedWordIndex || firstSelectedWordIndex === 0) && index === firstSelectedWordIndex && (
-              <div className="absolute -top-4 left-2 -translate-x-3 bg-primary-500 text-pure-white px-2 py-0.5 rounded-[10px] text-xs whitespace-nowrap">
+              <div className="absolute -top-4 left-2 -translate-x-3 bg-accent text-on-accent-sm px-2 py-0.5 rounded-sm-token text-caption font-extrabold whitespace-nowrap">
                 {t('first')}
               </div>
             )}
             {(!!secondSelectedWordIndex || secondSelectedWordIndex === 0) && index === secondSelectedWordIndex && (
-              <div className="absolute -top-4 left-2 -translate-x-3 bg-primary-500 text-pure-white px-2 py-0.5 rounded-[10px] text-xs whitespace-nowrap">
+              <div className="absolute -top-4 left-2 -translate-x-3 bg-accent text-on-accent-sm px-2 py-0.5 rounded-sm-token text-caption font-extrabold whitespace-nowrap">
                 {t('last')}
               </div>
             )}
             <button onClick={() => onSelectWord(index)} className="w-full">
               <Chip
-                className="w-[104px] h-8 cursor-pointer"
+                className="w-full cursor-pointer"
                 selected={firstSelectedWordIndex === index || secondSelectedWordIndex === index}
                 label={word}
               />
@@ -107,23 +108,25 @@ export const VerifySeedPhraseScreen: React.FC<VerifySeedPhraseScreenProps> = ({
         ))}
       </article>
 
-      <div className="flex-1" />
+      {isHardwareSecurityAvailable && (
+        <div className="flex flex-col gap-stack w-full">
+          <div className="flex flex-col gap-stack-tight">
+            <h3 className="font-heading font-extrabold text-subhead text-ink">{t('unlockWallet')}</h3>
+            <p className="text-label leading-[1.45] text-ink-2">{t('unlockWalletDescription')}</p>
+          </div>
+          <div className="flex items-center justify-between gap-stack">
+            <p className="text-label text-ink-2 flex-1">{t('passwordsCanBeInsecure')}</p>
+            <Toggle value={useBiometric} onChangeValue={onBiometricChange} />
+          </div>
+        </div>
+      )}
 
-      <div className="flex flex-col gap-4 self-center w-full">
-        {isHardwareSecurityAvailable && (
-          <>
-            <div className="flex flex-col gap-1 px-2">
-              <h3 className="text-lg font-semibold">{t('unlockWallet')}</h3>
-              <p className="text-sm text-text-muted">{t('unlockWalletDescription')}</p>
-            </div>
-            <div className="flex items-center justify-between gap-3 px-2">
-              <p className="text-sm text-text-muted flex-1">{t('passwordsCanBeInsecure')}</p>
-              <Toggle value={useBiometric} onChangeValue={onBiometricChange} />
-            </div>
-          </>
-        )}
+      {/* The CTA moves into the shared zone so it lands at the same Y as every
+          other onboarding step; the zone's `mt-auto` replaces the bare
+          `flex-1` spacer this screen used to push the button down with. */}
+      <ActionZone>
         <Button disabled={!isCorrectWordSelected} title={t('continue')} onClick={onSubmit} />
-      </div>
+      </ActionZone>
     </div>
   );
 };

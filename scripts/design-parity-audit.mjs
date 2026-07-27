@@ -234,6 +234,44 @@ const add = (status, area, title, detail, evidence = '') => findings.push({ stat
   );
 }
 
+// ---------------------------------------------------------------- overrides
+{
+  // A component-level fix is not enough if call sites can override the very
+  // property that makes it conformant. Four onboarding screens passed
+  // className="text-base" to <Button>, which beat its own text-cta and dropped
+  // the label back under the size white-on-accent needs. The audit only caught
+  // the default, not the override — so now it checks both.
+  const overrides = sh(
+    `grep -rnE '<Button[^>]*className="[^"]*\\btext-(xs|sm|base|lg|label|body|caption)\\b' src --include='*.tsx' | grep -v '\\.test\\.'`
+  );
+  const n = countLines(overrides);
+  add(
+    n === 0 ? 'OK' : 'OPEN',
+    'buttons',
+    'No call site overrides the CTA label size',
+    n === 0 ? 'none' : `${n} call site(s) override Button's font size`,
+    overrides.split('\n').slice(0, 6).join('\n')
+  );
+}
+
+// ---------------------------------------------------------------- hardcoded px
+{
+  // Sizing must come from tokens or the rem scale so the whole composition
+  // scales together with the user's text size. Inline pixel style objects are
+  // the worst offenders because no utility scan catches them.
+  const inline = sh(
+    `grep -rnE 'style=\\{\\{[^}]*(width|height|fontSize|padding|margin|gap):[[:space:]]*[0-9]+[,}]' src/screens/onboarding --include='*.tsx' | grep -v '\\.test\\.'`
+  );
+  const n = countLines(inline);
+  add(
+    n === 0 ? 'OK' : 'OPEN',
+    'spacing',
+    'Onboarding sizes come from tokens, not inline pixels',
+    n === 0 ? 'no inline pixel sizing' : `${n} inline pixel size(s)`,
+    inline.split('\n').slice(0, 6).join('\n')
+  );
+}
+
 // ---------------------------------------------------------------- report
 const order = { OPEN: 0, INFO: 1, KNOWN: 2, OK: 3 };
 findings.sort((a, b) => order[a.status] - order[b.status]);
