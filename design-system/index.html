@@ -521,6 +521,10 @@ table.map td code{font-size:var(--t-label)}
    In the mocks this is scoped to .phone.ext because a media query cannot see a
    fixed-width frame; in production key it off a container query or isExtension(). */
 .phone.ext .mseg{gap:4px}
+/* The extension popup is 360px across four segments -- the label cannot fit at any
+   size worth reading, so the raised pill alone carries the selected state there. */
+.phone.ext .mseg .seg.on .lbl{display:none}
+.phone.ext .mseg .seg.on{padding:0}
 /* Earn mirrors the shipped flag: isEarnEnabled() is false, so earn surfaces are hidden
    here by default too. Hidden, NOT deleted — the feature is built and routed, so the
    design has to survive until the flag flips. Toggle it to review the earn-enabled
@@ -534,22 +538,24 @@ table.map td code{font-size:var(--t-label)}
 /* Collapsed chips may compress (never below a 40px tap area) so the active chip always
    wins the space it needs; min-width:max-content on the active chip makes clipping
    structurally impossible at any viewport, including long localised labels. */
-.mseg .seg{flex:1 1 0;min-width:44px;height:2.75rem;border-radius:var(--radius-full);display:flex;align-items:center;justify-content:center;
+.mseg .seg{flex:1 1 0;min-width:0;height:2.75rem;padding:0;border-radius:var(--radius-full);display:flex;align-items:center;justify-content:center;
   background:none;color:var(--ink);cursor:pointer;overflow:hidden;font-family:var(--ui);
-  /* Deliberately NOT animating flex. .seg is flex:1 1 0 and .seg.on is flex:0 0 auto,
-     so flex-basis would have to interpolate to `auto`, which is not an animatable
-     value -- the browser snaps it while flex-grow is still mid-interpolation and the
-     label's max-width is changing the intrinsic width that `auto` resolves against.
-     Three competing inputs, one of them discontinuous: measured widths oscillated
-     140 -> 149 -> 138 -> 126 -> 117 before settling at 89. The label reveal is the
-     only driver now, so the width change is monotonic. */
-  transition:background var(--dur-base) ease,box-shadow var(--dur-base) ease,color var(--dur-base) ease}
+  /* NOTHING here animates, and that is the fix rather than a compromise.
+     Three earlier attempts each removed one racing pair and left another. What was
+     left crossfaded FOUR things on a single tap -- the outgoing label's opacity, the
+     incoming label's opacity, the outgoing fill and the incoming fill -- with the
+     labels on --dur-fast and the fills on --dur-base. Different durations, overlapping
+     windows, so mid-switch two labels are partly visible and neither pill is solid.
+     That is the "race" feeling: nothing is wrong in any single frame, but four
+     independent timelines are resolving at once and the eye reads the disagreement.
+     A segmented control is a radio group. Radio groups do not morph. */
+  transition:none}
 /* Active chip is neutral white — the designer's icons already carry their own colour,
    so tinting the chip the same hue would flatten the glyph against it. */
-.mseg .seg.on{flex:0 0 auto;min-width:max-content;padding:0 0.875rem;font-weight:700;font-size:var(--t-label);
+.mseg .seg.on{font-weight:800;font-size:var(--t-caption);letter-spacing:.01em;
   background:var(--surface);color:var(--ink);box-shadow:var(--shadow-1)}
 .mseg .seg svg{width:1.1875rem;height:1.1875rem;flex:none}
-.mseg .seg img,.mseg .seg .svgic{width:1.25rem;height:1.25rem;flex:none;display:block}
+.mseg .seg img,.mseg .seg .svgic{width:1.125rem;height:1.125rem;flex:none;display:block}
 /* Overview deliberately has no data-act: wallet.svg really is currentColor in the
    source, so it should follow the ink and flip with the theme. */
 .mseg .seg[data-act="send"]    .svgic{background-color:var(--act-send)}
@@ -564,9 +570,12 @@ table.map td code{font-size:var(--t-label)}
    shrinks for 14+ more frames, so the two halves of the switch are asymmetric.
    Width now changes in a single layout pass and only the fill crossfades, which
    is also what the bottom nav does -- it slides a ::before rather than reflowing. */
+/* Ellipsis, not a chopped glyph. At narrow frame widths "Overview" was rendering
+   as "Overviev" -- a hard clip mid-letter, which reads as a rendering fault rather
+   than as truncation. */
 .mseg .seg .lbl{max-width:0;opacity:0;overflow:hidden;white-space:nowrap;
-  transition:opacity var(--dur-fast) ease}
-.mseg .seg.on .lbl{max-width:12rem;opacity:1;margin-left:0.5rem}
+  text-overflow:ellipsis;transition:none}
+.mseg .seg.on .lbl{max-width:6.25rem;opacity:1;margin-left:0.25rem}
 @media (prefers-reduced-motion: reduce){.mseg .seg,.mseg .seg .lbl{transition-duration:.01ms}}
 /* fund-wallet prompt */
 /* ---- Prompt card ------------------------------------------------------------------
