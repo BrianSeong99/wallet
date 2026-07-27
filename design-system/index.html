@@ -540,19 +540,24 @@ table.map td code{font-size:var(--t-label)}
    structurally impossible at any viewport, including long localised labels. */
 .mseg .seg{flex:1 1 0;min-width:0;height:2.75rem;padding:0;border-radius:var(--radius-full);display:flex;align-items:center;justify-content:center;
   background:none;color:var(--ink);cursor:pointer;overflow:hidden;font-family:var(--ui);
-  /* NOTHING here animates, and that is the fix rather than a compromise.
-     Three earlier attempts each removed one racing pair and left another. What was
-     left crossfaded FOUR things on a single tap -- the outgoing label's opacity, the
-     incoming label's opacity, the outgoing fill and the incoming fill -- with the
-     labels on --dur-fast and the fills on --dur-base. Different durations, overlapping
-     windows, so mid-switch two labels are partly visible and neither pill is solid.
-     That is the "race" feeling: nothing is wrong in any single frame, but four
-     independent timelines are resolving at once and the eye reads the disagreement.
-     A segmented control is a radio group. Radio groups do not morph. */
-  transition:none}
+  /* The expand/collapse IS animated -- but flex-basis stays 0 in every state and
+     only flex-grow moves. That is the whole fix. The original bug was basis
+     0 -> auto: `auto` is not an interpolatable value, so the browser snapped it
+     while grow was still mid-flight and the label's max-width was changing the
+     intrinsic width `auto` resolved against. Widths oscillated 140-149-138-126-117.
+     With basis pinned at 0 the four widths are purely proportional to one number,
+     so a single continuous interpolation drives the entire bar.
+     Every property here shares ONE duration and ONE easing, including the label.
+     The old "racing" feel came from three timings running at once
+     (--dur-spatial on flex, --dur-fast on labels, --dur-base on fills); the
+     properties were never the problem, the disagreement between them was. */
+  transition:flex-grow var(--dur-normal) var(--ease-out-cubic),
+             background var(--dur-normal) var(--ease-out-cubic),
+             box-shadow var(--dur-normal) var(--ease-out-cubic),
+             color var(--dur-normal) var(--ease-out-cubic)}
 /* Active chip is neutral white — the designer's icons already carry their own colour,
    so tinting the chip the same hue would flatten the glyph against it. */
-.mseg .seg.on{font-weight:800;font-size:var(--t-caption);letter-spacing:.01em;
+.mseg .seg.on{flex-grow:1.7;font-weight:800;font-size:var(--t-caption);letter-spacing:.01em;
   background:var(--surface);color:var(--ink);box-shadow:var(--shadow-1)}
 .mseg .seg svg{width:1.1875rem;height:1.1875rem;flex:none}
 .mseg .seg img,.mseg .seg .svgic{width:1.125rem;height:1.125rem;flex:none;display:block}
@@ -574,7 +579,10 @@ table.map td code{font-size:var(--t-label)}
    as "Overviev" -- a hard clip mid-letter, which reads as a rendering fault rather
    than as truncation. */
 .mseg .seg .lbl{max-width:0;opacity:0;overflow:hidden;white-space:nowrap;
-  text-overflow:ellipsis;transition:none}
+  text-overflow:ellipsis;
+  transition:max-width var(--dur-normal) var(--ease-out-cubic),
+             opacity var(--dur-normal) var(--ease-out-cubic),
+             margin-left var(--dur-normal) var(--ease-out-cubic)}
 .mseg .seg.on .lbl{max-width:6.25rem;opacity:1;margin-left:0.25rem}
 @media (prefers-reduced-motion: reduce){.mseg .seg,.mseg .seg .lbl{transition-duration:.01ms}}
 /* fund-wallet prompt */
