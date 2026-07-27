@@ -5073,6 +5073,367 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
           </div>
         </div></div></div>
         <div class="scrnote">Blurred until an explicit hold — friction is the point. Shoulder-surfing is a real attack, so the warning precedes the words.</div></div>
+<div><div class="scrcap"><i></i>Recovery phrase &middot; checking device <span class="tag retire">blank frame</span></div>
+        <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
+          <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>
+          <div class="mpad" style="flex:1;display:flex;flex-direction:column">
+            <div class="sh2"><span class="bk2">&lsaquo;</span><span class="t2">Recovery Phrase</span></div>
+            <div class="notice" style="background:var(--surface-2);color:var(--ink-2);margin-top:0.25rem"><span>&#9432;</span><span>Checking how this device protects your wallet. This decides whether we ask for Face ID or your passcode.</span></div>
+            <div class="seedgrid" style="margin-top:0.875rem">
+              <div class="seedw" style="background:none;padding-left:0"><i>1</i><span class="skel2" style="display:block;flex:1;margin:0"></span></div>
+              <div class="seedw" style="background:none;padding-left:0"><i>2</i><span class="skel2" style="display:block;flex:1;margin:0"></span></div>
+              <div class="seedw" style="background:none;padding-left:0"><i>3</i><span class="skel2" style="display:block;flex:1;margin:0"></span></div>
+              <div class="seedw" style="background:none;padding-left:0"><i>4</i><span class="skel2" style="display:block;flex:1;margin:0"></span></div>
+              <div class="seedw" style="background:none;padding-left:0"><i>5</i><span class="skel2" style="display:block;flex:1;margin:0"></span></div>
+              <div class="seedw" style="background:none;padding-left:0"><i>6</i><span class="skel2" style="display:block;flex:1;margin:0"></span></div>
+              <div class="seedw" style="background:none;padding-left:0"><i>7</i><span class="skel2" style="display:block;flex:1;margin:0"></span></div>
+              <div class="seedw" style="background:none;padding-left:0"><i>8</i><span class="skel2" style="display:block;flex:1;margin:0"></span></div>
+              <div class="seedw" style="background:none;padding-left:0"><i>9</i><span class="skel2" style="display:block;flex:1;margin:0"></span></div>
+              <div class="seedw" style="background:none;padding-left:0"><i>10</i><span class="skel2" style="display:block;flex:1;margin:0"></span></div>
+              <div class="seedw" style="background:none;padding-left:0"><i>11</i><span class="skel2" style="display:block;flex:1;margin:0"></span></div>
+              <div class="seedw" style="background:none;padding-left:0"><i>12</i><span class="skel2" style="display:block;flex:1;margin:0"></span></div>
+            </div>
+          </div>
+        </div></div></div>
+        <div class="scrnote"><b>Shipped, this frame is entirely blank.</b> <code>RevealSeedPhrase.tsx:111&ndash;113</code> returns <code>null</code> while <code>Vault.hasHardwareProtector()</code> resolves &mdash; no header, no spinner, no background. The user taps &ldquo;Recovery Phrase&rdquo;, gets a white rectangle, and has nothing to press to leave; <code>RevealSecret.tsx:332&ndash;334</code> and <code>EncryptedWalletFileWalletPassword.tsx:136&ndash;138</code> do the identical thing, so <b>three security screens all open as nothing</b>. The header ships first because it is the only exit, and the numbered slots are the geometry the words will land in, so the grid does not resize when they arrive. The probe is a local keystore read, not a network call &mdash; naming it is what stops a fast device from reading as a flash of broken page.</div></div>
+<div><div class="scrcap"><i></i>Recovery phrase &middot; passcode <span class="tag survive">sheet</span></div>
+        <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
+          <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>
+          <div class="mpad" style="flex:1;display:flex;flex-direction:column">
+            <div class="sh2"><span class="bk2">&lsaquo;</span><span class="t2">Recovery Phrase</span></div>
+          </div>
+          <div class="shscrim"></div>
+          <div class="msheet">
+            <div class="mshandle"></div>
+            <div class="mshead">Enter your passcode</div>
+            <div style="font-size:var(--t-caption);color:var(--ink-2);line-height:1.4;margin-bottom:0.625rem">Enter your passcode to reveal the Recovery Phrase.</div>
+            <div class="dots"><i class="f"></i><i class="f"></i><i class="f"></i><i></i><i></i><i></i></div>
+            <div class="pad"><button>1</button><button>2</button><button>3</button><button>4</button><button>5</button><button>6</button><button>7</button><button>8</button><button>9</button><span></span><button>0</button><button>&#9003;</button></div>
+          </div>
+        </div></div></div>
+        <div class="scrnote">Copy is verbatim: <code>enterYourPasscode</code> and <code>revealSecretPasscodeInputDescription</code>, which interpolates the secret name. Mobile vaults are protected by the onboarding passcode, so <code>RevealSeedPhrase.tsx:185</code> picks the numpad off <code>isMobile()</code> alone &mdash; note that <code>RevealSecret.tsx:66</code> gates the same choice on <code>isMobile() &amp;&amp; hasHardwareProtector === false</code>, so the two reveal paths disagree about when a numpad is correct. <b>The page behind the sheet is empty by construction</b> and that is a real hazard: dismissing the sheet calls <code>handlePasswordDrawerClose</code> (<code>:106&ndash;109</code>) which fires <code>goBack()</code>, so there is never a state where this header stands alone. The header stays drawn anyway, because a sheet with nothing behind it reads as a modal the user cannot escape.</div></div>
+<div><div class="scrcap"><i></i>Recovery phrase &middot; password <span class="tag survive">extension</span></div>
+        <div class="phone ext"><div class="screen"><div class="mock">
+          <div class="extbar" style="padding-left:1rem"><span class="dot0 nti"></span>Bread &middot; Miden Testnet</div>
+          <div class="mpad" style="flex:1;display:flex;flex-direction:column">
+            <div class="sh2"><span class="bk2">&lsaquo;</span><span class="t2">Recovery Phrase</span></div>
+            <div class="fld" style="width:auto"><label>Password</label>
+              <input class="inp" type="password" value="00000000" aria-label="Password">
+              <div class="hint">Enter password to reveal the Recovery Phrase.</div>
+            </div>
+            <div class="notice" style="background:var(--surface-2);color:var(--ink-2)"><span>&#9432;</span><span>The phrase hides itself after 20 seconds.</span></div>
+            <div class="zone"><button class="btn btn-primary">Continue</button><div class="gh">Cancel</div></div>
+          </div>
+        </div></div></div>
+        <div class="scrnote">The extension has no passcode and no biometric hardware, so this branch is the typed vault password (<code>RevealSeedPhrase.tsx:206&ndash;230</code>). Two corrections to the shipped form. <b>The auto-hide is stated up front</b> &mdash; <code>useSecretState</code> wipes the secret after <code>SECRET_REVEAL_TIME</code> (<code>use-secret-state.hook.ts:3</code>, 20s) and nothing on the shipped screen mentions it, so on the extension the phrase vanishes mid-transcription with no warning that it was ever timed. <b>Cancel is drawn</b>: the shipped drawer has only a Continue button, and closing it is a swipe or a scrim tap that no popup-width pointer target announces. Continue stays enabled-looking here but is gated on <code>!passwordValue</code> in code (<code>:226</code>).</div></div>
+<div><div class="scrcap"><i></i>Private key &middot; acknowledge</div>
+        <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
+          <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>
+          <div class="mpad" style="flex:1;display:flex;flex-direction:column">
+            <div class="sh2"><span class="bk2">&lsaquo;</span><span class="t2">Reveal Private Key</span></div>
+            <div class="notice" style="background:var(--accent-wash);color:var(--accent-ink);margin-top:0.25rem"><span>&#9888;</span><span><b>Before you continue</b><br>Your private key gives full control of this account to whoever holds it. Miden accounts cannot rotate keys, so a leaked key compromises the account permanently.</span></div>
+            <div style="display:flex;align-items:flex-start;min-height:44px;padding:0.5rem 0"><span class="chk" style="align-items:flex-start;font-size:var(--t-label);line-height:1.4"><span class="box"></span>I understand this key cannot be rotated or revoked.</span></div>
+            <div class="fld" style="width:auto"><label>Password</label>
+              <input class="inp" type="password" placeholder="&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;" aria-label="Password" disabled>
+              <div class="hint">Enter password to reveal the Private Key.</div>
+            </div>
+            <div class="zone"><button class="btn btn-primary" disabled>Continue</button></div>
+          </div>
+        </div></div></div>
+        <div class="scrnote">Both strings are verbatim <code>privateKeyRevealWarningTitle</code> / <code>privateKeyRevealWarningBody</code>, and the tick-box is <code>privateKeyRevealAcknowledge</code>. The gate is real: <code>RevealSecret.tsx:340&ndash;358</code> renders it for <code>private-key</code> and <code>guardian-keys</code>, and <code>:379</code> holds Continue disabled until it is ticked. <b>The correction is ordering.</b> Shipped, the password field is live and focused before the box is ticked (<code>useLayoutEffect</code> at <code>:95&ndash;99</code> focuses it on mount), so a user can type the whole password and only then discover the button is dead. Here the field is disabled until the acknowledgement lands, which makes the sequence legible instead of making the button look broken. <b>The warning is not red.</b> Nothing has failed &mdash; this is a consequence, and reserving negative colour for actual failure is what keeps it meaning anything.</div></div>
+<div><div class="scrcap"><i></i>Private key &middot; revealed</div>
+        <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
+          <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>
+          <div class="mpad" style="flex:1;display:flex;flex-direction:column">
+            <div class="sh2"><span class="bk2">&lsaquo;</span><span class="t2">Reveal Private Key</span></div>
+            <div class="mstk-lbl2" style="margin-top:0.25rem">Private Key</div>
+            <div style="background:var(--surface-2);border-radius:var(--radius-md);padding:0.75rem 0.875rem;font-family:var(--mono);font-size:var(--t-caption);color:var(--ink);line-height:1.55;word-break:break-all">0x8f2ca41b90d7e6538c1470ab55e9f2d3661c88a4be07f19d5a3e2c7b04986fd1</div>
+            <div style="display:flex;justify-content:center;margin-top:0.75rem">
+              <button class="copybtn"><span class="cbico"><span class="cbi cbi-copy"><span class="svgic" style="--ic:url(assets/icons/copy.svg);width:0.9375rem;height:0.9375rem;display:block" aria-hidden="true"></span></span><span class="cbi cbi-tick" aria-hidden="true">&#10003;</span></span><span class="cblab"><span class="cbt cbt-a">Copy</span><span class="cbt cbt-b">Copied</span></span></button>
+            </div>
+            <div class="notice" style="background:var(--surface-2);color:var(--ink-2);margin-top:0.875rem"><span>&#9201;</span><span>Hides in 14 seconds. Current account key. Keep it in secret.</span></div>
+            <div class="zone"><button class="btn btn-primary">Hide</button></div>
+          </div>
+        </div></div></div>
+        <div class="scrnote">The key is Geist Mono per the address rule, and it is the only mono block on the screen so nothing competes with it. <b>The countdown is the addition.</b> <code>use-secret-state.hook.ts:3</code> arms a 20-second timer the moment the secret lands and the shipped screen shows no trace of it &mdash; a user copying a 64-character key by hand has no idea they are racing anything. <code>privateKeyFieldDescription</code> (&ldquo;Current account key. Keep it in secret.&rdquo;) is folded into the same line rather than given its own block, because a second advisory paragraph under a revealed key is read by nobody. <b>Hide is primary</b>, not back: the destructive-feeling action here is leaving the key on screen, so the safe action gets the weight.</div></div>
+<div><div class="scrcap"><i></i>Reveal secret &middot; expired <span class="tag retire">bug</span></div>
+        <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
+          <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>
+          <div class="mpad" style="flex:1;display:flex;flex-direction:column">
+            <div class="sh2"><span class="bk2">&lsaquo;</span><span class="t2">Reveal Private Key</span></div>
+            <div class="notice" style="background:var(--surface-2);color:var(--ink-2);margin-top:0.25rem"><span>&#9201;</span><span><b>Hidden after 20 seconds</b><br>Your private key was cleared from the screen. Nothing changed &mdash; unlock again to show it.</span></div>
+            <div class="fld" style="width:auto"><label>Password</label>
+              <input class="inp" type="password" placeholder="&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;" aria-label="Password">
+            </div>
+            <div class="zone"><button class="btn btn-primary">Show again</button><div class="gh">Done</div></div>
+          </div>
+        </div></div></div>
+        <div class="scrnote"><b>The unexplained state.</b> <code>RevealSecret.tsx</code> has no post-auto-hide branch: <code>mainContent</code> (<code>:200&ndash;311</code>) falls back to the password form the instant <code>secret</code> goes null, so at 20 seconds the key silently disappears and the auth form is back with <b>no message at all</b>. Users read that as &ldquo;it failed&rdquo; or &ldquo;my password was wrong&rdquo;, and the second reveal is the one they hurry. <b>The two reveal screens also disagree about what should happen</b>: <code>RevealSeedPhrase.tsx:72&ndash;76</code> reacts to the same expiry by calling <code>goBack()</code> &mdash; one screen navigates away, the other re-prompts, from the same 20-second timer. Pick re-prompt: leaving the page throws away the user&rsquo;s place for a timeout they did not cause. &ldquo;Nothing changed&rdquo; is load-bearing copy &mdash; the first fear on a vanished key screen is that something was rotated or revoked.</div></div>
+<div><div class="scrcap"><i></i>Guardian keys &middot; revealed</div>
+        <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
+          <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>
+          <div class="mpad" style="flex:1;display:flex;flex-direction:column">
+            <div class="sh2"><span class="bk2">&lsaquo;</span><span class="t2">Reveal Private Key</span></div>
+            <div class="mstk-lbl2" style="margin-top:0.25rem">Recovery (Cold) Private Key &middot; secret</div>
+            <div style="background:var(--surface-2);border-radius:var(--radius-md);padding:0.6875rem 0.8125rem;font-family:var(--mono);font-size:var(--t-caption);color:var(--ink);line-height:1.55;word-break:break-all">0x41c7be09d5f38a2e6704bb15c93df8206a17e4c8b90d2f5e73a6c018bd4297ef</div>
+            <div class="mstk-lbl2" style="margin-top:0.875rem">Recovery (Cold) Public Key &middot; safe to share</div>
+            <div style="background:var(--surface-2);border-radius:var(--radius-md);padding:0.6875rem 0.8125rem;font-family:var(--mono);font-size:var(--t-caption);color:var(--ink-2);line-height:1.55;word-break:break-all">0x9d02a6f4c817be35&hellip;0f72</div>
+            <div class="mstk-lbl2" style="margin-top:0.875rem">Device Public Key &middot; safe to share</div>
+            <div style="background:var(--surface-2);border-radius:var(--radius-md);padding:0.6875rem 0.8125rem;font-family:var(--mono);font-size:var(--t-caption);color:var(--ink-2);line-height:1.55;word-break:break-all">0x3ba85c1720ef94d6&hellip;c841</div>
+            <div class="notice" style="background:var(--surface-2);color:var(--ink-2);margin-top:0.875rem"><span>&#9201;</span><span>Hides in 12 seconds. To reveal the device private key, use Settings &rarr; Reveal device key.</span></div>
+            <div class="zone"><button class="btn btn-primary">Hide</button></div>
+          </div>
+        </div></div></div>
+        <div class="scrnote">Three labels verbatim from <code>RevealSecret.tsx:210 / :222 / :234</code> &mdash; <code>coldPrivateKey</code>, <code>coldPublicKeyLabel</code>, <code>hotPublicKeyLabel</code> &mdash; and the device row only renders when <code>guardianBundle.hotPublicKey</code> exists (<code>:229</code>), which it does not on a recovered account before hot-key activation. <b>Shipped, all three blocks look identical.</b> They are the same <code>FormField textarea readOnly</code> with the same label weight, so <b>one secret and two publishable keys are presented as peers</b> &mdash; the highest-consequence field on the screen has no visual claim over the other two. Here the secret carries full ink and the public keys are demoted to <code>--ink-2</code>, and each label states its own disclosure class in words, not colour. <b>The bug in the shipped copy:</b> <code>guardianKeysRevealDescription</code> routes users to &ldquo;Settings &rarr; Reveal Device Key&rdquo;, but the row is titled <code>revealHotKey</code> = &ldquo;Reveal device key&rdquo; and only appears for a Guardian account with an activated hot key (<code>KeysSettings.tsx:21</code>). The pointer is also <b>320 words up-screen from where it is needed</b> &mdash; it is the <code>labelDescription</code> of the cold-key field.</div></div>
+<div><div class="scrcap"><i></i>Settings &middot; Keys <span class="tag merge">sheet</span></div>
+        <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
+          <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>
+          <div class="mpad" style="flex:1;opacity:.35"><div style="font-family:var(--display);font-weight:800;font-size:var(--t-title);padding:0.375rem 0 0.875rem">Settings</div></div>
+          <div class="shscrim"></div>
+          <div class="msheet">
+            <div class="mshandle"></div>
+            <div class="mshead">Keys</div>
+            <div class="setgroup">
+              <div class="setrow"><span class="svgic" style="--ic:url(assets/icons/key.svg);" aria-hidden="true"></span>Reveal Private Key<span class="ch">&rsaquo;</span></div>
+              <div class="setrow"><span class="svgic" style="--ic:url(assets/icons/key.svg);" aria-hidden="true"></span>Reveal device key<span class="ch">&rsaquo;</span></div>
+            </div>
+            <div class="mstk-lbl2">Guardian</div>
+            <div class="setgroup">
+              <div class="setrow"><span class="svgic" style="--ic:url(assets/icons/guardian-avatar.svg);" aria-hidden="true"></span>Rotate Guardian<span class="ch">&rsaquo;</span></div>
+              <div class="setrow"><span class="svgic" style="--ic:url(assets/icons/convert.svg);" aria-hidden="true"></span>Rotate device key<span class="ch">&rsaquo;</span></div>
+            </div>
+            <div class="notice" style="background:var(--surface-2);color:var(--ink-2)"><span>&#9432;</span><span>Rotating your device key keeps the same account and the same funds.</span></div>
+          </div>
+        </div></div></div>
+        <div class="scrnote"><b>&ldquo;Rotate Guardian&rdquo; goes nowhere.</b> <code>KeysSettings.tsx:22</code> navigates to <code>/rotate-guardian</code>; that path is not in <code>PageRouter.tsx</code>&rsquo;s route map, so the <code>&#39;*&#39;</code> catch-all at <code>PageRouter.tsx:280</code> silently redirects to <code>/</code> &mdash; tapping a Settings row dumps the user on Home with no error. <code>KeysSettings.test.tsx:184</code> asserts only that <code>navigate</code> was called with that string, so the suite is green on a feature that does not exist. <b>Second structural problem:</b> shipped, this drawer is two navigation rows followed by <code>&lt;hr&gt;</code> and an inlined <code>GuardianReplaceHotKey</code> (<code>:42&ndash;47</code>) &mdash; a full submit form with its own confirm state, sitting under a list of links. That mixes a menu and a transaction in one sheet; the rows here are all rows, and rotation gets its own review screen. Grouping is by consequence, not by noun: reveals expose material, rotations change on-chain state.</div></div>
+<div><div class="scrcap"><i></i>Settings &middot; change passcode <span class="tag merge">gap</span></div>
+        <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
+          <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>
+          <div class="mpad" style="flex:1;display:flex;flex-direction:column">
+            <div class="sh2"><span class="bk2">&lsaquo;</span><span class="t2">Change passcode</span></div>
+            <div style="flex:1;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;width:100%">
+              <div style="font-size:var(--t-caption);color:var(--ink-2);font-weight:700">Step 1 of 3</div>
+              <h2 class="obh" style="margin-top:0.375rem">Enter current passcode</h2>
+              <p class="obp">Your wallet, funds and recovery phrase stay the same.</p>
+              <div class="dots" style="margin:1.25rem 0 1.375rem"><i class="f"></i><i class="f"></i><i></i><i></i><i></i><i></i></div>
+              <div class="pad pinned" style="width:100%"><button>1</button><button>2</button><button>3</button><button>4</button><button>5</button><button>6</button><button>7</button><button>8</button><button>9</button><span></span><button>0</button><button>&#9003;</button></div>
+            </div>
+          </div>
+        </div></div></div>
+        <div class="scrnote"><b>GAP &mdash; you cannot change your passcode or password in this wallet.</b> There is no <code>changePassword</code> or <code>changePasscode</code> symbol anywhere in <code>src/</code>, no key for either in <code>en.json</code>, and no row in <code>Settings.tsx</code>&rsquo;s <code>TAB_GROUPS</code> (<code>:120&ndash;215</code>). The only route from a shoulder-surfed passcode to a new one is <b>Reset Wallet</b> &mdash; wipe the vault and re-import from the recovery phrase, which is precisely the material the user is trying not to touch. Three steps, not two: current &rarr; new &rarr; confirm, because a passcode change with no proof of the old one is a device-theft escalation. The step counter is drawn as text rather than <code>.progdots</code>, which belong to onboarding; this is a settings task and must not borrow first-run chrome. Geometry is lifted verbatim from <b>12 &middot; Unlock</b> so the numpad a user already knows does not move.</div></div>
+<div><div class="scrcap"><i></i>Settings &middot; app lock <span class="tag merge">gap</span></div>
+        <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
+          <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>
+          <div class="mpad" style="flex:1;display:flex;flex-direction:column">
+            <div class="sh2"><span class="bk2">&lsaquo;</span><span class="t2">App lock</span></div>
+            <div class="mstk-lbl2" style="margin-top:0.25rem">Unlock</div>
+            <div class="setgroup">
+              <div class="setrow" role="switch" aria-checked="true" tabindex="0"><span class="svgic" style="--ic:url(assets/icons/face.svg);" aria-hidden="true"></span>Face ID<span style="margin-left:auto;display:flex;align-items:center;gap:0.5rem"><span style="font-size:var(--t-caption);color:var(--ink-2);font-weight:700">On</span><span class="toggle on" aria-hidden="true" style="display:block"><span class="knob"></span></span></span></div>
+              <div class="setrow" role="switch" aria-checked="false" tabindex="0"><span class="svgic" style="--ic:url(assets/icons/lock.svg);" aria-hidden="true"></span>Require for sends and swaps<span style="margin-left:auto;display:flex;align-items:center;gap:0.5rem"><span style="font-size:var(--t-caption);color:var(--ink-2);font-weight:700">Off</span><span class="toggle" aria-hidden="true" style="display:block"><span class="knob"></span></span></span></div>
+            </div>
+            <div class="notice" style="background:var(--surface-2);color:var(--ink-2)"><span>&#9432;</span><span>With this off, sends and swaps are signed without a Face ID check. Your passcode still locks the app.</span></div>
+            <div class="mstk-lbl2" style="margin-top:0.875rem">If Face ID is unavailable</div>
+            <div class="setgroup">
+              <div class="setrow" role="switch" aria-checked="true" tabindex="0">Fall back to passcode<span style="margin-left:auto;display:flex;align-items:center;gap:0.5rem"><span style="font-size:var(--t-caption);color:var(--ink-2);font-weight:700">On</span><span class="toggle on" aria-hidden="true" style="display:block"><span class="knob"></span></span></span></div>
+            </div>
+            <div class="notice" style="background:var(--accent-wash);color:var(--accent-ink)"><span>&#9888;</span><span>Off means a send proceeds when Face ID cannot run. That is what the app does today, silently.</span></div>
+          </div>
+        </div></div></div>
+        <div class="scrnote"><b>GAP &mdash; and the missing switch hides a fail-open.</b> <code>GeneralSettingsSelectors.BiometricToggle</code> is declared at <code>GeneralSettings.selectors.ts:10</code> and referenced by nothing but its own test; <code>setBiometricEnabled</code> and <code>setupBiometric</code> have <b>zero callers outside <code>lib/biometric/index.ts</code></b>. Only onboarding ever writes the preference, so a user who declined Face ID at setup, or enabled it and now wants it off, has no control anywhere in the product. <b>The second row is the one that matters.</b> <code>confirmSensitiveAction</code> (<code>lib/biometric/index.ts:183&ndash;192</code>) returns <code>true</code> &mdash; allow &mdash; when biometrics are unavailable, when the toggle is off, <em>and inside a bare <code>catch</code></em>, so any thrown probe error also permits the send. Its only callers are <code>ReviewTransaction.tsx:134</code> and <code>SwapManager.tsx:206</code>, both passing hard-coded English (&ldquo;Confirm your send&rdquo; / &ldquo;Confirm your swap&rdquo;) that never went through <code>t()</code>. On denial both do <code>setIsSubmitting(false); return;</code> &mdash; <b>no toast, no error, no explanation</b>; the screen just stops responding to the button. Stating the fail-open on screen is the point: a security control that quietly degrades to &ldquo;allow&rdquo; is worse than one the user knows is off. Each toggle carries its own word, so state never rests on the knob position alone, and the row is the 44pt target rather than the 30pt switch.</div></div>
+<div><div class="scrcap"><i></i>Settings &middot; auto-lock <span class="tag merge">gap</span></div>
+        <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
+          <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>
+          <div class="mpad" style="flex:1;display:flex;flex-direction:column">
+            <div class="sh2"><span class="bk2">&lsaquo;</span><span class="t2">Auto-lock</span></div>
+            <div style="font-size:var(--t-caption);color:var(--ink-2);line-height:1.45">Lock the app after it has been in the background this long.</div>
+            <div class="setgroup" style="margin-top:0.625rem">
+              <div class="setrow" role="radio" aria-checked="false" tabindex="0">Immediately</div>
+              <div class="setrow" role="radio" aria-checked="false" tabindex="0">After 1 minute</div>
+              <div class="setrow" role="radio" aria-checked="true" tabindex="0">After 10 minutes<span class="ch" style="color:var(--accent-ink);font-size:var(--t-label);font-weight:800">&#10003; Current</span></div>
+              <div class="setrow" role="radio" aria-checked="false" tabindex="0">After 1 hour</div>
+            </div>
+            <div class="notice" style="background:var(--accent-wash);color:var(--accent-ink)"><span>&#9888;</span><span>On iOS and Android this setting does nothing yet. The app locks only when you close it.</span></div>
+          </div>
+        </div></div></div>
+        <div class="scrnote"><b>GAP, and the mechanism behind it is extension-only.</b> <code>WALLET_AUTOLOCK_TIME</code> is a fixed constant &mdash; <code>fixed-times.ts:7</code>, 10 minutes &mdash; with no setting, no key in <code>en.json</code>, and no row in <code>Settings.tsx</code>. Worse, the whole lock-up subsystem refuses to load off-extension: <code>lock-up/run-checks.ts:9&ndash;10</code> throws unless <code>window.location.href</code> contains <code>extension://</code>, so on iOS, Android and Tauri there is <b>no idle auto-lock at all</b>. A phone left unlocked on a table stays in a funded wallet indefinitely. The banner says so rather than shipping a picker that lies on two of the three targets &mdash; a control that silently no-ops is the defect this whole spec exists to stop. <b>No radio circles.</b> Selection is a tick plus the word &ldquo;Current&rdquo;: an unfilled <code>.rad</code> circle is <code>--surface-3</code> on a <code>--surface-2</code> row, which is a control boundary at roughly 1.1:1 &mdash; invisible, and then the only thing separating it from the selected one is orange fill. Glyph and word carry the state without either. Ten minutes is pre-selected to match the shipped constant, so turning this on changes nobody&rsquo;s behaviour by surprise.</div></div>
+<div><div class="scrcap"><i></i>Guardian &middot; rotate review <span class="tag retire">specced, never built</span></div>
+        <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
+          <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>
+          <div class="mpad" style="flex:1;display:flex;flex-direction:column">
+            <div class="sh2"><span class="bk2">&lsaquo;</span><span class="t2">Review rotation</span></div>
+            <div class="dmeta" style="margin-top:0.25rem">
+              <div class="drow"><span class="k">Current Guardian</span><span class="v">Miden &middot; US-EAST</span></div>
+              <div class="drow"><span class="k">New Guardian</span><span class="v">OpenZeppelin &middot; US-EAST <span class="rbadge">New</span></span></div>
+            </div>
+            <div class="mstk-lbl2" style="margin-top:0.875rem">Signed by</div>
+            <div class="dmeta">
+              <div class="drow"><span class="k">Wallet key (hot)</span><span class="v">On this device</span></div>
+              <div class="drow"><span class="k">Recovery phrase (cold)</span><span class="v">In your vault</span></div>
+            </div>
+            <div class="notice" style="background:var(--surface-2);color:var(--ink-2);margin-top:0.875rem"><span>&#9432;</span><span><b>Your old Guardian can&rsquo;t block this</b><br>Rotation is approved by your two on-device keys. The old Guardian is only notified.</span></div>
+            <div class="zone"><button class="btn btn-primary">Rotate Guardian</button><div class="gh">Cancel</div></div>
+          </div>
+        </div></div></div>
+        <div class="scrnote"><b>Fully translated, never built.</b> Six keys exist for this screen and no source file references any of them: <code>reviewRotation</code>, <code>newLabel</code>, <code>walletKeyHot</code>, <code>recoveryPhraseCold</code>, <code>oldGuardianCantBlockTitle</code>, <code>oldGuardianCantBlockBody</code> (<code>en.json:412&ndash;418</code>). All six are used verbatim above. The entry point exists and is broken &mdash; see <b>Settings &middot; Keys</b>. <b>Do not ship this copy as-is.</b> It describes a rotation approved by the user&rsquo;s <em>two on-device keys</em> with the old Guardian merely notified; the code that actually performs a Guardian switch says the opposite &mdash; <code>GuardianSettings.tsx:112</code> submits under <code>switchGuardianConfirmation</code>, &ldquo;This is signed with your recovery (cold) key <em>and co-signed by your current guardian</em>&rdquo;, and <code>runSwitch</code> (<code>:40&ndash;75</code>) drives <code>initiateSwitchGuardianTransaction</code> on that path. If the current Guardian co-signs, it <em>can</em> block the rotation, and the reassurance here is false. One of the two is wrong and the protocol answer decides which; this screen is drawn so the contradiction is visible instead of buried in <code>en.json</code>.</div></div>
+<div><div class="scrcap"><i></i>Guardian &middot; remove <span class="tag merge">gap</span></div>
+        <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
+          <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>
+          <div class="mpad" style="flex:1;opacity:.35"><div style="font-family:var(--display);font-weight:800;font-size:var(--t-title);padding:0.375rem 0 0.875rem">Settings</div></div>
+          <div class="shscrim"></div>
+          <div class="msheet">
+            <div class="mshandle"></div>
+            <div class="mshead">Remove your Guardian</div>
+            <div class="dmeta">
+              <div class="drow"><span class="k">Removing</span><span class="v">Miden &middot; US-EAST</span></div>
+              <div class="drow"><span class="k">After this</span><span class="v">Fully private<span class="vsub">No cosigner, no recovery</span></span></div>
+            </div>
+            <div class="notice" style="margin-top:0.875rem"><span>&#9940;</span><span><b>You lose Guardian recovery</b><br>Nothing cosigns your transactions and nothing can help you recover this account. If you lose this device and your recovery phrase, the funds are gone.</span></div>
+            <div style="display:flex;align-items:flex-start;min-height:44px;padding:0.375rem 0"><span class="chk" style="align-items:flex-start;font-size:var(--t-label);line-height:1.4"><span class="box"></span>I understand this account will have no recovery.</span></div>
+            <div class="zone"><button class="btn btn-primary" disabled>Remove Guardian</button><div class="gh">Keep my Guardian</div></div>
+          </div>
+        </div></div></div>
+        <div class="scrnote"><b>GAP &mdash; the product promises this in onboarding and never built it.</b> <code>GuardianInfoDrawer.tsx:79</code> renders <code>guardianInfoSwitchingIsEasyDescription</code>: &ldquo;You can rotate to a different Guardian &mdash; or remove one entirely &mdash; at any time using your recovery phrase.&rdquo; A user reads that on <b>06a</b> before choosing a Guardian at all. There is no removal path in <code>GuardianSettings.tsx</code>, no action in <code>back/actions.ts</code>, and no route. <code>en.json:404</code> holds <code>guardianAboutDescription</code>, a <em>second</em> copy of the same promise (&ldquo;You can rotate or remove your Guardian anytime with your recovery phrase&rdquo;) which no component renders &mdash; the claim was written twice and implemented zero times. Removal is the one Guardian operation that <b>cannot be undone by the same means it was done</b>: switching moves you between cosigners, removing leaves the account with no recovery party at all, which is the Fully Private branch of <b>06c</b> chosen after the fact. Hence the acknowledgement gate, the same pattern as the private-key reveal, and a ghost that says <em>keep</em> rather than <em>cancel</em>, so the safe exit names its own outcome.</div></div>
+<div><div class="scrcap"><i></i>Settings &middot; reset wallet <span class="tag merge">gap</span></div>
+        <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
+          <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>
+          <div class="mpad" style="flex:1;display:flex;flex-direction:column">
+            <div style="font-family:var(--display);font-weight:800;font-size:var(--t-title);padding:0.375rem 0 0.875rem">Settings</div>
+            <div class="mstk-lbl2">Security</div>
+            <div class="setgroup">
+              <div class="setrow"><span class="svgic" style="--ic:url(assets/icons/key.svg);" aria-hidden="true"></span>Recovery Phrase<span class="ch">&rsaquo;</span></div>
+              <div class="setrow"><span class="svgic" style="--ic:url(assets/icons/lock.svg);" aria-hidden="true"></span>Keys<span class="ch">&rsaquo;</span></div>
+              <div class="setrow"><span class="svgic" style="--ic:url(assets/icons/guardian-avatar.svg);" aria-hidden="true"></span>Guardian Settings<span class="ch">&rsaquo;</span></div>
+              <div class="setrow"><span class="svgic" style="--ic:url(assets/icons/share.svg);" aria-hidden="true"></span>Encrypted Wallet File<span class="ch">&rsaquo;</span></div>
+            </div>
+            <div class="mstk-lbl2" style="margin-top:0.875rem">Danger zone</div>
+            <div class="setgroup">
+              <div class="setrow" style="color:var(--neg)"><span class="svgic" style="--ic:url(assets/icons/eye-off.svg);background-color:var(--neg)" aria-hidden="true"></span>Reset Wallet<span class="ch" style="color:var(--neg)">&rsaquo;</span></div>
+            </div>
+            <div class="notice" style="background:var(--surface-2);color:var(--ink-2)"><span>&#9432;</span><span>Resetting erases this wallet from the device. You can restore it with your recovery phrase.</span></div>
+          </div>
+          <div class="mnav" style="--i:2"><button class="t"><span class="svgic" style="--ic:url(assets/icons/home-new.svg)" aria-hidden="true"></span><span>Home</span></button><button class="t"><span class="svgic" style="--ic:url(assets/icons/explore.svg)" aria-hidden="true"></span><span>Explore</span></button><button class="t on"><span class="svgic" style="--ic:url(assets/icons/activity.svg)" aria-hidden="true"></span><span>Activity</span></button></div>
+        </div></div></div>
+        <div class="scrnote"><b>Reset Wallet is only reachable from the lock screen.</b> <code>Unlock.tsx:280</code> renders it as a ghost button under &ldquo;Try again&rdquo; on the hardware-only branch; <code>Settings.tsx</code>&rsquo;s <code>TAB_GROUPS</code> has no such row. So the user who most needs it &mdash; someone handing on a device, or clearing a wallet they can still open &mdash; has to <em>lock themselves out first</em> to find it. The Danger-zone group is separated by a labelled gap rather than sitting last in the Security block, because reset and reveal are not the same class of action and a mis-tap between adjacent rows is unrecoverable. <b>Two corrections to the shipped list while it is on screen.</b> Encrypted Wallet File is drawn here but does not exist in <code>TAB_GROUPS</code> either &mdash; see the three export screens below. And <code>Settings.tsx:415</code> renders a hard-coded English <code>Version {pkg.version}</code>, bypassing <code>t()</code>, while <code>versionLabel</code> sits in <code>en.json:9</code> used only by the orphaned <code>About.tsx</code>; the version string moves to About, where it belongs, and stops shipping untranslated at the foot of every locale.</div></div>
+<div><div class="scrcap"><i></i>Reset wallet &middot; confirm <span class="tag merge">gap</span></div>
+        <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
+          <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>
+          <div class="mpad" style="flex:1;opacity:.35"><div style="font-family:var(--display);font-weight:800;font-size:var(--t-title);padding:0.375rem 0 0.875rem">Settings</div></div>
+          <div class="shscrim"></div>
+          <div class="msheet">
+            <div class="mshandle"></div>
+            <div class="mshead">Reset Wallet</div>
+            <div class="notice" style="margin-top:0"><span>&#9940;</span><span><b>This erases the wallet on this device</b><br>Your accounts, keys and Guardian setup are deleted from this phone. Your funds stay on Miden and come back only with your recovery phrase.</span></div>
+            <div class="mstk-lbl2" style="margin-top:0.875rem">Type RESET to confirm</div>
+            <div class="fld" style="width:auto"><input class="inp" value="RESE" aria-label="Type RESET to confirm"></div>
+            <div class="zone"><button class="btn btn-primary" disabled>Reset Wallet</button><div class="gh">Cancel</div></div>
+          </div>
+        </div></div></div>
+        <div class="scrnote"><b>There is no confirmation on reset today.</b> <code>Unlock.tsx:280</code> wires the button straight to <code>onForgotPasswordClick</code>, which navigates into <code>/forgot-password</code> &mdash; one tap from a lock screen to the wipe-and-reimport flow, and <code>en.json</code> has no <code>resetWalletConfirmation</code> key at all. A typed confirmation, not a second button: the action is irreversible without external material, and paired buttons are the pattern users clear reflexively. The word states the cost in plain terms &mdash; <b>the device is erased, the chain is not</b> &mdash; because the fear the copy has to answer is &ldquo;does this destroy my money&rdquo;, and the honest answer is no, provided the phrase exists. This sheet is the natural home for the same hardening the seed-phrase overlay needs: <code>Settings.tsx:433&ndash;492</code> renders that overlay with no <code>role=&quot;dialog&quot;</code>, no <code>aria-modal</code>, no focus trap and <b>no back-handler registration</b>, so Android hardware-back navigates the page underneath while the warning is still painted on top.</div></div>
+<div><div class="scrcap"><i></i>Encrypted file &middot; unlock <span class="tag merge">unrouted</span></div>
+        <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
+          <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>
+          <div class="mpad" style="flex:1;opacity:.35"><div style="font-family:var(--display);font-weight:800;font-size:var(--t-title);padding:0.375rem 0 0.875rem">Settings</div></div>
+          <div class="shscrim"></div>
+          <div class="msheet">
+            <div class="mshandle"></div>
+            <div class="mshead">Encrypted Wallet File</div>
+            <div style="font-size:var(--t-label);color:var(--ink);line-height:1.45;margin-bottom:0.75rem">Enter your password to access your Encrypted Wallet File.</div>
+            <div class="fld" style="width:auto"><label>Password</label><input class="inp" type="password" value="00000000" aria-label="Password"></div>
+            <div style="display:flex;align-items:flex-start;min-height:44px;padding:0.5rem 0"><span class="chk on" style="align-items:flex-start;font-size:var(--t-label);line-height:1.4"><span class="box" style="color:var(--on-accent-sm)">&#10003;</span>I will not share my Encrypted Wallet File with anyone, including Bread.</span></div>
+            <div class="zone"><button class="btn btn-primary">Continue</button></div>
+          </div>
+        </div></div></div>
+        <div class="scrnote"><b>Built, translated, tested &mdash; and unreachable.</b> <code>src/screens/encrypted-file-flow/</code> is a complete three-step export with four components, its own <code>Navigator</code> routes and a mobile back handler, and <code>EncryptedFileFlow</code> has <b>zero importers</b>: nothing in <code>PageRouter.tsx</code>, nothing in <code>Settings.tsx</code>&rsquo;s <code>TAB_GROUPS</code>. Dead code with a full test suite is worse than absent code &mdash; it reads as shipped in review. Copy verbatim: <code>encryptedWalletFileDescription</code>, and the hardware branch swaps it for <code>encryptedWalletFileDescriptionHardware</code> at <code>EncryptedWalletFileWalletPassword.tsx:144</code>. <b>Same probe bug as the reveal screens:</b> <code>:136&ndash;138</code> returns <code>null</code> while <code>hasHardwareProtector</code> is unknown, so step one of the export also opens as an empty sheet. The acknowledgement is a real gate (<code>:167&ndash;174</code>) &mdash; drawn as a <code>.chk</code> rather than the shipped bare <code>&lt;button&gt;</code> wrapping a checkbox, which has no accessible checked state.</div></div>
+<div><div class="scrcap"><i></i>Encrypted file &middot; name and password <span class="tag merge">unrouted</span></div>
+        <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
+          <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>
+          <div class="mpad" style="flex:1;display:flex;flex-direction:column">
+            <div class="sh2"><span class="bk2">&lsaquo;</span><span class="t2">Encrypted Wallet File</span></div>
+            <div class="fld" style="width:auto"><label>Name</label><input class="inp" value="Encrypted Wallet File.json" aria-label="Name"></div>
+            <div class="notice" style="background:var(--surface-2);color:var(--ink-2)"><span>&#9432;</span><span>Enter a password to encrypt your wallet file. This is a new password, not your wallet password.</span></div>
+            <div style="margin-top:0.25rem">
+              <input class="opw" type="password" value="0000000000" aria-label="Password">
+              <div class="strength" data-tier="strong">
+                <div class="opwbar"><i></i><i></i><i></i></div>
+                <div class="opwmeta"><span>Minimum 8 characters with at least 1 number</span><span class="tier">Very strong!</span></div>
+              </div>
+              <input class="opw ok" type="password" value="0000000000" aria-label="Verify password" style="margin-top:0.875rem">
+              <div class="fok">&#10003; It&rsquo;s a match!</div>
+            </div>
+            <div class="zone"><button class="btn btn-primary">Continue</button></div>
+          </div>
+        </div></div></div>
+        <div class="scrnote">Labels verbatim from <code>ExportFileSetNamePassword.tsx</code>: <code>name</code> (<code>:101</code>), <code>enterPasswordToEncrypt</code> (<code>:114</code>), <code>verifyPassword</code> (<code>:141</code>), <code>itsAMatch</code> (<code>:162</code>). The strength meter is the <b>06b</b> component unchanged &mdash; the shipped screen uses a different one (<code>PasswordStrengthIndicator</code>), which is the same divergence this spec exists to close. <b>The clarifying clause is the addition.</b> The user typed their wallet password one screen ago and is now asked for &ldquo;a password&rdquo; with no statement that it is a different secret; nothing in the shipped copy distinguishes them, and a user who reuses the wallet password here has bound the backup to the credential the backup is meant to survive. <b>Not drawn, and a real defect:</b> <code>encryptedFileImportedAccountsOmitted</code> warns that imported accounts are excluded from the file &mdash; it renders only on step 3, <em>after</em> the file is already written, which is one screen too late to act on.</div></div>
+<div><div class="scrcap"><i></i>Encrypted file &middot; exported <span class="tag retire">auto-downloads</span></div>
+        <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
+          <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>
+          <div class="mpad" style="flex:1;display:flex;flex-direction:column">
+            <div class="rcpt"><div class="ok2">&#10003;</div>
+              <div style="font-family:var(--display);font-weight:900;font-size:var(--t-heading)">Encrypted Wallet File<br>Exported!</div>
+            </div>
+            <div class="dmeta" style="margin-top:1.125rem">
+              <div class="drow"><span class="k">File</span><span class="v addr2">Encrypted Wallet File.json</span></div>
+              <div class="drow"><span class="k">Accounts</span><span class="v">3 included<span class="vsub">1 imported account omitted</span></span></div>
+            </div>
+            <div class="notice" style="background:var(--surface-2);color:var(--ink-2);margin-top:0.875rem"><span>&#9432;</span><span>Your encrypted wallet file has been downloaded. <b>Keep it and your password safe.</b> If you lose them you risk losing access to your wallet</span></div>
+            <div class="zone"><button class="btn btn-primary">Done</button><button class="btn btn-secondary" style="margin-top:0.5rem">Save again</button></div>
+          </div>
+        </div></div></div>
+        <div class="scrnote">Three copy fragments verbatim from <code>ExportFileComplete.tsx:128&ndash;130</code>. <b>The file writes itself before this screen paints.</b> <code>:110&ndash;112</code> calls <code>getExportFile()</code> from a mount <code>useEffect</code>, so arriving here <em>is</em> the export &mdash; the heading announces something the user never confirmed, and on mobile the share sheet fires unprompted. That also makes the failure path silent: the mobile branch swallows errors into <code>console.error</code> (<code>:101&ndash;103</code>) and still renders this success screen, so a failed write is indistinguishable from a successful one. <b>Save again exists for exactly that</b>, and it is the only retry the flow can offer without re-deriving the file. The omitted-imported-accounts count is promoted out of a red paragraph into the file summary, where a number belongs &mdash; but the honest fix is the one noted on the previous screen: warn before writing, not after.</div></div>
+<div><div class="scrcap"><i></i>Settings &middot; About <span class="tag merge">gap</span></div>
+        <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
+          <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>
+          <div class="mpad" style="flex:1;display:flex;flex-direction:column">
+            <div class="sh2"><span class="bk2">&lsaquo;</span><span class="t2">About</span></div>
+            <div style="text-align:center;padding:1.125rem 0 0.25rem">
+              <img src="assets/bread-logo.svg" alt="" style="width:3.25rem;display:block;margin:0 auto">
+              <div style="font-family:var(--display);font-weight:800;font-size:var(--t-heading);margin-top:0.625rem">Bread</div>
+              <div style="font-family:var(--num);font-feature-settings:var(--num-feat);font-size:var(--t-label);color:var(--ink-2);margin-top:0.1875rem">version: 0.15.7</div>
+            </div>
+            <div class="setgroup" style="margin-top:1.125rem">
+              <div class="setrow"><span class="svgic" style="--ic:url(assets/icons/globe.svg);" aria-hidden="true"></span>Website<span class="ch">&#8599;</span></div>
+              <div class="setrow"><span class="svgic" style="--ic:url(assets/icons/globe.svg);" aria-hidden="true"></span>X (Twitter)<span class="ch">&#8599;</span></div>
+            </div>
+            <div class="setgroup">
+              <div class="setrow"><span class="svgic" style="--ic:url(assets/icons/lock.svg);" aria-hidden="true"></span>Privacy Policy<span class="ch">&#8599;</span></div>
+              <div class="setrow"><span class="svgic" style="--ic:url(assets/icons/contacts-book.svg);" aria-hidden="true"></span>Terms of Use<span class="ch">&#8599;</span></div>
+            </div>
+            <div class="notice" style="background:var(--surface-2);color:var(--ink-2)"><span>&#8599;</span><span>These four open in your browser, outside the wallet.</span></div>
+          </div>
+        </div></div></div>
+        <div class="scrnote"><b>The component exists and nothing renders it.</b> <code>app/templates/About.tsx</code> has zero non-test importers &mdash; no route, no entry in <code>TAB_GROUPS</code> &mdash; so <code>versionLabel</code> (<code>en.json:9</code>) reaches no user and <code>Settings.tsx:415</code> prints a hard-coded English <code>Version {pkg.version}</code> at the foot of the settings list instead, untranslated in every locale. The shipped About also duplicates two rows the settings list already has: <code>Settings.tsx</code>&rsquo;s About group holds Privacy Policy and Terms of Service as <code>linksOutsideOfWallet</code> entries, while <code>About.tsx:30&ndash;31</code> lists the same two URLs under the key <code>termsOfUse</code>, so the identical destination has two different labels depending on which surface renders it. Routing About collapses that: the four external links live in one place, the version number gets its translated key back, and the settings root loses its stray untranslated line. <b>The outward arrow is per-row, not decorative</b> &mdash; leaving a self-custody wallet for a browser is a context change worth marking on every row that does it.</div></div>
+<div><div class="scrcap"><i></i>Account &middot; rename <span class="tag merge">gap</span></div>
+        <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
+          <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>
+          <div class="mpad" style="flex:1;opacity:.35"><div class="masset-h">Assets</div></div>
+          <div class="shscrim"></div>
+          <div class="msheet">
+            <div class="mshandle"></div>
+            <div class="mshead"><button class="shback" aria-label="Back">&lsaquo;</button>Edit Account Name</div>
+            <div class="drow filled editing" style="margin-bottom:0.5rem"><span class="k">Name</span><span class="v">Savings</span></div>
+            <div style="display:flex;justify-content:space-between;gap:0.75rem;font-size:var(--t-caption);color:var(--ink-2);line-height:1.4"><span>Up to 16 characters. Cannot start with a space or a hyphen.</span><span style="font-family:var(--num);font-feature-settings:var(--num-feat);flex:none">7/16</span></div>
+            <div class="drow filled" style="margin-top:0.75rem"><span class="k">Address</span><span class="v mono">mtst1ap8&hellip;r4fp</span><button class="acopy" aria-label="Copy address"><span class="svgic" style="--ic:url(assets/icons/copy.svg)" aria-hidden="true"></span></button></div>
+            <div class="zone"><button class="btn btn-primary">Save</button></div>
+          </div>
+        </div></div></div>
+        <div class="scrnote"><b>Wired end to end, with no UI on top of it.</b> <code>editAccountName</code> runs the whole stack &mdash; <code>store/index.ts:207</code> (optimistic, with rollback) &rarr; <code>EditAccountRequest</code> &rarr; <code>back/actions.ts:269&ndash;279</code> &rarr; <code>vault.ts:846</code> &mdash; and <code>front/client.ts:143</code> exposes it on <code>useMidenContext</code>. Nothing calls it. The string <code>editAccountName</code> = &ldquo;Edit Account Name&rdquo; sits in <code>en.json:68</code> rendered by no component, and <code>AccountsDrawer.tsx</code> has no rename affordance at all. <b>The constraint has to be on screen because the failure is server-side and in English.</b> <code>ACCOUNT_NAME_PATTERN</code> (<code>app/defaults.tsx:21</code>, <code>/^[^\s-].{0,15}$/</code>) is enforced in the backend action, which throws a hard-coded <code>&#39;Invalid name. Up to 16 characters; cannot start with whitespace or hyphen.&#39;</code> &mdash; not a translated key. Stating the rule and counting characters in front of the user is what stops that untranslated throw from ever surfacing. Rename lives on the per-account sheet, not the accounts list, for the reason already settled there: the list answers &ldquo;which account&rdquo;.</div></div>
+<div><div class="scrcap"><i></i>Account &middot; delete <span class="tag retire">no-op backend</span></div>
+        <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
+          <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>
+          <div class="mpad" style="flex:1;opacity:.35"><div class="masset-h">Assets</div></div>
+          <div class="shscrim"></div>
+          <div class="msheet">
+            <div class="mshandle"></div>
+            <div class="mshead">Remove &ldquo;Savings&rdquo;</div>
+            <div class="dmeta">
+              <div class="drow"><span class="k">Address</span><span class="v addr2">mtst1ap8&hellip;r4fp</span></div>
+              <div class="drow"><span class="k">Balance</span><span class="v num">318.90 MIDEN<span class="vsub">Stays on Miden, not deleted</span></span></div>
+            </div>
+            <div class="notice" style="margin-top:0.875rem"><span>&#9940;</span><span><b>Back up this account first</b><br>Removing it deletes its keys from this device. Without its private key you cannot bring it back, and your recovery phrase alone will not restore an imported account.</span></div>
+            <div class="zone"><button class="btn btn-primary">Remove account</button><div class="gh">Cancel</div></div>
+          </div>
+        </div></div></div>
+        <div class="scrnote"><b>Do not build this screen against the current backend.</b> <code>removeAccount</code> is an <em>empty function body</em> at <code>back/actions.ts:267</code>, and <code>front/client.ts:331</code> is an empty <code>useCallback</code> &mdash; a delete UI wired to either would close the sheet, resolve successfully, and delete nothing, which is the most dangerous class of bug a wallet can ship: the user believes the keys are off the device and they are not. The source comment above <code>:267</code> says so and names the unfinished work: for Guardian accounts a real removal must also release the hardware-backed hot key via <code>secureHotKey.deleteHotKey</code> and clear the cold-key blob (<code>accColdSecretKeyStrgKey</code>), or the Secure Enclave entry and the cold key outlive the deleted account. <b>The balance row is drawn because the fear is wrong.</b> Users read &ldquo;remove account&rdquo; as &ldquo;destroy funds&rdquo;; the funds are on Miden and the risk is purely key custody, so the row separates the two and the warning names the one case &mdash; an imported account &mdash; where the recovery phrase does <em>not</em> save you. Ship the copy, gate the button, and leave it disabled until <code>removeAccount</code> is real.</div></div>
 <div><div class="scrcap"><i></i>dApp browser</div>
         <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
           <div class="stat"><span>9:41</span><span class="r">✦ ▪ ▪</span></div>
