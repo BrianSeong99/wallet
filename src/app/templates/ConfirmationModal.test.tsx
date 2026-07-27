@@ -10,8 +10,8 @@ jest.mock('react-i18next', () => ({
   useTranslation: () => ({ t: (key: string) => key })
 }));
 
-// The real `ModalWithTitle` pulls in `CustomModal` → `react-modal` +
-// `useAppEnv` (constate provider) + native mobile hooks. ConfirmationModal only
+// The real `ModalWithTitle` pulls in `CustomModal` → the vaul overlay
+// primitive + `useAppEnv` (constate provider) + native mobile hooks. ConfirmationModal only
 // relies on it to render its children and to receive the forwarded
 // `onRequestClose` + `...restProps`, so a lightweight stand-in keeps the test
 // hermetic while letting us assert exactly which props were forwarded.

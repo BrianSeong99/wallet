@@ -12,7 +12,7 @@ jest.mock('react-i18next', () => ({
   useTranslation: () => ({ t: (key: string) => key })
 }));
 
-// `ModalWithTitle` wraps `CustomModal` (react-modal portal + `useAppEnv`).
+// `ModalWithTitle` wraps `CustomModal` (vaul overlay portal + `useAppEnv`).
 // None of that plumbing matters here — render the children only while `isOpen`
 // so the closed (`address === null`) branch renders nothing, and surface
 // `title` / `onRequestClose` so both are assertable / drivable.

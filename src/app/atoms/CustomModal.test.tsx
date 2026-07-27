@@ -1,13 +1,12 @@
 import React from 'react';
 
-import { render, screen, act } from '@testing-library/react';
+import { render, screen, act, fireEvent } from '@testing-library/react';
 
 import CustomModal from './CustomModal';
 
-// `lib/platform` drives two branches in CustomModal:
-//   - `isExtension()` selects the `closeTimeoutMS` (0 for extension, 200 else)
-//   - `isMobile()` (via `useHideDappBubblesWhileOpen`) toggles the body drawer
-// Mock it as jest.fn()s so each test can steer the branch it exercises.
+// `lib/platform` gates the body-drawer flag CustomModal sets: `isMobile()`
+// (via `useHideDappBubblesWhileOpen`) toggles it. `isExtension()` is mocked
+// too so each platform branch can be steered independently.
 jest.mock('lib/platform', () => ({
   isExtension: jest.fn(() => false),
   isMobile: jest.fn(() => false)
@@ -28,9 +27,9 @@ function mountRoot(): HTMLElement {
 }
 
 /**
- * react-modal fires `onAfterOpen` inside a `requestAnimationFrame` and defers
- * timed closes with a `setTimeout`. Advancing the fake clock (wrapped in `act`)
- * flushes both so the modal's lifecycle callbacks actually run.
+ * The overlay primitive animates in and out, so open/close side effects can
+ * land a frame or a timer late. Advancing the fake clock (wrapped in `act`)
+ * flushes anything pending so the modal's lifecycle effects have run.
  */
 function flushModalTimers(ms = 300): void {
   act(() => {
@@ -102,7 +101,7 @@ describe('CustomModal', () => {
     );
 
     const content = document.getElementById('custom-modal') as HTMLElement;
-    expect(content).toHaveClass('bg-surface-solid', 'rounded', 'z-30', 'shadow-2xl', 'my-custom-class');
+    expect(content).toHaveClass('bg-surface-solid', 'rounded-t-[20px]', 'z-30', 'shadow-2xl', 'my-custom-class');
   });
 
   it('merges a custom overlayClassName onto the overlay', () => {
@@ -116,10 +115,11 @@ describe('CustomModal', () => {
 
     const overlay = document.querySelector('.my-overlay-class') as HTMLElement;
     expect(overlay).not.toBeNull();
-    expect(overlay).toHaveClass('fixed', 'inset-0', 'z-30', 'flex', 'items-center', 'justify-center', 'p-6');
+    // Scrim spec: 40% black light / 55% dark, with a small (4px) never-animated blur.
+    expect(overlay).toHaveClass('fixed', 'inset-0', 'z-30', 'bg-black/40', 'backdrop-blur-[4px]', 'dark:bg-black/55');
   });
 
-  it('flags the body via onAfterOpen when the modal opens', () => {
+  it('flags the body when the modal opens', () => {
     mountRoot();
 
     render(
@@ -134,7 +134,7 @@ describe('CustomModal', () => {
     expect(document.body).toHaveClass('overscroll-y-none');
   });
 
-  it('clears the body flag via onAfterClose when the modal closes (extension: closeTimeoutMS 0)', () => {
+  it('clears the body flag when the modal closes (extension build)', () => {
     platform.isExtension.mockReturnValue(true);
     mountRoot();
 
@@ -155,11 +155,10 @@ describe('CustomModal', () => {
       );
     });
 
-    // closeTimeoutMS is 0 for the extension, so the close is not deferred.
     expect(document.body).not.toHaveClass('overscroll-y-none');
   });
 
-  it('closes with the non-extension timeout (closeTimeoutMS 200) and still clears the flag', () => {
+  it('clears the body flag when the modal closes (non-extension build)', () => {
     platform.isExtension.mockReturnValue(false);
     mountRoot();
 
@@ -180,7 +179,7 @@ describe('CustomModal', () => {
       );
     });
 
-    // The 200ms close animation defers onAfterClose until the timer elapses.
+    // Let the exit animation settle before asserting the flag is gone.
     flushModalTimers();
 
     expect(document.body).not.toHaveClass('overscroll-y-none');
@@ -199,7 +198,7 @@ describe('CustomModal', () => {
     expect(document.body.hasAttribute('data-drawer-open')).toBe(true);
   });
 
-  it('forwards arbitrary react-modal props (e.g. contentLabel)', () => {
+  it('exposes contentLabel as the surface accessible name', () => {
     mountRoot();
 
     render(
@@ -210,5 +209,24 @@ describe('CustomModal', () => {
 
     const content = document.getElementById('custom-modal') as HTMLElement;
     expect(content.getAttribute('aria-label')).toBe('my-dialog');
+  });
+
+  it('requests close on Escape', () => {
+    mountRoot();
+    const onRequestClose = jest.fn();
+
+    render(
+      <CustomModal isOpen onRequestClose={onRequestClose}>
+        <div>body</div>
+      </CustomModal>
+    );
+
+    flushModalTimers();
+
+    act(() => {
+      fireEvent.keyDown(document, { key: 'Escape', code: 'Escape' });
+    });
+
+    expect(onRequestClose).toHaveBeenCalled();
   });
 });
