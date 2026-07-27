@@ -173,7 +173,7 @@
   --accent:#E77537; --accent-hover:#F08B57; --accent-ink:#E77537; --accent-wash:#33210F;
   --on-accent:#FFFFFF;
   --on-accent-sm:#191919;
-  --pos:#90BA89; --pos-wash:#26301F; --pend:#E85D2F; --neg:#F5736B; --warn:#E8B33F;
+  --pos:#90BA89; --pos-wash:#26301F; --pend:#EE6B38; --neg:#F5736B; --warn:#E8B33F;
   --warn-wash:#33290F; --neg-wash:#3A1F1C;
   --act-send:#91ACC1; --act-receive:#99AC94; --act-swap:#BEACD2; --act-earn:#777487;
   --tx-received:#A8BBA3; --tx-sent:#A3BCCF; --tx-swap:#C9BAD9; --tx-earn:#BDB9CC; --tx-faucet:#CDB0DE;
@@ -693,6 +693,13 @@ table.map td code{font-size:var(--t-label)}
   margin-bottom:-0.6875rem;margin-right:-0.625rem;border:0;background:none;padding:0;display:flex;
   align-items:center;justify-content:center;color:var(--ink-2);cursor:pointer}
 .shgear .svgic{width:1.1875rem;height:1.1875rem}
+/* Page header (title + optional trailing gear). Was inline-styled on seven screens with
+   padding-right:0, which left .shgear's -0.625rem pull nothing to cancel and overflowed the
+   header by exactly 10pt on every one. The pull belongs to the header, not the button: it is
+   the header that wants to sit flush with .mpad's padding. */
+.pghead{display:flex;align-items:center;padding:0.375rem 0 0.75rem;margin-right:-0.625rem}
+.pghead > .ttl{font-family:var(--display);font-weight:800;font-size:var(--t-title)}
+.pghead .shgear{margin-right:0}
 /* Leading icon on a button: gap from the label, sized to the label's cap height. */
 .btn.withic{display:flex;align-items:center;justify-content:center;gap:0.5rem}
 .btn.withic .svgic{width:1.0625rem;height:1.0625rem;flex:none}
@@ -4415,8 +4422,8 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
         <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
           <div class="stat"><span>9:41</span><span class="r">✦ ▪ ▪</span></div>
           <div class="mpad" style="flex:1;display:flex;flex-direction:column">
-            <div style="display:flex;align-items:center;padding:0.375rem 0 0.75rem"><span style="font-family:var(--display);font-weight:800;font-size:var(--t-title)">Activity</span><button class="shgear" aria-label="Settings"><span class="svgic" style="--ic:url(assets/icons/settings-new.svg)" aria-hidden="true"></span></button></div>
-            <div class="filters"><span class="fc on">All</span><span class="fc">Sent</span><span class="fc">Received</span><span class="fc" data-earn-surface>Earn</span></div>
+            <div class="pghead"><span class="ttl">Activity</span><button class="shgear" aria-label="Settings"><span class="svgic" style="--ic:url(assets/icons/settings-new.svg)" aria-hidden="true"></span></button></div>
+            <div class="filters"><span class="fc on">All</span><span class="fc">Sent</span><span class="fc">Received</span><span class="fc">Faucet</span></div>
             <div style="font-size:var(--t-caption);color:var(--ink-2);font-weight:700;margin:0.375rem 0 0.125rem">TODAY</div>
             <div class="mrow"><div class="ic sq"><span class="svgic" style="--ic:url(assets/icons/receive-new.svg);" aria-hidden="true"></span></div><div><div class="nm">Received</div><div class="ad addr">mtst1kq2…88xz</div></div><div class="rt"><div class="f" style="color:var(--pos)">+40.00</div><div class="b">2m ago</div></div></div>
             <div class="mrow"><div class="ic sq"><span class="svgic" style="--ic:url(assets/icons/send-new.svg);" aria-hidden="true"></span></div><div><div class="nm">Sent</div><div class="ad addr">mtst1ap8…r4fp</div></div><div class="rt"><div class="f">−12.50</div><div class="b">1h ago</div></div></div>
@@ -4439,7 +4446,6 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
                 <div class="drow"><span class="k">Status</span><span class="v" style="color:var(--pos)">✓ Confirmed</span></div>
                 <div class="drow"><span class="k">From</span><span class="v addr2">mtst1kq2…88xz</span></div>
                 <div class="drow"><span class="k">Date</span><span class="v">24 Jul 2026, 09:41</span></div>
-                <div class="drow"><span class="k">Network fee</span><span class="v num">0.0021</span></div>
                 <div class="dtot"><span class="k">Transaction</span><span class="v addr2" style="font-size:var(--t-label)">0ab3…77df</span></div>
               </div>
             </div>
@@ -4447,6 +4453,175 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
           </div>
         </div></div></div>
         <div class="scrnote">Same review card, reused as a receipt — one component, two moments in the flow.</div></div>
+<div><div class="scrcap"><i></i>Activity &middot; empty <span class="tag merge">gap</span></div>
+        <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
+          <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>
+          <div class="mpad" style="flex:1;display:flex;flex-direction:column">
+            <div class="pghead"><span class="ttl">Activity</span><button class="shgear" aria-label="Settings"><span class="svgic" style="--ic:url(assets/icons/settings-new.svg)" aria-hidden="true"></span></button></div>
+            <div class="emptyb" style="margin-top:auto;margin-bottom:auto">
+              <div class="et">No transactions yet</div>
+              <div class="eb">You don&rsquo;t currently have any transactions. Sending, receiving and claiming all appear here.</div>
+              <button class="btn btn-secondary">Show my address</button>
+            </div>
+          </div>
+          <div class="mnav" style="--i:2"><button class="t"><span class="svgic" style="--ic:url(assets/icons/home-new.svg)" aria-hidden="true"></span><span>Home</span></button><button class="t"><span class="svgic" style="--ic:url(assets/icons/explore.svg)" aria-hidden="true"></span><span>Explore</span></button><button class="t on"><span class="svgic" style="--ic:url(assets/icons/activity.svg)" aria-hidden="true"></span><span>Activity</span></button></div>
+        </div></div></div>
+        <div class="scrnote">Shipped copy is kept verbatim &mdash; <code>noOperationsFound</code> is <b>&ldquo;You don&rsquo;t currently have any transactions.&rdquo;</b> &mdash; but it is all the shipped screen draws: <code>HistoryView.tsx:158&ndash;165</code> centres one grey sentence under a generic up&#8209;down glyph, with <b>no action</b>. A wallet with no history has exactly one next move, and it is not on this screen. The filter chips and the search field are dropped here: <code>AllHistory.tsx:66&ndash;90</code> mounts both <em>outside</em> <code>History</code>, so they stay on screen over an empty list &mdash; four filters and a search box for nothing. They return the moment there is a row to filter.</div></div>
+<div><div class="scrcap"><i></i>Activity &middot; loading <span class="tag merge">gap</span></div>
+        <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
+          <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>
+          <div class="mpad" style="flex:1;display:flex;flex-direction:column">
+            <div class="pghead"><span class="ttl">Activity</span><button class="shgear" aria-label="Settings"><span class="svgic" style="--ic:url(assets/icons/settings-new.svg)" aria-hidden="true"></span></button></div>
+            <div class="filters"><span class="fc on">All</span><span class="fc">Sent</span><span class="fc">Received</span><span class="fc">Faucet</span></div>
+            <div class="searchf" style="width:auto"><span class="svgic" style="--ic:url(assets/icons/search.svg)" aria-hidden="true"></span>Search by name or symbol</div>
+            <div class="skel" style="width:38%;margin-top:0.5rem"></div>
+            <div class="mrow"><div class="ic anon"></div><div style="flex:1"><div class="skel2" style="width:34%"></div><div class="skel2" style="width:52%;margin-top:0.375rem"></div></div></div>
+            <div class="mrow"><div class="ic anon"></div><div style="flex:1"><div class="skel2" style="width:28%"></div><div class="skel2" style="width:46%;margin-top:0.375rem"></div></div></div>
+            <div class="mrow"><div class="ic anon"></div><div style="flex:1"><div class="skel2" style="width:36%"></div><div class="skel2" style="width:40%;margin-top:0.375rem"></div></div></div>
+          </div>
+          <div class="mnav" style="--i:2"><button class="t"><span class="svgic" style="--ic:url(assets/icons/home-new.svg)" aria-hidden="true"></span><span>Home</span></button><button class="t"><span class="svgic" style="--ic:url(assets/icons/explore.svg)" aria-hidden="true"></span><span>Explore</span></button><button class="t on"><span class="svgic" style="--ic:url(assets/icons/activity.svg)" aria-hidden="true"></span><span>Activity</span></button></div>
+        </div></div></div>
+        <div class="scrnote">The shipped loading state is <code>&lt;ActivitySpinner /&gt;</code> (<code>HistoryView.tsx:157</code>) &mdash; a single 21px spinner in a <code>pt-8</code> box, drawn only while <code>entries.length === 0 &amp;&amp; initialLoading</code>. It tells the user nothing about the shape of what is arriving, and it is reachable exactly once. Both history SWRs set <code>keepPreviousData: true</code> (<code>History.tsx:42</code>, <code>:53</code>), so every refetch after the first &mdash; the 10s poll, an account switch, a token filter change &mdash; keeps the old rows on screen with <b>no indication that they are stale</b>. Skeletons in row geometry say &ldquo;a list is coming, this wide&rdquo;; the search field and chips stay live because they are already usable.</div></div>
+<div><div class="scrcap"><i></i>Activity &middot; Sent, no matches <span class="tag retire">bug</span></div>
+        <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
+          <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>
+          <div class="mpad" style="flex:1;display:flex;flex-direction:column">
+            <div class="pghead"><span class="ttl">Activity</span><button class="shgear" aria-label="Settings"><span class="svgic" style="--ic:url(assets/icons/settings-new.svg)" aria-hidden="true"></span></button></div>
+            <div class="filters"><span class="fc">All</span><span class="fc on">Sent</span><span class="fc">Received</span><span class="fc">Faucet</span></div>
+            <div class="searchf" style="width:auto"><span class="svgic" style="--ic:url(assets/icons/search.svg)" aria-hidden="true"></span>Search by name or symbol</div>
+            <div class="emptyb" style="margin-top:1rem">
+              <div class="et">Nothing sent yet</div>
+              <div class="eb">You have 43 transactions. None of them is a send.</div>
+              <button class="btn btn-secondary">Show all</button>
+            </div>
+          </div>
+          <div class="mnav" style="--i:2"><button class="t"><span class="svgic" style="--ic:url(assets/icons/home-new.svg)" aria-hidden="true"></span><span>Home</span></button><button class="t"><span class="svgic" style="--ic:url(assets/icons/explore.svg)" aria-hidden="true"></span><span>Explore</span></button><button class="t on"><span class="svgic" style="--ic:url(assets/icons/activity.svg)" aria-hidden="true"></span><span>Activity</span></button></div>
+        </div></div></div>
+        <div class="scrnote"><b>The shipped code does not distinguish this from empty, and that is the defect.</b> Filtering is client&#8209;side and happens after the fetch (<code>History.tsx:104&ndash;111</code>), then <code>HistoryView.tsx:150</code> collapses everything to <code>noEntries = entries.length === 0</code> &mdash; so filtering to <b>Sent</b> with no sends renders <b>&ldquo;You don&rsquo;t currently have any transactions.&rdquo;</b> over a wallet holding 43 of them. Search behaves identically. The fix costs a count the component already has: name the filter, state the real total, and put the escape hatch in the block rather than asking the user to work out that a chip they cannot see is on. Chip set is <code>all / sent / received / faucet</code> per <code>AllHistory.tsx:29&ndash;35</code>; the shipped inactive chip is <code>border border-rule-strong</code> (<code>AllHistory.tsx:79</code>), an outlined control, so it is drawn filled here.</div></div>
+<div><div class="scrcap"><i></i>Activity &middot; failed transactions <span class="tag merge">gap</span></div>
+        <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
+          <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>
+          <div class="mpad" style="flex:1;display:flex;flex-direction:column">
+            <div class="pghead"><span class="ttl">Activity</span><button class="shgear" aria-label="Settings"><span class="svgic" style="--ic:url(assets/icons/settings-new.svg)" aria-hidden="true"></span></button></div>
+            <div class="filters"><span class="fc on">All</span><span class="fc">Sent</span><span class="fc">Received</span><span class="fc">Faucet</span></div>
+            <div style="font-size:var(--t-caption);color:var(--ink-2);font-weight:700;margin:0.375rem 0 0.125rem">TODAY</div>
+            <div class="mrow"><div class="ic sq"><span class="svgic" style="--ic:url(assets/icons/send-new.svg);" aria-hidden="true"></span></div><div><div class="nm">Sent</div><div class="ad">Expired before it was submitted</div></div><div class="rt"><div class="f" style="color:var(--neg)">Failed</div><div class="b">12.50 MIDEN not sent</div></div></div>
+            <div class="mrow"><div class="ic sq"><span class="svgic" style="--ic:url(assets/icons/convert.svg);" aria-hidden="true"></span></div><div><div class="nm">Swap</div><div class="ad">Took too long, cancelled</div></div><div class="rt"><div class="f" style="color:var(--neg)">Failed</div><div class="b">40.00 USDC not swapped</div></div></div>
+            <div style="font-size:var(--t-caption);color:var(--ink-2);font-weight:700;margin:0.75rem 0 0.125rem">YESTERDAY</div>
+            <div class="mrow"><div class="ic sq"><span class="svgic" style="--ic:url(assets/icons/receive-new.svg);" aria-hidden="true"></span></div><div><div class="nm">Claim</div><div class="ad">Note already spent</div></div><div class="rt"><div class="f" style="color:var(--neg)">Failed</div><div class="b">Nothing claimed</div></div></div>
+          </div>
+          <div class="mnav" style="--i:2"><button class="t"><span class="svgic" style="--ic:url(assets/icons/home-new.svg)" aria-hidden="true"></span><span>Home</span></button><button class="t"><span class="svgic" style="--ic:url(assets/icons/explore.svg)" aria-hidden="true"></span><span>Explore</span></button><button class="t on"><span class="svgic" style="--ic:url(assets/icons/activity.svg)" aria-hidden="true"></span><span>Activity</span></button></div>
+        </div></div></div>
+        <div class="scrnote"><b>GAP &mdash; the app cannot draw this screen at all.</b> <code>History.tsx:140</code> calls <code>getCompletedTransactions(address, offset, limit, false, tokenId)</code>; the fourth argument is <code>includeFailed</code>, defaulted <code>false</code> at <code>get.ts:54</code>, and that one call site is the <b>only non&#8209;test caller in the repo</b>. Without it the query returns <code>status === Completed</code> only (<code>get.ts:57</code>), and <code>getUncompletedTransactions</code> returns only Queued and GeneratingTransaction (<code>get.ts:14&ndash;17</code>) &mdash; so a Failed row exists in Dexie and is reachable from no list in the product. Everything downstream is dead code: the failure branches at <code>History.tsx:142&ndash;143</code> and the icon, tone and label branches at <code>HistoryView.tsx:58</code>, <code>:71&ndash;73</code>, <code>:119&ndash;121</code> can never run. A send that failed silently vanishes; the user last saw money leaving and now sees no record of it either way. Two design corrections over the dead branches. The <b>type glyph is kept</b> &mdash; <code>HistoryView.tsx:71&ndash;73</code> swaps it for a red cross, discarding the one fact the row still knows, which is what you were trying to do. And the <b>reason is on the row</b>: <code>cancelTransaction</code> already writes it to <code>dbTx.error</code> (<code>cancel.ts:35</code>) from three distinct producers &mdash; queue TTL expiry at <code>cancel.ts:69</code>, the <code>MAX_WAIT_BEFORE_CANCEL</code> sweep at <code>:58</code>, and the thrown error itself &mdash; and nothing reads it back.</div></div>
+<div><div class="scrcap"><i></i>Activity &middot; in progress <span class="tag merge">gap</span></div>
+        <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
+          <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>
+          <div class="mpad" style="flex:1;display:flex;flex-direction:column">
+            <div class="pghead"><span class="ttl">Activity</span><button class="shgear" aria-label="Settings"><span class="svgic" style="--ic:url(assets/icons/settings-new.svg)" aria-hidden="true"></span></button></div>
+            <div class="filters"><span class="fc on">All</span><span class="fc">Sent</span><span class="fc">Received</span><span class="fc">Faucet</span></div>
+            <div class="mstk-lbl2">IN PROGRESS</div>
+            <div class="mprompt" data-status="pend"><div class="ptx"><div class="pt">Sending 12.50 MIDEN</div><div class="pb">Proof generated &middot; submitting &middot; 8s</div></div><button class="pcta">Cancel</button></div>
+            <div class="mprompt" data-status="pend" style="margin-top:0.5rem"><div class="ptx"><div class="pt">Claiming 40.00 USDC</div><div class="pb">Queued behind 1 transaction</div></div><button class="pcta">Cancel</button></div>
+            <div style="font-size:var(--t-caption);color:var(--ink-2);font-weight:700;margin:0.75rem 0 0.125rem">TODAY</div>
+            <div class="mrow"><div class="ic sq"><span class="svgic" style="--ic:url(assets/icons/receive-new.svg);" aria-hidden="true"></span></div><div><div class="nm">Received</div><div class="ad addr">mtst1kq2&hellip;88xz</div></div><div class="rt"><div class="f" style="color:var(--pos)">+40.00</div><div class="b">Confirmed</div></div></div>
+            <div class="mrow"><div class="ic sq"><span class="svgic" style="--ic:url(assets/icons/send-new.svg);" aria-hidden="true"></span></div><div><div class="nm">Sent</div><div class="ad addr">mtst1ap8&hellip;r4fp</div></div><div class="rt"><div class="f">&minus;12.50</div><div class="b">Confirmed</div></div></div>
+          </div>
+          <div class="mnav" style="--i:2"><button class="t"><span class="svgic" style="--ic:url(assets/icons/home-new.svg)" aria-hidden="true"></span><span>Home</span></button><button class="t"><span class="svgic" style="--ic:url(assets/icons/explore.svg)" aria-hidden="true"></span><span>Explore</span></button><button class="t on"><span class="svgic" style="--ic:url(assets/icons/activity.svg)" aria-hidden="true"></span><span>Activity</span></button></div>
+        </div></div></div>
+        <div class="scrnote"><b>Cancel is built, wired, and unreachable.</b> <code>History.tsx:59&ndash;63</code> attaches a <code>cancel</code> closure to every pending entry, calling <code>cancelTransactionById</code>. The only renderer that draws it is <code>HistoryItem.tsx:87&ndash;96</code>, and <code>HistoryView.tsx:177</code> reaches <code>HistoryItem</code> only when <code>!fullHistory</code> &mdash; while <b>both</b> call sites pass <code>fullHistory={true}</code> (<code>AllHistory.tsx:97</code>, <code>TokenDetail.tsx:117</code>). The full page renders <code>ActivityRow</code>, which has no cancel prop. So a transaction can be stuck for up to <code>MAX_WAIT_BEFORE_CANCEL</code> &mdash; 2 minutes on mobile, <b>30 minutes on desktop</b> (<code>cancel.ts:13</code>) &mdash; with no way to stop it. In&#8209;flight work is lifted out of the date groups because it is not history yet and because the two are sorted in <b>opposite directions</b>: <code>History.tsx:72</code> concatenates pending oldest&#8209;first (<code>get.ts:21</code>) ahead of a list <code>mergeAndSort</code> orders newest&#8209;first (<code>History.tsx:215</code>), so one list reverses direction partway down. Each row states its stage, because &ldquo;Pending&rdquo; alone does not distinguish <em>queued behind something else</em> from <em>submitted and waiting on the chain</em>, and only one of those is worth cancelling.</div></div>
+<div><div class="scrcap"><i></i>Activity &middot; end of list <span class="tag retire">bug</span></div>
+        <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
+          <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>
+          <div class="mpad" style="flex:1;display:flex;flex-direction:column">
+            <div class="pghead"><span class="ttl">Activity</span><button class="shgear" aria-label="Settings"><span class="svgic" style="--ic:url(assets/icons/settings-new.svg)" aria-hidden="true"></span></button></div>
+            <div style="font-size:var(--t-caption);color:var(--ink-2);font-weight:700;margin:0.375rem 0 0.125rem">12 MAY 2026</div>
+            <div class="mrow"><div class="ic sq"><span class="svgic" style="--ic:url(assets/icons/send-new.svg);" aria-hidden="true"></span></div><div><div class="nm">Sent</div><div class="ad addr">mtst1zz9&hellip;41mn</div></div><div class="rt"><div class="f">&minus;5.00</div><div class="b">Confirmed</div></div></div>
+            <div class="mrow"><div class="ic sq"><span class="svgic" style="--ic:url(assets/icons/receive-new.svg);" aria-hidden="true"></span></div><div><div class="nm">Received</div><div class="ad addr">mtst1kq2&hellip;88xz</div></div><div class="rt"><div class="f" style="color:var(--pos)">+100.00</div><div class="b">Confirmed</div></div></div>
+            <div class="mrow"><div class="ic anon"></div><div style="flex:1"><div class="skel2" style="width:32%"></div><div class="skel2" style="width:48%;margin-top:0.375rem"></div></div></div>
+            <div style="text-align:center;font-size:var(--t-caption);color:var(--ink-3);padding:0.75rem 0 0.25rem">Loading older transactions&hellip;</div>
+          </div>
+          <div class="mnav" style="--i:2"><button class="t"><span class="svgic" style="--ic:url(assets/icons/home-new.svg)" aria-hidden="true"></span><span>Home</span></button><button class="t"><span class="svgic" style="--ic:url(assets/icons/explore.svg)" aria-hidden="true"></span><span>Explore</span></button><button class="t on"><span class="svgic" style="--ic:url(assets/icons/activity.svg)" aria-hidden="true"></span><span>Activity</span></button></div>
+        </div></div></div>
+        <div class="scrnote"><b>Pagination is broken three ways and none of them is visible.</b> <code>get.ts:68</code> ends with <code>transactions.slice(offset, limit)</code> &mdash; <code>Array.slice</code> takes <code>(start, end)</code>, not <code>(offset, count)</code>. <code>History.tsx:82&ndash;83</code> passes <code>offset = HISTORY_PAGE_SIZE * page</code> and <code>limit = HISTORY_PAGE_SIZE</code>, and <code>HISTORY_PAGE_SIZE</code> is <b>1000</b> (<code>defaults.tsx:5</code>), so page 1 asks for <code>slice(1000, 1000)</code> and gets <code>[]</code> &mdash; every page after the first is empty by construction. Second, <code>get.ts:62</code> sorts <b>ascending</b>, so page 0&rsquo;s <code>slice(0, 1000)</code> is the <em>oldest</em> thousand; an account past 1000 transactions can never page to anything it has not already got. Third, <code>hasMore</code> never becomes <code>false</code>: <code>History.tsx:87</code> tests <code>allRestEntries.length === 0</code>, but <code>allRestEntries</code> is <code>mergeAndSort(restEntries, [])</code>, which is non&#8209;empty as soon as anything has loaded, so the sentinel stays armed and refetches the same rows forever. On top of that <code>HistoryView.tsx:227&ndash;233</code> passes <code>InfiniteScroll</code> no <code>loader</code> prop, so the refetch draws <b>nothing</b>. A pending row plus a stated intent is the minimum; the honest end&#8209;of&#8209;list marker cannot be drawn until <code>hasMore</code> can go false.</div></div>
+<div><div class="scrcap"><i></i>Transaction detail &middot; failed <span class="tag merge">gap</span></div>
+        <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
+          <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>
+          <div class="mpad" style="flex:1;display:flex;flex-direction:column">
+            <div class="sh2"><span class="bk2">&lsaquo;</span><span class="t2">Transaction</span></div>
+            <div class="dcard compact" style="width:auto">
+              <div class="dhero" data-surface="graphite"><div class="tokwell"><img src="assets/icons/miden.svg" alt=""></div>
+                <div class="hamt">12.50 MIDEN</div><div class="hfiat">&asymp; $128.75</div></div>
+              <div class="dmeta">
+                <div class="drow"><span class="k">Status</span><span class="v" style="color:var(--neg)">Failed &middot; not sent</span></div>
+                <div class="drow"><span class="k">Reason</span><span class="v">Expired after being queued too long<span class="vsub">Queued 09:41, gave up 10:11</span></span></div>
+                <div class="drow"><span class="k">To</span><span class="v addr2">mtst1kq2&hellip;88xz</span></div>
+                <div class="drow"><span class="k">Transaction</span><span class="v">Never submitted</span></div>
+              </div>
+            </div>
+            <div class="notice" style="background:var(--pos-wash);color:var(--pos)"><span>&#10003;</span><span>Your 12.50 MIDEN never left the wallet. The balance is unchanged.</span></div>
+            <div class="zone"><button class="btn btn-primary" style="width:100%">Try again</button><div class="gh">Back to activity</div></div>
+          </div>
+        </div></div></div>
+        <div class="scrnote"><b>The reason is persisted and never read.</b> <code>cancelTransaction</code> writes <code>dbTx.error</code> on every failure path (<code>cancel.ts:35</code>) and <code>ITransaction.error</code> is declared at <code>db/types.ts:102</code> &mdash; but <code>HistoryDetails.tsx:124&ndash;141</code> builds its entry without it and <code>IHistoryEntry</code> has no <code>error</code> field at all, so the one sentence explaining what happened to the money is dropped between the database and the screen. The <b>Transaction</b> row is present and says <code>Never submitted</code> rather than being hidden: <code>HistoryDetails.tsx:298</code> gates the hash row on <code>externalTxId</code>, so a tx that expired in the queue silently loses the row, and an absent row is indistinguishable from a row that failed to load. <b>There is no fee row in the shipped receipt and there never was</b> &mdash; <code>HistoryDetails.tsx:293&ndash;328</code> renders Date, Tx ID, From, To and nothing else, and <code>IHistoryEntry.fee</code> (<code>IHistoryEntry.ts:25</code>) is declared but never assigned or rendered anywhere in the repo; the <b>&ldquo;Network fee 0.0021&rdquo;</b> on the existing <i>Transaction detail</i> mock is invented and should come out. Two more defects this screen routes around: <code>StatusPill</code> hard&#8209;codes <code>bg-green-600/20</code> for every status (<code>DetailCard.tsx:38</code>), so a failure renders red text on a <em>green</em> wash, and its label is <code>text-[10px]</code> (<code>:40</code>), under the 11pt floor.</div></div>
+<div><div class="scrcap"><i></i>Transaction detail &middot; pending <span class="tag retire">bug</span></div>
+        <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
+          <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>
+          <div class="mpad" style="flex:1;display:flex;flex-direction:column">
+            <div class="sh2"><span class="bk2">&lsaquo;</span><span class="t2">Transaction</span></div>
+            <div class="dcard compact" style="width:auto">
+              <div class="dhero" data-surface="graphite"><div class="tokwell"><img src="assets/icons/miden.svg" alt=""></div>
+                <div class="hamt">12.50 MIDEN</div><div class="hfiat">&asymp; $128.75</div></div>
+              <div class="dmeta">
+                <div class="drow"><span class="k">Status</span><span class="v" style="color:var(--pend)">In Progress</span></div>
+                <div class="drow"><span class="k">Started</span><span class="v">24 Jul 2026, 09:41<span class="vsub">8 seconds ago</span></span></div>
+                <div class="drow"><span class="k">To</span><span class="v addr2">mtst1kq2&hellip;88xz</span></div>
+              </div>
+            </div>
+            <div class="tsteps">
+              <div class="tstep" data-state="complete"><span class="tsi"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M3 6.4 5 8.6 9 3.8"/></svg></span><span class="tsl">Guardian approved</span><span class="tsm">2s</span></div>
+              <div class="tstep" data-state="complete"><span class="tsi"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M3 6.4 5 8.6 9 3.8"/></svg></span><span class="tsl">Proof generated</span><span class="tsm">4s</span></div>
+              <div class="tstep" data-state="active"><span class="tsi"></span><span class="tsl">Submitting</span></div>
+              <div class="tstep" data-state="pending"><span class="tsi"></span><span class="tsl">Syncing with Guardian</span></div>
+            </div>
+            <div class="zone"><button class="btn btn-secondary" style="width:100%">Cancel transaction</button></div>
+          </div>
+        </div></div></div>
+        <div class="scrnote"><b>Opening a pending transaction today prints the literal string &ldquo;Invalid Date&rdquo;.</b> <code>HistoryView.tsx:214</code> makes every row with a <code>txId</code> tappable, pending rows included (<code>History.tsx:193</code> sets one). <code>HistoryDetails.tsx:127</code> then maps <code>timestamp: tx.completedAt</code>, which is <code>undefined</code> until the transaction finishes, and <code>formatDate</code> returns the hard&#8209;coded, untranslated <code>'Invalid Date'</code> for a non&#8209;number (<code>transactionUtils.ts:78&ndash;79</code>) &mdash; rendered straight into the Date row at <code>HistoryDetails.tsx:295</code>. The field that <em>is</em> populated on a pending row is <code>initiatedAt</code>, so the row is relabelled <b>Started</b> and reads from it. The hash row is correctly absent &mdash; <code>externalTxId</code> is unset before submission &mdash; so the steps carry progress instead, reusing the four <code>TRANSACTION_STEPS</code> and the per&#8209;step timings the send screen already stamps (<code>constants.ts:10&ndash;31</code>). Cancel lives here because this is the only surface a pending transaction can be opened from, and <code>cancelTransactionById</code> is otherwise unreachable.</div></div>
+<div><div class="scrcap"><i></i>Claim &middot; in progress <span class="tag merge">gap</span></div>
+        <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
+          <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>
+          <div class="mpad" style="flex:1;display:flex;flex-direction:column">
+            <div class="sh2"><span class="bk2">&lsaquo;</span><span class="t2">Pending notes</span></div>
+            <div style="text-align:center;margin-top:0.625rem">
+              <div style="width:3.5rem;height:3.5rem;border-radius:50%;background:var(--accent);margin:0 auto;display:flex;align-items:center;justify-content:center">
+                <span class="svgic" style="--ic:url(assets/icons/receive-new.svg);width:1.5rem;height:1.5rem;background-color:var(--on-accent)" aria-hidden="true"></span></div>
+              <div style="font-family:var(--display);font-weight:900;font-size:var(--t-heading);margin-top:0.875rem">Claiming 4 notes</div>
+              <div style="font-size:var(--t-label);color:var(--ink-2);margin-top:0.375rem">2 of 4 done &middot; 52.50 MIDEN</div>
+            </div>
+            <div class="mstk-lbl2" style="margin-top:1rem">NOTES</div>
+            <div class="mrow"><div class="ic sq"><span class="svgic" style="--ic:url(assets/icons/receive-new.svg);" aria-hidden="true"></span></div><div><div class="nm">From mtst1kq2&hellip;88xz</div><div class="ad">MIDEN</div></div><div class="rt"><div class="f">40.00</div><div class="b" style="color:var(--pos)">Claimed</div></div></div>
+            <div class="mrow"><div class="ic sq"><span class="svgic" style="--ic:url(assets/icons/receive-new.svg);" aria-hidden="true"></span></div><div><div class="nm">From mtst1zz9&hellip;41mn</div><div class="ad">MIDEN</div></div><div class="rt"><div class="f">7.50</div><div class="b" style="color:var(--pos)">Claimed</div></div></div>
+            <div class="mrow"><div class="ic sq"><span class="svgic" style="--ic:url(assets/icons/receive-new.svg);" aria-hidden="true"></span></div><div><div class="nm">From mtst1ap8&hellip;r4fp</div><div class="ad">MIDEN</div></div><div class="rt"><div class="f">3.00</div><div class="b" style="color:var(--pend)">Claiming</div></div></div>
+            <div class="mrow"><div class="ic sq"><span class="svgic" style="--ic:url(assets/icons/receive-new.svg);" aria-hidden="true"></span></div><div><div class="nm">From mtst1gg4&hellip;09kd</div><div class="ad">MIDEN</div></div><div class="rt"><div class="f">2.00</div><div class="b" style="color:var(--ink-3)">Queued</div></div></div>
+            <div class="zone"><button class="btn btn-secondary" style="width:100%">Hide</button><div class="gh">Claiming continues if you leave</div></div>
+          </div>
+        </div></div></div>
+        <div class="scrnote"><b>GAP &mdash; the component that was supposed to draw this returns <code>null</code>.</b> <code>Pending.tsx:211</code> calls <code>useWalletStore.getState().openTransactionModal()</code> as the whole of its progress affordance on mobile and desktop, and <code>TransactionProgressModal</code> ends at <code>return null</code> (<code>TransactionProgressModal.tsx:350</code>) &mdash; the flag now only kicks the processing loop. On the extension branch there is not even that: <code>Pending.tsx:207&ndash;209</code> fires <code>requestSWTransactionProcessing()</code> and returns. So <b>Claim All</b> claims four notes with no progress, no per&#8209;note state and no result &mdash; rows just vanish from the list as sync catches up. Everything drawn here is state the page already holds and discards: <code>claimingNoteIds</code>, <code>individualClaimingIds</code> and the per&#8209;note <code>txId</code> map built at <code>Pending.tsx:189&ndash;202</code>. Per&#8209;note rows rather than one bar because <code>claimNotesBatch</code> queues one transaction per note and awaits them in sequence (<code>Pending.tsx:213&ndash;226</code>), so partial progress is the normal case, not an edge. Dismissal is <b>Hide</b>, not Cancel: nothing here is cancellable once queued.</div></div>
+<div><div class="scrcap"><i></i>Claim &middot; partial failure <span class="tag merge">gap</span></div>
+        <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
+          <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>
+          <div class="mpad" style="flex:1;display:flex;flex-direction:column">
+            <div class="sh2"><span class="bk2">&lsaquo;</span><span class="t2">Pending notes</span></div>
+            <div class="rcpt" style="padding-top:0.625rem"><div class="ok2" style="background:var(--warn-wash);color:var(--warn)">!</div>
+              <div style="font-family:var(--display);font-weight:900;font-size:var(--t-heading)">3 succeeded, 1 failed</div>
+              <div style="font-size:var(--t-label);color:var(--ink-2);margin-top:0.375rem">50.50 MIDEN claimed &middot; 2.00 MIDEN still waiting</div></div>
+            <div class="mstk-lbl2" style="margin-top:1.25rem">NOT CLAIMED</div>
+            <div class="mrow"><div class="ic sq"><span class="svgic" style="--ic:url(assets/icons/receive-new.svg);" aria-hidden="true"></span></div><div><div class="nm">From mtst1gg4&hellip;09kd</div><div class="ad">Failed to claim note</div></div><div class="rt"><div class="f">2.00</div><div class="b" style="color:var(--neg)">Not claimed</div></div></div>
+            <div class="notice"><span>&#9888;</span><span>This note is still yours. It stays in Pending and can be claimed again.</span></div>
+            <div class="zone"><button class="btn btn-primary" style="width:100%">Try again</button><div class="gh">Done</div></div>
+          </div>
+        </div></div></div>
+        <div class="scrnote"><b>The summary string exists, is translated, and has no callers.</b> <code>claimAllSummary</code> &mdash; <code>&ldquo;$succeeded$ succeeded, $failed$ failed&rdquo;</code> &mdash; sits at <code>en.json:545</code> and appears <b>nowhere in <code>src/</code></b>. The data to fill it is tracked and then thrown away: <code>Pending.tsx:196</code> and <code>:222</code> accumulate <code>failedNoteIds</code> across the batch, and <code>Pending.tsx:229</code> immediately runs <code>navigate('/', HistoryAction.Replace)</code> on mobile, <b>unmounting the component that owns the set</b> before anything can render it. The user lands on Home with a balance that went up by less than the claim implied and no statement of why. The reassurance is the load&#8209;bearing line: a failed claim is not lost money &mdash; the note was never consumed and re&#8209;enters <code>getConsumableNotes()</code> on the next sync &mdash; and nothing in the shipped flow says so. Per&#8209;note failure text is <code>failedToClaimNote</code> (<b>&ldquo;Failed to claim note&rdquo;</b>), the string <code>PendingTab.tsx:469</code> already sets on the single&#8209;note path but which the batch path never surfaces.</div></div>
 <div><div class="scrcap"><i></i>Pending notes</div>
         <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
           <div class="stat"><span>9:41</span><span class="r">✦ ▪ ▪</span></div>
