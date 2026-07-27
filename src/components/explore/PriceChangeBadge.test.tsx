@@ -16,10 +16,11 @@ import { PriceChangeBadge } from './PriceChangeBadge';
 //   - `useWalletStore(s => s.tokenPrices)` — per-symbol `{ price, change24h }`.
 //
 // We stub all three so the reduce is driven by hand, and swap the `Badge` UI
-// primitive for a pass-through `<span>` so we can assert on the exact className
-// / text the component builds (the real `Badge` runs the class strings through
-// tailwind-merge, which would collapse the conflicting `bg-*` utilities we key
-// our assertions on).
+// primitive for a pass-through `<span>` that echoes `variant` and `className`
+// as attributes, so we can assert on exactly what the component chose without
+// pulling class-variance-authority into the test. Direction now selects a
+// status *variant* on the canonical badge rather than a hardcoded `bg-*`
+// utility, so the colour assertions key on `data-variant`.
 // ---------------------------------------------------------------------------
 const mockUseAllTokensBaseMetadata = jest.fn<Record<string, unknown>, []>();
 const mockUseAllBalances = jest.fn<{ data?: unknown[] }, [string, Record<string, unknown>]>();
@@ -38,8 +39,8 @@ jest.mock('lib/store', () => ({
 }));
 
 jest.mock('lib/ui/badge', () => ({
-  Badge: ({ className, children }: { className?: string; children: React.ReactNode }) => (
-    <span data-testid="badge" className={className}>
+  Badge: ({ variant, className, children }: { variant?: string; className?: string; children: React.ReactNode }) => (
+    <span data-testid="badge" data-variant={variant} className={className}>
       {children}
     </span>
   )
@@ -81,13 +82,12 @@ describe('PriceChangeBadge', () => {
 
     const { badge, percent } = renderBadge();
 
-    // Neutral: empty sign prefix + "$0.00", grey badge, grey percentage text.
+    // Neutral: empty sign prefix + "$0.00", non-status badge, muted percentage.
     expect(badge.textContent).toBe('$0.00');
-    expect(badge.className).toContain('bg-grey-400');
-    expect(badge.className).toContain('!text-grey-800');
+    expect(badge).toHaveAttribute('data-variant', 'default');
     expect(badge.className).toContain('font-medium');
     expect(percent.textContent).toBe('0.00%');
-    expect(percent.className).toContain('text-grey-500');
+    expect(percent.className).toContain('text-ink-3');
   });
 
   it('renders a positive (green) delta with a "+" prefix and computed percentage', () => {
@@ -99,10 +99,9 @@ describe('PriceChangeBadge', () => {
     // portfolioChange = 10 * 0.5 = 5 (> 0), totalValue = 10 * 2 = 20,
     // percentage = 5 / 20 * 100 = 25.
     expect(badge.textContent).toBe('+$5.00');
-    expect(badge.className).toContain('bg-receive-green');
-    expect(badge.className).toContain('!text-white');
+    expect(badge).toHaveAttribute('data-variant', 'pos');
     expect(percent.textContent).toBe('25.00%');
-    expect(percent.className).toContain('text-receive-green');
+    expect(percent.className).toContain('text-pos');
   });
 
   it('renders a negative (red) delta with a "-" prefix and the absolute amount', () => {
@@ -114,10 +113,9 @@ describe('PriceChangeBadge', () => {
     // portfolioChange = 10 * -0.4 = -4 (< 0), totalValue = 10 * 3 = 30,
     // percentage = -4 / 30 * 100 = -13.333... -> "-13.33". Amount uses abs().
     expect(badge.textContent).toBe('-$4.00');
-    expect(badge.className).toContain('bg-red-500');
-    expect(badge.className).toContain('!text-white');
+    expect(badge).toHaveAttribute('data-variant', 'neg');
     expect(percent.textContent).toBe('-13.33%');
-    expect(percent.className).toContain('text-red-500');
+    expect(percent.className).toContain('text-neg');
   });
 
   it('falls back to change24h=0 / price=1 for symbols with missing or partial price data', () => {
@@ -136,9 +134,9 @@ describe('PriceChangeBadge', () => {
     // change contributions: 5*0 + 2*0 = 0 (neutral); totalValue: 5*1 + 2*1 = 7
     // (> 0), so percentage = 0 / 7 * 100 = 0. Neutral styling applies.
     expect(badge.textContent).toBe('$0.00');
-    expect(badge.className).toContain('bg-grey-400');
+    expect(badge).toHaveAttribute('data-variant', 'default');
     expect(percent.textContent).toBe('0.00%');
-    expect(percent.className).toContain('text-grey-500');
+    expect(percent.className).toContain('text-ink-3');
   });
 
   it('keeps percentage at 0 when the total portfolio value is zero (price=0)', () => {
@@ -150,8 +148,8 @@ describe('PriceChangeBadge', () => {
     // portfolioChange = 10 * -0.5 = -5 (< 0, negative badge), but
     // totalValue = 10 * 0 = 0, so the `totalValue > 0` guard yields 0%.
     expect(badge.textContent).toBe('-$5.00');
-    expect(badge.className).toContain('bg-red-500');
+    expect(badge).toHaveAttribute('data-variant', 'neg');
     expect(percent.textContent).toBe('0.00%');
-    expect(percent.className).toContain('text-red-500');
+    expect(percent.className).toContain('text-neg');
   });
 });

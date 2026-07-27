@@ -8,22 +8,41 @@ import useTippy from 'lib/ui/useTippy';
 
 import { OpenInExplorerChipSelectors } from './OpenInExplorerChip.selectors';
 
+// Fill and ink travel together as one semantic variant. The old API exposed
+// them as two independent numeric-shade axes (`bgShade={200} textShade={500}`),
+// which named Tailwind palette steps rather than roles and let a call site
+// build the illegal pairing — muted ink on the muted fill.
+type OpenInExplorerChipVariant = 'default' | 'muted';
+
+// `sm` and `md` are the two Crust radii a chip may take (8 / 12). The previous
+// `'sm' | 'base'` mapped to Tailwind's stock 2px and 4px, neither of which is
+// on the four-step radius scale.
+type OpenInExplorerChipRadius = 'sm' | 'md';
+
 type OpenInExplorerChipProps = {
   baseUrl: string;
   hash: string;
   className?: string;
-  bgShade?: 100 | 200;
-  textShade?: 500 | 600 | 700;
-  rounded?: 'sm' | 'base';
+  variant?: OpenInExplorerChipVariant;
+  radius?: OpenInExplorerChipRadius;
+};
+
+const VARIANT_CLASSNAMES: Record<OpenInExplorerChipVariant, string> = {
+  default: 'bg-surface-2 text-ink hover:bg-surface-3',
+  muted: 'bg-surface-3 text-ink-3 hover:bg-surface-2'
+};
+
+const RADIUS_CLASSNAMES: Record<OpenInExplorerChipRadius, string> = {
+  sm: 'rounded-sm-token',
+  md: 'rounded-md-token'
 };
 
 const OpenInExplorerChip: FC<OpenInExplorerChipProps> = ({
   baseUrl,
   hash,
   className,
-  bgShade = 100,
-  textShade = 600,
-  rounded = 'sm'
+  variant = 'default',
+  radius = 'sm'
 }) => {
   const { trackEvent } = useAnalytics();
   const tippyProps = useMemo(
@@ -49,31 +68,12 @@ const OpenInExplorerChip: FC<OpenInExplorerChipProps> = ({
       target="_blank"
       rel="noopener noreferrer"
       className={classNames(
-        (() => {
-          switch (bgShade) {
-            case 100:
-              return 'bg-gray-100 hover:bg-gray-100';
-
-            case 200:
-              return 'bg-chip-bg hover:bg-gray-100';
-          }
-        })(),
-        (() => {
-          switch (textShade) {
-            case 500:
-              return 'text-text-muted';
-
-            case 600:
-              return 'text-black';
-
-            case 700:
-              return 'text-black';
-          }
-        })(),
-        rounded === 'base' ? 'rounded' : 'rounded-sm',
+        VARIANT_CLASSNAMES[variant],
+        RADIUS_CLASSNAMES[radius],
         'leading-none select-none',
         'transition-colors ease-hover duration-150',
-        'flex items-center justify-center',
+        // It is a link, so it is a tap target: SC 2.5.5 floor.
+        'flex items-center justify-center min-h-11 min-w-11',
         className
       )}
       onClick={handleClick}

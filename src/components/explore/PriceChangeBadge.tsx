@@ -26,21 +26,21 @@ export const PriceChangeBadge = ({ account }: { account: WalletAccount }) => {
   const isPositive = portfolioChange > 0;
   const isNeutral = portfolioChange === 0;
 
+  // Direction picks a status role, and the role owns both the fill and the ink.
+  // Previously the fill was hardcoded (`bg-receive-green` / `bg-red-500` /
+  // `bg-grey-400`) and the label had to be forced back on top of it with
+  // `!text-white` — white that does not invert with the theme. `pos`/`neg` put
+  // `--paper` on the fill instead, which is correct in both themes with one
+  // declaration; the neutral case is not a status at all, so it takes the
+  // default surface badge.
+  const variant = isNeutral ? 'default' : isPositive ? 'pos' : 'neg';
+
   return (
     <div className="flex items-center gap-1">
-      <Badge
-        className={clsx(
-          'font-medium',
-          isNeutral
-            ? 'bg-grey-400 !text-grey-800'
-            : isPositive
-              ? 'bg-receive-green !text-white'
-              : 'bg-red-500 !text-white'
-        )}
-      >
+      <Badge variant={variant} className="font-medium">
         {isNeutral ? '' : isPositive ? '+' : '-'}${Math.abs(portfolioChange).toFixed(2)}
       </Badge>
-      <p className={clsx('text-xs', isNeutral ? 'text-grey-500' : isPositive ? 'text-receive-green' : 'text-red-500')}>
+      <p className={clsx('text-xs', isNeutral ? 'text-ink-3' : isPositive ? 'text-pos' : 'text-neg')}>
         {percentageChange.toFixed(2)}%
       </p>
     </div>
