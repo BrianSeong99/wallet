@@ -506,7 +506,12 @@ table.map td code{font-size:var(--t-label)}
    the container's 12px gap for a 21px gutter above the balance card -- and it broke the
    rule that vertical rhythm lives on .mpad, not inside components. Enforced, not
    special-cased: the gap is now purely the container's tier. */
-.mseg{display:flex;align-items:center;gap:0.4375rem;padding:0}
+/* A tray, not four floating chips. Without it the active segment is --surface
+   (white) sitting on --paper (near-white) and reads as nothing, which is why the
+   bar looked odd. The tray also means inactive segments need no fill of their own:
+   the contrast between the tray and the raised pill IS the selected state. */
+.mseg{display:flex;align-items:center;gap:0.25rem;padding:0.25rem;
+  background:var(--surface-2);border-radius:var(--radius-full)}
 /* Five segments only exist once isEarnEnabled() flips true (overview·send·receive·
    earn·swap). At the 360pt extension width that overflows by 9.1pt: the collapsed
    chips are already sitting on their 44pt tap-target floor and cannot compress
@@ -529,13 +534,13 @@ table.map td code{font-size:var(--t-label)}
 /* Collapsed chips may compress (never below a 40px tap area) so the active chip always
    wins the space it needs; min-width:max-content on the active chip makes clipping
    structurally impossible at any viewport, including long localised labels. */
-.mseg .seg{flex:0 1 46px;min-width:44px;height:2.75rem;border-radius:var(--radius-md);display:flex;align-items:center;justify-content:center;
-  background:var(--surface-2);color:var(--ink);cursor:pointer;overflow:hidden;font-family:var(--ui);
+.mseg .seg{flex:1 1 0;min-width:44px;height:2.75rem;border-radius:var(--radius-full);display:flex;align-items:center;justify-content:center;
+  background:none;color:var(--ink);cursor:pointer;overflow:hidden;font-family:var(--ui);
   transition:flex-grow var(--dur-spatial) var(--ease-spatial),flex-basis var(--dur-spatial) var(--ease-spatial),
              background var(--dur-base) ease,box-shadow var(--dur-base) ease,color var(--dur-base) ease}
 /* Active chip is neutral white — the designer's icons already carry their own colour,
    so tinting the chip the same hue would flatten the glyph against it. */
-.mseg .seg.on{flex:1 1 auto;min-width:max-content;padding:0 0.8125rem;font-weight:700;font-size:var(--t-label);
+.mseg .seg.on{flex:0 0 auto;min-width:max-content;padding:0 0.875rem;font-weight:700;font-size:var(--t-label);
   background:var(--surface);color:var(--ink);box-shadow:var(--shadow-1)}
 .mseg .seg svg{width:1.1875rem;height:1.1875rem;flex:none}
 .mseg .seg img,.mseg .seg .svgic{width:1.25rem;height:1.25rem;flex:none;display:block}
