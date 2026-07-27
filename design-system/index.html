@@ -536,8 +536,14 @@ table.map td code{font-size:var(--t-label)}
    structurally impossible at any viewport, including long localised labels. */
 .mseg .seg{flex:1 1 0;min-width:44px;height:2.75rem;border-radius:var(--radius-full);display:flex;align-items:center;justify-content:center;
   background:none;color:var(--ink);cursor:pointer;overflow:hidden;font-family:var(--ui);
-  transition:flex-grow var(--dur-spatial) var(--ease-spatial),flex-basis var(--dur-spatial) var(--ease-spatial),
-             background var(--dur-base) ease,box-shadow var(--dur-base) ease,color var(--dur-base) ease}
+  /* Deliberately NOT animating flex. .seg is flex:1 1 0 and .seg.on is flex:0 0 auto,
+     so flex-basis would have to interpolate to `auto`, which is not an animatable
+     value -- the browser snaps it while flex-grow is still mid-interpolation and the
+     label's max-width is changing the intrinsic width that `auto` resolves against.
+     Three competing inputs, one of them discontinuous: measured widths oscillated
+     140 -> 149 -> 138 -> 126 -> 117 before settling at 89. The label reveal is the
+     only driver now, so the width change is monotonic. */
+  transition:background var(--dur-base) ease,box-shadow var(--dur-base) ease,color var(--dur-base) ease}
 /* Active chip is neutral white — the designer's icons already carry their own colour,
    so tinting the chip the same hue would flatten the glyph against it. */
 .mseg .seg.on{flex:0 0 auto;min-width:max-content;padding:0 0.875rem;font-weight:700;font-size:var(--t-label);
@@ -1472,7 +1478,7 @@ ul.tick li:before{content:"→";position:absolute;left:0.125rem;color:var(--acce
    headline: it sits at label size in 4-char groups so it can actually be verified,
    with the network on the same card because those are the two facts that must be
    checked together. It replaced a 42-char hex string set as the visual hero. */
-.rcard{background:var(--surface-2);border-radius:var(--radius-md);padding:0.75rem 0.875rem;margin-top:0.75rem}
+.rcard{background:var(--surface-2);border-radius:var(--radius-md);padding:0.75rem 0.875rem}
 .rcnet{display:flex;align-items:center;gap:0.5rem;min-height:1.5rem}
 .rcnet .cdot{width:0.625rem;height:0.625rem;border-radius:50%;flex:none}
 .rcnet .nn{font-size:var(--t-label);font-weight:800;color:var(--ink)}
@@ -1484,7 +1490,11 @@ ul.tick li:before{content:"→";position:absolute;left:0.125rem;color:var(--acce
 /* A page title after the action bar starts a new section, so it takes --stack-loose,
    not the --stack used between components within a group. At 12px it crowded the bar. */
 .pgtitle{font-family:var(--display);font-weight:800;font-size:var(--t-title);line-height:1.1;
-  margin-top:0.25rem}
+  /* 24pt above, 12pt below. The title was 16pt from the action bar and 24pt from
+     the field it labels -- physically closer to the chrome than to its own content,
+     so proximity said it belonged to the bar. Reversed: a clear break from chrome,
+     bound tight to what it introduces. */
+  margin-top:0.75rem;margin-bottom:0}
 /* Camera viewfinder. Full-bleed dark regardless of theme -- a camera preview has no
    light mode. Corner brackets rather than a full rule: the frame guides aim without
    implying the code must be perfectly inscribed. */
@@ -3403,7 +3413,7 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
               <div class="seg" data-act="swap"><span class="svgic" style="--ic:url(assets/icons/convert.svg);" aria-hidden="true"></span><span class="lbl">Swap</span></div>
             </div>
             <div class="pgtitle">Choose recipient</div>
-            <div class="fld" style="width:auto;margin-top:0.75rem"><label>To</label>
+            <div class="fld" style="width:auto"><label>To</label>
               <div class="fieldrow">
                 <div class="searchf" style="width:auto;flex:1;min-width:0">Address or name</div>
                 <button class="tokchip" style="align-self:auto">Paste</button>
@@ -3431,7 +3441,7 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
               <div class="seg" data-act="swap"><span class="svgic" style="--ic:url(assets/icons/convert.svg);" aria-hidden="true"></span><span class="lbl">Swap</span></div>
             </div>
             <div class="pgtitle">Choose recipient</div>
-            <div class="fld" style="width:auto;margin-top:0.75rem"><label>To</label>
+            <div class="fld" style="width:auto"><label>To</label>
               <div class="fieldrow">
                 <div class="searchf" style="width:auto;flex:1;min-width:0;box-shadow:var(--focus-ring);background:var(--surface);color:var(--ink);font-family:var(--mono);font-size:var(--t-label)">mtst1ap8qz4v<span style="border-left:1.5px solid var(--accent);margin-left:1px"></span></div>
                 <button class="tokchip" style="align-self:auto">Paste</button>
@@ -3456,7 +3466,7 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
               <div class="seg" data-act="swap"><span class="svgic" style="--ic:url(assets/icons/convert.svg);" aria-hidden="true"></span><span class="lbl">Swap</span></div>
             </div>
             <div class="pgtitle">Choose recipient</div>
-            <div class="fld err" style="width:auto;margin-top:0.75rem"><label>To</label>
+            <div class="fld err" style="width:auto"><label>To</label>
               <div class="fieldrow">
                 <div class="searchf" style="width:auto;flex:1;min-width:0;box-shadow:0 0 0 1.5px var(--neg);background:var(--surface);color:var(--ink);font-family:var(--mono);font-size:var(--t-label)">0x71C7656EC7ab88b0&hellip;</div>
                 <button class="tokchip" style="align-self:auto">Paste</button>
