@@ -113,6 +113,19 @@
   --tx-glyph:#3F3F3F;
   --stack-tight:8px; --stack:12px; --stack-loose:24px;
   --nav-pill:rgba(63,63,63,.10); --nav-bg:rgba(255,255,255,.62); --nav-ink-off:#727272;
+  --pat:rgba(255,255,255,.035);
+  /* Account card colours. These were REFERENCED by the colour picker but never defined,
+     so all five swatches rendered rgba(0,0,0,0) -- five invisible circles. The audit
+     could not see it: they carry no text and were not marked as indicators. */
+  /* Darkened from the shipped values, which cannot carry the card's own muted label.
+     Measured against white at .70 alpha (need 4.5:1): shipped slate 3.14, orange 2.19,
+     blue 3.03, green 2.62, purple 2.95 -- all fail. The SHIPPING APP is worse still,
+     because it uses .55 alpha: 1.86-2.55:1 on every colour. Hue is preserved; only
+     lightness moves, which also sits closer to the muted-prestige direction. */
+  --card-slate:#575562; --card-orange:#854320; --card-blue:#455968;
+  --card-green:#4D5A4A; --card-purple:#5C5268;
+  --card-slate-deep:#635F70; --card-orange-deep:#B95B28; --card-blue-deep:#405565;
+  --card-green-deep:#50634C; --card-purple-deep:#5D5368;
   --nav-rim:rgba(255,255,255,.85); --nav-rim-lo:rgba(63,63,63,.06);
   --balance:#4F4F4F; --balance-deep:#3D3D3D; --balance-fg:#FFFFFF; --balance-fg-muted:rgba(255,255,255,.70);
   --shadow-1:0 1px 2px rgba(63,63,63,.06),0 1px 3px rgba(63,63,63,.05);
@@ -137,6 +150,12 @@
   --tx-glyph:#1C1A18;
   /* Balance card goes near-black in dark mode (colors are light-mode only). */
   --nav-pill:rgba(255,255,255,.16); --nav-bg:rgba(38,38,38,.58); --nav-ink-off:#989898;
+  --pat:rgba(255,255,255,.05);
+  /* Dark keeps the near-black card, so the hue survives only as a rim -- see data-card. */
+  --card-slate:#8E8A9E; --card-orange:#E77537; --card-blue:#91ACC1;
+  --card-green:#A8BBA3; --card-purple:#BEACD2;
+  --card-slate-deep:#000000; --card-orange-deep:#000000; --card-blue-deep:#000000;
+  --card-green-deep:#000000; --card-purple-deep:#000000;
   --nav-rim:rgba(255,255,255,.16); --nav-rim-lo:rgba(0,0,0,.35);
   --balance:#101010; --balance-deep:#000000; --balance-fg:#FFFFFF; --balance-fg-muted:rgba(255,255,255,.70);
   --shadow-1:0 1px 2px rgba(0,0,0,.4); --shadow-2:0 8px 24px rgba(0,0,0,.5);
@@ -340,8 +359,11 @@ table.map td code{font-size:12px}
    past the audit because it is a <span>, not a <button>. */
 .mbc .bot .m{min-width:44px;min-height:44px;border:0;background:none;padding:0;
   display:flex;align-items:center;justify-content:center;color:inherit;cursor:pointer}
-.mbc .bot .m i{width:24px;height:24px;border-radius:50%;background:var(--rule-strong);
-  display:flex;align-items:center;justify-content:center;font-size:11px;font-style:normal}
+/* No circle fill. --rule-strong over the deep band composites to a light grey, and white
+   on that measures 3.17-3.64:1 across the card colours. The glyph sits directly on the
+   deep band instead, where white is 4.56-7.76:1 on every colour -- and it is less chrome. */
+.mbc .bot .m i{width:24px;height:24px;display:flex;align-items:center;justify-content:center;
+  font-size:var(--t-caption);font-style:normal;letter-spacing:1px}
 /* action bar */
 .mactions{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:16px}
 .mact{display:flex;flex-direction:column;align-items:center;gap:6px}
@@ -434,6 +456,94 @@ table.map td code{font-size:12px}
    chevron, never both -- so a dismissible prompt has no affordance saying it is tappable.
    Showing both fixes that. The wash is reserved for `critical`, where an irreversible
    consequence genuinely warrants colour. */
+/* ---- data-card: an account's colour, scoped like every other surface -------------------
+   In LIGHT the card takes the account hue. In DARK the near-black rule holds (a coloured
+   card floats as a grey box, which was the original complaint), so the hue survives only as
+   a 3px top rim. That keeps accounts distinguishable in a stack without reintroducing the
+   floating-box problem -- otherwise every account would be the same near-black and the
+   stack would be unreadable. */
+[data-card="slate"] {--balance:var(--card-slate); --balance-deep:var(--card-slate-deep); --card-rim:var(--card-slate)}
+[data-card="orange"]{--balance:var(--card-orange);--balance-deep:var(--card-orange-deep);--card-rim:var(--card-orange)}
+[data-card="blue"]  {--balance:var(--card-blue);  --balance-deep:var(--card-blue-deep);  --card-rim:var(--card-blue)}
+[data-card="green"] {--balance:var(--card-green); --balance-deep:var(--card-green-deep); --card-rim:var(--card-green)}
+[data-card="purple"]{--balance:var(--card-purple);--balance-deep:var(--card-purple-deep);--card-rim:var(--card-purple)}
+[data-theme="dark"] [data-card]{--balance:#101010; --balance-deep:#000000}
+[data-theme="dark"] .mbc[data-card]{border-top:3px solid var(--card-rim)}
+
+/* ---- Prompt carousel: horizontal, scroll-snapped, with peek ---------------------------
+   The shipped PromptCarousel is a drag-driven paged carousel with dots. Multiplicity is
+   discoverable ONLY from the dots there, which is weak. Peeking the next card at 88% width
+   makes "there is more" visible in the card itself, and the dots then just report position.
+   Built on native CSS scroll-snap, not a library: it is keyboard- and screen-reader
+   scrollable for free, momentum is the platform's, and there is no JS to desync.
+   The negative inline margin lets cards bleed to the screen edge while keeping the first
+   card aligned to the 16px gutter -- so the peeking card reads as continuing off-screen
+   rather than being clipped by a container. */
+.mcar{display:flex;gap:10px;overflow-x:auto;scroll-snap-type:x mandatory;
+  scrollbar-width:none;-ms-overflow-style:none;
+  margin-inline:-16px;padding-inline:16px;scroll-padding-left:16px}
+.mcar::-webkit-scrollbar{display:none}
+.mcar > .mprompt{flex:0 0 88%;scroll-snap-align:start}
+
+/* Sheet chrome, extracted from the inline styles the older Accounts mock used. */
+.msheet{position:absolute;left:0;right:0;bottom:0;background:var(--surface);
+  border-radius:var(--radius-lg) var(--radius-lg) 0 0;padding:12px 16px 0;
+  display:flex;flex-direction:column;max-height:76%}
+.mshandle{width:40px;height:5px;border-radius:var(--radius-full);background:var(--rule-strong);
+  margin:0 auto 14px;flex:none}
+.mshead{font-family:var(--display);font-weight:800;font-size:var(--t-subhead);margin-bottom:12px;flex:none}
+
+/* ---- Account cards, half-stacked (iPhone Wallet model) --------------------------------
+   FORWARD-LOOKING. The shipped AccountsDrawer lists no accounts at all -- it is a card
+   colour picker, a Settings link, and a DISABLED "Add account (coming soon)" button. So
+   this is a design for a feature that does not exist yet, marked accordingly.
+   Overlap is 80px against a 144.6px card, leaving a 64px band per collapsed card: enough
+   for the account label and its balance, which are the two things you choose between. The
+   frontmost card is fully revealed. Each card carries a top rim so the stack edge reads
+   even when two adjacent cards share a colour. */
+.mstack{display:flex;flex-direction:column;overflow-y:auto;overflow-x:hidden;padding-bottom:4px}
+.mstack > .mbc{flex:none;box-shadow:0 -1px 0 var(--nav-rim),0 -6px 16px rgba(0,0,0,.14)}
+.mstack > .mbc + .mbc{margin-top:-80px}
+.mstack > .mbc.sel{margin-bottom:0}
+.mstack .mbc .bot{opacity:0;transition:opacity var(--dur-fast) ease}
+.mstack .mbc.sel .bot{opacity:1}
+.mstack .mbc .amt{font-size:26px}
+.mstack .mbc.sel .amt{font-size:var(--t-balance)}
+.mstk-lbl{font-size:var(--t-caption);font-weight:700;color:var(--ink-2);
+  display:flex;align-items:center;gap:6px}
+.mstk-lbl .chk{width:14px;height:14px;border-radius:50%;background:var(--pos);flex:none}
+
+/* ---- Wagara: traditional Japanese geometric pattern as the card's texture layer -------
+   Drawn from real wagara rather than generic generative noise: seigaiha (breaking waves),
+   uroko (fish scales), koshi (lattice). All three are pure repeating gradients -- no image
+   assets, nothing invented, cheap to paint.
+   TWO constraints shape it:
+   1. Contrast, HAND-COMPUTED. The review harness reads background-COLOR and is blind to
+      background-image, so it cannot check this and its clean run does not cover it. Binding
+      case is the muted label at .70 alpha on the light card: at 5% pattern alpha it drops to
+      4.48:1 and FAILS. Ceiling is 4%. Light runs 3.5% (muted 4.63:1, figure 7.44:1); dark
+      runs 5% (9.52 -> 8.87:1), which has room because the near-black card starts far ahead.
+   2. Ma. The pattern is masked into the top-right and fades out rather than tiling the whole
+      card -- which keeps it off the balance figure, and makes asymmetry with generous
+      negative space the operative principle. The motif alone would just be decoration. */
+.mbc [data-pattern]{position:relative}
+.mbc [data-pattern]::after{content:'';position:absolute;inset:0;pointer-events:none;z-index:0;
+  -webkit-mask-image:radial-gradient(circle at 100% 0%,#000 0%,rgba(0,0,0,.55) 38%,transparent 72%);
+  mask-image:radial-gradient(circle at 100% 0%,#000 0%,rgba(0,0,0,.55) 38%,transparent 72%)}
+.mbc [data-pattern] > *{position:relative;z-index:1}
+[data-pattern="seigaiha"]::after{
+  background-image:radial-gradient(circle at 50% 100%,transparent 21%,var(--pat) 22%,var(--pat) 25%,
+    transparent 26%,transparent 40%,var(--pat) 41%,var(--pat) 44%,transparent 45%,
+    transparent 59%,var(--pat) 60%,var(--pat) 63%,transparent 64%);
+  background-size:52px 26px}
+[data-pattern="uroko"]::after{
+  background-image:radial-gradient(circle at 50% 0,var(--pat) 33%,transparent 34%),
+    radial-gradient(circle at 50% 0,var(--pat) 33%,transparent 34%);
+  background-size:22px 11px,22px 11px;background-position:0 0,11px 5.5px}
+[data-pattern="koshi"]::after{
+  background-image:repeating-linear-gradient(45deg,var(--pat) 0 1.5px,transparent 1.5px 13px),
+    repeating-linear-gradient(-45deg,var(--pat) 0 1.5px,transparent 1.5px 13px)}
+
 /* Vertical rhythm lives on the CONTAINER, not inside each component.
    Before: .mpad was a flex column with `gap: normal`, so every child invented its own
    spacing via padding/margins -- measured values in play were 2, 4, 6, 9, 10, 11, 13, 16,
@@ -558,14 +668,19 @@ table.map td code{font-size:12px}
   box-shadow:inset 0 1px 0 var(--nav-rim),0 1px 3px rgba(0,0,0,.06);
   transform:translateX(calc(var(--i) * (100% + 6px)));
   transition:transform var(--dur-normal) var(--ease-out-cubic)}
-/* The liquid part. The bubble does not rigidly translate -- it stretches along travel and
-   settles, which is what separates this from a segmented control. `scale` is an independent
-   transform property, so it composes with the translateX above instead of overwriting it. */
+/* The liquid part, TUNED DOWN to the app's motion family. The bubble stretches along travel
+   and settles, which is what separates this from a segmented control -- but the first version
+   peaked at scale 1.09/0.93 with a second rebound at 0.98/1.02, and that was out of family.
+   Solving the app's own springs for overshoot, exp(-zeta*pi/sqrt(1-zeta^2)):
+     settle 0.03% . morph 0.05% . standard 0.21% . snappy 0.63% . pill 0.79% . magnetic 6.01%
+   So `springs.pill`, the spring this claims to approximate, overshoots 0.79% -- the keyframe
+   was ~11x bouncier, and nothing in the app double-bounces at all. Now a single lobe at 3%.
+   Shape deformation reads weaker than positional overshoot, which is why it is 3% rather than
+   0.79%, but it sits in the same register as everything else. */
 .mnav.sliding::before{animation:navliquid var(--dur-normal) var(--ease-out-cubic)}
 @keyframes navliquid{
   0%{scale:1 1}
-  40%{scale:1.09 .93}
-  70%{scale:.98 1.02}
+  45%{scale:1.03 .975}
   100%{scale:1 1}}
 @media (prefers-reduced-motion: reduce){
   .mnav::before{transition-duration:.01ms}
@@ -2234,7 +2349,7 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
               <div class="seg" data-act="swap"><span class="svgic" style="--ic:url(assets/icons/convert.svg);" aria-hidden="true"></span><span class="lbl">Swap</span></div>
             </div>
             <div class="mbc">
-              <div class="top" data-surface="graphite">
+              <div class="top" data-surface="graphite" data-pattern="seigaiha">
                 <div class="balrow"><div class="tl">Total Balance</div><div class="delta" data-status="pos">+0.00 (0.00%)</div></div>
                 <div class="amt">$0.00 <small>USD</small></div></div>
               <div class="bot" data-surface="graphite-deep"><span class="acc">Account #: mtst1ap8…r4fp</span><button class="m" aria-label="Account options"><i>⋯</i></button></div>
@@ -2760,12 +2875,12 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
               <div class="seg" data-act="swap"><span class="svgic" style="--ic:url(assets/icons/convert.svg);" aria-hidden="true"></span><span class="lbl">Swap</span></div>
             </div>
             <div class="mbc">
-              <div class="top" data-surface="graphite">
+              <div class="top" data-surface="graphite" data-pattern="seigaiha">
                 <div class="balrow"><div class="tl">Total Balance</div><div class="delta" data-status="pos">+$40.00 (0.32%)</div></div>
                 <div class="amt">$12,480.50 <small>USD</small></div></div>
               <div class="bot" data-surface="graphite-deep"><span class="acc">Account #: mtst1ap8…r4fp</span><button class="m" aria-label="Account options"><i>⋯</i></button></div>
             </div>
-            <div class="mprompt"><span class="pic"><span class="svgic" style="--ic:url(assets/icons/key.svg)" aria-hidden="true"></span></span><div class="ptx"><div class="pt">Verify your recovery phrase</div><div class="pb">Confirm you saved your recovery phrase so you can restore this wallet later.</div></div><button class="pdis" aria-label="Dismiss">&#10005;</button></div>
+            <div><div class="mcar"><div class="mprompt"><span class="pic"><span class="svgic" style="--ic:url(assets/icons/key.svg)" aria-hidden="true"></span></span><div class="ptx"><div class="pt">Verify your recovery phrase</div><div class="pb">Confirm you saved your recovery phrase so you can restore this wallet later.</div></div><button class="pdis" aria-label="Dismiss">&#10005;</button></div><div class="mprompt"><span class="pic"><span class="svgic" style="--ic:url(assets/icons/lock.svg)" aria-hidden="true"></span></span><div class="ptx"><div class="pt">Activate device key</div><div class="pb">Generate a device key for this recovered account. Required before sending.</div></div><button class="pdis" aria-label="Dismiss">&#10005;</button></div><div class="mprompt"><span class="pic"><span class="svgic" style="--ic:url(assets/icons/guardian-avatar.svg)" aria-hidden="true"></span></span><div class="ptx"><div class="pt">Guardian changed</div><div class="pb">Your guardian was switched and we couldn&rsquo;t identify the new operator. Enter its URL to reconnect.</div></div><button class="pdis" aria-label="Dismiss">&#10005;</button></div></div><div class="mpdots"><i class="on"></i><i></i><i></i></div></div>
             <div class="masset-h">Assets</div>
             <button class="msearch">Search for tokens</button>
             <div class="mrow"><div class="ic"><img src="assets/icons/miden.svg" alt=""></div><div><div class="nm">Miden</div><div class="ad">1,204.50 MIDEN</div></div><div class="rt"><div class="f">$12,480.50</div><div class="b" style="color:var(--pos)">+0.32%</div></div></div>
@@ -2775,11 +2890,29 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
         </div></div></div>
         <div class="scrnote">Funded state. Balance and amounts in Nunito tabular; addresses in Geist Mono.</div></div>
 
+      <div><div class="scrcap"><i></i>Accounts &middot; stacked cards <span class="tag retire">proposed</span></div>
+        <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
+          <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>
+          <div class="mpad" style="flex:1;opacity:.35"><div class="masset-h">Assets</div><button class="msearch">Search for tokens</button></div>
+          <div class="shscrim"></div>
+          <div class="msheet">
+            <div class="mshandle"></div>
+            <div class="mshead">Accounts</div>
+            <div class="mstack">
+              <div class="mbc" data-card="blue"><div class="top" data-surface="graphite" data-pattern="seigaiha"><div class="balrow"><div class="tl">Miden Account 1</div><div class="delta" data-status="pos">+0.11%</div></div><div class="amt">$1,204.00 <small>USD</small></div></div><div class="bot" data-surface="graphite-deep"><span class="acc">Account #: mtst1ap8&hellip;r4fp</span><button class="m" aria-label="Account options"><i>&ctdot;</i></button></div></div>
+              <div class="mbc" data-card="green"><div class="top" data-surface="graphite" data-pattern="seigaiha"><div class="balrow"><div class="tl">Miden Account 2</div><div class="delta" data-status="pos">+0.04%</div></div><div class="amt">$318.90 <small>USD</small></div></div><div class="bot" data-surface="graphite-deep"><span class="acc">Account #: mtst1ap8&hellip;r4fp</span><button class="m" aria-label="Account options"><i>&ctdot;</i></button></div></div>
+              <div class="mbc sel" data-card="slate"><div class="top" data-surface="graphite" data-pattern="seigaiha"><div class="balrow"><div class="tl">Miden Account 3</div><div class="delta" data-status="pos">+0.32%</div></div><div class="amt">$12,480.50 <small>USD</small></div></div><div class="bot" data-surface="graphite-deep"><span class="acc">Account #: mtst1ap8&hellip;r4fp</span><button class="m" aria-label="Account options"><i>&ctdot;</i></button></div></div>
+            </div>
+            <div class="mstk-lbl" style="margin-top:12px"><span class="chk nti"></span>Miden Account 3 selected</div>
+            <div class="zone" style="padding-bottom:max(16px,var(--safe-bottom,0px))"><button class="btn btn-primary">Add account</button></div>
+          </div>
+        </div></div></div>
+        <div class="scrnote"><b>Proposed &mdash; multi-account does not exist yet.</b> The shipped <code>AccountsDrawer</code> lists <em>no accounts at all</em>: it is a card-colour picker, a Settings link, and a <em>disabled</em> &ldquo;Add account (coming soon)&rdquo; button whose dashed outline also breaks the no-bordered-controls rule. Cards overlap by <b>80px</b> against a 144.6px card, leaving a <b>64px</b> band each &mdash; enough for the account name and its balance, which are the two things you actually choose between. The frontmost card is fully revealed; the account row and the full-size figure appear only on the selected one, so hierarchy comes from <em>reveal</em> rather than from adding chrome. In <b>dark</b> the near-black rule holds and the account hue survives as a <b>3px top rim</b> &mdash; a coloured card in dark floats as a grey box, which was the original complaint, but without <em>some</em> hue every account would be identical near-black and the stack unreadable.</div></div>
       <div><div class="scrcap"><i></i>Accounts sheet</div>
         <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
           <div class="stat"><span>9:41</span><span class="r">✦ ▪ ▪</span></div>
           <div class="mpad" style="flex:1;opacity:.4"><div class="mseg"><div class="seg on"><span class="svgic" style="--ic:url(assets/icons/wallet.svg);" aria-hidden="true"></span><span class="lbl">Overview</span></div><div class="seg" data-act="send"><span class="svgic" style="--ic:url(assets/icons/send-new.svg);" aria-hidden="true"></span></div><div class="seg" data-act="receive"><span class="svgic" style="--ic:url(assets/icons/receive-new.svg);" aria-hidden="true"></span></div><div class="seg" data-act="swap"><span class="svgic" style="--ic:url(assets/icons/convert.svg);" aria-hidden="true"></span></div></div>
-            <div class="mbc"><div class="top" data-surface="graphite"><div class="tl">Total Balance</div><div class="amt">$12,480.50 <small>USD</small></div></div></div></div>
+            <div class="mbc"><div class="top" data-surface="graphite" data-pattern="seigaiha"><div class="tl">Total Balance</div><div class="amt">$12,480.50 <small>USD</small></div></div></div></div>
           <div style="position:absolute;inset:0;background:rgba(0,0,0,.45)"></div>
           <div style="position:absolute;left:0;right:0;bottom:0;background:var(--surface);border-radius:var(--radius-lg) var(--radius-lg) 0 0;padding:12px 20px max(16px,var(--safe-bottom))">
             <div style="width:40px;height:5px;border-radius:var(--radius-full);background:var(--rule-strong);margin:0 auto 14px"></div>
@@ -2787,11 +2920,11 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
             <div class="mrow" style="padding:9px 0"><div class="ic" style="background:var(--balance)"></div><div><div class="nm">Miden Account 1</div><div class="ad">mtst1ap8…r4fp</div></div><div class="rt"><div class="f">$12,480.50</div></div></div>
             <div style="font-size:11.5px;color:var(--ink-2);margin:12px 0 8px">Card colour</div>
             <div style="display:flex;gap:9px">
-              <span style="width:30px;height:30px;border-radius:50%;background:var(--card-slate);box-shadow:0 0 0 2px var(--accent)"></span>
-              <span style="width:30px;height:30px;border-radius:50%;background:var(--card-orange)"></span>
-              <span style="width:30px;height:30px;border-radius:50%;background:var(--card-blue)"></span>
-              <span style="width:30px;height:30px;border-radius:50%;background:var(--card-green)"></span>
-              <span style="width:30px;height:30px;border-radius:50%;background:var(--card-purple)"></span>
+              <span class="nti" style="width:30px;height:30px;border-radius:50%;background:var(--card-slate);box-shadow:0 0 0 2px var(--accent)"></span>
+              <span class="nti" style="width:30px;height:30px;border-radius:50%;background:var(--card-orange)"></span>
+              <span class="nti" style="width:30px;height:30px;border-radius:50%;background:var(--card-blue)"></span>
+              <span class="nti" style="width:30px;height:30px;border-radius:50%;background:var(--card-green)"></span>
+              <span class="nti" style="width:30px;height:30px;border-radius:50%;background:var(--card-purple)"></span>
             </div>
             <div class="setgroup" style="margin-top:14px"><div class="setrow"><span class="svgic" style="--ic:url(assets/icons/settings-new.svg);" aria-hidden="true"></span>Settings<span class="ch">›</span></div></div>
           </div>
@@ -2911,7 +3044,7 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
               <div class="seg" data-act="receive"><span class="svgic" style="--ic:url(assets/icons/receive-new.svg);" aria-hidden="true"></span><span class="lbl">Receive</span></div>
               <div class="seg on" data-act="earn"><span class="svgic" style="--ic:url(assets/icons/earn.svg);" aria-hidden="true"></span><span class="lbl">Earn</span></div><div class="seg" data-act="swap"><span class="svgic" style="--ic:url(assets/icons/convert.svg);" aria-hidden="true"></span></div>
             </div>
-            <div class="mbc"><div class="top" data-surface="graphite"><div class="tl">Earning</div><div class="amt">$500.00 <small>USD</small></div>
+            <div class="mbc"><div class="top" data-surface="graphite" data-pattern="seigaiha"><div class="tl">Earning</div><div class="amt">$500.00 <small>USD</small></div>
               <div class="delta" style="background:var(--pos-wash);color:var(--pos)">+$4.10 all time</div></div></div>
             <div class="masset-h">Vaults</div>
             <div class="vaultrow"><img src="assets/icons/aave.svg" alt=""><div><div class="vn">Aave · MIDEN</div><div class="vs">Deposited 500.00</div></div><div class="vapy"><div class="p">4.82%</div><div class="pl">APY</div></div></div>
