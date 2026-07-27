@@ -390,12 +390,20 @@ table.map td code{font-size:12px}
 .mact .lb{font-size:11px;font-weight:600;color:var(--ink-2)}
 /* assets */
 .masset-h{font-family:var(--display);font-weight:800;font-size:var(--t-heading);margin-top:calc(var(--stack-loose) - var(--stack));margin-bottom:calc(var(--stack-tight) - var(--stack))}
-/* 56px = the app's SearchInput h-14. The mock had it at 38px, which both diverged from
-   shipped and sat under the 44pt tap floor -- invisible to the audit because it was a
-   <div>. It is a <button> now, so the target check sees it. */
-.msearch{background:var(--surface-2);border-radius:var(--radius-full);min-height:56px;width:100%;
-  display:flex;align-items:center;padding:0 16px;color:var(--ink-3);font-size:var(--t-label);
-  border:0;font-family:var(--ui);text-align:left;cursor:pointer}
+/* 48px, not the app's 56px (h-14). Height was the reported symptom; the cause is that the
+   shipped field does not read as a search field at all. It combines `text-center`,
+   `placeholder:font-bold`, `text-base` and NO magnifier icon inside a 56px pill -- a centred
+   bold label in a tall pill is a BUTTON, and the strongest "this is search" signal is absent.
+   Three corrections, and the icon is what earns the smaller height:
+     - magnifier (search.svg, already in the set) makes the control self-identifying
+     - left-aligned, normal-weight placeholder: search fields are left-aligned universally,
+       and a placeholder should be lighter than input text, never bolder
+     - 48px. 44 is the FLOOR, not the target. At 56 the field is 87% of the 64.3pt asset row
+       it filters -- near parity with its own content. 48 is 75%, on the grid, 4pt clear. */
+.msearch{background:var(--surface-2);border-radius:var(--radius-full);min-height:48px;width:100%;
+  display:flex;align-items:center;gap:9px;padding:0 16px;color:var(--ink-2);font-size:var(--t-label);
+  border:0;font-family:var(--ui);text-align:left;cursor:pointer;font-weight:500}
+.msearch .svgic{width:17px;height:17px;flex:none;opacity:.75}
 .mrow{display:flex;align-items:center;gap:12px;padding:12px 0}
 /* Consecutive rows are one list, so they use the tight tier rather than the
    component tier -- 12px between list items reads as separate cards. */
@@ -2402,7 +2410,7 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
             </div>
             <div class="mprompt"><span class="pic"><span class="svgic" style="--ic:url(assets/icons/key.svg)" aria-hidden="true"></span></span><div class="ptx"><div class="pt">Verify your recovery phrase</div><div class="pb">Confirm you saved your recovery phrase so you can restore this wallet later.</div></div><button class="pdis" aria-label="Dismiss">&#10005;</button></div>
             <div class="masset-h">Assets</div>
-            <button class="msearch">Search for tokens</button>
+            <button class="msearch"><span class="svgic" style="--ic:url(assets/icons/search.svg)" aria-hidden="true"></span>Search for tokens</button>
             <div class="mrow"><div class="ic"><img src="assets/icons/miden.svg" alt=""></div><div><div class="nm">Miden</div><div class="ad">0.00 MIDEN</div></div><div class="rt"><div class="f">$0.00</div><div class="b" style="color:var(--pos)">+0.00%</div></div></div>
           </div>
           <div class="mnav"><button class="t on"><span class="svgic" style="--ic:url(assets/icons/home-new.svg)" aria-hidden="true"></span><span>Home</span></button><button class="t"><span class="svgic" style="--ic:url(assets/icons/explore.svg)" aria-hidden="true"></span><span>Explore</span></button><button class="t"><span class="svgic" style="--ic:url(assets/icons/activity.svg)" aria-hidden="true"></span><span>Activity</span></button></div>
@@ -2928,7 +2936,7 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
             </div>
             <div><div class="mcar"><div class="mprompt"><span class="pic"><span class="svgic" style="--ic:url(assets/icons/key.svg)" aria-hidden="true"></span></span><div class="ptx"><div class="pt">Verify your recovery phrase</div><div class="pb">Confirm you saved your recovery phrase so you can restore this wallet later.</div></div><button class="pdis" aria-label="Dismiss">&#10005;</button></div><div class="mprompt"><span class="pic"><span class="svgic" style="--ic:url(assets/icons/lock.svg)" aria-hidden="true"></span></span><div class="ptx"><div class="pt">Activate device key</div><div class="pb">Generate a device key for this recovered account. Required before sending.</div></div><button class="pdis" aria-label="Dismiss">&#10005;</button></div><div class="mprompt"><span class="pic"><span class="svgic" style="--ic:url(assets/icons/guardian-avatar.svg)" aria-hidden="true"></span></span><div class="ptx"><div class="pt">Guardian changed</div><div class="pb">Your guardian was switched and we couldn&rsquo;t identify the new operator. Enter its URL to reconnect.</div></div><button class="pdis" aria-label="Dismiss">&#10005;</button></div></div><div class="mpdots"><i class="on"></i><i></i><i></i></div></div>
             <div class="masset-h">Assets</div>
-            <button class="msearch">Search for tokens</button>
+            <button class="msearch"><span class="svgic" style="--ic:url(assets/icons/search.svg)" aria-hidden="true"></span>Search for tokens</button>
             <div class="mrow"><div class="ic"><img src="assets/icons/miden.svg" alt=""></div><div><div class="nm">Miden</div><div class="ad">1,204.50 MIDEN</div></div><div class="rt"><div class="f">$12,480.50</div><div class="b" style="color:var(--pos)">+0.32%</div></div></div>
             <div class="mrow"><div class="ic"><img src="assets/icons/usdc.svg" alt=""></div><div><div class="nm">USDC</div><div class="ad">0.00 USDC</div></div><div class="rt"><div class="f">$0.00</div><div class="b">—</div></div></div>
           </div>
@@ -2939,7 +2947,7 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
       <div><div class="scrcap"><i></i>Accounts &middot; list <span class="tag retire">proposed</span></div>
         <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
           <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>
-          <div class="mpad" style="flex:1;opacity:.35"><div class="masset-h">Assets</div><button class="msearch">Search for tokens</button></div>
+          <div class="mpad" style="flex:1;opacity:.35"><div class="masset-h">Assets</div><button class="msearch"><span class="svgic" style="--ic:url(assets/icons/search.svg)" aria-hidden="true"></span>Search for tokens</button></div>
           <div class="shscrim"></div>
           <div class="msheet">
             <div class="mshandle"></div>
