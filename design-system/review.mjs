@@ -334,6 +334,14 @@ const probeReflow = () => {
       // A deliberate horizontal scroller (.mcar) is content wider than its box BY DESIGN, so
       // it trips the same test. It is still reported — a carousel can break too — but labelled
       // 'scrollable' rather than suppressed, so nobody has to guess which kind of hit it is.
+      // An element authored to truncate -- overflow:hidden + white-space:nowrap +
+      // text-overflow:ellipsis -- has scrollWidth > clientWidth BY DEFINITION, on every string
+      // long enough to need the ellipsis. Flagging it reported a working truncation as a reflow
+      // break, which is the check crying wolf on exactly the mechanism that prevents reflow
+      // breaks. The exemption is narrow on purpose: all three properties must be set, so an
+      // overflow:hidden container that merely clips its children is still caught.
+      const truncates = cs.textOverflow === 'ellipsis' && cs.whiteSpace === 'nowrap' && /hidden|clip/.test(cs.overflowX);
+      if (truncates) return;
       if (el.clientWidth > 0 && el.scrollWidth > el.clientWidth + 1) bad.push({ el: label, why: /auto|scroll/.test(cs.overflowX) ? 'scrollable' : 'content', sw: el.scrollWidth, cw: el.clientWidth });
       else if (pt(r.right - sr.right) > 1) bad.push({ el: label, why: 'past-edge', byPt: Math.round(pt(r.right - sr.right)) });
     });
