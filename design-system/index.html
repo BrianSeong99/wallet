@@ -1586,6 +1586,19 @@ ul.tick li:before{content:"→";position:absolute;left:0.125rem;color:var(--acce
   border-radius:var(--radius-sm);flex:none;letter-spacing:.02em;
   background:var(--surface-2);color:var(--ink-2)}
 .liverow[data-state="blocked"]{cursor:not-allowed}
+/* Inline network choice. "EVM" and "SVM" are jargon -- most people have never
+   met the words, and a label nobody can read is worse than no label. The address
+   format still cannot name a chain (an 0x string is valid on all of them at
+   once), so the question is unavoidable; it is asked here, in network names
+   people recognise, instead of being deferred to a sheet behind a term they
+   would have to look up. Asking on the page also collapses a step. */
+.netpick{margin-top:0.625rem}
+.netpick .npq{font-size:var(--t-caption);font-weight:700;color:var(--ink-2);margin-bottom:0.5rem}
+.netopts{display:flex;flex-wrap:wrap;gap:0.375rem}
+.netopt{display:inline-flex;align-items:center;gap:0.4375rem;min-height:2.75rem;
+  padding:0 0.75rem;border-radius:var(--radius-full);background:var(--surface-2);
+  font-size:var(--t-label);font-weight:700;color:var(--ink);cursor:pointer;border:0}
+.netopt .nd{width:0.625rem;height:0.625rem;border-radius:50%;flex:none}
 .tsteps{display:flex;flex-direction:column;gap:0.125rem;margin-top:1.125rem}
 .tstep{display:flex;align-items:center;gap:0.625rem;padding:0.5625rem 0.125rem;font-size:var(--t-label)}
 .tstep .tsi{width:1.125rem;height:1.125rem;flex:none;border-radius:50%;display:flex;align-items:center;
@@ -3531,7 +3544,7 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
           <div class="mnav"><button class="t on"><span class="svgic" style="--ic:url(assets/icons/home-new.svg)" aria-hidden="true"></span><span>Home</span></button><button class="t"><span class="svgic" style="--ic:url(assets/icons/explore.svg)" aria-hidden="true"></span><span>Explore</span></button><button class="t"><span class="svgic" style="--ic:url(assets/icons/activity.svg)" aria-hidden="true"></span><span>Activity</span></button></div>
         </div></div></div>
         <div class="scrnote"><b>&ldquo;No results&rdquo; is the wrong frame here.</b> In a wallet an unmatched address is the <em>normal</em> case &mdash; the first time you pay anyone nothing matches, and the address is perfectly valid. Rendering that as a dead end would tell the user something is wrong when nothing is. So the row states the fact, confirms the address is valid, and <b>Confirm stays enabled</b> &mdash; the green field ring is the same check the error state fails. It also answers the question this state actually raises, <em>should I save this?</em>, by saying saving happens afterwards, so a send is never blocked on a housekeeping decision. <b>Proposed:</b> there is no contact list on this screen today and no save-after-send flow.</div></div>
-      <div><div class="scrcap"><i></i>Send &middot; recipient, EVM detected</div>
+      <div><div class="scrcap"><i></i>Send &middot; recipient, other network</div>
         <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
           <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>
           <div class="mpad" style="flex:1;display:flex;flex-direction:column">
@@ -3549,11 +3562,14 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
                 <button class="scanbtn" aria-label="Scan a QR code"><span class="svgic" style="--ic:url(assets/icons/qr-scan.svg)" aria-hidden="true"></span></button>
               </div>
             </div>
-            <div class="liverow" data-state="ask"><span class="lv"><span class="la">0x71C7656EC7ab88b0&hellip;8976F</span><span class="ls">Ethereum-family address &mdash; choose a network</span></span><span class="fam">EVM</span><span class="go" aria-hidden="true">&rsaquo;</span></div>
+            <div class="liverow" data-state="ask"><span class="lv"><span class="la">0x71C7656EC7ab88b0&hellip;8976F</span><span class="ls">This address works on several networks</span></span></div>
+            <div class="netpick"><div class="npq">Which network is it on?</div>
+              <div class="netopts"><button class="netopt"><span class="nd" style="background:#627EEA"></span>Ethereum</button><button class="netopt"><span class="nd" style="background:#0052FF"></span>Base</button><button class="netopt"><span class="nd" style="background:#28A0F0"></span>Arbitrum</button><button class="netopt"><span class="nd" style="background:#FF0420"></span>Optimism</button></div>
+            </div>
           </div>
           <div class="mnav"><button class="t on"><span class="svgic" style="--ic:url(assets/icons/home-new.svg)" aria-hidden="true"></span><span>Home</span></button><button class="t"><span class="svgic" style="--ic:url(assets/icons/explore.svg)" aria-hidden="true"></span><span>Explore</span></button><button class="t"><span class="svgic" style="--ic:url(assets/icons/activity.svg)" aria-hidden="true"></span><span>Activity</span></button></div>
         </div></div></div>
-        <div class="scrnote"><b>Detection resolves to a FAMILY, never to a chain.</b> An <code>0x</code> string is simultaneously valid on Ethereum, Base, Arbitrum, Optimism and every other EVM network, so the format carries no signal about where the money should go. That is precisely why the row ends in a question and a chevron rather than a tick: tapping opens the network sheet, which is the one thing the address genuinely cannot tell us. Guessing here is how funds are lost irrecoverably &mdash; an exchange deposit address on the wrong chain does not come back. <b>Proposed:</b> today this string is rejected outright with <code>invalidMidenAccountId</code>.</div></div>
+        <div class="scrnote"><b>The network is chosen here, in names people recognise.</b> The format still cannot identify a chain &mdash; an <code>0x</code> string is valid on Ethereum, Base, Arbitrum and every other EVM network simultaneously &mdash; so the question is unavoidable. What changed is where it is asked and in what words: <b>&ldquo;EVM&rdquo; never appears</b>, because it is jargon most people have never met, and a label nobody can read is worse than no label at all. Asking on the page also removes a step, since the answer was always going to be required before the send could proceed. Guessing a default is not an option here: an exchange deposit address on the wrong chain does not come back. <b>Proposed:</b> today this string is rejected outright with <code>invalidMidenAccountId</code>, and no chain name exists anywhere in <code>en.json</code>.</div></div>
       <div><div class="scrcap"><i></i>Send &middot; recipient, unsupported</div>
         <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
           <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>
@@ -3572,7 +3588,7 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
                 <button class="scanbtn" aria-label="Scan a QR code"><span class="svgic" style="--ic:url(assets/icons/qr-scan.svg)" aria-hidden="true"></span></button>
               </div>
             </div>
-            <div class="liverow" data-state="blocked"><span class="lv"><span class="la">7xKXtg2CW87d97TXJSDpbD5jBkheTqA&hellip;</span><span class="ls">Solana address &mdash; Miden cannot send here</span></span><span class="fam">Solana</span></div>
+            <div class="liverow" data-state="blocked"><span class="lv"><span class="la">7xKXtg2CW87d97TXJSDpbD5jBkheTqA&hellip;</span><span class="ls">Miden cannot send to Solana</span></span><span class="fam">Solana</span></div>
           </div>
           <div class="mnav"><button class="t on"><span class="svgic" style="--ic:url(assets/icons/home-new.svg)" aria-hidden="true"></span><span>Home</span></button><button class="t"><span class="svgic" style="--ic:url(assets/icons/explore.svg)" aria-hidden="true"></span><span>Explore</span></button><button class="t"><span class="svgic" style="--ic:url(assets/icons/activity.svg)" aria-hidden="true"></span><span>Activity</span></button></div>
         </div></div></div>
