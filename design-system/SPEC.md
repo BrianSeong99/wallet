@@ -130,6 +130,21 @@ Playwright, exits non-zero on any failure. Per screen, in **both themes**, it ch
 | Targets | every interactive element >= 44pt |
 | Type | nothing below the 11pt floor |
 
+**The harness is necessary, not sufficient — always look at the render.** Every numeric check
+can pass while the screen is visibly wrong. Three defects this session were invisible to it and
+found only by opening the screenshot:
+
+| Defect | Why no check caught it |
+|---|---|
+| Account cards merged into one black block in dark | Each card passed contrast individually; *adjacent-card* separation is not a WCAG quantity |
+| A permanent "Tap to rename" + blinking caret on the resting state | An editing variant left switched on is valid markup with valid contrast |
+| Card colour swatches rendered fully transparent | No text and not marked as indicators, so nothing measured them |
+
+Related blind spot: the harness reads `background-color` and is **blind to `background-image`**, so
+gradients, patterns and washes are unverified by it — the wagara pattern's contrast is
+hand-computed for that reason. Treat a clean run as "no measurable failure", never as "looks
+right".
+
 **Three harness rules learned the hard way.** (1) The theme switch must happen in a
 *separate* `evaluate()` call from the measurement — doing both in one synchronous block
 yields stale computed styles and fabricates failures. (2) The safe-area floor is **per

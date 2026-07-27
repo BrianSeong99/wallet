@@ -345,11 +345,30 @@ table.map td code{font-size:12px}
 .mbc .tl{font-size:var(--t-caption);font-weight:600;color:var(--ink-2)}
 .mbc .amt{font-family:var(--num);font-feature-settings:var(--num-feat);font-weight:800;font-size:var(--t-balance);letter-spacing:-.02em;margin-top:5px;display:flex;align-items:baseline;gap:6px}
 .mbc .amt small{font-size:var(--t-caption);color:var(--ink-2);font-weight:500}
-/* Delta uses the data-status scope rather than a per-instance colour. The shipped card
-   hardcodes bg-[#A8BBA3] with white text = 2.04:1; the wash+ink pair measures >5:1. */
-.mbc .delta{font-size:var(--t-caption);font-weight:700;padding:3px 9px;border-radius:var(--radius-full);
-  font-family:var(--num);font-feature-settings:var(--num-feat);
-  background:var(--st-wash);color:var(--st);white-space:nowrap}
+/* Delta is a CAPTION, not a badge. The filled wash pill read as senior to the balance it
+   describes -- a bright blob on the label row, above the number, competing with the figure
+   that is the whole point of the card. Now plain coloured text: same row (which is what
+   keeps the card at 144.6px instead of growing a line), but it recedes.
+   The sign carries direction, so colour is never the sole carrier (SC 1.4.1) and no arrow
+   glyph is needed -- which is just as well, the set ships none.
+   Shows the percentage only. The absolute was redundant against a card whose entire subject
+   is the absolute balance; if the money delta turns out to matter more, it is a one-token
+   swap. The shipped card hardcodes bg-[#A8BBA3] with white text at 2.04:1, so the pill was
+   failing anyway.
+   AND IT IS NOT A STATUS COLOUR. Two reasons, one measured and one editorial.
+   Measured: the status inks are tuned for the PAGE, and a graphite card is a dark context
+   even in the light theme -- --pos #4A6B44 on #4F4F4F is 1.36:1, and --neg is 1.20:1.
+   Lightening them enough drives green to a bright mint (#91D285) and red all the way to
+   white, both off-palette. The wash existed precisely to lift the local background so a
+   dark ink could sit on it; removing the wash without removing the colour is not an option.
+   Editorial: a single portfolio delta rendered green/red is trading-terminal language, and
+   this system explicitly is "not a trading terminal". So the delta takes the surface's own
+   muted ink (5.01:1 light card / 9.52:1 dark) and the SIGN carries direction -- which also
+   satisfies SC 1.4.1 without an arrow glyph, of which the set ships none. Status colour
+   stays where it earns its keep: individual transactions in the activity list.
+   If losses should ever read red, that is a graphite-scope --neg, added deliberately. */
+.mbc .delta{font-size:var(--t-caption);font-weight:700;color:var(--ink-2);white-space:nowrap;
+  font-family:var(--num);font-feature-settings:var(--num-feat)}
 /* Solid hairline, not dashed: the dashed rule read as a receipt tear and is the one
    decorative flourish left on an otherwise restrained surface. */
 .mbc .bot{border-top:1px solid var(--rule);padding:0 6px 0 16px;display:flex;align-items:center;justify-content:space-between;gap:8px;min-height:44px}
@@ -468,7 +487,7 @@ table.map td code{font-size:12px}
 [data-card="green"] {--balance:var(--card-green); --balance-deep:var(--card-green-deep); --card-rim:var(--card-green)}
 [data-card="purple"]{--balance:var(--card-purple);--balance-deep:var(--card-purple-deep);--card-rim:var(--card-purple)}
 [data-theme="dark"] [data-card]{--balance:#101010; --balance-deep:#000000}
-[data-theme="dark"] .mbc[data-card]{border-top:3px solid var(--card-rim)}
+/* rim now applied in .mstack for both themes -- see the note there */
 
 /* ---- Prompt carousel: horizontal, scroll-snapped, with peek ---------------------------
    The shipped PromptCarousel is a drag-driven paged carousel with dots. Multiplicity is
@@ -493,22 +512,49 @@ table.map td code{font-size:12px}
   margin:0 auto 14px;flex:none}
 .mshead{font-family:var(--display);font-weight:800;font-size:var(--t-subhead);margin-bottom:12px;flex:none}
 
-/* ---- Account cards, half-stacked (iPhone Wallet model) --------------------------------
-   FORWARD-LOOKING. The shipped AccountsDrawer lists no accounts at all -- it is a card
-   colour picker, a Settings link, and a DISABLED "Add account (coming soon)" button. So
-   this is a design for a feature that does not exist yet, marked accordingly.
-   Overlap is 80px against a 144.6px card, leaving a 64px band per collapsed card: enough
-   for the account label and its balance, which are the two things you choose between. The
-   frontmost card is fully revealed. Each card carries a top rim so the stack edge reads
-   even when two adjacent cards share a colour. */
-.mstack{display:flex;flex-direction:column;overflow-y:auto;overflow-x:hidden;padding-bottom:4px}
-.mstack > .mbc{flex:none;box-shadow:0 -1px 0 var(--nav-rim),0 -6px 16px rgba(0,0,0,.14)}
-.mstack > .mbc + .mbc{margin-top:-80px}
-.mstack > .mbc.sel{margin-bottom:0}
-.mstack .mbc .bot{opacity:0;transition:opacity var(--dur-fast) ease}
-.mstack .mbc.sel .bot{opacity:1}
-.mstack .mbc .amt{font-size:26px}
-.mstack .mbc.sel .amt{font-size:var(--t-balance)}
+/* ---- Account list: vertical balance blocks (Family's model) ----------------------------
+   Replaced an Apple-Wallet overlap stack, and the reasons are all things the stack could not
+   fix:
+   - In DARK every card is near-black, and overlapping them merged all three into one block.
+     Tinting each with its account hue at 12% measured 1.00-1.04:1 between adjacent cards --
+     hue separates almost nothing at near-black, so only a structural gap actually works.
+   - The collapsed band forced a choice between showing the name and showing the balance; one
+     card's amount butted straight into the next card's name.
+   - The stack grew 64px per account and stopped working past about six.
+   A plain list on the --stack rhythm has none of those problems and scales to any count.
+   Blocks are the balance card's top half only: name plus balance, which is what you choose
+   between. No delta -- performance is not why this sheet is open. */
+.mlist{display:flex;flex-direction:column;gap:var(--stack);overflow-y:auto;padding:2px 0 4px}
+.mlist > .mbc{flex:none;position:relative}
+.mlist .anm{font-size:var(--t-caption);font-weight:700;color:var(--ink);
+  display:flex;align-items:center;gap:6px;min-height:22px}
+.mlist .amt{font-size:26px}
+/* Selection is a filled check, not a ring: an outline round a card would read as a bordered
+   control, which this system does not use. */
+.mlist .achk{position:absolute;top:10px;right:12px;width:22px;height:22px;border-radius:50%;
+  background:var(--pos);display:none;align-items:center;justify-content:center;
+  color:var(--paper);font-size:12px;font-weight:800;z-index:2}
+.mlist > .mbc.sel .achk{display:flex}
+
+/* ---- Per-account sheet: where renaming and identity live -------------------------------
+   Separated from the stack deliberately. The stack answers "which account"; this answers
+   "what about this account". Renaming inside a 38px collapsed band would compete with the
+   selection gesture, and the card colour belongs here too because colour is per-account
+   IDENTITY, not a global preference -- today it is one localStorage value for the whole app,
+   which is why it currently reads as decoration. */
+.afield{display:flex;align-items:center;justify-content:space-between;gap:10px;
+  min-height:52px;padding:0 14px;background:var(--surface-2);border-radius:var(--radius-md)}
+.afield .k{font-size:var(--t-caption);color:var(--ink-2);font-weight:600}
+.afield .v{font-size:var(--t-label);font-weight:700}
+.afield .v.mono{font-family:var(--mono);font-weight:500}
+.afield.edit{box-shadow:0 0 0 1.5px var(--accent)}
+.afield.edit .v::after{content:'';display:inline-block;width:1.5px;height:14px;
+  background:var(--accent);margin-left:2px;vertical-align:-2px;animation:caret 1s step-end infinite}
+@keyframes caret{50%{opacity:0}}
+.aswatches{display:flex;gap:10px}
+.aswatches .sw{width:38px;height:38px;border-radius:50%;flex:none;position:relative}
+.aswatches .sw.on::after{content:'\2713';position:absolute;inset:0;display:flex;
+  align-items:center;justify-content:center;color:var(--pure-white);font-size:15px;font-weight:800}
 .mstk-lbl{font-size:var(--t-caption);font-weight:700;color:var(--ink-2);
   display:flex;align-items:center;gap:6px}
 .mstk-lbl .chk{width:14px;height:14px;border-radius:50%;background:var(--pos);flex:none}
@@ -2350,7 +2396,7 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
             </div>
             <div class="mbc">
               <div class="top" data-surface="graphite" data-pattern="seigaiha">
-                <div class="balrow"><div class="tl">Total Balance</div><div class="delta" data-status="pos">+0.00 (0.00%)</div></div>
+                <div class="balrow"><div class="tl">Total Balance</div><div class="delta" data-status="pos">+0.00%</div></div>
                 <div class="amt">$0.00 <small>USD</small></div></div>
               <div class="bot" data-surface="graphite-deep"><span class="acc">Account #: mtst1ap8…r4fp</span><button class="m" aria-label="Account options"><i>⋯</i></button></div>
             </div>
@@ -2876,7 +2922,7 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
             </div>
             <div class="mbc">
               <div class="top" data-surface="graphite" data-pattern="seigaiha">
-                <div class="balrow"><div class="tl">Total Balance</div><div class="delta" data-status="pos">+$40.00 (0.32%)</div></div>
+                <div class="balrow"><div class="tl">Total Balance</div><div class="delta" data-status="pos">+0.32%</div></div>
                 <div class="amt">$12,480.50 <small>USD</small></div></div>
               <div class="bot" data-surface="graphite-deep"><span class="acc">Account #: mtst1ap8…r4fp</span><button class="m" aria-label="Account options"><i>⋯</i></button></div>
             </div>
@@ -2890,7 +2936,7 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
         </div></div></div>
         <div class="scrnote">Funded state. Balance and amounts in Nunito tabular; addresses in Geist Mono.</div></div>
 
-      <div><div class="scrcap"><i></i>Accounts &middot; stacked cards <span class="tag retire">proposed</span></div>
+      <div><div class="scrcap"><i></i>Accounts &middot; list <span class="tag retire">proposed</span></div>
         <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
           <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>
           <div class="mpad" style="flex:1;opacity:.35"><div class="masset-h">Assets</div><button class="msearch">Search for tokens</button></div>
@@ -2898,16 +2944,16 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
           <div class="msheet">
             <div class="mshandle"></div>
             <div class="mshead">Accounts</div>
-            <div class="mstack">
-              <div class="mbc" data-card="blue"><div class="top" data-surface="graphite" data-pattern="seigaiha"><div class="balrow"><div class="tl">Miden Account 1</div><div class="delta" data-status="pos">+0.11%</div></div><div class="amt">$1,204.00 <small>USD</small></div></div><div class="bot" data-surface="graphite-deep"><span class="acc">Account #: mtst1ap8&hellip;r4fp</span><button class="m" aria-label="Account options"><i>&ctdot;</i></button></div></div>
-              <div class="mbc" data-card="green"><div class="top" data-surface="graphite" data-pattern="seigaiha"><div class="balrow"><div class="tl">Miden Account 2</div><div class="delta" data-status="pos">+0.04%</div></div><div class="amt">$318.90 <small>USD</small></div></div><div class="bot" data-surface="graphite-deep"><span class="acc">Account #: mtst1ap8&hellip;r4fp</span><button class="m" aria-label="Account options"><i>&ctdot;</i></button></div></div>
-              <div class="mbc sel" data-card="slate"><div class="top" data-surface="graphite" data-pattern="seigaiha"><div class="balrow"><div class="tl">Miden Account 3</div><div class="delta" data-status="pos">+0.32%</div></div><div class="amt">$12,480.50 <small>USD</small></div></div><div class="bot" data-surface="graphite-deep"><span class="acc">Account #: mtst1ap8&hellip;r4fp</span><button class="m" aria-label="Account options"><i>&ctdot;</i></button></div></div>
+            <div class="mlist">
+              <div class="mbc" data-card="blue"><span class="achk">&#10003;</span><div class="top" data-surface="graphite" data-pattern="seigaiha"><div class="balrow"><div class="anm">Miden Account 1</div></div><div class="amt">$1,204.00 <small>USD</small></div></div></div>
+              <div class="mbc" data-card="green"><span class="achk">&#10003;</span><div class="top" data-surface="graphite" data-pattern="seigaiha"><div class="balrow"><div class="anm">Miden Account 2</div></div><div class="amt">$318.90 <small>USD</small></div></div></div>
+              <div class="mbc sel" data-card="slate"><span class="achk">&#10003;</span><div class="top" data-surface="graphite" data-pattern="seigaiha"><div class="balrow"><div class="anm">Miden Account 3</div></div><div class="amt">$12,480.50 <small>USD</small></div></div></div>
             </div>
             <div class="mstk-lbl" style="margin-top:12px"><span class="chk nti"></span>Miden Account 3 selected</div>
             <div class="zone" style="padding-bottom:max(16px,var(--safe-bottom,0px))"><button class="btn btn-primary">Add account</button></div>
           </div>
         </div></div></div>
-        <div class="scrnote"><b>Proposed &mdash; multi-account does not exist yet.</b> The shipped <code>AccountsDrawer</code> lists <em>no accounts at all</em>: it is a card-colour picker, a Settings link, and a <em>disabled</em> &ldquo;Add account (coming soon)&rdquo; button whose dashed outline also breaks the no-bordered-controls rule. Cards overlap by <b>80px</b> against a 144.6px card, leaving a <b>64px</b> band each &mdash; enough for the account name and its balance, which are the two things you actually choose between. The frontmost card is fully revealed; the account row and the full-size figure appear only on the selected one, so hierarchy comes from <em>reveal</em> rather than from adding chrome. In <b>dark</b> the near-black rule holds and the account hue survives as a <b>3px top rim</b> &mdash; a coloured card in dark floats as a grey box, which was the original complaint, but without <em>some</em> hue every account would be identical near-black and the stack unreadable.</div></div>
+        <div class="scrnote"><b>Proposed &mdash; multi-account does not exist yet.</b> The shipped <code>AccountsDrawer</code> lists <em>no accounts at all</em>: it is a card-colour picker, a Settings link, and a <em>disabled</em> &ldquo;Add account (coming soon)&rdquo; button whose dashed outline also breaks the no-bordered-controls rule. <b>Vertical list, not an Apple-Wallet stack</b> &mdash; the stack was built first and failed on three counts: in <b>dark</b> every card is near-black so overlapping merged all three into one block (tinting each with its account hue at 12&percnt; measured <b>1.00&ndash;1.04:1</b> between adjacent cards, because hue separates almost nothing at near-black); the collapsed band forced a choice between the name and the balance, with one card&rsquo;s amount butting into the next card&rsquo;s name; and it grew 64px per account, stopping around six. Blocks here are the card&rsquo;s top half &mdash; name and balance, which is what you choose between &mdash; with no delta, since performance is not why this sheet is open. Selection is a filled check rather than a ring, because an outline round a card would read as a bordered control. <b>Renaming is deliberately not here:</b> the list answers &ldquo;which account&rdquo;, and a rename affordance would compete with the selection gesture.</div></div>
       <div><div class="scrcap"><i></i>Accounts sheet</div>
         <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
           <div class="stat"><span>9:41</span><span class="r">✦ ▪ ▪</span></div>
