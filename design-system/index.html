@@ -177,7 +177,12 @@
    colour overrides and no specificity collisions. This is the mechanism that makes
    "colour:var(--ink-2)" correct on white *and* on graphite. */
 [data-surface]{color:var(--ink)}
-[data-surface="graphite"]{background:var(--balance); --st-glyph:#90BA89;
+[data-surface="graphite"]{background:var(--balance);
+  /* Direction colours for the card, cleared at 3:1 as GRAPHICS on every card colour --
+     3.32:1 worst case for up, 3.06:1 for down. The page-level --pos/--neg cannot be used:
+     they are tuned for the page and measure 1.07-2.62:1 here. Down needed lightening from
+     #F5736B to #FF847B to clear the darkest card. */
+  --st-up:#90BA89; --st-down:#FF847B; --st-glyph:var(--st-up);
   --ink:var(--balance-fg); --ink-2:var(--balance-fg-muted); --ink-3:rgba(255,255,255,.5);
   --rule:rgba(255,255,255,.18); --rule-strong:rgba(255,255,255,.3)}
 [data-surface="graphite-deep"]{background:var(--balance-deep);
@@ -353,7 +358,7 @@ table.map td code{font-size:12px}
    is an attribute OF the balance, so it reads fine beside its label. */
 .mbc .balrow{display:flex;align-items:center;justify-content:space-between;gap:10px}
 .mbc .tl{font-size:var(--t-caption);font-weight:600;color:var(--ink-2)}
-.mbc .amt{font-family:var(--num);font-feature-settings:var(--num-feat);font-weight:800;font-size:var(--t-balance);letter-spacing:-.02em;margin-top:5px;display:flex;align-items:baseline;gap:6px}
+.mbc .amt{font-family:var(--num);font-feature-settings:var(--num-feat);font-weight:800;letter-spacing:-.02em;margin-top:5px;display:flex;align-items:baseline;gap:6px}
 .mbc .amt small{font-size:var(--t-caption);color:var(--ink-2);font-weight:500}
 /* Delta is a CAPTION, not a badge. The filled wash pill read as senior to the balance it
    describes -- a bright blob on the label row, above the number, competing with the figure
@@ -393,16 +398,26 @@ table.map td code{font-size:12px}
    'it's a glyph so 3:1 applies' was wrong while it was still a character. */
 .mbc .delta .tri{width:8px;height:7px;flex:none;fill:var(--st-glyph,var(--ink-2))}
 .mbc .delta .per{font-weight:600;opacity:.75;font-family:var(--ui)}
-.mbc .delta .ch{font-size:13px;opacity:.6;font-family:var(--ui)}
-/* Balance block: figure + delta stacked left, performance chart right, so the chart occupies
-   existing vertical space rather than adding a band of its own. */
-.mbc .balmain{display:flex;align-items:flex-end;justify-content:space-between;gap:12px}
-.mbc .balmain .bl{min-width:0}
-.mbc .perf{width:96px;height:44px;flex:none;display:block;overflow:visible}
-.mbc .perf .ln{fill:none;stroke:var(--st-glyph,var(--ink-2));stroke-width:1.8;
+/* Balance block: figure + delta stacked left, chart right, so the chart uses existing
+   vertical space rather than adding a band. The chart BLEEDS to the card's right edge
+   (-16px, the card's own padding) and stretches the full block height -- boxed and inset it
+   read as a widget dropped on the card rather than the card's own data. */
+.mbc .balmain{display:flex;align-items:stretch;justify-content:space-between;gap:14px}
+.mbc .balmain .bl{min-width:0;display:flex;flex-direction:column;justify-content:flex-end}
+.mbc .perf{width:124px;flex:none;display:block;align-self:stretch;margin-right:-16px;
+  min-height:52px;overflow:visible}
+.mbc .perf .ln{fill:none;stroke:var(--pc,var(--st-up));stroke-width:2;
   stroke-linecap:round;stroke-linejoin:round;vector-effect:non-scaling-stroke}
-.mbc .perf .ar{fill:var(--st-glyph,var(--ink-2));opacity:.16;stroke:none}
-.mbc .perf .lbl{font-family:var(--ui);font-size:8px;font-weight:700;fill:var(--ink-2);opacity:.8}
+/* Vertical fade, not a flat 16% wash: a hard-edged block of colour under the line reads as a
+   filled shape, where a fade reads as depth under a trend. */
+/* Fallback is mandatory. --pc is set by data-dir; with the attribute missing, fill:var(--pc)
+   is invalid and SVG falls back to its default BLACK -- which is exactly how this shipped
+   as a solid black block. Same for the line. */
+.mbc .perf .ar{fill:var(--pc,var(--st-up));stroke:none;opacity:.18}
+.mbc .perf[data-dir="up"]  {--pc:var(--st-up)}
+.mbc .perf[data-dir="down"]{--pc:var(--st-down)}
+.mbc .delta[data-dir="down"]{--st-glyph:var(--st-down)}
+.mbc .delta[data-dir="down"] .tri{transform:rotate(180deg)}
 /* Solid hairline, not dashed: the dashed rule read as a receipt tear and is the one
    decorative flourish left on an otherwise restrained surface. */
 .mbc .bot{border-top:1px solid var(--rule);padding:0 6px 0 16px;display:flex;align-items:center;justify-content:space-between;gap:8px;min-height:44px}
@@ -576,26 +591,52 @@ table.map td code{font-size:12px}
    between. No delta -- performance is not why this sheet is open. */
 .mlist{display:flex;flex-direction:column;gap:var(--stack);overflow-y:auto;padding:2px 0 4px}
 .mlist > .mbc{flex:none;position:relative}
-.mlist .anm{font-size:var(--t-caption);font-weight:700;color:var(--ink);
+/* Scoped to .mbc, not .mlist. Scoping it to the list gave the account sheet's card a shorter
+   name row for identical content -- three screens showed the same component at 155 / 122 /
+   132pt, which read as three accidents rather than a decision. Now TWO sizes: compact
+   (name + figure) wherever you are choosing or previewing an account, and .hero (adds the
+   delta line, the chart and the account row) on Home, which is the only place those belong. */
+.mbc .anm{font-size:var(--t-caption);font-weight:700;color:var(--ink);
   display:flex;align-items:center;gap:6px;min-height:22px}
-.mlist .amt{font-size:26px}
+.mbc .amt{font-size:26px}
+.mbc.hero .amt{font-size:var(--t-balance)}
 /* Selection is a filled check, not a ring: an outline round a card would read as a bordered
    control, which this system does not use. */
 /* Selection is NEUTRAL ink, not --pos. Green means "positive status"; being the selected
    account is not a status, and reusing the status ramp for UI state is the same misuse that
    put green/red on the portfolio delta. Matches the nav, where active is --ink for the same
    reason. Contrast: 10.5:1 light, 17.6:1 dark, against --pos's narrower pass. */
-/* Per-row options. Selecting the card switches account; this reaches that account's own
-   sheet, which is where renaming lives. 44pt target, inset so it does not enlarge the card. */
-.mlist .arow-m{position:absolute;top:0;right:0;min-width:44px;min-height:44px;border:0;
-  background:none;padding:0;display:flex;align-items:center;justify-content:center;
-  color:var(--ink-2);z-index:3;cursor:pointer}
-.mlist > .mbc.sel .arow-m{display:none}
-.mlist .arow-m i{font-style:normal;font-size:var(--t-caption);letter-spacing:1px}
-.mlist .achk{position:absolute;top:10px;right:12px;width:22px;height:22px;border-radius:50%;
-  background:var(--ink);display:none;align-items:center;justify-content:center;
-  color:var(--paper);font-size:12px;font-weight:800;z-index:2}
-.mlist > .mbc.sel .achk{display:flex}
+/* An explicit "Edit" per account, not a generic More. The sheet it opens is that account's
+   own -- rename, colour, address -- so naming the action beats a menu glyph, and there is no
+   pencil in the icon set to borrow. Present on EVERY card including the selected one: the
+   account you are on is the one you are most likely to want to rename.
+   The old global "Settings" row is gone from this sheet. A global destination inside an
+   account-scoped sheet was a category error, and it is not stranded -- Settings is reachable
+   from Activity's TabHeader gear. Two taps from Home instead of three, and the residual
+   oddity is that Home still has no header of its own. */
+/* Colour comes from --balance-fg-muted, NOT --ink-2. This element is a child of .mbc, and the
+   graphite surface scope lives on .top -- so an absolutely-positioned sibling sits OUTSIDE the
+   scope and --ink-2 resolves to the PAGE's dark grey, which on a dark card rendered invisible.
+   Third time this trap has bitten: anything positioned onto a scoped surface must take its
+   colour from that surface's own tokens, which are theme-level and scope-independent. */
+.mbc .aedit{position:absolute;top:0;right:0;min-height:44px;min-width:52px;padding:0 10px;border:0;
+  background:none;color:var(--balance-fg-muted);font-family:var(--ui);font-size:var(--t-caption);
+  font-weight:700;display:flex;align-items:center;z-index:3;cursor:pointer}
+/* Inline before the name, not in the corner -- the corner now belongs to Edit, and a check
+   beside the name reads as "this one" more directly than a floating badge. */
+/* The tick is --balance (the card's own fill), NOT --paper. Inside data-surface="graphite"
+   --ink resolves to WHITE, so a white badge with a paper-coloured tick was white-on-white at
+   1.03:1. That is the surface-scope trap: --ink means "readable ink on THIS surface", so
+   anything using it as a BACKGROUND must take its foreground from the surface too. */
+/* An SVG shape, not a character. As a 9px check glyph it tripped the 11pt text floor -- the
+   same mistake as the delta triangle. The stroke is --balance (the card's own fill), NOT
+   --paper: inside data-surface="graphite" --ink resolves to WHITE, so a white badge with a
+   paper tick measured 1.03:1. --ink means "readable ink on THIS surface", so anything using it
+   as a background must take its foreground from the surface too. */
+.mlist .achk{width:15px;height:15px;border-radius:50%;background:var(--ink);display:none;flex:none}
+.mlist .achk path{fill:none;stroke:var(--balance);stroke-width:1.9;stroke-linecap:round;
+  stroke-linejoin:round}
+.mbc.sel .achk{display:inline-block;vertical-align:-3px}
 
 /* ---- Per-account sheet: where renaming and identity live -------------------------------
    Separated from the stack deliberately. The stack answers "which account"; this answers
@@ -1196,6 +1237,18 @@ ul.tick li:before{content:"→";position:absolute;left:2px;color:var(--accent-in
 .fld .inp:disabled{opacity:.45;cursor:not-allowed}
 .fld .hint{font-size:11.5px;margin-top:6px;color:var(--ink-3)}
 .fld.err .hint{color:var(--neg);font-weight:600}
+/* The scan affordance belongs with the address field, not in the bottom action zone. It was a
+   ghost row under Continue -- two steps away from the input it fills, and competing with the
+   primary action for the zone. Now a trailing control on the field row: one tap, obviously
+   related, and the action zone is back to a single action.
+   Icon is the app's own qr-scan.svg, copied in -- and it needed a stroke added, like key.svg
+   and search.svg before it, since these files carry fill="none" and the app's <Icon> component
+   supplies the paint as a prop. */
+.fieldrow{display:flex;align-items:center;gap:8px}
+.scanbtn{min-width:48px;min-height:48px;flex:none;border:0;border-radius:var(--radius-full);
+  background:var(--surface-2);color:var(--ink-2);display:flex;align-items:center;
+  justify-content:center;cursor:pointer}
+.scanbtn .svgic{width:20px;height:20px}
 .searchf{background:var(--surface-2);border-radius:var(--radius-full);padding:12px 18px;display:flex;gap:9px;align-items:center;color:var(--ink-3);font-size:14px;width:270px}
 .amtent{text-align:center;padding:10px 0;width:270px}
 .amtent .big{font-family:var(--num);font-feature-settings:var(--num-feat);font-weight:800;font-size:38px;letter-spacing:-.02em;color:var(--ink)}
@@ -3012,16 +3065,16 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
               <div class="seg" data-act="receive"><span class="svgic" style="--ic:url(assets/icons/receive-new.svg);" aria-hidden="true"></span><span class="lbl">Receive</span></div>
               <div class="seg" data-act="swap"><span class="svgic" style="--ic:url(assets/icons/convert.svg);" aria-hidden="true"></span><span class="lbl">Swap</span></div>
             </div>
-            <div class="mbc">
-              <div class="top" data-surface="graphite" data-pattern="seigaiha">
+            <div class="mbc hero" data-card="slate">
+              <div class="top" data-surface="graphite" data-pattern="">
                 <div class="balrow"><div class="tl">Total Balance</div></div>
                 <div class="balmain"><div class="bl">
                   <div class="amt">$12,480.50 <small>USD</small></div>
-                  <div class="delta"><svg class="tri" viewBox="0 0 8 7" aria-hidden="true"><path d="M4 0 8 7 0 7Z"/></svg>+$40.00 (0.32%)<span class="per">today</span><span class="ch">&rsaquo;</span></div>
+                  <div class="delta"><svg class="tri" viewBox="0 0 8 7" aria-hidden="true"><path d="M4 0 8 7 0 7Z"/></svg>+$40.00 (0.32%)<span class="per">today</span></div>
                 </div>
-                <svg class="perf" viewBox="0 0 96 44" aria-label="Balance, today: up 0.32 percent">
-                  <path class="ar" d="M0,34 12,30 24,32 36,22 48,26 60,14 72,18 84,8 96,11 96,44 0,44Z"/>
-                  <polyline class="ln" points="0,34 12,30 24,32 36,22 48,26 60,14 72,18 84,8 96,11"/>
+                <svg class="perf" data-dir="up" viewBox="0 0 124 52" preserveAspectRatio="none" aria-label="Balance today, up 0.32 percent">
+                  <path class="ar" d="M0,40 15,35 31,38 46,26 62,31 77,17 93,22 108,9 124,13 124,52 0,52Z"/>
+                  <polyline class="ln" points="0,40 15,35 31,38 46,26 62,31 77,17 93,22 108,9 124,13"/>
                 </svg></div></div>
               <div class="bot" data-surface="graphite-deep"><span class="acc">Account #: mtst1ap8…r4fp</span><span class="ch">›</span></div>
             </div>
@@ -3044,7 +3097,7 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
             <div class="mshandle"></div>
             <div class="mshead"><button class="shback" aria-label="Back">&lsaquo;</button>Miden Account 3</div>
             <div class="mbc" data-card="slate" style="margin-bottom:12px">
-              <div class="top" data-surface="graphite" data-pattern=""><div class="balrow"><div class="anm">Miden Account 3</div></div><div class="amt">$12,480.50 <small>USD</small></div></div></div>
+              <div class="top" data-surface="graphite" data-pattern=""><button class="aedit">Edit</button><div class="balrow"><div class="anm">Miden Account 3</div></div><div class="amt">$12,480.50 <small>USD</small></div></div></div>
             <div class="afield edit" style="margin-bottom:8px"><span class="k">Name</span><span class="v">Miden Account 3</span></div>
             <div class="afield" style="margin-bottom:12px"><span class="k">Address</span><span class="v mono">mtst1ap8&hellip;r4fp</span><button class="acopy" aria-label="Copy address"><span class="svgic" style="--ic:url(assets/icons/copy.svg)" aria-hidden="true"></span></button></div>
             <div class="mstk-lbl2">Card colour</div>
@@ -3068,49 +3121,26 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
             <div class="mshandle"></div>
             <div class="mshead">Accounts</div>
             <div class="mlist">
-              <div class="mbc" data-card="blue"><span class="achk">&#10003;</span><button class="arow-m" aria-label="Account options"><i>&ctdot;</i></button><div class="top" data-surface="graphite" data-pattern=""><div class="balrow"><div class="anm">Miden Account 1</div></div><div class="amt">$1,204.00 <small>USD</small></div></div></div>
-              <div class="mbc" data-card="green"><span class="achk">&#10003;</span><button class="arow-m" aria-label="Account options"><i>&ctdot;</i></button><div class="top" data-surface="graphite" data-pattern=""><div class="balrow"><div class="anm">Miden Account 2</div></div><div class="amt">$318.90 <small>USD</small></div></div></div>
-              <div class="mbc sel" data-card="slate"><span class="achk">&#10003;</span><button class="arow-m" aria-label="Account options"><i>&ctdot;</i></button><div class="top" data-surface="graphite" data-pattern=""><div class="balrow"><div class="anm">Miden Account 3</div></div><div class="amt">$12,480.50 <small>USD</small></div></div></div>
+              <div class="mbc" data-card="blue"><div class="top" data-surface="graphite" data-pattern=""><button class="aedit">Edit</button><div class="balrow"><div class="anm"><svg class="achk" viewBox="0 0 12 12" aria-hidden="true"><path d="M3 6.4 5 8.6 9 3.8"/></svg>Miden Account 1</div></div><div class="amt">$1,204.00 <small>USD</small></div></div></div>
+              <div class="mbc" data-card="green"><div class="top" data-surface="graphite" data-pattern=""><button class="aedit">Edit</button><div class="balrow"><div class="anm"><svg class="achk" viewBox="0 0 12 12" aria-hidden="true"><path d="M3 6.4 5 8.6 9 3.8"/></svg>Miden Account 2</div></div><div class="amt">$318.90 <small>USD</small></div></div></div>
+              <div class="mbc sel" data-card="slate"><div class="top" data-surface="graphite" data-pattern=""><button class="aedit">Edit</button><div class="balrow"><div class="anm"><svg class="achk" viewBox="0 0 12 12" aria-hidden="true"><path d="M3 6.4 5 8.6 9 3.8"/></svg>Miden Account 3</div></div><div class="amt">$12,480.50 <small>USD</small></div></div></div>
             </div>
             
-            <div class="setgroup" style="margin-top:12px"><div class="setrow"><span class="svgic" style="--ic:url(assets/icons/settings-new.svg)" aria-hidden="true"></span>Settings<span class="ch">&rsaquo;</span></div></div><div class="zone" style="padding-bottom:max(16px,var(--safe-bottom,0px))"><button class="btn btn-primary">Add account</button></div>
+            <div class="zone" style="padding-bottom:max(16px,var(--safe-bottom,0px))"><button class="btn btn-primary">Add account</button><div class="gh">Settings &rsaquo;</div></div>
           </div>
         </div></div></div>
         <div class="scrnote"><b>Proposed &mdash; multi-account does not exist yet.</b> The shipped <code>AccountsDrawer</code> lists <em>no accounts at all</em>: it is a card-colour picker, a Settings link, and a <em>disabled</em> &ldquo;Add account (coming soon)&rdquo; button whose dashed outline also breaks the no-bordered-controls rule. <b>Vertical list, not an Apple-Wallet stack</b> &mdash; the stack was built first and failed on three counts: in <b>dark</b> every card is near-black so overlapping merged all three into one block (tinting each with its account hue at 12&percnt; measured <b>1.00&ndash;1.04:1</b> between adjacent cards, because hue separates almost nothing at near-black); the collapsed band forced a choice between the name and the balance, with one card&rsquo;s amount butting into the next card&rsquo;s name; and it grew 64px per account, stopping around six. Blocks here are the card&rsquo;s top half &mdash; name and balance, which is what you choose between &mdash; with no delta, since performance is not why this sheet is open. Selection is a filled check rather than a ring, because an outline round a card would read as a bordered control. <b>Renaming is deliberately not here:</b> the list answers &ldquo;which account&rdquo;, and a rename affordance would compete with the selection gesture.</div></div>
-      <div><div class="scrcap"><i></i>Accounts sheet</div>
-        <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
-          <div class="stat"><span>9:41</span><span class="r">✦ ▪ ▪</span></div>
-          <div class="mpad" style="flex:1;opacity:.4"><div class="mseg"><div class="seg on"><span class="svgic" style="--ic:url(assets/icons/wallet.svg);" aria-hidden="true"></span><span class="lbl">Overview</span></div><div class="seg" data-act="send"><span class="svgic" style="--ic:url(assets/icons/send-new.svg);" aria-hidden="true"></span></div><div class="seg" data-act="receive"><span class="svgic" style="--ic:url(assets/icons/receive-new.svg);" aria-hidden="true"></span></div><div class="seg" data-act="swap"><span class="svgic" style="--ic:url(assets/icons/convert.svg);" aria-hidden="true"></span></div></div>
-            <div class="mbc"><div class="top" data-surface="graphite" data-pattern="seigaiha"><div class="tl">Total Balance</div><div class="amt">$12,480.50 <small>USD</small></div></div></div></div>
-          <div style="position:absolute;inset:0;background:rgba(0,0,0,.45)"></div>
-          <div style="position:absolute;left:0;right:0;bottom:0;background:var(--surface);border-radius:var(--radius-lg) var(--radius-lg) 0 0;padding:12px 20px max(16px,var(--safe-bottom))">
-            <div style="width:40px;height:5px;border-radius:var(--radius-full);background:var(--rule-strong);margin:0 auto 14px"></div>
-            <div style="font-family:var(--display);font-weight:800;font-size:16px;margin-bottom:10px">Accounts</div>
-            <div class="mrow" style="padding:9px 0"><div class="ic" style="background:var(--balance)"></div><div><div class="nm">Miden Account 1</div><div class="ad">mtst1ap8…r4fp</div></div><div class="rt"><div class="f">$12,480.50</div></div></div>
-            <div style="font-size:11.5px;color:var(--ink-2);margin:12px 0 8px">Card colour</div>
-            <div style="display:flex;gap:9px">
-              <span class="nti" style="width:30px;height:30px;border-radius:50%;background:var(--card-slate);box-shadow:0 0 0 2px var(--accent)"></span>
-              <span class="nti" style="width:30px;height:30px;border-radius:50%;background:var(--card-orange)"></span>
-              <span class="nti" style="width:30px;height:30px;border-radius:50%;background:var(--card-blue)"></span>
-              <span class="nti" style="width:30px;height:30px;border-radius:50%;background:var(--card-green)"></span>
-              <span class="nti" style="width:30px;height:30px;border-radius:50%;background:var(--card-purple)"></span>
-            </div>
-            <div class="setgroup" style="margin-top:14px"><div class="setrow"><span class="svgic" style="--ic:url(assets/icons/settings-new.svg);" aria-hidden="true"></span>Settings<span class="ch">›</span></div></div>
-          </div>
-        </div></div></div>
-        <div class="scrnote">The canonical bottom sheet — one overlay primitive (vaul) for every picker in the app.</div></div>
-
       <div><div class="scrcap"><i></i>Send · recipient</div>
         <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
           <div class="stat"><span>9:41</span><span class="r">✦ ▪ ▪</span></div>
           <div class="mpad" style="flex:1;display:flex;flex-direction:column">
             <div class="sh2"><span class="bk2">‹</span><span class="t2">Send to</span></div>
-            <div class="searchf" style="width:auto">Address, name or ENS</div>
+            <div class="fieldrow"><div class="searchf" style="width:auto;flex:1">Address, name or ENS</div><button class="scanbtn" aria-label="Scan a QR code"><span class="svgic" style="--ic:url(assets/icons/qr-scan.svg)" aria-hidden="true"></span></button></div>
             <div style="font-size:11.5px;color:var(--ink-2);margin:16px 0 4px;font-weight:600">Recent</div>
             <div class="mrow" style="padding:9px 0"><div class="ic" style="background:var(--tx-sent)"></div><div><div class="nm">Wiktor</div><div class="ad addr">mtst1ap8…r4fp</div></div></div>
             <div class="mrow" style="padding:9px 0"><div class="ic" style="background:var(--tx-swap)"></div><div><div class="nm">Dominik</div><div class="ad addr">mtst1kq2…88xz</div></div></div>
             <div class="mrow" style="padding:9px 0"><div class="ic" style="background:var(--tx-earn)"></div><div><div class="nm">Savings</div><div class="ad addr">mtst1zz9…41mn</div></div></div>
-            <div class="zone"><button class="btn btn-primary" style="width:100%">Continue</button><div class="gh">Scan a QR code</div></div>
+            <div class="zone"><button class="btn btn-primary" style="width:100%">Continue</button></div>
           </div>
         </div></div></div>
         <div class="scrnote">Named contacts above raw addresses — recognition over recall, and it reduces mis-paste risk.</div></div>
