@@ -97,30 +97,13 @@ export default {
               900: '#652D15',
               950: '#381508'
             },
-        logoOrange: isDevnet
-          ? {
-              200: '#8A9DB5',
-              300: '#C5D0DC',
-              400: '#7F95AD',
-              500: '#7286A0',
-              700: '#4E5F73'
-            }
-          : {
-              200: '#F1A47E',
-              300: '#F7C8B1',
-              400: '#E77537',
-              500: '#E77537',
-              700: '#9F4518'
-            },
         // Brand colors
-        'primary-white': '#fcfaf7',
         'primary-orange': isDevnet ? '#8A9DB5' : '#E77537',
         'primary-orange-disabled': isDevnet ? '#7F95AD' : '#DCD4C8',
         'primary-orange-light': isDevnet ? '#C5D0DC' : '#F7C8B1',
         'primary-orange-dark': isDevnet ? '#4E5F73' : '#9F4518',
         'primary-orange-lighter': isDevnet ? '#EEF1F4' : '#FFF3EC',
         'primary-orange-darker': isDevnet ? '#3A4857' : '#652D15',
-        'primary-gray': '#656565',
         'border-card': 'var(--color-border)',
         'border-faint': '#BABABA33',
         'chip-bg': 'var(--color-chip-bg)',
