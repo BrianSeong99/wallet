@@ -637,13 +637,38 @@ table.map td code{font-size:var(--t-label)}
    floats as a grey box) means hue cannot live in the fill. Light keeps the fill AND the
    stripe, so the treatment is the same shape in both themes. */
 .mlist > .mbc{flex:none;position:relative;border-left:3px solid var(--card-rim,var(--rule-strong))}
-/* Selection is the system's existing card idiom: a 2px accent ring. Both .gcard.sel (Guardian)
-   and .ropt.sel (recovery option) already use exactly this, so reusing it enforces a convention
-   rather than inventing a third treatment -- an inline check alone was too quiet to read as
-   state. The check STAYS alongside it so selection is never colour-only (SC 1.4.1).
-   The left stripe and the ring do not compete: the stripe is per-account IDENTITY and never
-   changes, the ring is STATE and moves as you choose. Different jobs, different edges. */
-.mlist > .mbc.sel{box-shadow:0 0 0 2px var(--accent)}
+/* Selection is carried by FILL, not an outline: the selected account is the only COLOURED
+   card, and the others are quiet neutral rows.
+   The accent ring came first, borrowed from .gcard.sel / .ropt.sel -- consistent on paper, but
+   a hard orange outline on a soft patterned card is a foreign visual language and read closer
+   to a warning border than to state. It also stacked a third signal onto a card that already
+   had a stripe and a check.
+   Fill is the better answer for the same reason it won in the nav: state should change the
+   object, not add a frame to it. And it says something the ring could not -- Home shows the
+   current account as a coloured card, so here the coloured card IS the current account. The
+   list and Home now agree.
+   Unselected cards override the balance tokens on .mbc, which sits OUTSIDE the graphite scope,
+   so var(--ink) there resolves to the page ink rather than the scope's white. Measured: name
+   9.60:1 light / 14.16:1 dark, secondary text 5.82 / 7.38. The check stays, so selection is
+   never colour-only (SC 1.4.1). */
+.mlist > .mbc:not(.sel){--balance:var(--surface-2); --balance-deep:var(--surface-3);
+  --balance-fg:var(--ink); --balance-fg-muted:var(--ink-2);
+  border-left-color:var(--card-rim)}
+/* background-image:none, not --pat:transparent. The pattern tokens hold gradient FUNCTIONS
+   that reference var(--pat); zeroing the colour leaves the gradients in place and merely
+   invisible, which is fragile and still paints. Removing the image is unambiguous. */
+.mlist > .mbc:not(.sel) [data-pattern]::after{background-image:none}
+/* DARK inverts the fill relationship, and this is a real correction rather than a tweak.
+   In dark the account hue cannot live in the fill (the near-black rule), so "the selected card
+   is the only coloured one" has nothing to express -- and worse, the selected card came out at
+   #101010 against unselected at #2B2B2B on a #232323 sheet, so the CHOSEN card was the only
+   one recessed below the sheet while the others appeared lifted. Exactly backwards.
+   So in dark the list steps the selected card UP (--surface-2) and the others DOWN to the page
+   colour, which reads as chosen-versus-quiet. This is scoped to .mlist: Home's hero card keeps
+   its near-black treatment, because the original complaint there was a coloured card floating
+   as a grey box, and a lifted row inside a sheet is not that. */
+[data-theme="dark"] .mlist > .mbc.sel{--balance:var(--surface-2); --balance-deep:var(--surface-3)}
+[data-theme="dark"] .mlist > .mbc:not(.sel){--balance:var(--paper); --balance-deep:var(--paper)}
 /* Scoped to .mbc, not .mlist. Scoping it to the list gave the account sheet's card a shorter
    name row for identical content -- three screens showed the same component at 155 / 122 /
    132pt, which read as three accidents rather than a decision. Now TWO sizes: compact
