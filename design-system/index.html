@@ -1345,6 +1345,39 @@ ul.tick li:before{content:"→";position:absolute;left:2px;color:var(--accent-in
    TOTAL visually separated — it's the value the user is actually approving. */
 /* App-native: three stacked soft rounded blocks with space between them — no hairline
    dividers, no table. Matches how Home stacks balance card → prompt → assets. */
+/* ---- Transaction step list ---------------------------------------------------------------
+   A genuine system addition: nothing existing covers an ordered, stateful step list (.progdots
+   is onboarding progress, .fid is the Face ID frame). Four states matching the shipped
+   helper.ts: pending / active / complete / failed.
+   The tick and spinner are SHAPES, not glyph characters -- a 9px character trips the 11pt text
+   floor, which caught me twice before on the delta triangle and the selection check. */
+.scrnote2{font-size:var(--t-caption);color:var(--ink-2);line-height:1.45;margin-top:10px}
+.tsteps{display:flex;flex-direction:column;gap:2px;margin-top:18px}
+.tstep{display:flex;align-items:center;gap:10px;padding:9px 2px;font-size:var(--t-label)}
+.tstep .tsi{width:18px;height:18px;flex:none;border-radius:50%;display:flex;align-items:center;
+  justify-content:center}
+.tstep .tsl{flex:1;color:var(--ink-2);font-weight:600}
+.tstep .tsm{font-size:var(--t-caption);color:var(--ink-3);font-family:var(--num)}
+.tstep[data-state="complete"] .tsi{background:var(--pos)}
+.tstep[data-state="complete"] .tsi svg{width:11px;height:11px}
+.tstep[data-state="complete"] .tsi path{fill:none;stroke:var(--paper);stroke-width:2;
+  stroke-linecap:round;stroke-linejoin:round}
+.tstep[data-state="complete"] .tsl{color:var(--ink)}
+.tstep[data-state="active"] .tsi{border:2px solid var(--accent);border-top-color:transparent;
+  animation:tspin .8s linear infinite}
+.tstep[data-state="active"] .tsl{color:var(--ink);font-weight:700}
+@keyframes tspin{to{transform:rotate(360deg)}}
+.tstep[data-state="pending"] .tsi{border:2px solid var(--rule-strong)}
+/* Token selector chip on the amount step. */
+.tokchip{display:inline-flex;align-self:flex-start;align-items:center;gap:7px;min-height:44px;padding:0 13px;
+  border-radius:var(--radius-full);background:var(--surface-2);border:0;cursor:pointer;
+  font-family:var(--ui);font-size:var(--t-label);font-weight:700;color:var(--ink)}
+.tokchip img{width:19px;height:19px;border-radius:50%;flex:none}
+.tokchip .cv{color:var(--ink-3);font-weight:600}
+.bigamt{font-family:var(--num);font-feature-settings:var(--num-feat);font-weight:800;
+  font-size:var(--t-display);line-height:1;letter-spacing:-.03em;margin:6px 0 8px}
+.amtmeta{font-size:var(--t-caption);color:var(--ink-2);margin-bottom:16px}
+
 .dcard{width:310px;display:flex;flex-direction:column;gap:10px}
 /* Money hero = the SAME graphite surface as the balance card. Metadata = the same grey
    block as every other content card. Two surfaces, both already in the app. No new ones. */
@@ -3224,16 +3257,85 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
           </div>
         </div></div></div>
         <div class="scrnote">Named contacts above raw addresses — recognition over recall, and it reduces mis-paste risk.</div></div>
+<div><div class="scrcap"><i></i>Send · amount</div>
+        <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
+          <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>
+          <div class="mpad" style="flex:1;display:flex;flex-direction:column">
+            <div class="sh2"><span class="bk2">&lsaquo;</span><span class="t2">Select Amount</span></div>
+            <div class="bigamt">100.00</div>
+            <div class="amtmeta">Available 200 USDC &middot; &asymp; $200.00 USD</div>
+            <button class="tokchip"><img src="assets/icons/usdc.svg" alt="">USDC<span class="cv">&rsaquo;</span></button>
+            <div class="zone"><button class="btn btn-primary">Confirm</button></div>
+                  </div>
+        </div></div></div></div>
+        <div class="scrnote"><b>Was undrawn.</b> A real Navigator step &mdash; <code>ROUTES</code> in <code>SendManager.tsx</code> is exactly <code>[SelectRecipient, SelectAmount]</code>, so the flow has two steps and only one was mocked. Copy is the shipped <code>selectAmount</code> / <code>available</code> / <code>approxFiatValue</code>. The CTA is disabled until <code>canProceed</code>; two error states exist and remain undrawn, <code>invalidAmount</code> and <code>amountMustBeLessThanBalance</code>.</div></div>
+<div><div class="scrcap"><i></i>Send · token picker <span class="tag merge">sheet</span></div>
+        <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
+          <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>
+          <div class="mpad" style="flex:1;display:flex;flex-direction:column">
+            <div class="sh2"><span class="bk2">&lsaquo;</span><span class="t2">Select Amount</span></div>
+            <div class="bigamt" style="opacity:.35">100.00</div>
+          </div>
+          <div class="shscrim"></div>
+          <div class="msheet">
+            <div class="mshandle"></div>
+            <div class="mshead">Select a token</div>
+            <div class="mrow"><div class="ic"><img src="assets/icons/miden.svg" alt=""></div><div><div class="nm">Miden</div><div class="ad">500 MDN</div></div><div class="rt"><div class="f">$17.65</div><div class="b">&minus;2.58%</div></div></div>
+            <div class="mrow"><div class="ic"><img src="assets/icons/usdc.svg" alt=""></div><div><div class="nm">USDC</div><div class="ad">200 USDC</div></div><div class="rt"><div class="f">$200.00</div><div class="b">+0.01%</div></div></div>
+            <div class="zone" style="padding-bottom:max(16px,var(--safe-bottom,0px))"><button class="btn btn-secondary">Cancel</button></div>
+          </div>
+        </div></div></div>
+        <div class="scrnote">The shipped picker is a vaul sheet (<code>SelectTokenDrawer</code>), reusing the same overlay primitive as every other picker. <b>Two gaps in the code this cannot show:</b> <code>SelectToken.tsx:63-79</code> maps the filtered list with <em>no empty branch and no loading branch</em>, so a search matching nothing &mdash; or balances still loading &mdash; renders an empty box. The contacts drawer beside it <em>does</em> have an empty state, which makes the omission look accidental.</div></div>
+<div><div class="scrcap"><i></i>Send · review <span class="tag retire">From row added</span></div>
+        <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
+          <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>
+          <div class="mpad" style="flex:1;display:flex;flex-direction:column">
+            <div class="sh2"><span class="bk2">&lsaquo;</span><span class="t2">Review Details</span></div>
+            <div style="font-size:var(--t-caption);color:var(--ink-2);font-weight:600">You are sending</div>
+            <div style="font-family:var(--num);font-feature-settings:var(--num-feat);font-weight:800;font-size:26px;margin:5px 0 2px">100.00 USDC</div>
+            <div style="font-size:var(--t-label);color:var(--ink-2)">&asymp; $200.00 USD</div>
+            <div class="dmeta" style="margin-top:18px">
+              <div class="drow"><span class="k">From</span><span class="v">Miden Account 3</span></div>
+              <div class="drow"><span class="k">To</span><span class="v addr2">mtst1kq2&hellip;88xz</span></div>
+              <div class="drow"><span class="k">Network</span><span class="v">Miden</span></div>
+              <div class="drow"><span class="k">Expiration Date</span><span class="v">In 7 days <span style="color:var(--accent-ink)">Edit</span></span></div>
+            </div>
+            <div class="scrnote2">If unclaimed by then, the 100 USDC returns to your wallet automatically. No funds are lost.</div>
+            <div class="zone"><button class="btn btn-primary">Send Payment</button></div>
+                  </div>
+        </div></div></div></div>
+        <div class="scrnote"><b>The From row is the point of this screen.</b> The shipped review renders exactly four things &mdash; <code>youAreSending</code>, <code>to</code>, <code>network</code>, <code>expirationDate</code> &mdash; and <em>never names the sending account</em>, though the <code>publicKey</code> it debits is read at <code>ReviewTransaction.tsx:44</code>. The key <code>"from"</code> already exists in <code>en.json</code>, unused. Harmless with one account; the moment multi-account ships it is the setup for irreversibly sending from the wrong one. <b>Still missing here too:</b> no fee or total-cost line, no note-privacy disclosure (<code>sharePrivately</code> is hardcoded <code>true</code> with the toggle removed), and the CTA has no submitting or error state &mdash; a failed <code>initiateSendTransaction</code> is swallowed by <code>console.error</code> and drops you back on an idle screen.</div></div>
+<div><div class="scrcap"><i></i>Send · in progress</div>
+        <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
+          <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>
+          <div class="mpad" style="flex:1;display:flex;flex-direction:column">
+            <div style="text-align:center;margin-top:26px">
+              <div style="width:56px;height:56px;border-radius:50%;background:var(--accent);margin:0 auto;display:flex;align-items:center;justify-content:center">
+                <span class="svgic" style="--ic:url(assets/icons/send-new.svg);width:24px;height:24px;background-color:var(--on-accent)" aria-hidden="true"></span></div>
+              <div style="font-family:var(--display);font-weight:900;font-size:var(--t-heading);margin-top:14px">Sending Payment</div>
+              <div style="font-size:var(--t-label);color:var(--ink-2);margin-top:6px">100.00 USDC &rarr; <span class="addr2">mtst1kq2&hellip;88xz</span></div>
+            </div>
+            <div class="tsteps">
+              <div class="tstep" data-state="complete"><span class="tsi"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M3 6.4 5 8.6 9 3.8"/></svg></span><span class="tsl">Guardian approved</span><span class="tsm">2s</span></div>
+              <div class="tstep" data-state="complete"><span class="tsi"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M3 6.4 5 8.6 9 3.8"/></svg></span><span class="tsl">Proof generated</span><span class="tsm">4s</span></div>
+              <div class="tstep" data-state="active"><span class="tsi"></span><span class="tsl">Submitting</span></div>
+              <div class="tstep" data-state="pending"><span class="tsi"></span><span class="tsl">Syncing with Guardian</span></div>
+            </div>
+            <div class="scrnote2" style="margin-top:14px">This may take a moment depending on network traffic. You can close this &mdash; we&rsquo;ll notify you when it&rsquo;s done.</div>
+            <div class="zone"><button class="btn btn-secondary">Hide</button></div>
+                  </div>
+        </div></div></div></div>
+        <div class="scrnote">The four steps are the shipped ones (<code>constants.ts:10-31</code>). <b>But this sequence is optimistic and the code says so:</b> the non-guardian path emits only <code>syncing</code> then <code>sending</code> before entering the SDK pipeline, so <b>step 3 jumps from pending straight to complete and is never active</b>, and for a public send or <em>any swap</em> steps 2&ndash;4 never animate at all. Step 4 is labelled &ldquo;Syncing with Guardian&rdquo; while what happens there is note confirmation and delivery. The failure state surfaces nothing either: <code>row.error</code> exists on <code>ITransaction</code> and this screen never reads it, offering only <code>done</code> with no reason and no retry.</div></div>
 <div><div class="scrcap"><i></i>Send · success</div>
         <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
           <div class="stat"><span>9:41</span><span class="r">✦ ▪ ▪</span></div>
           <div class="mpad" style="flex:1;display:flex;flex-direction:column">
             <div class="rcpt"><div class="ok2">✓</div>
               <div style="font-family:var(--display);font-weight:900;font-size:var(--t-heading)">Sent</div>
-              <div style="font-family:var(--num);font-feature-settings:var(--num-feat);font-weight:800;font-size:26px;margin-top:8px">40.00 MIDEN</div>
-              <div style="font-size:var(--t-label);color:var(--ink-2);margin-top:4px">≈ $412.80</div></div>
+              <div style="font-family:var(--num);font-feature-settings:var(--num-feat);font-weight:800;font-size:26px;margin-top:8px">100.00 USDC</div>
+              <div style="font-size:var(--t-label);color:var(--ink-2);margin-top:4px">≈ $200.00 USD</div></div>
             <div class="dmeta" style="margin-top:20px">
-              <div class="drow"><span class="k">To</span><span class="v"><span class="av3"><span class="dot3"></span><span class="addr2">mtst1ap8…r4fp</span></span></span></div>
+              <div class="drow"><span class="k">To</span><span class="v"><span class="av3"><span class="dot3"></span><span class="addr2">mtst1kq2…88xz</span></span></span></div>
               <div class="drow"><span class="k">Network fee</span><span class="v num">0.0021</span></div>
               <div class="drow"><span class="k">Transaction</span><span class="v addr2">0ab3…77df</span></div>
             </div>
