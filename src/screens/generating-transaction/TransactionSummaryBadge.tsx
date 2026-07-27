@@ -47,7 +47,7 @@ export const TransactionSummaryBadge: FC<TransactionSummaryBadgeProps> = ({ lhs,
       </div>
       <span className="shrink-0" aria-hidden="true">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <rect width="24" height="24" rx="12" fill={fillForArrow ?? '#91ACC1'} />
+          <rect width="24" height="24" rx="12" fill={fillForArrow ?? 'var(--tx-sent)'} />
           <path d="M6.22266 12.0889H16.5071" stroke="white" stroke-width="2.20995" stroke-linecap="round" />
           <path
             d="M14.6582 9.77832L17.0849 12.0894L14.6582 14.4006"
@@ -130,7 +130,7 @@ export const useTransactionSummaryBadgeContent = (
       return {
         lhs: <SwapAmountText amount={offeredAmount} symbol={offered.symbol} />,
         rhs: <SwapAmountText amount={requestedAmount} symbol={requested.symbol} />,
-        fillForArrow: '#BEACD2'
+        fillForArrow: 'var(--tx-swap)'
       };
     }
 

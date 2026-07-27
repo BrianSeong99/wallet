@@ -8,6 +8,10 @@ import { ReactComponent as MidenLogo } from 'app/icons/logos/miden.svg';
 import { ReactComponent as UsdcLogo } from 'app/icons/logos/usdc.svg';
 import { Avatar } from 'components/Avatar';
 
+// The USDC and BTC plates are third-party *brand* colours, not surfaces, so
+// they stay raw hex and never flip with the theme — tokenising them would
+// misrepresent someone else's mark. MIDEN/ETH use theme tokens because those
+// plates are ours.
 const TOKEN_LOGOS: Record<string, { Logo: FC<SVGProps<SVGSVGElement>>; bg: string }> = {
   MIDEN: { Logo: MidenLogo, bg: 'bg-white' },
   ETH: { Logo: EthLogo, bg: 'bg-pure-black' },

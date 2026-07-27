@@ -432,7 +432,7 @@ body[data-hide-navbar] [data-tabbar-footer='true'] {
     --tx-swap: #beacd2;
     --tx-earn: #777487;
     --tx-faucet: #891db1;
-    --rule-default: rgba(63, 63, 63, 0.08);
+    /* --rule-default is aliased onto --rule further down this block. */
     --rule-strong: rgba(63, 63, 63, 0.16);
     --color-border-button: #cbcbcb;
     --radius-sm: 8px;
@@ -661,7 +661,7 @@ body[data-hide-navbar] [data-tabbar-footer='true'] {
     --tx-swap: #beacd2;
     --tx-earn: #777487;
     --tx-faucet: #891db1;
-    --rule-default: rgba(255, 255, 255, 0.08);
+    /* --rule-default is aliased onto --rule further down this block. */
     --rule-strong: rgba(255, 255, 255, 0.16);
     --color-border-button: #444444;
 

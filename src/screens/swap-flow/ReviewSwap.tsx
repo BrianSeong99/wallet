@@ -72,7 +72,7 @@ export const ReviewSwap: React.FC<ReviewSwapProps> = ({
   onSubmit
 }) => {
   const { t } = useTranslation();
-  const divider = <div className="h-0.75 flex-1 bg-[#ECEBE8]" />;
+  const divider = <div className="h-0.75 flex-1 bg-rule-default" />;
   const rate = formatRate(offerToken.symbol, requestToken.symbol, offerPrice, requestPrice);
 
   const hero = (
@@ -109,7 +109,7 @@ export const ReviewSwap: React.FC<ReviewSwapProps> = ({
     >
       <ReviewRow label={t('rate')} value={rate} />
       {rate && (
-        <p className="pt-1 text-xs text-[#6B6862]">
+        <p className="pt-1 text-xs text-ink-3">
           {t('swapSolverFeeNote', { percent: `${Math.round(SOLVER_MARGIN * 100)}%` })}
         </p>
       )}

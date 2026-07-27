@@ -246,7 +246,12 @@ export default {
       boxShadow: {
         'xs-white': '0 0 0 1px rgba(255, 255, 255, 0.05)',
         'top-light': '0 -1px 2px 0 rgba(0, 0, 0, 0.1)',
-        outline: isDevnet ? '0 0 0 3px rgba(114, 134, 160, 0.5)' : '0 0 0 3px rgba(231, 117, 55, 0.5)'
+        outline: isDevnet ? '0 0 0 3px rgba(114, 134, 160, 0.5)' : '0 0 0 3px rgba(231, 117, 55, 0.5)',
+        // Crust elevation: flat (rule border) / e1 raised / e2 overlay. The CSS
+        // vars landed in main.css in P0 but were never exposed here, so there
+        // was no way to spend them -- BottomNav is still on a raw shadow-[…].
+        e1: 'var(--shadow-1)',
+        e2: 'var(--shadow-2)'
       },
       // Custom border radius
       borderRadius: {
@@ -272,7 +277,14 @@ export default {
         cta: 'var(--t-cta)',
         heading: 'var(--t-heading)',
         title: 'var(--t-title)',
-        balance: 'var(--t-balance)',
+        // Named `numeric-hero`, not `balance`, even though the CSS var is
+        // --t-balance. `text-balance` is a three-way collision: Tailwind v4
+        // ships it as a built-in text-wrap utility, and the `balance` COLOUR
+        // token below also lives in the `text-` namespace, where colour wins.
+        // The result was `.text-balance { color: … }` with no font-size rule
+        // emitted at all -- a silently dead step. `numeric-hero` is the name
+        // TOKENS.md gives this step anyway.
+        'numeric-hero': 'var(--t-balance)',
         'display-xl': 'var(--t-display)'
       },
       // Custom stroke color

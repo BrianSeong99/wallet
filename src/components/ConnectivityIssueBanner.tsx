@@ -46,6 +46,12 @@ function pickActiveCategory(state: ReturnType<typeof useConnectivityState>['stat
   return null;
 }
 
+// `iconColor` is a JS constant handed to <Icon fill>, so it can't take a
+// Tailwind class. It stays raw hex for now: the amber (#FEA644) and grey
+// (#9ca3af) are near --warn / --ink-3 but not equal, and the informational
+// blue (#5b8def) has no Crust equivalent at all — the token set is
+// pos/warn/pend/neg with no info tier. Moving these needs the icons switched
+// to currentColor first, which is a mechanism change, not a token swap.
 const VIEWS: Record<ConnectivityCategory, BannerView> = {
   network: {
     category: 'network',

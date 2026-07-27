@@ -13,6 +13,11 @@ export interface ProgressIndicatorProps extends React.HTMLAttributes<HTMLDivElem
 const ACTIVE_WIDTH = 54;
 const INACTIVE_WIDTH = 42;
 const FILLED_COLOR = PRIMARY_500;
+// Fixed hex, not a token: both colours are interpolated by framer-motion's
+// `animate`, which needs a parseable colour rather than a `var(--…)` string.
+// #D9D9D9 also does not flip for dark mode — no Crust token matches it
+// (--rule-strong and --surface-3 are both materially different), so
+// tokenising it here would change pixels. Left for the component rebuild.
 const EMPTY_COLOR = '#D9D9D9';
 
 export const ProgressIndicator: React.FC<ProgressIndicatorProps> = ({ className, steps, currentStep, ...props }) => {

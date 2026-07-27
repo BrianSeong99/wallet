@@ -143,7 +143,7 @@ export const ChooseGuardianScreen: React.FC<ChooseGuardianScreenProps> = ({
                   className={cn(
                     'relative flex h-30.5 w-44.25 flex-col overflow-hidden rounded-[20px] transition-all duration-150',
                     'border-2',
-                    isSelected ? 'border-primary-500 border-4' : 'border-[#E3E3E3] dark:border-grey-800'
+                    isSelected ? 'border-primary-500 border-4' : 'border-rule-strong'
                   )}
                 >
                   {(isCurrent || isDefault) && (
@@ -164,7 +164,7 @@ export const ChooseGuardianScreen: React.FC<ChooseGuardianScreenProps> = ({
                   <p className="">
                     {t('guardianOperatedBy')} <span className="font-bold">{option.operatedBy}</span>
                   </p>
-                  <div className="w-18.75 mx-auto bg-[#E7753770] h-px" />
+                  <div className="w-18.75 mx-auto bg-accent/44 h-px" />
                   <p className="mt-0.5">
                     {t('guardianLocation')} <span className="font-bold">{option.location}</span>
                   </p>

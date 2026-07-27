@@ -20,15 +20,15 @@ interface InfoRowProps {
 }
 
 const InfoRow: React.FC<InfoRowProps> = ({ badge, title, description, hasDivider = true }) => (
-  <div className={hasDivider ? 'border-b border-[#E9E9E9]' : undefined}>
+  <div className={hasDivider ? 'border-b border-rule-default' : undefined}>
     <div className="mx-auto flex max-w-[32rem] flex-col items-center px-4 py-4 text-center">
       <div className="flex max-w-full items-center justify-center gap-3">
         {badge}
-        <h3 className="min-w-0 break-words text-left font-heading text-[18px] font-semibold leading-[1.2] text-[#151515] dark:text-heading-gray">
+        <h3 className="min-w-0 break-words text-left font-heading text-[18px] font-semibold leading-[1.2] text-ink">
           {title}
         </h3>
       </div>
-      <p className="mt-2.5 break-words text-[15px] font-normal leading-[1.32] text-gray-secondary">{description}</p>
+      <p className="mt-2.5 break-words text-body font-normal leading-[1.32] text-gray-secondary">{description}</p>
     </div>
   </div>
 );
@@ -62,7 +62,7 @@ export const GuardianInfoDrawer: React.FC<GuardianInfoDrawerProps> = ({ open, on
           <div className="mt-3 flex flex-col">
             <InfoRow
               badge={
-                <IconBadge className="bg-[#7D936D]">
+                <IconBadge className="bg-pos">
                   <Icon name={IconName.Checkmark} size="xs" fill="currentColor" className="text-pure-white" />
                 </IconBadge>
               }
@@ -80,7 +80,7 @@ export const GuardianInfoDrawer: React.FC<GuardianInfoDrawerProps> = ({ open, on
             />
             <InfoRow
               badge={
-                <IconBadge className="bg-[#C96060]">
+                <IconBadge className="bg-neg">
                   <Icon name={IconName.Close} size="xs" fill="currentColor" className="text-pure-white" />
                 </IconBadge>
               }

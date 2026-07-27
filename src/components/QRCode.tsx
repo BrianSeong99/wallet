@@ -52,6 +52,9 @@ export const QRCode = forwardRef<QRCodeHandle, QRCodeProps>(({ address, size }, 
       dotsOptions: { type: 'dots', color },
       cornersSquareOptions: { type: 'extra-rounded', color },
       cornersDotOptions: { type: 'dot', color },
+      // Scannability requirement, not a surface: QR readers need a high-contrast
+      // light quiet zone behind the modules. Deliberately NOT --surface / --paper,
+      // which would go near-black in dark mode and make the code unscannable.
       backgroundOptions: { color: '#FFFFFF' }
     };
   }, [qrValue, size]);
