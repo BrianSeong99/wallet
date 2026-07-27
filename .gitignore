@@ -79,3 +79,6 @@ sdk-debug/
 
 # superpowers SDD scratch (progress ledger, etc.)
 .superpowers/
+
+# Screen-drafting scaffolding: fragments are spliced into index.html, not shipped.
+design-system/_frag/
