@@ -10,6 +10,8 @@
 
 ### Fixes
 
+* [FIX][all] **Error alerts now draw their icon in red instead of amber.** The error variant was using the warning colour while its background was already red, so errors read as warnings.
+* [FIX][all] **The syncing shimmer now uses the Bread accent.** It was drawing a different orange (Tailwind's `#F97316` rather than the brand `#E77537`), so the sync animation didn't match any other accent surface in the app. It now follows the accent token, which also means it picks up the slate devnet colour.
 * [FIX][all] **Keyboard focus is no longer thrown away every time a button is clicked.** `Button` called `blur()` on every click, which sent focus back to the top of the document — so anyone navigating onboarding by keyboard lost their place on every single step, and had to tab back from the beginning. The blur existed to stop a focus ring sticking after a touch tap; that is now handled by `:focus-visible`, so the ring appears for keyboard users and not for touch.
 * [FIX][all] **The primary button label is now large enough to be legible on the orange fill.** White on the brand orange measures exactly 3.00:1, which only meets the contrast standard at "large text" sizes — but the label was being drawn at 16px, below that threshold, so every primary action in the app fell short. The label is now 19px bold, which conforms. Secondary and ghost buttons are unchanged.
 * [FIX][all] **The ghost button no longer draws an outline.** Buttons are filled or borderless; an outline on a tap target reads as structural separation and made ghost actions compete with the primary action next to them.
