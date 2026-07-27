@@ -50,8 +50,8 @@ documents, and which screens document a given file.
 | 16 | 07a · Creating wallet | bug / proposed — loading | — |
 | 17 | 07b · Wallet ready | shipped — 4/4 | — |
 | 18 | 07c · Biometric failed | bug / proposed — was missing | — |
-| 19 | 08 · Back up your wallet | shipped — 1/4 | — |
-| 20 | 09 · Verify seed phrase | bug / proposed — was missing | — |
+| 19 | 08 · Back up your wallet | bug / proposed — unreachable | — |
+| 20 | 09 · Verify seed phrase | bug / proposed — unreachable | — |
 | 21 | 10 · Import with seed phrase | bug / proposed — path was missing | — |
 | 22 | 10e · Invalid seed word | bug / proposed — was missing | `ImportSeedPhrase.tsx:99` |
 | 23 | 11 · Import recovery method | bug / proposed — was missing | — |

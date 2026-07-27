@@ -3412,7 +3412,7 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
           </div>
         </div></div></div>
         <div class="scrnote"><b>A fully-built state with no design.</b> <code>Confirmation.tsx</code> already ships it: <code>biometricFailed</code> in red, and the CTA pair swaps to <code>continueWithPassword</code> + <code>tryBiometricAgain</code> once <code>showPasswordFallback</code> is set. Before attempts run out it instead shows <code>retry</code> plus &ldquo;<em>n</em> attempts remaining&rdquo;. Two decisions: the <b>success illustration and headline stay</b> &mdash; the wallet genuinely was created, and only the unlock method failed, so re-framing the screen as a failure would lie about what happened; and the <b>escape hatch is primary</b>, retry ghost beneath, because a user whose face or finger just failed twice needs the exit more than another attempt.</div></div>
-      <div><div class="scrcap"><i></i>08 &middot; Back up your wallet <span class="tag survive">1/4</span></div>
+      <div><div class="scrcap"><i></i>08 &middot; Back up your wallet <span class="tag retire">unreachable</span></div>
         <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
           <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>
           <div class="mpad" style="flex:1;display:flex;flex-direction:column">
@@ -3425,7 +3425,7 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
           </div>
         </div></div></div>
         <div class="scrnote">Backup is its own 4-step sub-flow (<code>BackupSeed 1 &middot; VerifySeed 2 &middot; CreatePassword 3 &middot; RecoveryMethod 4</code>). Deliberately <em>not</em> password-shaped: no masking, no strength meter, no autofill.</div></div>
-      <div><div class="scrcap"><i></i>09 &middot; Verify seed phrase <span class="tag retire">was missing</span></div>
+      <div><div class="scrcap"><i></i>09 &middot; Verify seed phrase <span class="tag retire">unreachable</span></div>
         <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
           <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>
           <div class="mpad" style="flex:1;display:flex;flex-direction:column">
