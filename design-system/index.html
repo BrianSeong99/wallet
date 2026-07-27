@@ -608,7 +608,7 @@ table.map td code{font-size:var(--t-label)}
   align-items:center;justify-content:center;color:var(--ink-2);cursor:pointer}
 .mshead .shgear .svgic{width:19px;height:19px}
 /* Leading icon on a button: gap from the label, sized to the label's cap height. */
-.btn.withic{display:inline-flex;align-items:center;justify-content:center;gap:8px}
+.btn.withic{display:flex;align-items:center;justify-content:center;gap:8px}
 .btn.withic .svgic{width:17px;height:17px;flex:none}
 /* 44pt target, negative-margined so it does not inflate the sheet header. */
 .shback{min-width:44px;min-height:44px;margin:-11px -8px -11px -12px;border:0;background:none;
@@ -1277,7 +1277,10 @@ ul.tick li:before{content:"→";position:absolute;left:2px;color:var(--accent-in
 .notice{display:flex;gap:8px;border-radius:var(--radius-md);padding:9px 12px;font-size:var(--t-caption);line-height:1.4;font-weight:600;
   background:color-mix(in srgb,var(--neg) 10%,transparent);color:var(--neg);margin-top:10px}
 .zone{margin-top:auto;padding-top:16px;padding-bottom:max(16px,var(--safe-bottom,0px))}
-.zone .btn-primary{width:100%;padding:13px 10px;min-height:52px}
+/* Any button in the action zone is full-width, not just the primary variant. The rule was
+   scoped to .btn-primary, so putting a secondary in the same slot silently lost the width --
+   the zone's geometry is a property of the SLOT, not of which variant sits in it. */
+.zone .btn{width:100%;padding:13px 10px;min-height:52px}
 /* Two peer actions, neither primary. This sheet's primary job is SELECTING an account, and
    that happens by tapping a card -- so an orange CTA in the footer competed with the actual
    task and implied "Add account" was the point of the screen. Both are filled-secondary at
