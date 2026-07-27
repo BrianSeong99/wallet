@@ -637,38 +637,6 @@ table.map td code{font-size:var(--t-label)}
    floats as a grey box) means hue cannot live in the fill. Light keeps the fill AND the
    stripe, so the treatment is the same shape in both themes. */
 .mlist > .mbc{flex:none;position:relative;border-left:3px solid var(--card-rim,var(--rule-strong))}
-/* Selection is carried by FILL, not an outline: the selected account is the only COLOURED
-   card, and the others are quiet neutral rows.
-   The accent ring came first, borrowed from .gcard.sel / .ropt.sel -- consistent on paper, but
-   a hard orange outline on a soft patterned card is a foreign visual language and read closer
-   to a warning border than to state. It also stacked a third signal onto a card that already
-   had a stripe and a check.
-   Fill is the better answer for the same reason it won in the nav: state should change the
-   object, not add a frame to it. And it says something the ring could not -- Home shows the
-   current account as a coloured card, so here the coloured card IS the current account. The
-   list and Home now agree.
-   Unselected cards override the balance tokens on .mbc, which sits OUTSIDE the graphite scope,
-   so var(--ink) there resolves to the page ink rather than the scope's white. Measured: name
-   9.60:1 light / 14.16:1 dark, secondary text 5.82 / 7.38. The check stays, so selection is
-   never colour-only (SC 1.4.1). */
-.mlist > .mbc:not(.sel){--balance:var(--surface-2); --balance-deep:var(--surface-3);
-  --balance-fg:var(--ink); --balance-fg-muted:var(--ink-2);
-  border-left-color:var(--card-rim)}
-/* background-image:none, not --pat:transparent. The pattern tokens hold gradient FUNCTIONS
-   that reference var(--pat); zeroing the colour leaves the gradients in place and merely
-   invisible, which is fragile and still paints. Removing the image is unambiguous. */
-.mlist > .mbc:not(.sel) [data-pattern]::after{background-image:none}
-/* DARK inverts the fill relationship, and this is a real correction rather than a tweak.
-   In dark the account hue cannot live in the fill (the near-black rule), so "the selected card
-   is the only coloured one" has nothing to express -- and worse, the selected card came out at
-   #101010 against unselected at #2B2B2B on a #232323 sheet, so the CHOSEN card was the only
-   one recessed below the sheet while the others appeared lifted. Exactly backwards.
-   So in dark the list steps the selected card UP (--surface-2) and the others DOWN to the page
-   colour, which reads as chosen-versus-quiet. This is scoped to .mlist: Home's hero card keeps
-   its near-black treatment, because the original complaint there was a coloured card floating
-   as a grey box, and a lifted row inside a sheet is not that. */
-[data-theme="dark"] .mlist > .mbc.sel{--balance:var(--surface-2); --balance-deep:var(--surface-3)}
-[data-theme="dark"] .mlist > .mbc:not(.sel){--balance:var(--paper); --balance-deep:var(--paper)}
 /* Scoped to .mbc, not .mlist. Scoping it to the list gave the account sheet's card a shorter
    name row for identical content -- three screens showed the same component at 155 / 122 /
    132pt, which read as three accidents rather than a decision. Now TWO sizes: compact
@@ -1143,7 +1111,7 @@ ul.tick li:before{content:"→";position:absolute;left:2px;color:var(--accent-in
 .ferr{margin-top:10px;font-size:var(--t-caption);line-height:1.45;font-weight:700;color:var(--neg)}
 .fok{margin-top:8px;font-size:var(--t-caption);line-height:1.45;font-weight:700;color:var(--pos)}
 .ropt{text-align:left;background:var(--surface-2);border-radius:var(--radius-md);padding:12px 13px;margin-top:9px;position:relative}
-.ropt.sel{box-shadow:0 0 0 2px var(--accent)}
+
 .ropt .rt2{font-family:var(--display);font-weight:800;font-size:var(--t-body);display:flex;align-items:center;gap:7px}
 .ropt .rd{font-size:var(--t-caption);color:var(--ink-2);line-height:1.45;margin-top:4px}
 .ropt .rbadge{font-size:var(--t-caption);font-weight:800;background:var(--accent);color:var(--on-accent-sm);
@@ -1226,7 +1194,16 @@ ul.tick li:before{content:"→";position:absolute;left:2px;color:var(--accent-in
 .gguard{display:grid;grid-template-columns:1fr 1fr;gap:9px;grid-auto-rows:1fr;margin-top:12px}
 .gcard{position:relative;display:flex;flex-direction:column;border-radius:var(--radius-md);background:var(--surface);
   box-shadow:0 0 0 1.5px var(--rule-strong);overflow:hidden;text-align:center;padding-top:20px;min-height:101px}
-.gcard.sel{box-shadow:0 0 0 2px var(--accent)}
+/* ---- Selection ring: ONE treatment, three components -------------------------------------
+   .mbc (account card), .gcard (Guardian) and .ropt (recovery option) all use .sel, so they now
+   share one rule instead of each carrying its own box-shadow.
+   OFFSET, not flush. A 2px ring hard against the card's edge reads as a BORDER -- which is what
+   made the first version feel wrong on a coloured, patterned card. A 2px gap makes it read as a
+   highlight around the card rather than part of it.
+   outline + outline-offset rather than box-shadow, because the gap is transparent: the same rule
+   works on the page, inside a sheet, or over a scrim without knowing the surround colour.
+   The inline check stays on the account card, so selection is never colour-only (SC 1.4.1). */
+.mbc.sel,.gcard.sel,.ropt.sel{outline:2px solid var(--accent);outline-offset:2px}
 .gcard .band{position:absolute;top:0;left:0;right:0;height:20px;display:flex;align-items:center;justify-content:center;
   background:var(--accent);color:var(--on-accent-sm);font-size:var(--t-caption);font-weight:800;letter-spacing:.02em}
 /* Partner marks sit on a LIGHT PLATE in dark mode. lambdaclass.svg, open-zeppelin.svg and
