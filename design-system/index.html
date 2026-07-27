@@ -256,8 +256,8 @@ hr.rule{border:0;border-top:1px solid var(--rule);margin:2.5rem 0}
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:1.125rem}
 .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:0.875rem}
 .card{background:var(--surface);border:1px solid var(--rule);border-radius:var(--radius-lg);padding:1.25rem;box-shadow:var(--shadow-1)}
-.callout{border-left:3px solid var(--accent);background:var(--accent-wash);padding:0.875rem 1.125rem;border-radius:0 var(--radius-md) var(--radius-md) 0;margin:1.125rem 0;font-size:var(--t-body)}
-.callout.warn{border-left-color:var(--neg);background:color-mix(in srgb,var(--neg) 10%,transparent)}
+.callout{background:var(--accent-wash);padding:0.875rem 1.125rem;border-radius:var(--radius-md);margin:1.125rem 0;font-size:var(--t-body)}
+.callout.warn{background:color-mix(in srgb,var(--neg) 10%,transparent)}
 
 /* principle list */
 .prin{counter-reset:p;margin-top:1.25rem;display:grid;gap:0.125rem}
@@ -1458,11 +1458,24 @@ ul.tick li:before{content:"→";position:absolute;left:0.125rem;color:var(--acce
    least prominent value on the screen -- and "public" vs "private" was carried by
    hue alone. Text is --ink so the meaning survives without colour (SC 1.4.1); the
    amber lives in the wash and the rule, where it signals rather than informs. */
-.pcliff{display:flex;gap:0.5rem;align-items:flex-start;padding:0.625rem 0.75rem;
-  border-radius:var(--radius-md);background:var(--warn-wash);
-  border-left:3px solid var(--warn);color:var(--ink);
+.pcliff{display:flex;gap:0.5rem;align-items:flex-start;padding:0.75rem 0.875rem;
+  border-radius:var(--radius-md);background:var(--warn-wash);color:var(--ink);
   font-size:var(--t-label);line-height:1.45;margin:0.875rem 0 0.5rem}
+.pcliff .svgic{width:1.0625rem;height:1.0625rem;flex:none;margin-top:0.0625rem;background-color:var(--warn)}
 .pcliff b{font-weight:800}
+/* Resolved recipient card. The address is a checksum you glance at, not a
+   headline: it sits at label size in 4-char groups so it can actually be verified,
+   with the network on the same card because those are the two facts that must be
+   checked together. It replaced a 42-char hex string set as the visual hero. */
+.rcard{background:var(--surface-2);border-radius:var(--radius-md);padding:0.75rem 0.875rem;margin-top:0.75rem}
+.rcnet{display:flex;align-items:center;gap:0.5rem;min-height:1.5rem}
+.rcnet .cdot{width:0.625rem;height:0.625rem;border-radius:50%;flex:none}
+.rcnet .nn{font-size:var(--t-label);font-weight:800;color:var(--ink)}
+.rcnet .chg{margin-left:auto;min-height:44px;display:flex;align-items:center;
+  font-size:var(--t-caption);font-weight:700;color:var(--accent-ink)}
+.rcaddr{font-family:var(--mono);font-size:var(--t-label);line-height:1.5;color:var(--ink-2);
+  word-spacing:0.15em;margin-top:0.25rem}
+.rcaddr b{color:var(--ink);font-weight:700}
 .tsteps{display:flex;flex-direction:column;gap:0.125rem;margin-top:1.125rem}
 .tstep{display:flex;align-items:center;gap:0.625rem;padding:0.5625rem 0.125rem;font-size:var(--t-label)}
 .tstep .tsi{width:1.125rem;height:1.125rem;flex:none;border-radius:50%;display:flex;align-items:center;
@@ -3369,14 +3382,23 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
               <div class="seg" data-act="swap"><span class="svgic" style="--ic:url(assets/icons/convert.svg);" aria-hidden="true"></span><span class="lbl">Swap</span></div>
             </div>
             <div style="font-family:var(--display);font-weight:800;font-size:var(--t-title);line-height:1.1">Choose recipient</div>
-            <div class="heroin">Enter Miden Address</div>
-            <button class="tokchip"><span class="svgic" style="--ic:url(assets/icons/contacts-book.svg)" aria-hidden="true"></span>Address Book</button>
+            <div class="fld" style="width:auto;margin-top:0.75rem"><label>To</label>
+              <div class="fieldrow">
+                <div class="searchf" style="width:auto;flex:1;min-width:0">Address or name</div>
+                <button class="tokchip" style="align-self:auto">Paste</button>
+                <button class="scanbtn" aria-label="Scan a QR code"><span class="svgic" style="--ic:url(assets/icons/qr-scan.svg)" aria-hidden="true"></span></button>
+              </div>
+            </div>
+            <div class="shlab" style="margin-top:1.125rem">Recent</div>
+            <div class="mrow"><div class="ic" style="background:var(--tx-sent)"></div><div><div class="nm">Wiktor</div><div class="ad addr">mtst1ap8&hellip;r4fp</div></div></div>
+            <div class="mrow"><div class="ic" style="background:var(--tx-swap)"></div><div><div class="nm">Dominik</div><div class="ad addr">mtst1kq2&hellip;88xz</div></div></div>
+            <div class="mrow"><div class="ic" style="background:var(--surface-3)"><span class="svgic" style="--ic:url(assets/icons/contacts-book.svg);width:1.0625rem;height:1.0625rem;background-color:var(--ink-2)" aria-hidden="true"></span></div><div><div class="nm">Address Book</div><div class="ad">All saved contacts</div></div><span aria-hidden="true" style="color:var(--ink-2);margin-left:auto">&rsaquo;</span></div>
             <div class="zone"><button class="btn btn-primary" style="width:100%" disabled>Confirm</button></div>
           </div>
         
           <div class="mnav"><button class="t on"><span class="svgic" style="--ic:url(assets/icons/home-new.svg)" aria-hidden="true"></span><span>Home</span></button><button class="t"><span class="svgic" style="--ic:url(assets/icons/explore.svg)" aria-hidden="true"></span><span>Explore</span></button><button class="t"><span class="svgic" style="--ic:url(assets/icons/activity.svg)" aria-hidden="true"></span><span>Activity</span></button></div>
         </div></div></div>
-        <div class="scrnote">Named contacts above raw addresses — recognition over recall, and it reduces mis-paste risk.</div></div>
+        <div class="scrnote"><b>Redrawn — the previous version broke three form rules at once.</b> The address input was a borderless 32px mono placeholder with <em>no label</em>, so it read as a heading rather than a field: placeholder-as-only-label and an input that looks like plain text are both named anti-patterns. Worse, the placeholder was <b>larger than the page heading</b> (32px against 26px), so the emptiest element on the screen was the loudest thing on it. And 311pt — <b>37% of the screen</b> — was dead, while offering exactly one way to enter a 49-character bech32 string. Now: a labelled field, <b>Paste and Scan beside it</b> because pasting is how addresses are actually entered, and the recovered space holds recents. Named contacts above raw addresses — recognition over recall. Dead space is down to 12%. <b>Proposed, not shipped:</b> there is no recents feature in the code, and <code>qr-scan.svg</code> sits in <code>assets/icons/</code> referenced by nothing. Shipped <code>SelectRecipient.tsx</code> renders the borderless textarea, the Address Book pill, and nothing else.</div></div>
       <div><div class="scrcap"><i></i>Send · other chain <span class="tag merge">proposed</span></div>
         <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
           <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>
@@ -3387,10 +3409,12 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
               <div class="seg" data-act="receive"><span class="svgic" style="--ic:url(assets/icons/receive-new.svg);" aria-hidden="true"></span><span class="lbl">Receive</span></div>
               <div class="seg" data-act="swap"><span class="svgic" style="--ic:url(assets/icons/convert.svg);" aria-hidden="true"></span><span class="lbl">Swap</span></div>
             </div>
-            <div style="font-family:var(--display);font-weight:800;font-size:var(--t-title);line-height:1.1">Choose recipient</div>
-            <div class="heroin" style="font-size:var(--t-heading);color:var(--ink)">0x71C7656EC7ab88b098defB751B7401B5f6d8976F</div>
-            <div class="rchip"><span class="cdot" style="background:#0052FF"></span><span class="cnet">Base</span><span class="cadr">0x71C7&hellip;8976F</span><span aria-hidden="true" style="color:var(--ink-2);flex:none">&rsaquo;</span></div>
-            <div class="pcliff"><span>This transfer leaves Miden. On Base the amount and recipient are <b>public</b>.</span></div>
+            <div style="font-family:var(--display);font-weight:800;font-size:var(--t-title);line-height:1.1">Confirm recipient</div>
+            <div class="rcard">
+              <div class="rcnet"><span class="cdot" style="background:#0052FF"></span><span class="nn">Base</span><span class="chg">Change</span></div>
+              <div class="rcaddr"><b>0x71C7</b> 656E C7ab 88b0 98de fB75 1B74 01B5 f6d8 <b>976F</b></div>
+            </div>
+            <div class="pcliff"><span class="svgic" style="--ic:url(assets/icons/globe.svg)" aria-hidden="true"></span><span>This transfer leaves Miden. On Base the amount and recipient are <b>public</b>.</span></div>
             <div class="dmeta">
               <div class="drow"><span class="k">Arrives</span><span class="v">~1 hour</span></div>
               <div class="drow"><span class="k">If unclaimed</span><span class="v">Returns in 7 days</span></div>
