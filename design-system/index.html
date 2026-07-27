@@ -4714,6 +4714,349 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
           <div class="mnav" style="--i:2"><button class="t"><span class="svgic" style="--ic:url(assets/icons/home-new.svg)" aria-hidden="true"></span><span>Home</span></button><button class="t"><span class="svgic" style="--ic:url(assets/icons/explore.svg)" aria-hidden="true"></span><span>Explore</span></button><button class="t on"><span class="svgic" style="--ic:url(assets/icons/activity.svg)" aria-hidden="true"></span><span>Activity</span></button></div>
         </div></div></div>
         <div class="scrnote">Grouped soft blocks rather than a divided table — the same stacking idiom as everywhere else.</div></div>
+<div><div class="scrcap"><i></i>Settings &middot; general <span class="tag retire">bug</span></div>
+        <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
+          <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>
+          <div class="mpad" style="flex:1;display:flex;flex-direction:column">
+            <div class="sh2"><span class="bk2">&lsaquo;</span><span class="t2">Preferences</span></div>
+          </div>
+          <div class="shscrim"></div>
+          <div class="msheet" style="max-height:74%">
+            <div class="mshandle"></div>
+            <div class="mshead">General</div>
+            <div class="shlab">Theme</div>
+            <div class="tftabs" style="margin-top:0"><button class="tftab on">System</button><button class="tftab">Light</button><button class="tftab">Dark</button></div>
+            <div class="shdiv"></div>
+            <div class="setgroup" style="margin-bottom:0">
+              <button class="setrow" role="switch" aria-checked="true" style="width:100%;min-height:52px;background:none;border:0;padding:0.6875rem 0;font-family:var(--ui);font-size:var(--t-label);color:var(--ink);text-align:left;cursor:pointer">Haptic Feedback<span class="toggle on" style="margin-left:auto" aria-hidden="true"><span class="knob"></span></span></button>
+              <button class="setrow" role="switch" aria-checked="true" style="width:100%;min-height:52px;background:none;border:0;padding:0.6875rem 0;font-family:var(--ui);font-size:var(--t-label);color:var(--ink);text-align:left;cursor:pointer">Delegate Proof Generation<span class="toggle on" style="margin-left:auto" aria-hidden="true"><span class="knob"></span></span></button>
+              <button class="setrow" role="switch" aria-checked="false" style="width:100%;min-height:52px;background:none;border:0;padding:0.6875rem 0;font-family:var(--ui);font-size:var(--t-label);color:var(--ink);text-align:left;align-items:flex-start;cursor:pointer"><span style="flex:1;min-width:0"><span style="display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">Auto Consume MIDEN notes</span><span style="display:-webkit-box;font-size:var(--t-caption);font-weight:600;color:var(--ink-2);margin-top:0.125rem;line-height:1.35;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">Automatically consume notes from Miden Faucet</span></span><span class="toggle" aria-hidden="true"><span class="knob"></span></span></button>
+            </div>
+          </div>
+        </div></div></div>
+        <div class="scrnote">Three defects the shipped drawer carries at once. <b>The switch is a 40&times;22 target.</b> <code>ToggleSwitch.tsx:51</code> and <code>:82</code> size the container and the invisible <code>&lt;input&gt;</code> at <code>40px&times;22px</code>, half the 44pt floor on the short axis. <code>SettingToggle.tsx:17</code> wraps the row in a <code>&lt;label htmlFor=&#123;name&#125;&gt;</code> to widen it, but <code>ToggleSwitch</code> is never given an <code>id</code> &mdash; only <code>name</code>, spread through <code>&#123;...rest&#125;</code> &mdash; and <code>htmlFor</code> matches on <b>id</b>. <b>So the label is bound to nothing:</b> tapping the words does not flip the switch, and the checkbox has no accessible name from the label or from an <code>aria-label</code>. Here the row itself is the control at 52pt, the words included. <b>Haptic Feedback is mobile-only</b> (<code>GeneralSettings.tsx:79</code>); on the extension the drawer shows two toggles, not three. State is carried by knob position and <code>aria-checked</code>, never by the track colour alone.</div></div>
+<div><div class="scrcap"><i></i>Settings &middot; general, save failed <span class="tag merge">gap</span></div>
+        <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
+          <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>
+          <div class="mpad" style="flex:1;display:flex;flex-direction:column">
+            <div class="sh2"><span class="bk2">&lsaquo;</span><span class="t2">Preferences</span></div>
+          </div>
+          <div class="shscrim"></div>
+          <div class="msheet" style="max-height:74%">
+            <div class="mshandle"></div>
+            <div class="mshead">General</div>
+            <div class="shlab">Theme</div>
+            <div class="tftabs" style="margin-top:0"><button class="tftab on">System</button><button class="tftab">Light</button><button class="tftab">Dark</button></div>
+            <div class="shdiv"></div>
+            <div class="setgroup" style="margin-bottom:0">
+              <button class="setrow" role="switch" aria-checked="true" style="width:100%;min-height:52px;background:none;border:0;padding:0.6875rem 0;font-family:var(--ui);font-size:var(--t-label);color:var(--ink);text-align:left;cursor:pointer">Haptic Feedback<span class="toggle on" style="margin-left:auto" aria-hidden="true"><span class="knob"></span></span></button>
+              <button class="setrow" role="switch" aria-checked="false" style="width:100%;min-height:52px;background:none;border:0;padding:0.6875rem 0;font-family:var(--ui);font-size:var(--t-label);color:var(--ink);text-align:left;cursor:pointer">Delegate Proof Generation<span class="toggle" style="margin-left:auto" aria-hidden="true"><span class="knob"></span></span></button>
+            </div>
+            <div class="mprompt" data-status="neg" style="margin-top:0.5rem"><div class="ptx"><div class="pt">Not saved &mdash; still off</div><div class="pb">We couldn&rsquo;t write this setting to device storage. Delegate proving is unchanged.</div></div><button class="pcta">Retry</button></div>
+          </div>
+        </div></div></div>
+        <div class="scrnote"><b>GAP &mdash; the app cannot report a failed write, so it reports success instead.</b> <code>helpers.ts:15&ndash;19</code> wraps <code>localStorage.setItem</code> in a bare <code>try &#123;&#125; catch &#123;&#125;</code> that returns nothing and throws nothing. Meanwhile the visible switch position lives in <code>ToggleSwitch</code>&rsquo;s own <code>localChecked</code> state (<code>ToggleSwitch.tsx:32</code>, set by <code>checkedHandler</code> at <code>:43</code>), <b>not</b> in the value that was persisted &mdash; and <code>GeneralSettings.tsx:47,56</code> read <code>isDelegateProofEnabled()</code> / <code>isAutoConsumeEnabled()</code> synchronously at render without <code>useState</code>, so the parent never re-renders to correct it. The switch therefore shows the new position whether or not the write landed. On a WKWebView that has evicted local storage the user turns delegate proving off, sees it off, and it is on again next launch with no event in between. The fix is a real result from the setter and a row-scoped failure that <b>names the surviving value</b>. Note also the re-entrancy guards at <code>GeneralSettings.tsx:48&ndash;54</code> and <code>:57&ndash;63</code>: <code>delegateChangingRef</code> is set and cleared inside one synchronous callback, so it can never be <code>true</code> on entry and guards nothing.</div></div>
+<div><div class="scrcap"><i></i>Settings &middot; language <span class="tag retire">bug</span></div>
+        <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
+          <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>
+          <div class="mpad" style="flex:1;display:flex;flex-direction:column">
+            <div class="setgroup" style="margin-bottom:0">
+              <div class="setrow"><span class="svgic" style="--ic:url(assets/icons/globe.svg);" aria-hidden="true"></span>Language<span style="margin-left:auto;font-size:var(--t-label);font-weight:800;color:var(--ink)">pl</span><span class="ch" style="margin-left:0.5rem">&rsaquo;</span></div>
+            </div>
+          </div>
+          <div class="shscrim"></div>
+          <div class="msheet" style="max-height:85%">
+            <div class="mshandle"></div>
+            <div class="mshead">Language</div>
+            <div style="flex:1;overflow-y:auto;margin:0 -0.25rem;padding:0 0.25rem">
+              <button style="display:flex;align-items:center;width:100%;min-height:44px;background:none;border:0;padding:0.5rem 0;font-family:var(--ui);font-size:var(--t-label);font-weight:600;color:var(--ink);text-align:left;cursor:pointer">English</button>
+              <button style="display:flex;align-items:center;width:100%;min-height:44px;background:none;border:0;padding:0.5rem 0;font-family:var(--ui);font-size:var(--t-label);font-weight:600;color:var(--ink);text-align:left;cursor:pointer">Espa&ntilde;ol</button>
+              <button style="display:flex;align-items:center;width:100%;min-height:44px;background:none;border:0;padding:0.5rem 0;font-family:var(--ui);font-size:var(--t-label);font-weight:600;color:var(--ink);text-align:left;cursor:pointer">Fran&ccedil;ais</button>
+              <button style="display:flex;align-items:center;width:100%;min-height:44px;background:none;border:0;padding:0.5rem 0;font-family:var(--ui);font-size:var(--t-label);font-weight:600;color:var(--ink);text-align:left;cursor:pointer">Deutsch</button>
+              <button style="display:flex;align-items:center;width:100%;min-height:44px;background:none;border:0;padding:0.5rem 0;font-family:var(--ui);font-size:var(--t-label);font-weight:600;color:var(--ink);text-align:left;cursor:pointer">&#31616;&#20307;&#20013;&#25991;</button>
+              <button style="display:flex;align-items:center;width:100%;min-height:44px;background:none;border:0;padding:0.5rem 0;font-family:var(--ui);font-size:var(--t-label);font-weight:600;color:var(--ink);text-align:left;cursor:pointer">&#32321;&#39636;&#20013;&#25991;</button>
+              <button style="display:flex;align-items:center;width:100%;min-height:44px;background:none;border:0;padding:0.5rem 0;font-family:var(--ui);font-size:var(--t-label);font-weight:600;color:var(--ink);text-align:left;cursor:pointer">&#26085;&#26412;&#35486;</button>
+              <button style="display:flex;align-items:center;width:100%;min-height:44px;background:none;border:0;padding:0.5rem 0;font-family:var(--ui);font-size:var(--t-label);font-weight:600;color:var(--ink);text-align:left;cursor:pointer">&#54620;&#44397;&#50612;</button>
+              <button style="display:flex;align-items:center;width:100%;min-height:44px;background:none;border:0;padding:0.5rem 0;font-family:var(--ui);font-size:var(--t-label);font-weight:800;color:var(--ink);text-align:left;cursor:pointer">Polski<span class="rtick"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M1.6 6.3l2.7 2.7L10.4 3" fill="none" stroke="var(--on-accent-sm)" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
+              <button style="display:flex;align-items:center;width:100%;min-height:44px;background:none;border:0;padding:0.5rem 0;font-family:var(--ui);font-size:var(--t-label);font-weight:600;color:var(--ink);text-align:left;cursor:pointer">&#1059;&#1082;&#1088;&#1072;&#1111;&#1085;&#1089;&#1100;&#1082;&#1072;</button>
+              <button style="display:flex;align-items:center;width:100%;min-height:44px;background:none;border:0;padding:0.5rem 0;font-family:var(--ui);font-size:var(--t-label);font-weight:600;color:var(--ink);text-align:left;cursor:pointer">T&uuml;rk</button>
+              <button style="display:flex;align-items:center;width:100%;min-height:44px;background:none;border:0;padding:0.5rem 0;font-family:var(--ui);font-size:var(--t-label);font-weight:600;color:var(--ink);text-align:left;cursor:pointer">Portugu&ecirc;s</button>
+              <button style="display:flex;align-items:center;width:100%;min-height:44px;background:none;border:0;padding:0.5rem 0;font-family:var(--ui);font-size:var(--t-label);font-weight:600;color:var(--ink);text-align:left;cursor:pointer">&#1056;&#1091;&#1089;&#1089;&#1082;&#1080;&#1081;</button>
+            </div>
+          </div>
+        </div></div></div>
+        <div class="scrnote"><b>Two lists of languages disagree with each other.</b> The drawer offers <b>13</b> locales as endonyms (<code>LanguageSettings.tsx:9&ndash;23</code>), but the settings row that reports the current one reads from <code>LANGUAGE_LABELS</code>, which holds only <b>9</b> entries (<code>Settings.tsx:78&ndash;88</code>) and falls back to the bare locale code (<code>:93</code>). Pick Polski, &#1059;&#1082;&#1088;&#1072;&#1111;&#1085;&#1089;&#1100;&#1082;&#1072; or T&uuml;rk and the row behind reads <code>pl</code>, <code>uk</code>, <code>tr</code> &mdash; drawn here, since the chip is the only place the defect is visible. <b>Refined from the brief:</b> <code>zh_TW</code> does <i>not</i> show a raw code &mdash; <code>getCurrentLanguageLabel</code> splits on <code>[-_]</code> first (<code>Settings.tsx:92</code>), so it bases to <code>zh</code> and renders &ldquo;Chinese&rdquo;, identical to <code>zh_CN</code>. That is the worse bug of the two: two distinct locales report the same label, so the row cannot tell you which is active. The map should be deleted and the row should read the endonym straight off the same <code>LANGUAGES</code> array the drawer uses. Rows are 44pt here; shipped they are <code>py-3</code> on a 13px line, about 38.</div></div>
+<div><div class="scrcap"><i></i>Settings &middot; advanced, key loading <span class="tag merge">gap</span></div>
+        <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
+          <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>
+          <div class="mpad" style="flex:1;display:flex;flex-direction:column">
+            <div class="sh2"><span class="bk2">&lsaquo;</span><span class="t2">Developer</span></div>
+          </div>
+          <div class="shscrim"></div>
+          <div class="msheet" style="max-height:52%">
+            <div class="mshandle"></div>
+            <div class="mshead">Advanced Settings</div>
+            <div class="shlab">Account Public Key</div>
+            <div class="lskel" style="padding:0.375rem 0"><span style="flex:1"><span class="sk sk1" style="display:block"></span><span class="sk sk2" style="display:block"></span></span></div>
+            <div class="shdiv"></div>
+            <div class="setgroup" style="margin-bottom:0">
+              <button class="setrow" style="width:100%;min-height:48px;background:none;border:0;padding:0.6875rem 0;font-family:var(--ui);font-size:var(--t-label);color:var(--ink);text-align:left;cursor:pointer">Edit Miden Faucet ID<span class="ch">&rsaquo;</span></button>
+            </div>
+          </div>
+        </div></div></div>
+        <div class="scrnote"><b>The wait is drawn as a space character.</b> <code>AdvancedSettings.tsx:50</code> sets the placeholder to the string <code>&#39; &#39;</code> while the WASM lookup runs &mdash; and the comment above it claims a non-breaking space, which it is not. So the row holds its height and shows nothing: no shimmer, no word, no indication that anything is in flight. The lookup is not fast &mdash; <code>fetchPublicKey</code> takes the single-threaded WASM client lock (<code>:22</code>) and can queue behind an in-progress sync, which on this app holds for 30&ndash;60s. A shimmering block says &ldquo;a value is coming here&rdquo; and reserves the same two lines, so nothing jumps when it resolves. The copy control is absent rather than present-and-disabled: <code>:62</code> disables it at 40&percnt; opacity, which reads as a broken button rather than a pending one.</div></div>
+<div><div class="scrcap"><i></i>Settings &middot; advanced, key unavailable <span class="tag merge">gap</span></div>
+        <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
+          <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>
+          <div class="mpad" style="flex:1;display:flex;flex-direction:column">
+            <div class="sh2"><span class="bk2">&lsaquo;</span><span class="t2">Developer</span></div>
+          </div>
+          <div class="shscrim"></div>
+          <div class="msheet" style="max-height:58%">
+            <div class="mshandle"></div>
+            <div class="mshead">Advanced Settings</div>
+            <div class="shlab">Account Public Key</div>
+            <div class="mprompt" data-status="warn"><div class="ptx"><div class="pt">Public key unavailable</div><div class="pb">This account has not been fetched from the node yet, so it holds no key commitment.</div></div><button class="pcta">Retry</button></div>
+            <div class="shdiv"></div>
+            <div class="setgroup" style="margin-bottom:0">
+              <button class="setrow" style="width:100%;min-height:48px;background:none;border:0;padding:0.6875rem 0;font-family:var(--ui);font-size:var(--t-label);color:var(--ink);text-align:left;cursor:pointer">Edit Miden Faucet ID<span class="ch">&rsaquo;</span></button>
+            </div>
+          </div>
+        </div></div></div>
+        <div class="scrnote"><b>Loading and failure are the same pixel.</b> <code>fetchPublicKey</code> returns <code>null</code> on two distinct outcomes &mdash; the node has no such account (<code>AdvancedSettings.tsx:25&ndash;27</code>) and the account resolved but exposes zero key commitments (<code>:29&ndash;31</code>) &mdash; and both land in the same <code>publicKey</code> state as the pre-fetch value, so <code>:50</code> renders the same blank space forever. There is no <code>catch</code> anywhere in <code>fetchPublicKey</code> either, so a rejected WASM call escapes the <code>useEffect</code> at <code>:37&ndash;39</code> as an unhandled rejection and <code>setPublicKey</code> is never reached &mdash; identical blank. A developer opens this drawer specifically to copy the key; being shown an empty line with no reason and no retry is the one outcome that cannot be acted on. Warn, not negative: nothing is lost and the value may exist after a sync.</div></div>
+<div><div class="scrcap"><i></i>Settings &middot; faucet ID</div>
+        <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
+          <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>
+          <div class="mpad" style="flex:1;display:flex;flex-direction:column">
+            <div class="sh2"><span class="bk2">&lsaquo;</span><span class="t2">Edit Miden Faucet ID</span></div>
+            <div class="fld" style="width:auto"><label>Faucet ID</label><input class="inp" value="" placeholder="mtst1qq&hellip;"><div class="hint">Enter the ID of a miden faucet</div></div>
+            <div class="shlab" style="margin-top:1rem">Current</div>
+            <div class="drow filled"><span class="k">Faucet ID</span><span class="v mono">mtst1qq9v&hellip;7k3d</span><button class="acopy" aria-label="Copy faucet ID"><span class="svgic" style="--ic:url(assets/icons/copy.svg)" aria-hidden="true"></span></button></div>
+            <div class="notice" style="background:var(--surface-2);color:var(--ink-2)"><span>&#9432;</span><span>Auto-consume only claims notes from this faucet. Changing it does not move any balance.</span></div>
+            <div class="zone"><button class="btn btn-primary" style="width:100%" disabled>Set new Faucet ID</button></div>
+          </div>
+        </div></div></div>
+        <div class="scrnote">Reachable only from the Advanced drawer (<code>AdvancedSettings.tsx:73</code>); it is a <code>HIDDEN_TABS</code> route (<code>Settings.tsx:246&ndash;252</code>) with no menu entry. Two things the shipped form does not do. It <b>never shows the current value as text</b> &mdash; the existing faucet ID is passed as the input&rsquo;s <code>placeholder</code> (<code>EditMidenFaucetId.tsx:69</code>), so it vanishes the moment you type, and it is not selectable or copyable at any point. It also <b>steals focus on mount</b>: <code>useLayoutEffect</code> at <code>:34&ndash;36</code> focuses the field before paint, which on iOS raises the keyboard over a screen the user has not read yet. Current value gets its own labelled row; the field starts empty and unfocused. The submit stays inert until something is typed &mdash; shipped it is always enabled and an empty submit is caught only by the <code>required</code> rule.</div></div>
+<div><div class="scrcap"><i></i>Settings &middot; faucet ID, saved</div>
+        <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
+          <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>
+          <div class="mpad" style="flex:1;display:flex;flex-direction:column">
+            <div class="sh2"><span class="bk2">&lsaquo;</span><span class="t2">Edit Miden Faucet ID</span></div>
+            <div class="rcpt" style="padding-top:1rem"><div class="ok2">&#10003;</div>
+              <div style="font-family:var(--display);font-weight:800;font-size:var(--t-heading)">Faucet ID Updated</div></div>
+            <div class="dmeta" style="margin-top:1.125rem">
+              <div class="drow"><span class="k">Faucet ID</span><span class="v addr2">mtst1kq2p8&hellip;88xz</span></div>
+              <div class="drow"><span class="k">Auto consume</span><span class="v">On</span></div>
+            </div>
+            <div class="zone"><button class="btn btn-primary" style="width:100%">Done</button></div>
+          </div>
+        </div></div></div>
+        <div class="scrnote">Shipped, success is one line of <code>text-green-600</code> appended <i>below</i> the submit button (<code>EditMidenFaucetId.tsx:95</code>) while the form, the stale placeholder and the button all stay exactly as they were &mdash; so the screen after a successful save is indistinguishable from the screen before it apart from a green sentence under the fold. <code>text-green-600</code> is also a raw Tailwind literal, outside the status token set and unverified in dark. Confirmation restates <b>the value that was written</b>, which is the fact the user came to change, and echoes the setting it actually governs so the consequence is visible. The tick is a drawn glyph on <code>--pos-wash</code>, not colour alone: the words carry the outcome.</div></div>
+<div><div class="scrcap"><i></i>Settings &middot; faucet ID, rejected <span class="tag retire">bug</span></div>
+        <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
+          <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>
+          <div class="mpad" style="flex:1;display:flex;flex-direction:column">
+            <div class="sh2"><span class="bk2">&lsaquo;</span><span class="t2">Edit Miden Faucet ID</span></div>
+            <div class="fld err" style="width:auto"><label>Faucet ID</label><input class="inp" value="mtst1qq9v0z4"><div class="hint">Not a valid Miden faucet ID. Check for a missing character.</div></div>
+            <div class="shlab" style="margin-top:1rem">Current</div>
+            <div class="drow filled"><span class="k">Faucet ID</span><span class="v mono">mtst1qq9v&hellip;7k3d</span><button class="acopy" aria-label="Copy faucet ID"><span class="svgic" style="--ic:url(assets/icons/copy.svg)" aria-hidden="true"></span></button></div>
+            <div class="notice"><span>&#9940;</span><span>Nothing was changed. Your faucet ID is still the one shown above.</span></div>
+            <div class="zone"><button class="btn btn-primary" style="width:100%">Set new Faucet ID</button></div>
+          </div>
+        </div></div></div>
+        <div class="scrnote"><b>The failure message is whatever the SDK threw.</b> <code>EditMidenFaucetId.tsx:52</code> pipes <code>err.message</code> straight into the field caption, so the user sees the raw exception text with no rewrite and no validation of its own &mdash; <code>setFaucetIdSetting</code> is called with the unchecked string at <code>:45</code>, and the only guard on the field is <code>required</code> (<code>:63</code>). A bech32 parse failure surfaces as an SDK sentence about a checksum. It then <b>re-focuses the field</b> (<code>:53</code>) after a hand-rolled 300ms delay (<code>:51</code>), reopening the keyboard over the error it just wrote. The caption here is authored copy, and a second line states the thing an error caption cannot: <b>nothing changed</b>, with the surviving value visible directly above it. Text plus icon plus the unchanged Current row &mdash; the red is never the only signal.</div></div>
+<div><div class="scrcap"><i></i>Settings &middot; authorized dApps</div>
+        <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
+          <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>
+          <div class="mpad" style="flex:1;display:flex;flex-direction:column">
+            <div class="sh2"><span class="bk2">&lsaquo;</span><span class="t2">Developer</span></div>
+          </div>
+          <div class="shscrim"></div>
+          <div class="msheet" style="max-height:54%">
+            <div class="mshandle"></div>
+            <div class="mshead">Authorized DApps</div>
+            <div class="setgroup" style="margin-bottom:0">
+              <button class="setrow" role="switch" aria-checked="true" style="width:100%;min-height:52px;background:none;border:0;padding:0.6875rem 0;font-family:var(--ui);font-size:var(--t-label);color:var(--ink);text-align:left;align-items:flex-start;cursor:pointer"><span style="flex:1;min-width:0"><span style="display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">DApps Interaction</span><span style="display:-webkit-box;font-size:var(--t-caption);font-weight:600;color:var(--ink-2);margin-top:0.125rem;line-height:1.35;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">Toggle to enable or disable DApp connections and balance visibility.</span></span><span class="toggle on" aria-hidden="true"><span class="knob"></span></span></button>
+              <button class="setrow" style="width:100%;min-height:48px;background:none;border:0;padding:0.6875rem 0;font-family:var(--ui);font-size:var(--t-label);color:var(--ink);text-align:left;cursor:pointer">See connected<span style="margin-left:auto;font-size:var(--t-caption);font-weight:700;color:var(--ink-2)">3</span><span class="ch" style="margin-left:0.5rem">&rsaquo;</span></button>
+            </div>
+          </div>
+        </div></div></div>
+        <div class="scrnote"><code>DAppDrawerSettings.tsx:26&ndash;28</code> computes <code>hasConnectedDApps</code> as a boolean and then throws the count away, so the row at <code>:61&ndash;77</code> is either absent or says &ldquo;See connected&rdquo; with no indication of how many sessions exist &mdash; and its <i>absence</i> is the only way the drawer signals zero, which reads as a missing feature rather than an empty set. The count is already in hand; showing it costs nothing and makes the row worth tapping. Bigger risk in the same file: <code>:19&ndash;24</code> uses <code>suspense: true</code> with <b>no local <code>&lt;Suspense&gt;</code> boundary</b>, so on a cold fetch this drawer suspends and the nearest boundary is the app shell &mdash; the whole screen blanks, not the sheet. The toggle disables dApp connections <i>and</i> balance visibility together, which the shipped description admits and no UI separates.</div></div>
+<div><div class="scrcap"><i></i>Settings &middot; connected dApps <span class="tag retire">bug</span></div>
+        <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
+          <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>
+          <div class="mpad" style="flex:1;display:flex;flex-direction:column">
+            <div class="sh2"><span class="bk2">&lsaquo;</span><span class="t2">Connected dApps</span></div>
+            <div class="mstk-lbl2">Connected to Miden Account 1 &middot; Testnet</div>
+            <div class="mrow"><div class="ic sq"><span class="svgic" style="--ic:url(assets/icons/convert.svg)" aria-hidden="true"></span></div><div style="flex:1;min-width:0"><div class="nm">app.miden.io</div><div class="ad addr">Private data &middot; Upon Request</div></div><span class="go" aria-hidden="true">&rsaquo;</span></div>
+            <div class="mrow"><div class="ic sq"><span class="svgic" style="--ic:url(assets/icons/coins.svg)" aria-hidden="true"></span></div><div style="flex:1;min-width:0"><div class="nm">faucet.testnet.miden.io</div><div class="ad addr">Private data &middot; Automatic</div></div><span class="go" aria-hidden="true">&rsaquo;</span></div>
+            <div class="mrow"><div class="ic sq"><span class="svgic" style="--ic:url(assets/icons/gateway.svg)" aria-hidden="true"></span></div><div style="flex:1;min-width:0"><div class="nm">bridge.miden.io</div><div class="ad addr">Private data &middot; Upon Request</div></div><span class="go" aria-hidden="true">&rsaquo;</span></div>
+            <div class="notice" style="background:var(--surface-2);color:var(--ink-2)"><span>&#9432;</span><span>Only sessions for this account are listed. Other accounts keep their own.</span></div>
+            <div class="zone"><button class="btn btn-secondary" style="width:100%">Revoke all</button></div>
+          </div>
+        </div></div></div>
+        <div class="scrnote">Shipped, each session is a bordered card carrying <b>Origin, Network, Account, Private Data Permission</b> and two permission chips (<code>DAppSettings.tsx:94&ndash;153</code>) &mdash; four rows to say what one row says, and the Account and Network are <b>identical on every card</b> because <code>:32</code> filters to the current account and the page is already scoped to one network. Both are hoisted to a single caption here. Three defects. <code>:29</code> does <code>Object.entries(data!)</code> &mdash; a non-null assertion on SWR data, which is exactly the value that is <code>undefined</code> before resolve. <code>:23&ndash;28</code> sets <code>suspense: true</code> with no local boundary, so the cold path blanks the app rather than this list. And <code>:130</code> hard-codes <code>testnet.midenscan.com</code> for the explorer link regardless of the session&rsquo;s own <code>network</code> field two rows above it &mdash; on devnet the link resolves to the wrong chain, even though <code>MIDEN_EXPLORER_ENDPOINTS</code> (<code>constants.ts:66&ndash;69</code>) already maps devnet correctly and has <b>no entry at all</b> for mainnet or localnet. Revoke moves off the card and into a footer that says what it does; the shipped affordance is an unlabelled &times; in the card header.</div></div>
+<div><div class="scrcap"><i></i>Settings &middot; connected dApps, none <span class="tag merge">gap</span></div>
+        <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
+          <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>
+          <div class="mpad" style="flex:1;display:flex;flex-direction:column">
+            <div class="sh2"><span class="bk2">&lsaquo;</span><span class="t2">Connected dApps</span></div>
+            <div class="mstk-lbl2">Connected to Miden Account 1 &middot; Testnet</div>
+            <div class="emptyb">
+              <div class="eic" style="background:var(--surface-3);color:var(--ink-2)"><span class="svgic" style="--ic:url(assets/icons/convert.svg)" aria-hidden="true"></span></div>
+              <div class="et">No dApps connected</div>
+              <div class="eb">Apps you approve in the dApp browser appear here, and you can revoke them at any time.</div>
+              <button class="btn btn-secondary">Browse dApps</button>
+            </div>
+          </div>
+        </div></div></div>
+        <div class="scrnote"><b>GAP.</b> <code>DAppSettings.tsx:53&ndash;59</code> maps over <code>dAppEntries</code> and renders nothing else &mdash; with zero sessions the route paints a bare <code>&lt;div class=&quot;w-full max-w-sm mx-auto my-8&quot;&gt;</code> under the header and stops. No copy, no reason, no way out. It is reachable in practice: <code>DAppDrawerSettings.tsx:61</code> gates the entry link on <code>hasConnectedDApps</code>, but <code>/settings/dapps</code> is a real route in <code>HIDDEN_TABS</code> (<code>Settings.tsx:260&ndash;265</code>), so a back-navigation after revoking the last session lands here. There is <b>no <code>noDappsConnected</code> key in <code>en.json</code></b>, so this copy is new and must be added rather than reused. The action points at the surface that creates sessions, which is the only thing a user can do from an empty permissions list.</div></div>
+<div><div class="scrcap"><i></i>Settings &middot; networks <span class="tag merge">gap</span></div>
+        <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
+          <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>
+          <div class="mpad" style="flex:1;display:flex;flex-direction:column">
+            <div class="sh2"><span class="bk2">&lsaquo;</span><span class="t2">Networks</span></div>
+            <div class="netpick" style="margin-top:0">
+              <div class="npq">Current</div>
+              <div class="netrow"><span class="nlg" style="background:var(--paper)"><img src="assets/icons/miden.svg" alt=""></span><span class="nname">Testnet</span><span class="rtick"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M1.6 6.3l2.7 2.7L10.4 3" fill="none" stroke="var(--on-accent-sm)" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/></svg></span></div>
+            </div>
+            <div class="netpick">
+              <div class="npq">Switch to</div>
+              <div class="netrow"><span class="nlg" style="background:var(--paper)"><img src="assets/icons/miden.svg" alt=""></span><span class="nname">Devnet</span><span class="go" aria-hidden="true">&rsaquo;</span></div>
+              <div class="netrow"><span class="nlg" style="background:var(--paper)"><img src="assets/icons/miden.svg" alt=""></span><span class="nname">Localnet</span><span class="go" aria-hidden="true">&rsaquo;</span></div>
+              <div class="netrow"><span class="nlg" style="background:var(--paper)"><img src="assets/icons/miden.svg" alt=""></span><span class="nname" style="color:var(--ink-3)">Mainnet</span><span style="margin-left:auto;font-size:var(--t-caption);font-weight:700;color:var(--ink-2)">Not live yet</span></div>
+            </div>
+            <div class="notice" style="background:var(--surface-2);color:var(--ink-2)"><span>&#9432;</span><span>Each network holds separate balances and history. Switching does not move funds.</span></div>
+          </div>
+        </div></div></div>
+        <div class="scrnote"><b>The shipped page is three unlabelled cards and no words of its own.</b> <code>Networks.tsx</code> imports no <code>useTranslation</code> and calls <code>t()</code> nowhere: the only strings are <code>item.name</code> read straight off <code>MIDEN_NETWORKS</code> (<code>constants.ts:91&ndash;105</code>). There is no header, no heading, no explanation of what switching does, and no way to tell the active row from a tappable one except a filled circle. It is also <b>unreachable</b>: it lives in <code>HIDDEN_TABS</code> only (<code>Settings.tsx:253&ndash;259</code>) and its sole link is commented out at <code>templates/AdvancedSettings.tsx:39&ndash;43</code> &mdash; a file that is itself dead, since <code>Settings.tsx:49</code> imports <code>./AdvancedSettings</code> and resolves to <code>pages/</code>. <b>Mainnet is missing</b> from the switchable list though <code>MIDEN_NETWORK_ENDPOINTS</code> defines it (<code>constants.ts:40</code>, marked placeholder), so it is drawn present and honestly unavailable rather than silently absent. Note for the implementer: <code>en.json</code> has <code>testnet</code> but <b>no <code>devnet</code>, <code>localnet</code> or <code>mainnet</code> key</b> &mdash; three strings must be added before this page can be translated at all.</div></div>
+<div><div class="scrcap"><i></i>Settings &middot; networks, confirm switch <span class="tag merge">gap</span></div>
+        <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
+          <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>
+          <div class="mpad" style="flex:1;display:flex;flex-direction:column">
+            <div class="sh2"><span class="bk2">&lsaquo;</span><span class="t2">Networks</span></div>
+          </div>
+          <div class="shscrim"></div>
+          <div class="msheet" style="max-height:52%">
+            <div class="mshandle"></div>
+            <div class="mshead">Switch to Devnet?</div>
+            <div class="dmeta">
+              <div class="drow"><span class="k">From</span><span class="v">Testnet</span></div>
+              <div class="drow"><span class="k">To</span><span class="v">Devnet</span></div>
+              <div class="drow"><span class="k">Node</span><span class="v mono">rpc.devnet.miden.io</span></div>
+            </div>
+            <div class="notice" style="background:var(--surface-2);color:var(--ink-2)"><span>&#9432;</span><span>Your Testnet balances and history stay on Testnet and return when you switch back.</span></div>
+            <div class="zone"><button class="btn btn-primary" style="width:100%">Switch network</button><div class="gh">Cancel</div></div>
+          </div>
+        </div></div></div>
+        <div class="scrnote"><b>GAP.</b> <code>Networks.tsx:12&ndash;14</code> declares <code>onNetworkSelect</code> <code>async</code> and then awaits nothing &mdash; a single tap calls <code>setNetworkId</code>, which writes Zustand and passive storage synchronously (<code>ready.tsx:28&ndash;35</code>) and returns. There is no confirmation step of any kind, so one mis-tap on a 3-row list swaps the chain the whole wallet is pointed at, and the user&rsquo;s balances appear to vanish. The endpoint is named because it is the only fact that distinguishes these three options and it is currently invisible everywhere in the UI. The reassurance is the load-bearing sentence: the failure mode of an unconfirmed network switch is not a broken app, it is a user who believes their money is gone.</div></div>
+<div><div class="scrcap"><i></i>Settings &middot; networks, switching <span class="tag merge">gap</span></div>
+        <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
+          <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>
+          <div class="mpad" style="flex:1;display:flex;flex-direction:column">
+            <div class="sh2"><span class="bk2">&lsaquo;</span><span class="t2">Networks</span></div>
+            <div style="text-align:center;margin-top:1.25rem">
+              <div style="font-family:var(--display);font-weight:800;font-size:var(--t-heading)">Switching to Devnet</div>
+              <div style="font-size:var(--t-label);color:var(--ink-2);margin-top:0.375rem">Testnet &rarr; Devnet</div>
+            </div>
+            <div class="tsteps">
+              <div class="tstep" data-state="complete"><span class="tsi"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M3 6.4 5 8.6 9 3.8"/></svg></span><span class="tsl">Network saved</span><span class="tsm">1s</span></div>
+              <div class="tstep" data-state="active"><span class="tsi"></span><span class="tsl">Reaching the Devnet node</span></div>
+              <div class="tstep" data-state="pending"><span class="tsi"></span><span class="tsl">Loading balances</span></div>
+            </div>
+            <div class="scrnote2" style="margin-top:0.875rem">Your Testnet data is untouched. You can switch back at any time.</div>
+            <div class="zone"><button class="btn btn-secondary" style="width:100%">Cancel</button></div>
+          </div>
+        </div></div></div>
+        <div class="scrnote"><b>GAP &mdash; there is no in-progress state because there is no progress to report.</b> <code>useSetNetworkId</code> (<code>ready.tsx:24&ndash;35</code>) writes the id and returns; it never probes the endpoint, so the app commits to a network it has not confirmed is reachable. Everything downstream then fails separately and blames itself &mdash; balances read zero, sync errors log to the console. The three steps are the operations that already happen in sequence and are currently silent: the write, the first RPC round-trip against <code>rpcBaseURL</code>, and the balance fetch. Naming them makes the failure attributable to the switch rather than to the wallet. Cancel is real because until the node answers nothing irreversible has occurred.</div></div>
+<div><div class="scrcap"><i></i>Settings &middot; networks, switch failed <span class="tag merge">gap</span></div>
+        <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
+          <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>
+          <div class="mpad" style="flex:1;display:flex;flex-direction:column">
+            <div class="sh2"><span class="bk2">&lsaquo;</span><span class="t2">Networks</span></div>
+            <div class="mprompt" data-status="neg"><div class="ptx"><div class="pt">Couldn&rsquo;t reach Devnet</div><div class="pb">The node did not respond. You are still on Testnet and nothing was changed.</div></div></div>
+            <div class="dmeta" style="margin-top:0.75rem">
+              <div class="drow"><span class="k">Still on</span><span class="v">Testnet</span></div>
+              <div class="drow"><span class="k">Tried</span><span class="v mono">rpc.devnet.miden.io</span></div>
+            </div>
+            <div class="netpick">
+              <div class="npq">Switch to</div>
+              <div class="netrow"><span class="nlg" style="background:var(--paper)"><img src="assets/icons/miden.svg" alt=""></span><span class="nname">Devnet</span><span class="go" aria-hidden="true">&rsaquo;</span></div>
+              <div class="netrow"><span class="nlg" style="background:var(--paper)"><img src="assets/icons/miden.svg" alt=""></span><span class="nname">Localnet</span><span class="go" aria-hidden="true">&rsaquo;</span></div>
+            </div>
+            <div class="zone"><button class="btn btn-primary" style="width:100%">Try again</button></div>
+          </div>
+        </div></div></div>
+        <div class="scrnote"><b>GAP.</b> There is no error path to redraw: <code>Networks.tsx:12&ndash;14</code> has no <code>try</code>, no <code>catch</code>, and no returned result to inspect, so an unreachable node is indistinguishable from a healthy one until balances silently render as zero on a chain the user did not ask to be stranded on. Localnet makes this routine &mdash; <code>http://localhost:57291</code> (<code>constants.ts:104</code>) is down whenever the developer&rsquo;s node is not running, which is most of the time. Two rules the screen obeys. The selection is <b>rolled back</b>, and the banner says which network survived rather than only which one failed &mdash; &ldquo;still on Testnet&rdquo; is the fact the user needs and the current code cannot state. The failed endpoint is named in mono so it is diagnosable without a console. Negative status, but the words carry it: the red wash is never the only signal that something did not happen.</div></div>
+<div><div class="scrcap"><i></i>Settings &middot; currency <span class="tag merge">gap</span></div>
+        <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
+          <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>
+          <div class="mpad" style="flex:1;display:flex;flex-direction:column">
+            <div class="sh2"><span class="bk2">&lsaquo;</span><span class="t2">Preferences</span></div>
+          </div>
+          <div class="shscrim"></div>
+          <div class="msheet" style="max-height:82%">
+            <div class="mshandle"></div>
+            <div class="mshead">Currency</div>
+            <div class="searchf" style="width:auto;margin-bottom:0.75rem"><span class="svgic" style="--ic:url(assets/icons/search.svg)" aria-hidden="true"></span>Search 23 currencies</div>
+            <div style="flex:1;overflow-y:auto;margin:0 -0.25rem;padding:0 0.25rem">
+              <div class="shlab">Selected</div>
+              <button style="display:flex;align-items:center;gap:0.75rem;width:100%;min-height:48px;background:none;border:0;padding:0.5rem 0;font-family:var(--ui);font-size:var(--t-label);font-weight:800;color:var(--ink);text-align:left;cursor:pointer"><span class="mono" style="width:2.25rem;flex:none;color:var(--ink-2)">USD</span><span style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">United States Dollar</span><span class="rtick"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M1.6 6.3l2.7 2.7L10.4 3" fill="none" stroke="var(--on-accent-sm)" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
+              <div class="shdiv" style="margin:0.5rem 0"></div>
+              <div class="shlab">All currencies</div>
+              <button style="display:flex;align-items:center;gap:0.75rem;width:100%;min-height:48px;background:none;border:0;padding:0.5rem 0;font-family:var(--ui);font-size:var(--t-label);font-weight:600;color:var(--ink);text-align:left;cursor:pointer"><span class="mono" style="width:2.25rem;flex:none;color:var(--ink-2)">AUD</span><span style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Australian Dollar</span></button>
+              <button style="display:flex;align-items:center;gap:0.75rem;width:100%;min-height:48px;background:none;border:0;padding:0.5rem 0;font-family:var(--ui);font-size:var(--t-label);font-weight:600;color:var(--ink);text-align:left;cursor:pointer"><span class="mono" style="width:2.25rem;flex:none;color:var(--ink-2)">CAD</span><span style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Canadian Dollar</span></button>
+              <button style="display:flex;align-items:center;gap:0.75rem;width:100%;min-height:48px;background:none;border:0;padding:0.5rem 0;font-family:var(--ui);font-size:var(--t-label);font-weight:600;color:var(--ink);text-align:left;cursor:pointer"><span class="mono" style="width:2.25rem;flex:none;color:var(--ink-2)">CHF</span><span style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Swiss Franc</span></button>
+              <button style="display:flex;align-items:center;gap:0.75rem;width:100%;min-height:48px;background:none;border:0;padding:0.5rem 0;font-family:var(--ui);font-size:var(--t-label);font-weight:600;color:var(--ink);text-align:left;cursor:pointer"><span class="mono" style="width:2.25rem;flex:none;color:var(--ink-2)">CNY</span><span style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Chinese Yuan</span></button>
+              <button style="display:flex;align-items:center;gap:0.75rem;width:100%;min-height:48px;background:none;border:0;padding:0.5rem 0;font-family:var(--ui);font-size:var(--t-label);font-weight:600;color:var(--ink);text-align:left;cursor:pointer"><span class="mono" style="width:2.25rem;flex:none;color:var(--ink-2)">EUR</span><span style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Euro</span></button>
+              <button style="display:flex;align-items:center;gap:0.75rem;width:100%;min-height:48px;background:none;border:0;padding:0.5rem 0;font-family:var(--ui);font-size:var(--t-label);font-weight:600;color:var(--ink);text-align:left;cursor:pointer"><span class="mono" style="width:2.25rem;flex:none;color:var(--ink-2)">GBP</span><span style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">British Pound</span></button>
+              <button style="display:flex;align-items:center;gap:0.75rem;width:100%;min-height:48px;background:none;border:0;padding:0.5rem 0;font-family:var(--ui);font-size:var(--t-label);font-weight:600;color:var(--ink);text-align:left;cursor:pointer"><span class="mono" style="width:2.25rem;flex:none;color:var(--ink-2)">JPY</span><span style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Japanese Yen</span></button>
+              <button style="display:flex;align-items:center;gap:0.75rem;width:100%;min-height:48px;background:none;border:0;padding:0.5rem 0;font-family:var(--ui);font-size:var(--t-label);font-weight:600;color:var(--ink);text-align:left;cursor:pointer"><span class="mono" style="width:2.25rem;flex:none;color:var(--ink-2)">KRW</span><span style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">South Korean Won</span></button>
+            </div>
+          </div>
+        </div></div></div>
+        <div class="scrnote"><b>GAP &mdash; the entire data layer ships and nothing renders it.</b> <code>fiat-curency/consts.ts:6&ndash;145</code> defines 23 currencies with symbols, <code>core.tsx:79&ndash;101</code> exposes <code>useFiatCurrency</code> with a <code>setSelectedFiatCurrency</code> that writes both Zustand and persistent storage, <code>store/index.ts:600</code> holds the reducer, and <code>FiatCurrencyProvider</code> is mounted in <code>front/provider.tsx:7</code>. <b>No component outside <code>lib/</code> imports any of it.</b> Every fiat figure in the product is a hard-coded dollar template: <code>AssetRow.tsx:46</code>, <code>Explore.tsx:188</code>, <code>Receive/PendingTab.tsx:51</code>, <code>SelectAmount.tsx:103</code>, <code>ReviewAmount.tsx:39</code>, and <code>HistoryDetails.tsx:72</code> which appends the literal string &ldquo;USD&rdquo;. The code is <b>three-letter</b> and in mono, leading, because that is what a user scans for and what disambiguates the five currencies in this list that all use the <code>&#36;</code> sign. Search is not optional at 23 rows. <b>Ship-order caveat:</b> <code>fetchFiatCurrencies</code> (<code>core.tsx:103&ndash;110</code>) returns <code>&#123;usd:1&#125;</code> from a TODO, so <code>useAssetFiatCurrencyPrice</code> returns <code>null</code> for every other code (<code>:26&ndash;28</code>). This picker must not ship before real rates, or it will let a user select EUR and keep showing dollars. There is no <code>currency</code> key in <code>en.json</code> either &mdash; all copy here is new.</div></div>
+<div><div class="scrcap"><i></i>Address book &middot; no results <span class="tag retire">bug</span></div>
+        <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
+          <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>
+          <div class="mpad" style="flex:1;display:flex;flex-direction:column">
+            <div class="sh2"><span class="bk2">&lsaquo;</span><span class="t2">Preferences</span></div>
+          </div>
+          <div class="shscrim"></div>
+          <div class="msheet" style="max-height:72%">
+            <div class="mshandle"></div>
+            <div class="mshead">Address Book</div>
+            <div class="mlist" style="flex:1">
+              <div class="shlab">Current Contacts</div>
+              <div class="fld"><label>Search contacts</label><input class="inp" value="dominik"></div>
+              <div class="shempty" style="padding:1.25rem 0.875rem 1.5rem">
+                <div class="eic" style="background:var(--surface-2);color:var(--ink-2)"><span class="svgic" style="--ic:url(assets/icons/search.svg)" aria-hidden="true"></span></div>
+                <div class="et" style="font-family:var(--display);font-weight:800;font-size:var(--t-body)">No match for &ldquo;dominik&rdquo;</div>
+                <div class="es" style="font-size:var(--t-caption);color:var(--ink-2);margin-top:0.25rem;line-height:1.4">You have 4 contacts. Check the spelling, or search by address.</div>
+                <button class="btn btn-secondary" style="margin-top:0.875rem;min-height:44px;padding:0.625rem 1.125rem;width:auto">Clear search</button>
+              </div>
+            </div>
+          </div>
+        </div></div></div>
+        <div class="scrnote"><b>Distinct from <code>Address book &middot; empty</code>, which the shipped code cannot be.</b> <code>AddressBook.tsx:68&ndash;69</code> renders one string, <code>noContactsFound</code> = &ldquo;No contacts found&rdquo;, for both <code>allContacts.length === 0</code> and <code>filteredContacts.length === 0</code> &mdash; so a user with four saved contacts who mistypes a name is told they have <i>none</i>, which is a claim about their data rather than about their query. This state echoes the query, states the true count, and offers the only useful action. Second defect drawn here: the search input at <code>:53&ndash;64</code> has a <code>placeholder</code> and <b>no <code>&lt;label&gt;</code> and no <code>aria-label</code></b> &mdash; the placeholder disappears on first keystroke, so from that point the field has no accessible name at all and a screen reader announces an unlabelled text box. A persistent visible label fixes both. The field also searches name <i>and</i> address (<code>:42</code>), which the shipped placeholder &ldquo;Search&rdquo; never says.</div></div>
+<div><div class="scrcap"><i></i>Address book &middot; edit contact <span class="tag merge">gap</span></div>
+        <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
+          <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>
+          <div class="mpad" style="flex:1;display:flex;flex-direction:column">
+            <div class="sh2"><span class="bk2">&lsaquo;</span><span class="t2">Preferences</span></div>
+          </div>
+          <div class="shscrim"></div>
+          <div class="msheet" style="max-height:76%">
+            <div class="mshandle"></div>
+            <div class="mshead">Edit Contact</div>
+            <div class="fld"><label>Name</label><input class="inp" value="Wiktor"></div>
+            <div class="fld" style="margin-top:0.75rem"><label>Address</label><input class="inp" value="mtst1ap8qz&hellip;r4fp" disabled><div class="hint">The address identifies this contact and cannot be changed. Delete and re-add to move it.</div></div>
+            <div class="shdiv"></div>
+            <div class="mrow"><div class="ic" style="background:var(--tx-sent)"><span class="ini">W</span></div><div style="flex:1;min-width:0"><div class="nm">Wiktor</div><div class="ad addr">External &middot; mtst1ap8&hellip;r4fp</div></div></div>
+            <div class="zone"><button class="btn btn-primary" style="width:100%">Save changes</button><div class="gh">Delete contact</div></div>
+          </div>
+        </div></div></div>
+        <div class="scrnote"><b>GAP &mdash; no edit mutation exists.</b> <code>address-book.ts</code> exports <code>addContact</code> (<code>:13</code>) and <code>removeContact</code> (<code>:25</code>) and nothing else, so correcting one letter of a name today means deleting the contact and retyping a 49-character bech32 address from memory. The address is the primary key that <code>removeContact</code> filters on, so it is shown read-only and the row says why, rather than being silently absent. This screen also gives the delete a <b>named, deliberate affordance</b>, which the shipped list does not have: <code>AddressBook.tsx:78</code> binds <code>onClick</code> of the whole <code>CardItem</code> to <code>handleRemoveContactClick</code>, so the entire row <i>is</i> the delete button &mdash; no trash icon, no swipe, no menu, and no hint that tapping a contact destroys it. Note the shipped list also has no way to <i>use</i> a contact: tapping cannot start a send. The live preview row is here because both the send-flow picker and the settings list render name-over-address, and a rename changes what the user will see there.</div></div>
 <div><div class="scrcap"><i></i>Reveal recovery phrase</div>
         <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
           <div class="stat"><span>9:41</span><span class="r">✦ ▪ ▪</span></div>
@@ -4748,6 +5091,400 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
           <div class="mnav" style="--i:1"><button class="t"><span class="svgic" style="--ic:url(assets/icons/home-new.svg)" aria-hidden="true"></span><span>Home</span></button><button class="t on"><span class="svgic" style="--ic:url(assets/icons/explore.svg)" aria-hidden="true"></span><span>Explore</span></button><button class="t"><span class="svgic" style="--ic:url(assets/icons/activity.svg)" aria-hidden="true"></span><span>Activity</span></button></div>
         </div></div></div>
         <div class="scrnote">Browser rejoins the app: same header scale, same tiles, same nav. The trust statement is on the surface, not buried.</div></div>
+<div><div class="scrcap"><i></i>dApp launcher &middot; no recents <span class="tag merge">gap</span></div>
+        <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
+          <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>
+          <div class="mpad" style="flex:1;display:flex;flex-direction:column">
+            <div style="font-family:var(--display);font-weight:800;font-size:var(--t-title);padding:0.375rem 0 0.75rem">Explore</div>
+            <div class="urlbar"><span class="svgic" style="--ic:url(assets/icons/search.svg);width:0.9375rem;height:0.9375rem;opacity:.5" aria-hidden="true"></span>Search dApps or paste URL</div>
+            <div class="shlab" style="margin:1.125rem 0 0.375rem">FEATURED</div>
+            <div class="daygrid">
+              <div class="dapp"><div class="tile"><span style="font-family:var(--display);font-weight:800;font-size:var(--t-cta);color:var(--ink)">Z</span></div>Zoro</div>
+              <div class="dapp"><div class="tile"><span style="font-family:var(--display);font-weight:800;font-size:var(--t-cta);color:var(--ink)">Q</span></div>Qash</div>
+              <div class="dapp"><div class="tile"><span style="font-family:var(--display);font-weight:800;font-size:var(--t-cta);color:var(--ink)">F</span></div>Faucet</div>
+              <div class="dapp"><div class="tile"><span style="font-family:var(--display);font-weight:800;font-size:var(--t-cta);color:var(--ink)">M</span></div>Miden Name</div>
+            </div>
+            <div class="shlab" style="margin:1.25rem 0 0.375rem">RECENTS</div>
+            <div class="emptyb">
+              <div class="et">Nothing opened yet</div>
+              <div class="eb">Apps you open will collect here so you can get back to them in one tap.</div>
+            </div>
+          </div>
+          <div class="mnav" style="--i:1"><button class="t"><span class="svgic" style="--ic:url(assets/icons/home-new.svg)" aria-hidden="true"></span><span>Home</span></button><button class="t on"><span class="svgic" style="--ic:url(assets/icons/explore.svg)" aria-hidden="true"></span><span>Explore</span></button><button class="t"><span class="svgic" style="--ic:url(assets/icons/activity.svg)" aria-hidden="true"></span><span>Activity</span></button></div>
+        </div></div></div>
+        <div class="scrnote"><b>GAP &mdash; the section does not exist until it is full.</b> <code>RecentsRow.tsx:32</code> is <code>if (recents.length === 0) return null</code>, so on a first visit the heading vanishes with the row and the launcher simply ends at the grid. The user is never told the row exists, which is why nothing explains where an app goes after it is closed. Drawn with the heading always present and one sentence in its place. <b>The naming is also a lie.</b> The capsule&rsquo;s &ldquo;Add to My Dapps&rdquo; (<code>DappActionsSheet.tsx:130&ndash;137</code>) writes through <code>recordRecentDapp</code> &mdash; the same store <code>DappLauncher/index.tsx:40</code> reads for Recents &mdash; and the row is <code>slice(0, MAX_VISIBLE)</code> with <code>MAX_VISIBLE = 4</code> (<code>RecentsRow.tsx:22,34</code>). A deliberately saved app is therefore indistinguishable from history and ages out silently on the fifth open. Saved and recent are two different promises served by one four-slot list. <b>Tile marks are letters on a neutral plate, not the shipped fallback.</b> <code>AppsGrid.tsx:55,59</code> paints the fallback letter <code>text-pure-white</code> on <code>dapp.brandColor</code>; measured against <code>featured-dapps.ts</code>, Faucet <code>&#35;0EA5E9</code> is 2.77:1 and Miden Name <code>&#35;10B981</code> is 2.56:1 &mdash; under the 3:1 floor for a graphic, let alone 4.5:1 for a character. A neutral plate needs no per-brand tuning and passes in both themes. The grid is four cards only off iOS: <code>getExploreGridDapps()</code> (<code>featured-dapps.ts:152&ndash;153</code>) strips <code>isExchange</code> entries under App Store Guideline 3.1.5(iii), so iOS ships three and the component comment still says 2&times;2.</div></div>
+<div><div class="scrcap"><i></i>dApp &middot; active <span class="tag retire">bug</span></div>
+        <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
+          <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>
+          <div style="flex:none;padding:0 0.5rem 0.5rem;background:var(--surface);border-bottom:1px solid var(--rule)">
+            <div class="mshandle" style="margin:0.375rem auto 0.5rem"></div>
+            <div style="display:flex;align-items:center;gap:0.375rem">
+              <div style="width:2.25rem;height:2.25rem;border-radius:var(--radius-md);background:var(--surface-2);display:flex;align-items:center;justify-content:center;flex:none"><span style="font-family:var(--display);font-weight:800;font-size:var(--t-body);color:var(--ink)">Z</span></div>
+              <div style="min-width:0;flex:1">
+                <div class="mono" style="font-size:var(--t-label);color:var(--ink);font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">app.zoroswap.com</div>
+                <div style="font-size:var(--t-caption);color:var(--ink-2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Zoro &middot; Private swaps on Miden</div>
+              </div>
+              <button class="scanbtn" style="min-width:44px;min-height:44px;background:none;color:var(--ink)" aria-label="Reload"><span class="svgic" style="--ic:url(assets/icons/convert.svg);width:1.125rem;height:1.125rem" aria-hidden="true"></span></button>
+              <button class="scanbtn" style="min-width:44px;min-height:44px;background:none;color:var(--ink)" aria-label="More actions"><span class="svgic" style="--ic:url(assets/icons/settings-new.svg);width:1.125rem;height:1.125rem" aria-hidden="true"></span></button>
+              <button class="scanbtn" style="min-width:44px;min-height:44px;color:var(--ink);font-size:var(--t-heading)" aria-label="Close app.zoroswap.com">&times;</button>
+            </div>
+          </div>
+          <div class="pbar" style="width:100%;height:3px;border-radius:0;background:var(--surface-2)"><i style="width:62%"></i></div>
+          <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;background:var(--surface-2);padding:0 2rem">
+            <div class="skel2" style="width:100%"></div>
+            <div class="skel2" style="width:72%"></div>
+            <div style="font-size:var(--t-caption);color:var(--ink-2);margin-top:0.75rem">Loading app.zoroswap.com&hellip;</div>
+          </div>
+          <div class="mnav" style="--i:1"><button class="t"><span class="svgic" style="--ic:url(assets/icons/home-new.svg)" aria-hidden="true"></span><span>Home</span></button><button class="t on"><span class="svgic" style="--ic:url(assets/icons/explore.svg)" aria-hidden="true"></span><span>Explore</span></button><button class="t"><span class="svgic" style="--ic:url(assets/icons/activity.svg)" aria-hidden="true"></span><span>Activity</span></button></div>
+        </div></div></div>
+        <div class="scrnote"><b>Three defects in one strip.</b> (1) <b>Every capsule control is 32pt.</b> <code>CapsuleBar.tsx:215,228,238,255,273</code> are all <code>h-8 w-8</code> &mdash; five of them in a row, on the one surface where the only way to leave a hostile page is the &times;. Redrawn at 44, which is what forces the button count down to three. (2) <b>The capsule is white in dark mode, with white text on it.</b> <code>CapsuleBar.tsx:130</code> sets <code>background: &lsquo;rgba(255,255,255,0.85)&rsquo;</code> as an inline literal, which cannot flip; its children use <code>text-black</code>, which resolves to <code>var(--color-text-primary)</code> = <code>&#35;ffffff</code> in dark (<code>main.css:442</code>). Title, hostname and all four glyphs go white-on-white. (3) <b>The progress bar is fiction.</b> <code>ProgressBar.tsx:32&ndash;38</code> jumps to 30&percnt;, crawls to 70&percnt;, then snaps to 100 on the load event &mdash; the plugin emits no progress, so the bar reports a number it does not have; it is also 2px (<code>:44</code>) and carries <code>role=&quot;progressbar&quot;</code> with no accessible name (<code>:45&ndash;48</code>). <b>The hostname leads.</b> Shipped puts <code>displayTitle</code> first and hides the hostname line whenever the two match (<code>CapsuleBar.tsx:114&ndash;116,194&ndash;203</code>) &mdash; but the title is supplied by the page and the hostname is not, so the only fact worth trusting is the one that gets demoted or dropped. Reversed, and set in mono with the identity rule for addresses and ids. <b>Still unresolved by this drawing:</b> there is no URL bar, no back, no forward, no share and no &ldquo;open in Safari&rdquo; anywhere in the component, so a dApp that navigates you somewhere else cannot be backed out of.</div></div>
+<div><div class="scrcap"><i></i>dApp &middot; load failed</div>
+        <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
+          <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>
+          <div style="flex:none;padding:0 0.5rem 0.5rem;background:var(--surface);border-bottom:1px solid var(--rule)">
+            <div class="mshandle" style="margin:0.375rem auto 0.5rem"></div>
+            <div style="display:flex;align-items:center;gap:0.375rem">
+              <div style="width:2.25rem;height:2.25rem;border-radius:var(--radius-md);background:var(--surface-2);display:flex;align-items:center;justify-content:center;flex:none"><span style="font-family:var(--display);font-weight:800;font-size:var(--t-body);color:var(--ink)">Z</span></div>
+              <div style="min-width:0;flex:1"><div class="mono" style="font-size:var(--t-label);color:var(--ink);font-weight:600">app.zoroswap.com</div><div style="font-size:var(--t-caption);color:var(--ink-2)">Not loaded</div></div>
+              <button class="scanbtn" style="min-width:44px;min-height:44px;color:var(--ink);font-size:var(--t-heading)" aria-label="Close app.zoroswap.com">&times;</button>
+            </div>
+          </div>
+          <div class="mpad" style="flex:1;display:flex;flex-direction:column">
+            <div class="obmid">
+              <div class="eic" style="background:var(--warn-wash);color:var(--warn);margin:0 auto 0.8125rem"><span class="svgic" style="--ic:url(assets/icons/globe.svg)" aria-hidden="true"></span></div>
+              <h2 class="obh" style="margin-top:0">Can&rsquo;t load this dApp</h2>
+              <p class="obp">Check your connection and try again.</p>
+              <div class="notice" style="background:var(--surface-2);color:var(--ink-2);margin-top:1rem"><span>&#9432;</span><span>Your wallet is fine. Nothing was sent and nothing was approved.</span></div>
+            </div>
+            <div class="zone"><button class="btn btn-primary">Retry</button><div class="gh">Back to Explore</div></div>
+          </div>
+        </div></div></div>
+        <div class="scrnote">Shipped and undrawn until now (<code>DappActive.tsx:234&ndash;248</code>); title, body and CTA are the verbatim <code>dappLoadFailed</code>, <code>dappLoadFailedHint</code> and <code>retry</code> strings. <b>The shipped error state has exactly one exit and it is 32pt.</b> The overlay renders Retry and nothing else, so the only way out of a dApp that will not load is the capsule &times; at <code>h-8 w-8</code> (<code>CapsuleBar.tsx:238</code>) or hardware back &mdash; there is no route back to the launcher on the screen that most needs one. Added as a ghost. <b>The reassurance line is new and load-bearing:</b> a failure inside a wallet&rsquo;s browser is the moment a user asks whether their money moved, and the shipped copy answers a networking question instead. <b>Note the layering hazard:</b> this overlay is a React node inside the slot the native WKWebView paints over (<code>DappActive.tsx:219&ndash;249</code>; see the <code>CapsuleBar.tsx:18&ndash;24</code> note about a dropdown that was invisible for exactly this reason) &mdash; it is legible only because a failed load leaves nothing painted above it.</div></div>
+<div><div class="scrcap"><i></i>dApp &middot; connect request</div>
+        <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
+          <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>
+          <div class="mpad" style="flex:1;opacity:.3"><div class="masset-h">Zoro</div></div>
+          <div class="shscrim"></div>
+          <div class="msheet">
+            <div class="mshandle"></div>
+            <div class="mshead">This app wants to connect to your wallet</div>
+            <div class="rcard" style="margin-bottom:0.75rem">
+              <div class="rcnet"><span class="nn">app.zoroswap.com</span></div>
+              <div class="rcaddr">Miden Testnet</div>
+            </div>
+            <div class="drow filled"><span class="k">Account</span><span class="v mono">mtst1ap8&hellip;r4fp</span></div>
+            <div class="mstk-lbl2" style="margin-top:0.875rem">Connecting lets this app</div>
+            <div class="isrow"><div class="ish"><span class="isb" style="background:var(--pos)">&#10003;</span>See your account address</div><div class="isdd">Your public address only. Balances and notes stay private until you approve them separately.</div></div>
+            <div class="isrow"><div class="ish"><span class="isb" style="background:var(--pos)">&#10003;</span>Ask you to approve transactions</div><div class="isdd">Every transaction still needs your explicit confirmation. Connecting on its own cannot move money.</div></div>
+            <div class="zone"><div class="zpair"><button class="btn btn-secondary">Deny</button><button class="btn btn-primary">Approve</button></div></div>
+          </div>
+        </div></div></div>
+        <div class="scrnote">Title is the verbatim <code>dappConnectionRequest</code>. <b>The shipped modal never says what connecting grants.</b> <code>DappConfirmationModal.tsx:199&ndash;211</code> renders an Account block and a Network block and stops; on approve it sends <code>privateDataPermission: PrivateDataPermission.UponRequest</code> (<code>:138</code>) &mdash; a standing permission the user is never shown, and which no screen in the app lists or revokes afterwards. The two grant rows are the deliverable here. <b>Deny is a bordered button in shipped code:</b> <code>border-2 border-orange-500</code> with orange text (<code>:219</code>), which breaks the no-outlined-controls rule and sets brand orange as text at 2.90:1 on paper. Filled-secondary is the peer treatment. <b>Bottom sheet, not a centred card.</b> Shipped centres a 360px box (<code>:145,161</code>); every other picker in the app is a vaul sheet, and a permission grant is the one dialog that belongs under the thumb rather than in the middle of the screen. Approve is correctly gated on <code>accountId</code> (<code>canApprove</code>, <code>:49</code>), but the shipped disabled fill is <code>bg-primary-200</code> &mdash; a pale orange that reads as an enabled button which has lost contrast, where <code>.btn-primary[disabled]</code> drops the accent entirely.</div></div>
+<div><div class="scrcap"><i></i>dApp &middot; transaction request <span class="tag retire">bug</span></div>
+        <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
+          <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>
+          <div class="mpad" style="flex:1;opacity:.3"><div class="masset-h">Zoro</div></div>
+          <div class="shscrim"></div>
+          <div class="msheet">
+            <div class="mshandle"></div>
+            <div class="mshead">This app is requesting a transaction</div>
+            <div class="rcard" style="margin-bottom:0.875rem">
+              <div class="rcnet"><span class="nn">app.zoroswap.com</span></div>
+              <div class="rcaddr">Miden Testnet</div>
+            </div>
+            <div style="font-size:var(--t-caption);color:var(--ink-2);font-weight:600">You are sending</div>
+            <div style="font-family:var(--num);font-feature-settings:var(--num-feat);font-weight:800;font-size:1.625rem;margin:0.3125rem 0 0.125rem">250.00 MIDEN</div>
+            <div style="font-size:var(--t-label);color:var(--ink-2)">&asymp; $2,587.50 USD</div>
+            <div class="dmeta" style="margin-top:0.875rem">
+              <div class="drow"><span class="k">From</span><span class="v">Miden Account 3<span class="vsub">mtst1ap8&hellip;r4fp</span></span></div>
+              <div class="drow"><span class="k">To</span><span class="v addr2">mtst1zz9&hellip;41mn</span></div>
+              <div class="drow"><span class="k">You receive</span><span class="v num">1,000.00 USDC</span></div>
+              <div class="dtot"><span class="k">Network fee</span><span class="v">0.10 MIDEN<span class="vsub">&asymp; $1.04</span></span></div>
+            </div>
+            <div class="zone"><div class="zpair"><button class="btn btn-secondary">Deny</button><button class="btn btn-primary">Confirm</button></div></div>
+          </div>
+        </div></div></div>
+        <div class="scrnote"><b>BUG &mdash; the request that moves money shows less than the one that does not.</b> <code>DappConfirmationModal.tsx:186&ndash;197</code> renders a transaction as a grey box of <code>request.transactionMessages</code> strings supplied by the caller, plus <code>request.network</code> (<code>:208&ndash;211</code>). There is <b>no amount field, no recipient field, no fee and no From account</b> &mdash; and the Account block is explicitly gated on <code>!isTransaction</code> (<code>:199</code>), so the signing account is shown on <em>connect</em> and hidden on <em>transaction</em>. A user approving a swap cannot see what leaves, what arrives, what it costs, or which of their accounts pays. Drawn on the same amount block and <code>.dmeta</code> the wallet&rsquo;s own Send review uses, because the user is approving the same kind of thing and should not have to learn a second layout to do it. <b>A field that is genuinely unavailable must be drawn as unavailable, not omitted</b> &mdash; an absent fee row reads as a free transaction. <b>Also unresolved:</b> <code>canApprove = isTransaction || Boolean(accountId)</code> (<code>:49</code>) short-circuits on transactions, so Confirm stays enabled even when <code>accountId</code> is <code>null</code> &mdash; the exact case the connect screen refuses to allow.</div></div>
+<div><div class="scrcap"><i></i>dApp &middot; claim note request <span class="tag merge">gap</span></div>
+        <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
+          <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>
+          <div class="mpad" style="flex:1;opacity:.3"><div class="masset-h">Qash</div></div>
+          <div class="shscrim"></div>
+          <div class="msheet">
+            <div class="mshandle"></div>
+            <div class="mshead">Claim a note into your wallet</div>
+            <div class="rcard" style="margin-bottom:0.875rem">
+              <div class="rcnet"><span class="nn">qash.finance</span></div>
+              <div class="rcaddr">Miden Testnet</div>
+            </div>
+            <div style="font-size:var(--t-caption);color:var(--ink-2);font-weight:600">You are receiving</div>
+            <div style="font-family:var(--num);font-feature-settings:var(--num-feat);font-weight:800;font-size:1.625rem;margin:0.3125rem 0 0.125rem">&plus;52.50 MIDEN</div>
+            <div style="font-size:var(--t-label);color:var(--ink-2)">&asymp; $543.38 USD</div>
+            <div class="dmeta" style="margin-top:0.875rem">
+              <div class="drow"><span class="k">Sent by</span><span class="v addr2">mtst1kq2&hellip;88xz</span></div>
+              <div class="drow"><span class="k">Into</span><span class="v">Miden Account 3</span></div>
+              <div class="dtot"><span class="k">Network fee</span><span class="v">0.10 MIDEN<span class="vsub">&asymp; $1.04</span></span></div>
+            </div>
+            <div class="notice" style="background:var(--surface-2);color:var(--ink-2)"><span>&#9432;</span><span>Claiming adds money to this wallet. Nothing leaves it.</span></div>
+            <div class="zone"><div class="zpair"><button class="btn btn-secondary">Not now</button><button class="btn btn-primary">Claim</button></div></div>
+          </div>
+        </div></div></div>
+        <div class="scrnote"><b>GAP &mdash; a note claim and an arbitrary transaction are pixel-identical today.</b> <code>DappConfirmationModal.tsx:46</code> is <code>isTransaction = request.type === &lsquo;transaction&rsquo; || request.type === &lsquo;consume&rsquo;</code>, and every downstream branch keys off that one boolean. So a <code>consume</code> request &mdash; money arriving &mdash; renders the same box, the same body copy <code>dappTransactionRequest</code> (&ldquo;This app is requesting a transaction&rdquo;, <code>:183</code>) and the same <code>confirm</code> label (<code>:230</code>) as a request to spend. The type survives all the way from <code>dapp.ts:1384</code> and is discarded at the last step. The consequence runs the wrong way: a user trained that this sheet means &ldquo;something is about to leave&rdquo; hesitates over free money and, far worse, reads a spend as a claim. Drawn with direction stated three ways at once &mdash; a <code>&plus;</code> signed figure, &ldquo;Sent by&rdquo; and &ldquo;Into&rdquo; instead of &ldquo;From&rdquo; and &ldquo;To&rdquo;, and a sentence &mdash; so the distinction never rests on a sign glyph alone. <b>The fee row stays:</b> claiming still costs a fee, and that is the only thing this screen has to warn about. <b>Deny becomes &ldquo;Not now&rdquo;</b>, because refusing free money is a deferral, not a rejection, and the note stays claimable from Pending either way.</div></div>
+<div><div class="scrcap"><i></i>dApp &middot; sign message <span class="tag merge">gap</span></div>
+        <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
+          <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>
+          <div class="mpad" style="flex:1;opacity:.3"><div class="masset-h">Zoro</div></div>
+          <div class="shscrim"></div>
+          <div class="msheet">
+            <div class="mshandle"></div>
+            <div class="mshead">Sign a message</div>
+            <div class="rcard" style="margin-bottom:0.875rem">
+              <div class="rcnet"><span class="nn">app.zoroswap.com</span></div>
+              <div class="rcaddr">Signing as <b>mtst1ap8&hellip;r4fp</b></div>
+            </div>
+            <div class="mstk-lbl2">Message</div>
+            <div class="dmeta" style="padding:0.75rem 0.875rem;margin-bottom:0.5rem">
+              <div class="mono" style="font-size:var(--t-label);line-height:1.6;color:var(--ink);word-break:break-all">Sign in to Zoro &middot; Nonce 8f3ac2d1 &middot; Issued 2026-07-27T09:41Z</div>
+            </div>
+            <div class="pcliff"><span class="svgic" style="--ic:url(assets/icons/key.svg)" aria-hidden="true"></span><span>A signature is not a transaction, but it can still authorise one. Only sign a message you can read and recognise.</span></div>
+            <div class="zone"><div class="zpair"><button class="btn btn-secondary">Reject</button><button class="btn btn-primary critical">Sign</button></div></div>
+          </div>
+        </div></div></div>
+        <div class="scrnote"><b>GAP &mdash; on mobile and desktop this throws a raw English exception into the page.</b> <code>generatePromisifySign</code> calls <code>requestConfirm</code> unconditionally at <code>dapp.ts:431</code>, and <code>requestConfirm</code> opens with <code>if (!isExtension()) throw new Error(&lsquo;DApp confirmation popup is only available in extension context&rsquo;)</code> at <code>dapp.ts:1529&ndash;1531</code>. <code>dappConfirmationStore</code> has no <code>sign</code> type, so there is no fallback path: the dApp receives a wallet implementation detail as its error string and the user sees whatever that dApp chooses to render, with <b>no wallet UI at all</b>. Only <code>connect</code> (<code>dapp.ts:276</code>), <code>transaction</code> (<code>:1090,:1239</code>) and <code>consume</code> (<code>:1378</code>) have a non-extension branch. <b>The message is rendered verbatim in mono and never truncated:</b> a signature request the user cannot read in full is one they cannot refuse on merit, and truncation is how blind-signing gets normalised. <code>--accent-critical</code> on the primary, per the rule that irreversible actions take the deeper fill &mdash; a signature cannot be recalled once handed over, and unlike a transaction it leaves no record in the wallet the user could later inspect.</div></div>
+<div><div class="scrcap"><i></i>dApp &middot; private data request <span class="tag merge">gap</span></div>
+        <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
+          <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>
+          <div class="mpad" style="flex:1;opacity:.3"><div class="masset-h">Qash</div></div>
+          <div class="shscrim"></div>
+          <div class="msheet">
+            <div class="mshandle"></div>
+            <div class="mshead">This app is asking to read private data</div>
+            <div class="rcard" style="margin-bottom:0.875rem">
+              <div class="rcnet"><span class="nn">qash.finance</span></div>
+              <div class="rcaddr">Reading from <b>mtst1ap8&hellip;r4fp</b></div>
+            </div>
+            <div class="isrow"><div class="ish"><span class="isb" style="background:var(--warn)">1</span>Your token balances</div><div class="isdd">3 assets, with amounts. That is the whole balance sheet for this account.</div></div>
+            <div class="isrow"><div class="ish"><span class="isb" style="background:var(--warn)">2</span>Your private notes</div><div class="isdd">12 notes, with sender and amount. Private notes are the part of Miden nobody else can see.</div></div>
+            <div class="pcliff"><span class="svgic" style="--ic:url(assets/icons/key.svg)" aria-hidden="true"></span><span>Once shared, this data is outside your wallet. It cannot be taken back.</span></div>
+            <div class="zone"><div class="zpair"><button class="btn btn-secondary">Deny</button><button class="btn btn-primary">Allow once</button></div><div class="gh">Always allow for this app</div></div>
+          </div>
+        </div></div></div>
+        <div class="scrnote"><b>GAP &mdash; mobile has two behaviours here and neither one is consent.</b> <code>privateNotes</code>, <code>consumableNotes</code> and <code>assets</code> each branch on <code>dApp.privateDataPermission === PrivateDataPermission.Auto</code> plus an <code>AllowedPrivateData</code> bit (<code>dapp.ts:503&ndash;504</code>, <code>:620&ndash;621</code>, <code>:748&ndash;749</code>). If the flag is <b>Auto</b>, balances and notes are returned <b>silently, with no prompt</b>. If it is not, the else-branch calls <code>requestConfirm</code> (<code>dapp.ts:525</code>, <code>:642</code>, <code>:772</code>) which throws off-extension at <code>dapp.ts:1529&ndash;1531</code>. So the user either discloses everything without being asked, or the dApp crashes. There is no third state, and <code>importPrivateNote</code> (<code>dapp.ts:909</code>) has the same shape. <b>The standing grant is set at connect and never surfaced again</b> &mdash; <code>DappConfirmationModal.tsx:138</code> sends <code>UponRequest</code> on every approve and nothing in the app lists or revokes it. Disclosure is enumerated by <em>count</em>, not by category name: &ldquo;private notes&rdquo; is an abstraction, &ldquo;12 notes, with sender and amount&rdquo; is a decision. <b>Allow once is the primary and the standing grant is a ghost</b>, inverting the shipped default &mdash; a permission that outlives the session should cost more than a tap on the biggest button on the screen.</div></div>
+<div><div class="scrcap"><i></i>dApp &middot; switcher <span class="tag retire">bug</span></div>
+        <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
+          <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>
+          <div class="mpad" style="flex:1;display:flex;flex-direction:column">
+            <div class="pghead"><span class="ttl" style="font-size:var(--t-heading)">3 open dApps</span><button class="shgear" style="color:var(--ink);font-size:var(--t-heading)" aria-label="Close dApp switcher">&times;</button></div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.625rem">
+              <div style="border-radius:var(--radius-md);background:var(--surface-2);overflow:hidden;position:relative;height:11rem;display:flex;flex-direction:column">
+                <div style="flex:1;background:var(--surface-3)"></div>
+                <div style="padding:0.4375rem 0.625rem 0.625rem"><div style="font-size:var(--t-label);font-weight:700;color:var(--ink)">Zoro</div><div class="mono" style="font-size:var(--t-caption);color:var(--ink-2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">app.zoroswap.com</div></div>
+                <button class="scanbtn" style="position:absolute;top:0.25rem;right:0.25rem;min-width:44px;min-height:44px;background:var(--surface);color:var(--ink);font-size:var(--t-heading)" aria-label="Close Zoro">&times;</button>
+              </div>
+              <div style="border-radius:var(--radius-md);background:var(--surface-2);overflow:hidden;position:relative;height:11rem;display:flex;flex-direction:column">
+                <div style="flex:1;background:var(--surface-3);display:flex;align-items:flex-end;padding:0.5rem"><span class="badge pend">Loading</span></div>
+                <div style="padding:0.4375rem 0.625rem 0.625rem"><div style="font-size:var(--t-label);font-weight:700;color:var(--ink)">Qash</div><div class="mono" style="font-size:var(--t-caption);color:var(--ink-2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">qash.finance</div></div>
+                <button class="scanbtn" style="position:absolute;top:0.25rem;right:0.25rem;min-width:44px;min-height:44px;background:var(--surface);color:var(--ink);font-size:var(--t-heading)" aria-label="Close Qash">&times;</button>
+              </div>
+              <div style="border-radius:var(--radius-md);background:var(--surface-2);overflow:hidden;position:relative;height:11rem;display:flex;flex-direction:column">
+                <div style="flex:1;background:var(--surface-3)"></div>
+                <div style="padding:0.4375rem 0.625rem 0.625rem"><div style="font-size:var(--t-label);font-weight:700;color:var(--ink)">Faucet</div><div class="mono" style="font-size:var(--t-caption);color:var(--ink-2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">faucet.testnet&hellip;</div></div>
+                <button class="scanbtn" style="position:absolute;top:0.25rem;right:0.25rem;min-width:44px;min-height:44px;background:var(--surface);color:var(--ink);font-size:var(--t-heading)" aria-label="Close Faucet">&times;</button>
+              </div>
+            </div>
+            <div class="zone"><button class="btn btn-secondary">Close all</button></div>
+          </div>
+        </div></div></div>
+        <div class="scrnote"><b>BUG &mdash; it declares itself a modal and behaves like a div.</b> <code>DappSwitcher.tsx:78&ndash;79</code> sets <code>role=&quot;dialog&quot; aria-modal=&quot;true&quot;</code>, then implements <b>no focus trap and no focus restore</b>, and puts the Escape handler in <code>onKeyDown</code> on the <code>motion.div</code> itself (<code>:88&ndash;90</code>) &mdash; an element with no <code>tabIndex</code> that never receives focus, so <b>Escape never closes it</b>. The same feature gets this right ninety lines away: <code>DappConfirmationModal.tsx:61&ndash;125</code> stores the previously focused element, moves focus in, traps Tab and restores on unmount. The omission is inconsistent, not budgeted. <b>Two floor breaches and an i18n breach.</b> The busy chip is a hard-coded English <code>Loading&hellip;</code> at <code>text-[10px]</code> (<code>:249</code>) &mdash; below the 11pt type floor and outside <code>t()</code>, which <code>yarn lint:i18n</code> is supposed to block; redrawn as a <code>.badge</code> carrying a real word. The per-card &times; is <code>h-7 w-7</code> = 28pt (<code>:229</code>), redrawn at 44 on an opaque plate, since a translucent <code>bg-black/40</code> chip over an arbitrary page snapshot has no guaranteed contrast at all. <b>The header count is hand-interpolated</b> &mdash; <code>.replace(&lsquo;&#123;count&#125;&rsquo;, &hellip;)</code> at <code>:70</code> rather than an i18n placeholder, so no locale can reorder it. <b>&ldquo;Close all&rdquo; is added:</b> the switcher exists because sessions accumulate, and one-card-at-a-time is the only disposal route shipped.</div></div>
+<div><div class="scrcap"><i></i>dApp &middot; peek tray <span class="tag retire">bug</span></div>
+        <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
+          <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>
+          <div class="mpad" style="flex:1;display:flex;flex-direction:column">
+            <div style="font-family:var(--display);font-weight:800;font-size:var(--t-title);padding:0.375rem 0 0.75rem">Explore</div>
+            <div class="urlbar"><span class="svgic" style="--ic:url(assets/icons/search.svg);width:0.9375rem;height:0.9375rem;opacity:.5" aria-hidden="true"></span>Search dApps or paste URL</div>
+            <div class="shlab" style="margin:1.125rem 0 0.375rem">FEATURED</div>
+            <div class="daygrid">
+              <div class="dapp"><div class="tile"><span style="font-family:var(--display);font-weight:800;font-size:var(--t-cta);color:var(--ink)">Z</span></div>Zoro</div>
+              <div class="dapp"><div class="tile"><span style="font-family:var(--display);font-weight:800;font-size:var(--t-cta);color:var(--ink)">Q</span></div>Qash</div>
+              <div class="dapp"><div class="tile"><span style="font-family:var(--display);font-weight:800;font-size:var(--t-cta);color:var(--ink)">F</span></div>Faucet</div>
+              <div class="dapp"><div class="tile"><span style="font-family:var(--display);font-weight:800;font-size:var(--t-cta);color:var(--ink)">M</span></div>Miden Name</div>
+            </div>
+            <div style="margin-top:auto;display:flex;justify-content:flex-end;gap:0.5rem;align-items:flex-end">
+              <div style="width:6rem;border-radius:var(--radius-md);background:var(--surface-2);box-shadow:var(--shadow-1);overflow:hidden;opacity:.6"><div style="height:3.5rem;background:var(--surface-3)"></div><div style="padding:0.375rem 0.5rem;font-size:var(--t-caption);color:var(--ink)">Faucet</div></div>
+              <div style="width:7rem;border-radius:var(--radius-md);background:var(--surface-2);box-shadow:var(--shadow-1);overflow:hidden">
+                <div style="height:4.25rem;background:var(--surface-3)"></div>
+                <div style="padding:0.375rem 0.5rem;font-size:var(--t-caption);color:var(--ink);font-weight:700">Zoro</div>
+              </div>
+            </div>
+            <button class="btn btn-secondary" style="width:100%;min-height:44px;margin-top:0.5rem;font-size:var(--t-label);padding:0.625rem 1rem">3 apps still open &mdash; manage</button>
+          </div>
+          <div class="mnav" style="--i:1"><button class="t"><span class="svgic" style="--ic:url(assets/icons/home-new.svg)" aria-hidden="true"></span><span>Home</span></button><button class="t on"><span class="svgic" style="--ic:url(assets/icons/explore.svg)" aria-hidden="true"></span><span>Explore</span></button><button class="t"><span class="svgic" style="--ic:url(assets/icons/activity.svg)" aria-hidden="true"></span><span>Activity</span></button></div>
+        </div></div></div>
+        <div class="scrnote"><b>BUG &mdash; every control on the tray is under both floors at once.</b> The cards are 104&times;132 (<code>DappPeekCard.tsx:43&ndash;44</code>) with a 30pt stack offset (<code>:50</code>), and onto that footprint the front card puts a close &times; at <code>h-6 w-6</code> = 24pt (<code>:382</code>), a &ldquo;&plus;N&rdquo; pill at <code>h-6</code> with <code>text-[10px]</code> (<code>:395&ndash;398</code>), a name at <code>text-[11px]</code> (<code>:371</code>) and a favicon fallback letter at <code>text-[8px]</code> (<code>:365</code>). Two targets at 24pt against a 44pt floor and three type sizes at or under the 11pt floor, on a surface that floats over live content &mdash; so a mis-hit lands on the page behind. <b>Closing moves off the card entirely.</b> A 44pt target cannot honestly coexist with a 104pt-wide thumbnail; the tray&rsquo;s job is resuming and disposal belongs in the switcher, which now has Close all. <b>&ldquo;&plus;N&rdquo; is a glyph doing a sentence&rsquo;s job.</b> <code>MAX_VISIBLE_CARDS = 3</code> (<code>DappPeekTray.tsx:58</code>) and the overflow badge renders only on the front card (<code>:410</code>), so the count of hidden sessions is two characters on a 24pt chip. Promoted to a full-width row that names what it opens &mdash; which also makes the tray reachable when every card is occluded. <b>Two cards, not three:</b> at 402pt the third is largely hidden by the stack offset and carries no controls, so it is decoration paid for in vertical space above the nav pill.</div></div>
+<div><div class="scrcap"><i></i>Lock &middot; probing hardware <span class="tag merge">gap</span></div>
+        <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
+          <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>
+          <div class="mpad" style="flex:1;display:flex;flex-direction:column">
+            <div class="obmid">
+              <img src="assets/bread-logo.svg" alt="" style="width:3.25rem;margin:0 auto;display:block">
+              <h2 class="obh">Welcome back</h2>
+              <div class="spin2" style="margin-top:1.5rem"></div>
+              <p class="obp" style="margin-top:1rem">Checking Face&nbsp;ID&hellip;</p>
+            </div>
+            <div class="zone"><button class="btn btn-secondary">Use passcode instead</button></div>
+          </div>
+        </div></div></div>
+        <div class="scrnote"><b>GAP &mdash; the shipped screen is an empty 128px box.</b> <code>Unlock.tsx:253&ndash;258</code> returns <code>&lt;div className=&quot;flex items-center justify-center h-32&quot; /&gt;</code> with no child at all while the hardware probe runs. The probe is not instant: it is a dynamic <code>import(&lsquo;lib/biometric&rsquo;)</code> plus a keychain round-trip (<code>:93&ndash;104</code>), or <code>import(&lsquo;lib/desktop/secure-storage&rsquo;)</code> on Tauri (<code>:81&ndash;92</code>). The first frame of a returning user&rsquo;s session is therefore a blank screen with no label, no spinner and nothing to act on. <b>And it has no timeout.</b> <code>setHardwareUnlockChecked(true)</code> is reached only at <code>:120</code>, after the probe settles or throws; if <code>hasHardwareKey()</code> never resolves, the render at <code>:253</code> is permanent and carries no escape control &mdash; a wallet the user can neither open nor leave. The manual fallback exists for exactly that case and needs no new machinery: <code>isHardwareOnlyWallet</code> at <code>:262</code> already proves the biometric and passcode paths are separable. Loading, empty and error are three states and this screen currently renders all three as the same nothing.</div></div>
+<div><div class="scrcap"><i></i>Lock &middot; passcode incorrect <span class="tag retire">error</span></div>
+        <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
+          <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>
+          <div class="mpad" style="flex:1;display:flex;flex-direction:column">
+            <div style="flex:1;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;width:100%">
+              <img src="assets/bread-logo.svg" alt="" style="width:3.25rem">
+              <h2 class="obh" style="margin-top:0.75rem">Enter your passcode</h2>
+              <div class="ferr" style="margin-top:0.5rem">Incorrect passcode. Try again.</div>
+              <div style="font-size:var(--t-caption);color:var(--ink-2);margin-top:0.25rem">2 tries left before a 1-minute wait</div>
+              <div class="dots" style="margin:1.125rem 0 1.25rem"><i></i><i></i><i></i><i></i><i></i><i></i></div>
+              <div class="pad pinned" style="width:100%"><button>1</button><button>2</button><button>3</button><button>4</button><button>5</button><button>6</button><button>7</button><button>8</button><button>9</button><span></span><button>0</button><button>&#9003;</button></div>
+            </div>
+            <div class="zone"><button class="btn btn-secondary">Use Face ID</button><div class="gh">Forgot passcode?</div></div>
+          </div>
+        </div></div></div>
+        <div class="scrnote">Error copy is the verbatim <code>incorrectPasscode</code>. <b>The attempt counter is new and it is the point of the screen.</b> <code>Unlock.tsx:160</code> locks the wallet the instant <code>attempt &gt;= LAST_ATTEMPT</code> (<code>LAST_ATTEMPT = 3</code>, <code>:27</code>) and nothing anywhere warns that a third mistype costs sixty seconds &mdash; the penalty arrives with no notice, on a screen people use one-handed while walking. The count is derived from state the component already holds. <b>The dots are one fixed grey in both states.</b> <code>:376&ndash;377</code> paints filled as <code>bg-[#C7C7CC] border-2 border-[#C7C7CC]</code> and empty as the same hex as a border only, so entry progress is fill-versus-outline within a single hardcoded value that ignores the theme entirely; <code>.dots i.f</code> takes the accent and scales, so progress reads at a glance in both. <b>The error moves out of the subtitle slot.</b> Shipped overloads one <code>&lt;p&gt;</code> with three unrelated meanings &mdash; the hint <code>enterYour6DigitCode</code>, the error, and the lockout countdown (<code>:351&ndash;355</code>) &mdash; recoloured by a fixed-palette <code>text-red-500</code>. Separating error from hint is what makes room for the tries-left line, and the word &ldquo;Incorrect&rdquo; carries the state without the colour.</div></div>
+<div><div class="scrcap"><i></i>Lock &middot; rate limited <span class="tag retire">bug</span></div>
+        <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
+          <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>
+          <div class="mpad" style="flex:1;display:flex;flex-direction:column">
+            <div class="obmid">
+              <div class="eic" style="background:var(--neg-wash);color:var(--neg);margin:0 auto 0.8125rem"><span class="svgic" style="--ic:url(assets/icons/lock.svg)" aria-hidden="true"></span></div>
+              <h2 class="obh" style="margin-top:0">Too many attempts</h2>
+              <p class="obp" style="max-width:26ch">You entered the wrong passcode three times. Try again in</p>
+              <div style="font-family:var(--num);font-feature-settings:var(--num-feat);font-weight:800;font-size:var(--t-balance);letter-spacing:-.02em;text-align:center;margin-top:0.5rem">00:47</div>
+              <div class="notice" style="background:var(--surface-2);color:var(--ink-2);margin-top:1.25rem"><span>&#9432;</span><span>Your wallet is safe. This wait only slows down guessing.</span></div>
+            </div>
+            <div class="zone"><button class="btn btn-primary" disabled>Try again</button><div class="gh">Forgot passcode?</div></div>
+          </div>
+        </div></div></div>
+        <div class="scrnote"><b>Two bugs, both on the passcode path only.</b> (1) <b>Wrong word.</b> <code>Unlock.tsx:352</code> renders <code>unlockPasswordErrorDelay</code> on the <em>passcode</em> screen, and that string reads verbatim &ldquo;You have entered the wrong <b>password</b> three times. Your wallet is being blocked for&rdquo;. Bread has no password on mobile &mdash; passcodes are mobile-only and passwords are extension-only, which is precisely why <code>:294</code> forks the render &mdash; so the lockout tells mobile users about a credential they were never issued and cannot check. Redrawn with the credential named correctly. (2) <b>The keypad lies about being live.</b> <code>handleDigit</code> and <code>handleDelete</code> return early on <code>isDisabled</code> (<code>:187,195</code>), but <code>&lt;Numpad&gt;</code> at <code>:386</code> takes no disabled state, so all twelve keys render at full contrast, animate their press, and swallow every tap for a minute. The password path <em>does</em> disable its field (<code>:322</code>); the passcode path forgot. The keypad is removed here rather than dimmed &mdash; a control that cannot be used is not information, and the screen&rsquo;s only content is the wait. <b>The countdown becomes the screen.</b> Shipped appends <code>timeleft</code> to the tail of a long sentence in a <code>text-lg</code> subtitle; it is the one actionable fact present, so it takes the balance ramp with tabular figures. <code>LOCK_TIME = 60_000</code> and <code>lockLevel = LOCK_TIME * Math.floor(attempt / 3)</code> (<code>:26,51</code>), so the wait doubles at six attempts and the existing mm:ss format already covers that.</div></div>
+<div><div class="scrcap"><i></i>Lock &middot; resume re-auth <span class="tag merge">gap</span></div>
+        <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
+          <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>
+          <div class="mpad" style="flex:1;display:flex;flex-direction:column">
+            <div class="obmid">
+              <div class="eic" style="background:var(--surface-2);color:var(--ink-2);margin:0 auto 0.8125rem"><span class="svgic" style="--ic:url(assets/icons/lock.svg)" aria-hidden="true"></span></div>
+              <h2 class="obh" style="margin-top:0">Wallet locked</h2>
+              <p class="obp" style="max-width:28ch">Bread locks itself when you leave the app. Unlock to see your balance.</p>
+              <div class="mbc" data-card="slate" style="margin-top:1.25rem">
+                <div class="top" data-surface="graphite" data-pattern="">
+                  <div class="balrow"><div class="tl">Total Balance</div></div>
+                  <div class="amt"><span class="msk">&bull;&bull;&bull;&bull;&bull;&bull;&bull;</span></div>
+                </div>
+              </div>
+            </div>
+            <div class="zone"><button class="btn btn-primary">Unlock with Face ID</button><div class="gh">Use passcode</div></div>
+          </div>
+        </div></div></div>
+        <div class="scrnote"><b>GAP &mdash; the wallet never re-locks on mobile.</b> There is no <code>appStateChange</code> listener anywhere in <code>src/</code>; the only Capacitor <code>App.addListener</code> in the codebase is <code>&lsquo;backButton&rsquo;</code> at <code>lib/mobile/back-handler.ts:30</code>. Unlock once, background the app, hand the phone over, and the next person resumes straight onto the balance with no challenge &mdash; the lock screen exists and nothing ever re-arms it. <code>Unlock.tsx</code> renders on a cold start only. <b>The balance is masked before authentication rather than hidden.</b> The card is drawn so the shape of the app stays recognisable through the lock, and the figure uses <code>.msk</code>, which is a text run and stays legible at 200&percnt; where a grey plate would not. <b>Face ID is the primary and passcode is the ghost</b>, matching shipped priority: <code>Unlock.tsx:65&ndash;124</code> attempts hardware unlock automatically on mount and falls through to the keypad only when there is no hardware key. The timeout policy &mdash; immediately, or after N minutes &mdash; is a product decision this screen does not make; it draws the state that has to exist once one is chosen.</div></div>
+<div><div class="scrcap"><i></i>Activity &middot; offline <span class="tag merge">gap</span></div>
+        <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
+          <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>
+          <div class="mpad" style="flex:1;display:flex;flex-direction:column">
+            <div class="pghead"><span class="ttl">Activity</span><button class="shgear" aria-label="Settings"><span class="svgic" style="--ic:url(assets/icons/settings-new.svg)" aria-hidden="true"></span></button></div>
+            <div class="mprompt" data-status="warn"><div class="ptx"><div class="pt">You appear to be offline</div><div class="pb">Check your internet connection and try again.</div></div><button class="pdis" aria-label="Dismiss">&#10005;</button></div>
+            <div class="filters"><span class="fc on">All</span><span class="fc">Sent</span><span class="fc">Received</span></div>
+            <div class="notice" style="background:var(--surface-2);color:var(--ink-2);margin-top:0"><span>&#9432;</span><span>Showing your last synced activity, from 14 minutes ago. Newer transactions are not listed.</span></div>
+            <div style="font-size:var(--t-caption);color:var(--ink-2);font-weight:700;margin:0.75rem 0 0.125rem">TODAY</div>
+            <div class="mrow"><div class="ic sq"><span class="svgic" style="--ic:url(assets/icons/receive-new.svg);" aria-hidden="true"></span></div><div><div class="nm">Received</div><div class="ad addr">mtst1kq2&hellip;88xz</div></div><div class="rt"><div class="f" style="color:var(--pos)">&plus;40.00</div><div class="b">2m ago</div></div></div>
+            <div class="mrow"><div class="ic sq"><span class="svgic" style="--ic:url(assets/icons/send-new.svg);" aria-hidden="true"></span></div><div><div class="nm">Sent</div><div class="ad addr">mtst1ap8&hellip;r4fp</div></div><div class="rt"><div class="f">&minus;12.50</div><div class="b">1h ago</div></div></div>
+          </div>
+          <div class="mnav" style="--i:2"><button class="t"><span class="svgic" style="--ic:url(assets/icons/home-new.svg)" aria-hidden="true"></span><span>Home</span></button><button class="t"><span class="svgic" style="--ic:url(assets/icons/explore.svg)" aria-hidden="true"></span><span>Explore</span></button><button class="t on"><span class="svgic" style="--ic:url(assets/icons/activity.svg)" aria-hidden="true"></span><span>Activity</span></button></div>
+        </div></div></div>
+        <div class="scrnote"><b>GAP &mdash; the banner is mounted on exactly one screen.</b> <code>&lt;ConnectivityIssueBanner /&gt;</code> appears once in the entire codebase, at <code>Explore.tsx:141</code> &mdash; the wallet home. Go offline on Activity, Browser, Settings or anywhere inside the send flow and the app says nothing at all. The component that <em>is</em> mounted globally, <code>ExtensionMessageListener</code> (imported at <code>App.tsx:17</code>), is <code>() =&gt; null</code> (<code>ConnectivityIssueBanner.tsx:152</code>) &mdash; the global slot is real and empty. <b>Activity is the worst surface to omit</b>, because a transaction list that cannot reach the node is indistinguishable from one that is up to date; hence the age line, which is the sentence Home cannot say. <b>The retry CTA is dropped here deliberately.</b> <code>onRetry</code> returns early unless <code>isExtension()</code> (<code>:93&ndash;99</code>), so on mobile and desktop it is live, tappable and inert; a button that lies is worse than no button, and there is nothing to retry that <code>useSyncTrigger</code> is not already retrying every three seconds. <b>The shipped dismiss is not a button.</b> <code>:136&ndash;142</code> hangs <code>onClick</code> on an <code>&lt;Icon&gt;</code> at <code>size=&quot;sm&quot;</code> &mdash; no <code>&lt;button&gt;</code> element, no accessible name, no keyboard path, roughly a 20pt target. <code>.pdis</code> is a real 44pt control. Copy for both lines is verbatim <code>connectivityNetworkTitle</code> and <code>connectivityNetworkBody</code>.</div></div>
+<div><div class="scrcap"><i></i>Toast &middot; link copied <span class="tag merge">gap</span></div>
+        <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
+          <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>
+          <div class="mpad" style="flex:1;display:flex;flex-direction:column">
+            <div style="font-family:var(--display);font-weight:800;font-size:var(--t-title);padding:0.375rem 0 0.75rem">Explore</div>
+            <div class="urlbar"><span class="svgic" style="--ic:url(assets/icons/search.svg);width:0.9375rem;height:0.9375rem;opacity:.5" aria-hidden="true"></span>Search dApps or paste URL</div>
+            <div class="shlab" style="margin:1.125rem 0 0.375rem">FEATURED</div>
+            <div class="daygrid">
+              <div class="dapp"><div class="tile"><span style="font-family:var(--display);font-weight:800;font-size:var(--t-cta);color:var(--ink)">Z</span></div>Zoro</div>
+              <div class="dapp"><div class="tile"><span style="font-family:var(--display);font-weight:800;font-size:var(--t-cta);color:var(--ink)">Q</span></div>Qash</div>
+              <div class="dapp"><div class="tile"><span style="font-family:var(--display);font-weight:800;font-size:var(--t-cta);color:var(--ink)">F</span></div>Faucet</div>
+              <div class="dapp"><div class="tile"><span style="font-family:var(--display);font-weight:800;font-size:var(--t-cta);color:var(--ink)">M</span></div>Miden Name</div>
+            </div>
+            <div class="toastzone show" style="margin:auto -0.5rem 0;background:transparent;height:4.5rem">
+              <div class="toast" style="display:flex;align-items:center;gap:0.5rem"><span class="svgic" style="--ic:url(assets/icons/copy.svg);width:1rem;height:1rem" aria-hidden="true"></span><span>Link copied</span></div>
+            </div>
+          </div>
+          <div class="mnav" style="--i:1"><button class="t"><span class="svgic" style="--ic:url(assets/icons/home-new.svg)" aria-hidden="true"></span><span>Home</span></button><button class="t on"><span class="svgic" style="--ic:url(assets/icons/explore.svg)" aria-hidden="true"></span><span>Explore</span></button><button class="t"><span class="svgic" style="--ic:url(assets/icons/activity.svg)" aria-hidden="true"></span><span>Activity</span></button></div>
+        </div></div></div>
+        <div class="scrnote"><b>GAP &mdash; the product has no in-app toast at all.</b> There is no <code>&lt;Toaster&gt;</code>, no <code>react-hot-toast</code>, no <code>sonner</code> and no <code>react-toastify</code> in <code>src/</code> or <code>package.json</code>. <code>NoteToastProvider</code> is named for one and <code>return null</code>s (<code>NoteToastProvider.tsx:60</code>), firing OS notifications instead (<code>:47&ndash;57</code>) &mdash; which the user sees only if they granted permission, and only outside the app. <b>The cost is measurable inside one sheet.</b> <code>handleCopyLink</code> writes the URL to the clipboard and closes (<code>DappActionsSheet.tsx:80&ndash;88</code>); <code>handleToggleMyDapps</code> adds or removes a saved app and closes (<code>:90&ndash;104</code>); <code>handleReopen</code> tears the session down and rebuilds it (<code>:106&ndash;114</code>). Three actions, three silences &mdash; and the clipboard write is <code>.catch(() =&gt; {})</code>, so a failure is silent too and &ldquo;copied&rdquo; is indistinguishable from &ldquo;nothing happened&rdquo;. <b>Spec.</b> Anchored above the nav pill so it never covers the tab about to be pressed; <code>--ink</code> fill with <code>--paper</code> text, which measures 10.4:1 light and 17.6:1 dark and needs no per-theme variant; one line, one icon, and <b>no action control</b> &mdash; a toast with a button is a dialog that dismisses itself, and 44pt cannot be met inside a 40pt bar. Anything needing a response is a sheet. Enters on <code>--dur-spatial</code>, holds about 2.5s, and must also be written to a live region: a self-dismissing element announces nothing on its own.</div></div>
+<div><div class="scrcap"><i></i>Notifications &middot; rationale <span class="tag merge">gap</span></div>
+        <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
+          <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>
+          <div class="mpad" style="flex:1;opacity:.3"><div class="masset-h">Assets</div></div>
+          <div class="shscrim"></div>
+          <div class="msheet">
+            <div class="mshandle"></div>
+            <div class="mshead">Know when money arrives</div>
+            <div class="isrow"><div class="ish"><span class="isb" style="background:var(--pos)">&#10003;</span>You have received a note</div><div class="isdd">Notes are not spendable until you claim them. A notification is the only way the wallet can tell you one is waiting while the app is closed.</div></div>
+            <div class="isrow"><div class="ish"><span class="isb" style="background:var(--ink-3)">&ndash;</span>Nothing else</div><div class="isdd">No prices, no marketing, no reminders. Bread sends exactly one kind of notification.</div></div>
+            <div class="notice" style="background:var(--surface-2);color:var(--ink-2)"><span>&#9432;</span><span>iOS asks once. You can change this later in Settings.</span></div>
+            <div class="zone"><button class="btn btn-primary">Turn on notifications</button><div class="gh">Not now</div></div>
+          </div>
+        </div></div></div>
+        <div class="scrnote"><b>GAP &mdash; the OS dialog is the entire experience.</b> <code>requestNotificationPermission</code> calls <code>LocalNotifications.checkPermissions()</code> then <code>LocalNotifications.requestPermissions()</code> back to back (<code>native-notifications.ts:50&ndash;56</code>), and it is reached from <code>initNativeNotifications()</code> inside a mount effect (<code>NoteToastProvider.tsx:37&ndash;41</code>). The system prompt therefore fires on app start, with no context, before the user has any reason to want it. <b>iOS grants exactly one prompt per install</b>, which makes an uncontextualised first ask the most expensive mistake available on this surface. A pre-prompt is the standard fix and it also makes refusal cheap: &ldquo;Not now&rdquo; never touches the OS, so the real ask stays in hand. <b>The denial path does not exist.</b> <code>:56</code> returns <code>false</code> and nothing consumes it &mdash; there is no re-request route, and neither <code>Settings.tsx</code> nor <code>AdvancedSettings.tsx</code> contains the word &ldquo;notification&rdquo;, so a user who declines has no way back short of the OS settings app they will not think to open. The second row exists because the true scope of the permission is unusually narrow &mdash; <code>showNoteReceivedNotification</code> is the only sender in the codebase &mdash; and saying so plainly is the strongest argument available.</div></div>
+<div><div class="scrcap"><i></i>Camera &middot; permission denied <span class="tag merge">gap</span></div>
+        <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
+          <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>
+          <div class="mpad" style="flex:1;display:flex;flex-direction:column">
+            <div class="sh2"><span class="bk2">&lsaquo;</span><span class="t2">Scan a code</span></div>
+            <div class="obmid">
+              <div class="eic" style="background:var(--surface-2);color:var(--ink-2);margin:0 auto 0.8125rem"><span class="svgic" style="--ic:url(assets/icons/qr-scan.svg)" aria-hidden="true"></span></div>
+              <h2 class="obh" style="margin-top:0">Camera permission denied</h2>
+              <p class="obp" style="max-width:30ch">Bread uses the camera only to read a Miden address from a QR code. Nothing is recorded and nothing is uploaded.</p>
+              <div class="mstk-lbl2" style="margin-top:1.375rem">Or paste the address</div>
+              <div class="fld" style="width:auto"><div class="fieldrow"><input class="inp" placeholder="mtst1&hellip;" aria-label="Miden address"></div></div>
+            </div>
+            <div class="zone"><button class="btn btn-primary">Open iOS Settings</button><div class="gh">Continue without scanning</div></div>
+          </div>
+        </div></div></div>
+        <div class="scrnote"><b>GAP &mdash; and the entire scan path is dead code.</b> <code>scanQRCode</code> returns <code>&#123; success: false, errorKey: &lsquo;cameraPermissionDenied&rsquo; &#125;</code> at <code>lib/qr/scanner.ts:85&ndash;87</code>, and <code>cameraPermissionDenied</code> = &ldquo;Camera permission denied&rdquo; ships in <code>en.json</code> &mdash; but <b><code>scanQRCode</code> has no callers</b>. The only reference outside the module is its own barrel re-export at <code>lib/qr/index.ts:2</code>; nothing under <code>app/</code>, <code>screens/</code> or <code>components/</code> imports it, and <code>components/QRCode.tsx</code> takes <code>encodeAddress</code> only. So the function, its four error keys and this system&rsquo;s own <code>Send &middot; scan</code> mock are all wired to nothing. <code>checkCameraPermission</code> (<code>:99&ndash;102</code>) is a stub returning <code>isMobile()</code> without checking any permission, with a comment saying the plugin handles it &mdash; which means the app cannot know it has been denied until a scan has already failed. <b>A denial is a fork, not an error</b>, so paste sits on the same screen rather than behind a back gesture; a user who declined the camera still has to send money. <b>The deep link is named, not implied:</b> &ldquo;Open iOS Settings&rdquo; rather than &ldquo;Allow&rdquo;, because the wallet cannot re-prompt after a hard denial and a button that appears to grant permission but silently no-ops is the failure this screen exists to prevent.</div></div>
+<div><div class="scrcap"><i></i>Update required <span class="tag merge">gap</span></div>
+        <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
+          <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>
+          <div class="mpad" style="flex:1;display:flex;flex-direction:column">
+            <div class="obmid">
+              <img src="assets/bread-logo.svg" alt="" style="width:3.25rem;margin:0 auto;display:block">
+              <h2 class="obh">Update Bread to continue</h2>
+              <p class="obp" style="max-width:30ch">The Miden network has changed in a way this version cannot handle. Updating takes about a minute.</p>
+              <div class="notice" style="background:var(--pos-wash);color:var(--pos);margin-top:1.25rem"><span>&#10003;</span><span>Your funds and recovery phrase are untouched. Nothing needs to be re-imported.</span></div>
+              <div class="drow filled" style="margin-top:0.875rem"><span class="k">Installed</span><span class="v mono">0.15.7</span></div>
+              <div class="drow filled" style="margin-top:0.5rem"><span class="k">Required</span><span class="v mono">0.16.0</span></div>
+            </div>
+            <div class="zone"><button class="btn btn-primary">Update</button><div class="gh">Reveal recovery phrase first</div></div>
+          </div>
+        </div></div></div>
+        <div class="scrnote"><b>GAP &mdash; no version gate exists.</b> Nothing in <code>src/</code> checks a minimum version, a maintenance flag or a migration state; the only adjacent screen in the whole product is <code>ResetRequired</code> at <code>PageRouter.tsx:53</code>, which is the <em>destructive</em> version of this &mdash; it wipes. A wallet shipping to mainnet against a protocol that is still moving needs the non-destructive gate first, or every breaking change becomes a reset. <b>The reassurance is the primary content.</b> Users read &ldquo;this version cannot handle the network&rdquo; as &ldquo;my money is stuck&rdquo;, and an update wall is exactly the moment a self-custody wallet has to say the keys are unaffected &mdash; which, for a build swap, is literally true: the vault is untouched. <b>The ghost is not a delay tactic.</b> If a build is being replaced under a user who has never written down their recovery phrase, the last safe moment to do so is before the swap, not after. <b>Versions are stated, in mono</b> per the addresses-and-ids rule: a gate that will not say what it wants is indistinguishable from a crash, and support cannot triage it.</div></div>
+<div><div class="scrcap"><i></i>Reset required <span class="tag retire">bug</span></div>
+        <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
+          <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>
+          <div class="mpad" style="flex:1;display:flex;flex-direction:column">
+            <div class="sh2"><span class="t2">Wallet Reset Required</span></div>
+            <div class="obmid">
+              <div class="eic" style="background:var(--neg-wash);color:var(--neg);margin:0 auto 0.8125rem"><span class="svgic" style="--ic:url(assets/icons/key.svg)" aria-hidden="true"></span></div>
+              <h2 class="obh" style="margin-top:0">Wallet Reset Required</h2>
+              <p class="obp" style="max-width:32ch">Miden Testnet has upgraded to bech32 account IDs to improve your experience. To keep using your wallet, please restore from a backup file or seed phrase, or create a new one.</p>
+              <div class="notice" style="margin-top:1rem"><span>&#9888;</span><span>Resetting erases this wallet from the device. Without your 12-word seed phrase or an encrypted backup file it cannot be recovered.</span></div>
+            </div>
+            <div class="zone">
+              <div class="zpair"><button class="btn btn-secondary">Restore from file</button><button class="btn btn-secondary">Use seed phrase</button></div>
+              <div class="gh">Reset and start over</div>
+            </div>
+          </div>
+        </div></div></div>
+        <div class="scrnote">Shipped and undrawn until now (<code>screens/onboarding/ResetRequired.tsx</code>); heading and body are the verbatim <code>resetRequired</code> and <code>resetRequiredDescription</code> strings. <b>BUG &mdash; the copy offers three routes and the screen ships one button.</b> <code>:41</code> renders a single <code>Primary</code> button titled <code>reset</code> = &ldquo;Reset Wallet&rdquo;, while the description tells the user to &ldquo;restore from a backup file or seed phrase, or create a new one&rdquo;. Neither restore route is reachable from the screen that demands them, so the only affordance present is the one that destroys the wallet &mdash; styled as the recommended action, with no confirmation step, on a wall the user cannot dismiss. Inverted here: the two recovery routes are the peer actions and the wipe is a ghost. <b>The warning does not exist in shipped code.</b> <code>resetRequiredSecondDescription</code> is &ldquo;We&rsquo;re sorry for the inconvenience.&rdquo; &mdash; an apology occupying the slot the consequence should hold, so a user who taps Reset without a seed phrase loses the wallet with no sentence anywhere having warned them. Compare <code>ForgotPasswordInfo</code>, which does carry that warning; the two most destructive screens in the product disagree about whether to give one. <b>Also a layout defect:</b> <code>:21</code> hard-codes <code>w-[22.5rem] h-[37.5rem]</code> &mdash; a 360&times;600 extension-popup box &mdash; and centres it with a border on every platform, so on a 402&times;874 phone the most consequential screen in the product renders as a bordered card floating in dead space.</div></div>
     </div>
 
   </section>
