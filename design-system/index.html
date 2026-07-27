@@ -389,7 +389,11 @@ table.map td code{font-size:12px}
 .mact .sq{width:46px;height:46px;border-radius:var(--radius-md);display:flex;align-items:center;justify-content:center;color:var(--pure-white);font-size:18px}
 .mact .lb{font-size:11px;font-weight:600;color:var(--ink-2)}
 /* assets */
-.masset-h{font-family:var(--display);font-weight:800;font-size:var(--t-heading);margin-top:calc(var(--stack-loose) - var(--stack));margin-bottom:calc(var(--stack-tight) - var(--stack))}
+/* Figma pairs the section header with an "All" link on the right. We had a bare header, so
+   there was no way to reach a full asset list -- worth taking as a row, not just a word. */
+.masset-h{display:flex;align-items:baseline;justify-content:space-between;gap:10px;
+  font-family:var(--display);font-weight:800;font-size:var(--t-heading);margin-top:calc(var(--stack-loose) - var(--stack));margin-bottom:calc(var(--stack-tight) - var(--stack))}
+.masset-h .all{font-family:var(--ui);font-size:var(--t-label);font-weight:600;color:var(--ink-2);min-height:44px;display:flex;align-items:center;background:none;border:0;cursor:pointer}
 /* 48px, not the app's 56px (h-14). Height was the reported symptom; the cause is that the
    shipped field does not read as a search field at all. It combines `text-center`,
    `placeholder:font-bold`, `text-base` and NO magnifier icon inside a 56px pill -- a centred
@@ -420,6 +424,17 @@ table.map td code{font-size:12px}
 .mrow .nm{font-weight:700;font-size:var(--t-body)}
 .mrow .ad{font-family:var(--num);font-feature-settings:var(--num-feat);font-size:var(--t-caption);color:var(--ink-2)}
 .mrow .ad.addr{font-family:var(--mono)}   /* addresses stay mono */
+/* ---- Sparkline: from Figma's asset rows -------------------------------------------------
+   Figma puts a 7-day trend line in every asset row, orange when down and green when up. We
+   had no chart at all, so the row carried price + delta and nothing about shape. Worth taking:
+   it is the one thing on that row that says "this is a market position" rather than "this is a
+   number", and it costs one inline polyline.
+   Direction is NOT colour-only -- the signed percentage sits directly beside it, so SC 1.4.1
+   is satisfied without the line needing a label. Uses --pos/--neg via data-status so it stays
+   on the palette rather than Figma's raw green/orange. */
+.spark{width:64px;height:22px;flex:none;display:block;overflow:visible}
+.spark polyline{fill:none;stroke:var(--st,var(--ink-2));stroke-width:1.6;
+  stroke-linecap:round;stroke-linejoin:round;vector-effect:non-scaling-stroke}
 .mrow .rt{margin-left:auto;text-align:right}
 .mrow .rt .f{font-family:var(--num);font-feature-settings:var(--num-feat);font-weight:700;font-size:var(--t-body)}
 .mrow .rt .b{font-family:var(--num);font-feature-settings:var(--num-feat);font-size:var(--t-caption);color:var(--ink-2)}
@@ -2162,7 +2177,7 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
 
     <h3 class="sh">List rows</h3>
     <div class="demo" style="flex-direction:column;align-items:stretch;gap:0">
-      <div class="mrow"><div class="ic"><img src="assets/icons/miden.svg" alt=""></div><div><div class="nm">MIDEN</div><div class="ad addr">mtst1a…8yna</div></div><div class="rt"><div class="f">$12,480.50</div><div class="b">1,204.50</div></div></div>
+      <div class="mrow"><div class="ic"><img src="assets/icons/miden.svg" alt=""></div><div><div class="nm">MIDEN</div><div class="ad addr">mtst1a…8yna</div></div><svg class="spark" data-status="neg" viewBox="0 0 64 22" aria-hidden="true"><polyline points="0,16 9,9 18,13 27,4 36,11 45,6 54,14 64,10"/></svg><div class="rt"><div class="f">$12,480.50</div><div class="b">1,204.50</div></div></div>
       <div class="mrow" style="border-top:1px solid var(--rule)"><div class="ic sq"><span class="svgic" style="--ic:url(assets/icons/receive-new.svg);" aria-hidden="true"></span></div><div><div class="nm">Received</div><div class="ad addr">from mtst1a…k29p</div></div><div class="rt"><div class="f" style="color:var(--pos)">+40.00</div><div class="b">2m ago</div></div></div>
     </div>
     <p class="small" style="margin-top:10px"><span class="tag survive">survive</span> <code>AssetListItem</code> (assets) · <code>ActivityRow</code> (transactions). <span class="tag merge">merge</span> <code>ListItem → CardItem</code> (generic) and <code>DetailRow ↔ ReviewRow</code> (one key/value row).</p>
@@ -2434,9 +2449,9 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
               <div class="bot" data-surface="graphite-deep"><span class="acc">Account #: mtst1ap8…r4fp</span><button class="m" aria-label="Account options"><i>⋯</i></button></div>
             </div>
             <div class="mprompt"><span class="pic"><span class="svgic" style="--ic:url(assets/icons/key.svg)" aria-hidden="true"></span></span><div class="ptx"><div class="pt">Verify your recovery phrase</div><div class="pb">Confirm you saved your recovery phrase so you can restore this wallet later.</div></div><button class="pdis" aria-label="Dismiss">&#10005;</button></div>
-            <div class="masset-h">Assets</div>
+            <div class="masset-h">Assets<button class="all">All</button></div>
             <button class="msearch"><span class="svgic" style="--ic:url(assets/icons/search.svg)" aria-hidden="true"></span>Search for tokens</button>
-            <div class="mrow"><div class="ic"><img src="assets/icons/miden.svg" alt=""></div><div><div class="nm">Miden</div><div class="ad">0.00 MIDEN</div></div><div class="rt"><div class="f">$0.00</div><div class="b" style="color:var(--pos)">+0.00%</div></div></div>
+            <div class="mrow"><div class="ic"><img src="assets/icons/miden.svg" alt=""></div><div><div class="nm">Miden</div><div class="ad">0.00 MIDEN</div></div><svg class="spark" data-status="pos" viewBox="0 0 64 22" aria-hidden="true"><polyline points="0,8 9,14 18,6 27,15 36,7 45,13 54,4 64,9"/></svg><div class="rt"><div class="f">$0.00</div><div class="b" style="color:var(--pos)">+0.00%</div></div></div>
           </div>
           <div class="mnav"><button class="t on"><span class="svgic" style="--ic:url(assets/icons/home-new.svg)" aria-hidden="true"></span><span>Home</span></button><button class="t"><span class="svgic" style="--ic:url(assets/icons/explore.svg)" aria-hidden="true"></span><span>Explore</span></button><button class="t"><span class="svgic" style="--ic:url(assets/icons/activity.svg)" aria-hidden="true"></span><span>Activity</span></button></div>
         </div></div></div>
@@ -2960,10 +2975,10 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
               <div class="bot" data-surface="graphite-deep"><span class="acc">Account #: mtst1ap8…r4fp</span><button class="m" aria-label="Account options"><i>⋯</i></button></div>
             </div>
             <div><div class="mcar"><div class="mprompt"><span class="pic"><span class="svgic" style="--ic:url(assets/icons/key.svg)" aria-hidden="true"></span></span><div class="ptx"><div class="pt">Verify your recovery phrase</div><div class="pb">Confirm you saved your recovery phrase so you can restore this wallet later.</div></div><button class="pdis" aria-label="Dismiss">&#10005;</button></div><div class="mprompt"><span class="pic"><span class="svgic" style="--ic:url(assets/icons/lock.svg)" aria-hidden="true"></span></span><div class="ptx"><div class="pt">Activate device key</div><div class="pb">Generate a device key for this recovered account. Required before sending.</div></div><button class="pdis" aria-label="Dismiss">&#10005;</button></div><div class="mprompt"><span class="pic"><span class="svgic" style="--ic:url(assets/icons/guardian-avatar.svg)" aria-hidden="true"></span></span><div class="ptx"><div class="pt">Guardian changed</div><div class="pb">Your guardian was switched and we couldn&rsquo;t identify the new operator. Enter its URL to reconnect.</div></div><button class="pdis" aria-label="Dismiss">&#10005;</button></div></div><div class="mpdots"><i class="on"></i><i></i><i></i></div></div>
-            <div class="masset-h">Assets</div>
+            <div class="masset-h">Assets<button class="all">All</button></div>
             <button class="msearch"><span class="svgic" style="--ic:url(assets/icons/search.svg)" aria-hidden="true"></span>Search for tokens</button>
-            <div class="mrow"><div class="ic"><img src="assets/icons/miden.svg" alt=""></div><div><div class="nm">Miden</div><div class="ad">1,204.50 MIDEN</div></div><div class="rt"><div class="f">$12,480.50</div><div class="b" style="color:var(--pos)">+0.32%</div></div></div>
-            <div class="mrow"><div class="ic"><img src="assets/icons/usdc.svg" alt=""></div><div><div class="nm">USDC</div><div class="ad">0.00 USDC</div></div><div class="rt"><div class="f">$0.00</div><div class="b">—</div></div></div>
+            <div class="mrow"><div class="ic"><img src="assets/icons/miden.svg" alt=""></div><div><div class="nm">Miden</div><div class="ad">1,204.50 MIDEN</div></div><svg class="spark" data-status="neg" viewBox="0 0 64 22" aria-hidden="true"><polyline points="0,16 9,9 18,13 27,4 36,11 45,6 54,14 64,10"/></svg><div class="rt"><div class="f">$12,480.50</div><div class="b" style="color:var(--pos)">+0.32%</div></div></div>
+            <div class="mrow"><div class="ic"><img src="assets/icons/usdc.svg" alt=""></div><div><div class="nm">USDC</div><div class="ad">0.00 USDC</div></div><svg class="spark" data-status="pos" viewBox="0 0 64 22" aria-hidden="true"><polyline points="0,8 9,14 18,6 27,15 36,7 45,13 54,4 64,9"/></svg><div class="rt"><div class="f">$0.00</div><div class="b">—</div></div></div>
           </div>
           <div class="mnav"><button class="t on"><span class="svgic" style="--ic:url(assets/icons/home-new.svg)" aria-hidden="true"></span><span>Home</span></button><button class="t"><span class="svgic" style="--ic:url(assets/icons/explore.svg)" aria-hidden="true"></span><span>Explore</span></button><button class="t"><span class="svgic" style="--ic:url(assets/icons/activity.svg)" aria-hidden="true"></span><span>Activity</span></button></div>
         </div></div></div>
@@ -2972,7 +2987,7 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
       <div><div class="scrcap"><i></i>Accounts &middot; list <span class="tag retire">proposed</span></div>
         <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
           <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>
-          <div class="mpad" style="flex:1;opacity:.35"><div class="masset-h">Assets</div><button class="msearch"><span class="svgic" style="--ic:url(assets/icons/search.svg)" aria-hidden="true"></span>Search for tokens</button></div>
+          <div class="mpad" style="flex:1;opacity:.35"><div class="masset-h">Assets<button class="all">All</button></div><button class="msearch"><span class="svgic" style="--ic:url(assets/icons/search.svg)" aria-hidden="true"></span>Search for tokens</button></div>
           <div class="shscrim"></div>
           <div class="msheet">
             <div class="mshandle"></div>
@@ -2996,7 +3011,7 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
           <div style="position:absolute;left:0;right:0;bottom:0;background:var(--surface);border-radius:var(--radius-lg) var(--radius-lg) 0 0;padding:12px 20px max(16px,var(--safe-bottom))">
             <div style="width:40px;height:5px;border-radius:var(--radius-full);background:var(--rule-strong);margin:0 auto 14px"></div>
             <div style="font-family:var(--display);font-weight:800;font-size:16px;margin-bottom:10px">Accounts</div>
-            <div class="mrow" style="padding:9px 0"><div class="ic" style="background:var(--balance)"></div><div><div class="nm">Miden Account 1</div><div class="ad">mtst1ap8…r4fp</div></div><div class="rt"><div class="f">$12,480.50</div></div></div>
+            <div class="mrow" style="padding:9px 0"><div class="ic" style="background:var(--balance)"></div><div><div class="nm">Miden Account 1</div><div class="ad">mtst1ap8…r4fp</div></div><svg class="spark" data-status="neg" viewBox="0 0 64 22" aria-hidden="true"><polyline points="0,16 9,9 18,13 27,4 36,11 45,6 54,14 64,10"/></svg><div class="rt"><div class="f">$12,480.50</div></div></div>
             <div style="font-size:11.5px;color:var(--ink-2);margin:12px 0 8px">Card colour</div>
             <div style="display:flex;gap:9px">
               <span class="nti" style="width:30px;height:30px;border-radius:50%;background:var(--card-slate);box-shadow:0 0 0 2px var(--accent)"></span>
