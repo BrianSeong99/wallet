@@ -177,7 +177,7 @@
    colour overrides and no specificity collisions. This is the mechanism that makes
    "colour:var(--ink-2)" correct on white *and* on graphite. */
 [data-surface]{color:var(--ink)}
-[data-surface="graphite"]{background:var(--balance);
+[data-surface="graphite"]{background:var(--balance); --st-glyph:#90BA89;
   --ink:var(--balance-fg); --ink-2:var(--balance-fg-muted); --ink-3:rgba(255,255,255,.5);
   --rule:rgba(255,255,255,.18); --rule-strong:rgba(255,255,255,.3)}
 [data-surface="graphite-deep"]{background:var(--balance-deep);
@@ -377,8 +377,32 @@ table.map td code{font-size:12px}
    satisfies SC 1.4.1 without an arrow glyph, of which the set ships none. Status colour
    stays where it earns its keep: individual transactions in the activity list.
    If losses should ever read red, that is a graphite-scope --neg, added deliberately. */
-.mbc .delta{font-size:var(--t-caption);font-weight:700;color:var(--ink-2);white-space:nowrap;
-  font-family:var(--num);font-feature-settings:var(--num-feat)}
+/* Uniswap's structure, adapted. Theirs is a green triangle + absolute + percent + PERIOD +
+   chevron; the period is the part worth stealing most -- a percentage with no timeframe is
+   meaningless, and ours had none.
+   Colour is split by role because it has to be: --pos measures 3.32-8.67:1 on our cards,
+   which clears 3:1 for a GLYPH but not 4.5:1 for text. Making it pass as text needs
+   lightening to #A8DAA0, a pale mint that is off-palette here. So the triangle carries the
+   colour and the numbers stay in the card's own ink. Direction is then signalled three ways
+   -- triangle, sign, colour -- so SC 1.4.1 is satisfied without relying on any one. */
+.mbc .delta{display:flex;align-items:center;gap:5px;font-size:var(--t-caption);font-weight:700;
+  color:var(--ink-2);white-space:nowrap;font-family:var(--num);font-feature-settings:var(--num-feat)}
+/* An SVG shape, not a text character. As a character the harness correctly measured it as
+   TEXT and demanded 4.5:1, which #90BA89 misses at 3.73:1 on the card. As a graphic,
+   SC 1.4.11's 3:1 genuinely applies and it passes on every card (3.32-8.67:1). My earlier
+   'it's a glyph so 3:1 applies' was wrong while it was still a character. */
+.mbc .delta .tri{width:8px;height:7px;flex:none;fill:var(--st-glyph,var(--ink-2))}
+.mbc .delta .per{font-weight:600;opacity:.75;font-family:var(--ui)}
+.mbc .delta .ch{font-size:13px;opacity:.6;font-family:var(--ui)}
+/* Balance block: figure + delta stacked left, performance chart right, so the chart occupies
+   existing vertical space rather than adding a band of its own. */
+.mbc .balmain{display:flex;align-items:flex-end;justify-content:space-between;gap:12px}
+.mbc .balmain .bl{min-width:0}
+.mbc .perf{width:96px;height:44px;flex:none;display:block;overflow:visible}
+.mbc .perf .ln{fill:none;stroke:var(--st-glyph,var(--ink-2));stroke-width:1.8;
+  stroke-linecap:round;stroke-linejoin:round;vector-effect:non-scaling-stroke}
+.mbc .perf .ar{fill:var(--st-glyph,var(--ink-2));opacity:.16;stroke:none}
+.mbc .perf .lbl{font-family:var(--ui);font-size:8px;font-weight:700;fill:var(--ink-2);opacity:.8}
 /* Solid hairline, not dashed: the dashed rule read as a receipt tear and is the one
    decorative flourish left on an otherwise restrained surface. */
 .mbc .bot{border-top:1px solid var(--rule);padding:0 6px 0 16px;display:flex;align-items:center;justify-content:space-between;gap:8px;min-height:44px}
@@ -386,13 +410,16 @@ table.map td code{font-size:12px}
   overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 /* 44pt hit area, 24pt visible dot. The shipped button is w-5 h-5 = 20pt, and it slipped
    past the audit because it is a <span>, not a <button>. */
-.mbc .bot .m{min-width:44px;min-height:44px;border:0;background:none;padding:0;
-  display:flex;align-items:center;justify-content:center;color:inherit;cursor:pointer}
-/* No circle fill. --rule-strong over the deep band composites to a light grey, and white
-   on that measures 3.17-3.64:1 across the card colours. The glyph sits directly on the
-   deep band instead, where white is 4.56-7.76:1 on every colour -- and it is less chrome. */
-.mbc .bot .m i{width:24px;height:24px;display:flex;align-items:center;justify-content:center;
-  font-size:var(--t-caption);font-style:normal;letter-spacing:1px}
+/* The whole card is the switch target, and the account row is what SAYS so -- it already
+   names the account, so a chevron there reads as "tap to change account" without a separate
+   control. Replaces a 44pt More button, which optimised the rarer action: managing an
+   account is less frequent than switching to one, yet it had the only affordance while
+   switching had none.
+   Implementation note: the shipped row is a CopyButton, so tapping it copies the address
+   today. Making it the switch target moves copy-address -- it lives on the Receive tab
+   (CopyButton + useCopyToClipboard) and in the Account sheet's Address field, both better
+   homes, since sharing an address is what Receive exists for. */
+.mbc .bot .ch{font-size:15px;color:inherit;opacity:.7;flex:none;line-height:1}
 /* action bar */
 .mactions{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:16px}
 .mact{display:flex;flex-direction:column;align-items:center;gap:6px}
@@ -586,6 +613,10 @@ table.map td code{font-size:12px}
   background:var(--accent);margin-left:2px;vertical-align:-2px;animation:caret 1s step-end infinite}
 @keyframes caret{50%{opacity:0}}
 .mstk-lbl2{font-size:var(--t-caption);font-weight:700;color:var(--ink-2);margin-bottom:8px}
+.acopy{min-width:44px;min-height:44px;margin:-4px -10px -4px 0;border:0;background:none;
+  padding:0;flex:none;display:flex;align-items:center;justify-content:center;
+  color:var(--ink-2);cursor:pointer}
+.acopy .svgic{width:17px;height:17px}
 .aswatches{display:flex;gap:10px}
 .aswatches .sw{width:38px;height:38px;border-radius:50%;flex:none;position:relative}
 .aswatches .sw.on::after{content:'\2713';position:absolute;inset:0;display:flex;
@@ -608,8 +639,10 @@ table.map td code{font-size:12px}
 .mbc [data-pattern]::after{content:'';position:absolute;inset:0;pointer-events:none;z-index:0;
   background-image:var(--pat-img);background-size:var(--pat-size,auto);
   background-position:var(--pat-pos,0 0);
-  -webkit-mask-image:radial-gradient(circle at 100% 0%,#000 0%,rgba(0,0,0,.55) 38%,transparent 72%);
-  mask-image:radial-gradient(circle at 100% 0%,#000 0%,rgba(0,0,0,.55) 38%,transparent 72%)}
+  /* Mask moved from top-right to bottom-left: the performance chart now lives top-right, and
+     information beats decoration when they want the same space. */
+  -webkit-mask-image:radial-gradient(circle at 0% 100%,#000 0%,rgba(0,0,0,.5) 40%,transparent 74%);
+  mask-image:radial-gradient(circle at 0% 100%,#000 0%,rgba(0,0,0,.5) 40%,transparent 74%)}
 .mbc [data-pattern] > *{position:relative;z-index:1}
 /* The five wagara, as reusable tokens. var(--pat) inside them resolves in the USING element's
    context, so one definition serves both themes at their respective alphas. */
@@ -2457,7 +2490,7 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
               <div class="top" data-surface="graphite" data-pattern="seigaiha">
                 <div class="balrow"><div class="tl">Total Balance</div><div class="delta" data-status="pos">+0.00%</div></div>
                 <div class="amt">$0.00 <small>USD</small></div></div>
-              <div class="bot" data-surface="graphite-deep"><span class="acc">Account #: mtst1ap8…r4fp</span><button class="m" aria-label="Account options"><i>⋯</i></button></div>
+              <div class="bot" data-surface="graphite-deep"><span class="acc">Account #: mtst1ap8…r4fp</span><span class="ch">›</span></div>
             </div>
             <div class="mprompt"><div class="ptx"><div class="pt">Verify your recovery phrase</div><div class="pb">Confirm you saved your recovery phrase so you can restore this wallet later.</div></div><button class="pdis" aria-label="Dismiss">&#10005;</button></div>
             <div class="masset-h">Assets</div>
@@ -2981,9 +3014,16 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
             </div>
             <div class="mbc">
               <div class="top" data-surface="graphite" data-pattern="seigaiha">
-                <div class="balrow"><div class="tl">Total Balance</div><div class="delta" data-status="pos">+0.32%</div></div>
-                <div class="amt">$12,480.50 <small>USD</small></div></div>
-              <div class="bot" data-surface="graphite-deep"><span class="acc">Account #: mtst1ap8…r4fp</span><button class="m" aria-label="Account options"><i>⋯</i></button></div>
+                <div class="balrow"><div class="tl">Total Balance</div></div>
+                <div class="balmain"><div class="bl">
+                  <div class="amt">$12,480.50 <small>USD</small></div>
+                  <div class="delta"><svg class="tri" viewBox="0 0 8 7" aria-hidden="true"><path d="M4 0 8 7 0 7Z"/></svg>+$40.00 (0.32%)<span class="per">today</span><span class="ch">&rsaquo;</span></div>
+                </div>
+                <svg class="perf" viewBox="0 0 96 44" aria-label="Balance, today: up 0.32 percent">
+                  <path class="ar" d="M0,34 12,30 24,32 36,22 48,26 60,14 72,18 84,8 96,11 96,44 0,44Z"/>
+                  <polyline class="ln" points="0,34 12,30 24,32 36,22 48,26 60,14 72,18 84,8 96,11"/>
+                </svg></div></div>
+              <div class="bot" data-surface="graphite-deep"><span class="acc">Account #: mtst1ap8…r4fp</span><span class="ch">›</span></div>
             </div>
             <div><div class="mcar"><div class="mprompt"><div class="ptx"><div class="pt">Verify your recovery phrase</div><div class="pb">Confirm you saved your recovery phrase so you can restore this wallet later.</div></div><button class="pdis" aria-label="Dismiss">&#10005;</button></div><div class="mprompt"><div class="ptx"><div class="pt">Activate device key</div><div class="pb">Generate a device key for this recovered account. Required before sending.</div></div><button class="pdis" aria-label="Dismiss">&#10005;</button></div><div class="mprompt"><div class="ptx"><div class="pt">Guardian changed</div><div class="pb">Your guardian was switched and we couldn&rsquo;t identify the new operator. Enter its URL to reconnect.</div></div><button class="pdis" aria-label="Dismiss">&#10005;</button></div></div><div class="mpdots"><i class="on"></i><i></i><i></i></div></div>
             <div class="masset-h">Assets</div>
@@ -3006,7 +3046,7 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
             <div class="mbc" data-card="slate" style="margin-bottom:12px">
               <div class="top" data-surface="graphite" data-pattern=""><div class="balrow"><div class="anm">Miden Account 3</div></div><div class="amt">$12,480.50 <small>USD</small></div></div></div>
             <div class="afield edit" style="margin-bottom:8px"><span class="k">Name</span><span class="v">Miden Account 3</span></div>
-            <div class="afield" style="margin-bottom:12px"><span class="k">Address</span><span class="v mono">mtst1ap8&hellip;r4fp</span></div>
+            <div class="afield" style="margin-bottom:12px"><span class="k">Address</span><span class="v mono">mtst1ap8&hellip;r4fp</span><button class="acopy" aria-label="Copy address"><span class="svgic" style="--ic:url(assets/icons/copy.svg)" aria-hidden="true"></span></button></div>
             <div class="mstk-lbl2">Card colour</div>
             <div class="aswatches">
               <span class="sw on nti" style="background:var(--card-slate)"></span>
@@ -3028,9 +3068,9 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
             <div class="mshandle"></div>
             <div class="mshead">Accounts</div>
             <div class="mlist">
-              <div class="mbc" data-card="blue"><span class="achk">&#10003;</span><button class="arow-m" aria-label="Account options"><i>&ctdot;</i></button><div class="top" data-surface="graphite" data-pattern="seigaiha"><div class="balrow"><div class="anm">Miden Account 1</div></div><div class="amt">$1,204.00 <small>USD</small></div></div></div>
-              <div class="mbc" data-card="green"><span class="achk">&#10003;</span><button class="arow-m" aria-label="Account options"><i>&ctdot;</i></button><div class="top" data-surface="graphite" data-pattern="seigaiha"><div class="balrow"><div class="anm">Miden Account 2</div></div><div class="amt">$318.90 <small>USD</small></div></div></div>
-              <div class="mbc sel" data-card="slate"><span class="achk">&#10003;</span><button class="arow-m" aria-label="Account options"><i>&ctdot;</i></button><div class="top" data-surface="graphite" data-pattern="seigaiha"><div class="balrow"><div class="anm">Miden Account 3</div></div><div class="amt">$12,480.50 <small>USD</small></div></div></div>
+              <div class="mbc" data-card="blue"><span class="achk">&#10003;</span><button class="arow-m" aria-label="Account options"><i>&ctdot;</i></button><div class="top" data-surface="graphite" data-pattern=""><div class="balrow"><div class="anm">Miden Account 1</div></div><div class="amt">$1,204.00 <small>USD</small></div></div></div>
+              <div class="mbc" data-card="green"><span class="achk">&#10003;</span><button class="arow-m" aria-label="Account options"><i>&ctdot;</i></button><div class="top" data-surface="graphite" data-pattern=""><div class="balrow"><div class="anm">Miden Account 2</div></div><div class="amt">$318.90 <small>USD</small></div></div></div>
+              <div class="mbc sel" data-card="slate"><span class="achk">&#10003;</span><button class="arow-m" aria-label="Account options"><i>&ctdot;</i></button><div class="top" data-surface="graphite" data-pattern=""><div class="balrow"><div class="anm">Miden Account 3</div></div><div class="amt">$12,480.50 <small>USD</small></div></div></div>
             </div>
             
             <div class="setgroup" style="margin-top:12px"><div class="setrow"><span class="svgic" style="--ic:url(assets/icons/settings-new.svg)" aria-hidden="true"></span>Settings<span class="ch">&rsaquo;</span></div></div><div class="zone" style="padding-bottom:max(16px,var(--safe-bottom,0px))"><button class="btn btn-primary">Add account</button></div>
