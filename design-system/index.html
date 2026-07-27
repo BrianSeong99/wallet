@@ -3,6 +3,12 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
+<!-- No-store: the review loop is "edit, reload, look", and a cached document silently
+     shows work that was already removed. That cost a round-trip once -- a sparkline
+     that had been deleted was still on the reviewer's screen. The audit harness busts
+     cache with ?cb=, a human browser does not. -->
+<meta http-equiv="Cache-Control" content="no-store, must-revalidate" />
+<meta http-equiv="Pragma" content="no-cache" />
 <title>Crust — the Bread Wallet design system</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -111,7 +117,11 @@
   --act-send:#748A9A; --act-receive:#7C8B78; --act-swap:#8F829F; --act-earn:#777487;
   --tx-received:#A8BBA3; --tx-sent:#A3BCCF; --tx-swap:#C9BAD9; --tx-earn:#BDB9CC; --tx-faucet:#CDB0DE;
   --tx-glyph:#3F3F3F;
-  --stack-tight:8px; --stack:12px; --stack-loose:24px;
+  /* 8 / 12 / 16. --stack-loose was 24 and read as a shout above the Assets header --
+     the 20px/800 heading against 15px body already marks the section, so the gap only
+     needs to separate. A tight ramp is right on a screen where the card and carousel
+     already take ~45% before the list starts. */
+  --stack-tight:8px; --stack:12px; --stack-loose:16px;
   --nav-pill:rgba(63,63,63,.10); --nav-bg:rgba(255,255,255,.62); --nav-ink-off:#727272;
   --pat:rgba(255,255,255,.035);
   /* Account card colours. These were REFERENCED by the colour picker but never defined,
@@ -216,7 +226,7 @@ code{font-family:var(--mono);font-size:.86em;background:var(--code-bg);padding:.
 .eyebrow{font-family:var(--display);font-weight:800;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--accent-ink)}
 h1.title{font-size:44px;font-weight:900;line-height:1.02;margin:10px 0 0;letter-spacing:-.025em}
 .lede{font-size:18px;color:var(--ink-2);max-width:60ch;margin-top:16px;line-height:1.5}
-h2.h{font-size:26px;font-weight:800;margin:52px 0 4px;letter-spacing:-.02em}
+h2.h{font-size:26px;font-weight:800;margin:34px 0 4px;letter-spacing:-.02em}
 h3.sh{font-size:17px;font-weight:800;margin:30px 0 10px;font-family:var(--display)}
 .sub{color:var(--ink-2);max-width:64ch}
 p{margin:10px 0}
@@ -389,11 +399,7 @@ table.map td code{font-size:12px}
 .mact .sq{width:46px;height:46px;border-radius:var(--radius-md);display:flex;align-items:center;justify-content:center;color:var(--pure-white);font-size:18px}
 .mact .lb{font-size:11px;font-weight:600;color:var(--ink-2)}
 /* assets */
-/* Figma pairs the section header with an "All" link on the right. We had a bare header, so
-   there was no way to reach a full asset list -- worth taking as a row, not just a word. */
-.masset-h{display:flex;align-items:baseline;justify-content:space-between;gap:10px;
-  font-family:var(--display);font-weight:800;font-size:var(--t-heading);margin-top:calc(var(--stack-loose) - var(--stack));margin-bottom:calc(var(--stack-tight) - var(--stack))}
-.masset-h .all{font-family:var(--ui);font-size:var(--t-label);font-weight:600;color:var(--ink-2);min-height:44px;display:flex;align-items:center;background:none;border:0;cursor:pointer}
+.masset-h{font-family:var(--display);font-weight:800;font-size:var(--t-heading);margin-top:calc(var(--stack-loose) - var(--stack));margin-bottom:calc(var(--stack-tight) - var(--stack))}
 /* 48px, not the app's 56px (h-14). Height was the reported symptom; the cause is that the
    shipped field does not read as a search field at all. It combines `text-center`,
    `placeholder:font-bold`, `text-base` and NO magnifier icon inside a 56px pill -- a centred
@@ -522,7 +528,12 @@ table.map td code{font-size:12px}
   display:flex;flex-direction:column;max-height:76%}
 .mshandle{width:40px;height:5px;border-radius:var(--radius-full);background:var(--rule-strong);
   margin:0 auto 14px;flex:none}
-.mshead{font-family:var(--display);font-weight:800;font-size:var(--t-subhead);margin-bottom:12px;flex:none}
+.mshead{font-family:var(--display);font-weight:800;font-size:var(--t-subhead);margin-bottom:12px;
+  flex:none;display:flex;align-items:center;gap:4px}
+/* 44pt target, negative-margined so it does not inflate the sheet header. */
+.shback{min-width:44px;min-height:44px;margin:-11px -8px -11px -12px;border:0;background:none;
+  padding:0;display:flex;align-items:center;justify-content:center;color:var(--ink);
+  font-size:22px;line-height:1;cursor:pointer;font-family:var(--ui)}
 
 /* ---- Account list: vertical balance blocks (Family's model) ----------------------------
    Replaced an Apple-Wallet overlap stack, and the reasons are all things the stack could not
@@ -543,8 +554,19 @@ table.map td code{font-size:12px}
 .mlist .amt{font-size:26px}
 /* Selection is a filled check, not a ring: an outline round a card would read as a bordered
    control, which this system does not use. */
+/* Selection is NEUTRAL ink, not --pos. Green means "positive status"; being the selected
+   account is not a status, and reusing the status ramp for UI state is the same misuse that
+   put green/red on the portfolio delta. Matches the nav, where active is --ink for the same
+   reason. Contrast: 10.5:1 light, 17.6:1 dark, against --pos's narrower pass. */
+/* Per-row options. Selecting the card switches account; this reaches that account's own
+   sheet, which is where renaming lives. 44pt target, inset so it does not enlarge the card. */
+.mlist .arow-m{position:absolute;top:0;right:0;min-width:44px;min-height:44px;border:0;
+  background:none;padding:0;display:flex;align-items:center;justify-content:center;
+  color:var(--ink-2);z-index:3;cursor:pointer}
+.mlist > .mbc.sel .arow-m{display:none}
+.mlist .arow-m i{font-style:normal;font-size:var(--t-caption);letter-spacing:1px}
 .mlist .achk{position:absolute;top:10px;right:12px;width:22px;height:22px;border-radius:50%;
-  background:var(--pos);display:none;align-items:center;justify-content:center;
+  background:var(--ink);display:none;align-items:center;justify-content:center;
   color:var(--paper);font-size:12px;font-weight:800;z-index:2}
 .mlist > .mbc.sel .achk{display:flex}
 
@@ -563,13 +585,11 @@ table.map td code{font-size:12px}
 .afield.edit .v::after{content:'';display:inline-block;width:1.5px;height:14px;
   background:var(--accent);margin-left:2px;vertical-align:-2px;animation:caret 1s step-end infinite}
 @keyframes caret{50%{opacity:0}}
+.mstk-lbl2{font-size:var(--t-caption);font-weight:700;color:var(--ink-2);margin-bottom:8px}
 .aswatches{display:flex;gap:10px}
 .aswatches .sw{width:38px;height:38px;border-radius:50%;flex:none;position:relative}
 .aswatches .sw.on::after{content:'\2713';position:absolute;inset:0;display:flex;
   align-items:center;justify-content:center;color:var(--pure-white);font-size:15px;font-weight:800}
-.mstk-lbl{font-size:var(--t-caption);font-weight:700;color:var(--ink-2);
-  display:flex;align-items:center;gap:6px}
-.mstk-lbl .chk{width:14px;height:14px;border-radius:50%;background:var(--pos);flex:none}
 
 /* ---- Wagara: traditional Japanese geometric pattern as the card's texture layer -------
    Drawn from real wagara rather than generic generative noise: seigaiha (breaking waves),
@@ -637,14 +657,16 @@ table.map td code{font-size:12px}
      --stack        12 between stacked components in one group (bar -> card -> prompt)
      --stack-loose  24 before a new section
    Components stop carrying their own outer spacing; .mpad owns it. */
-.mprompt{display:flex;align-items:center;gap:12px;background:var(--surface-2);
-  border-radius:var(--radius-md);padding:12px}
+/* Height floor for this card is set by two lines of the real 76-character i18n string at
+   the 11.5px caption token -- the copy cannot shrink and 11 is the type floor. So the
+   savings come from chrome: the invented icon is gone (Figma and the shipped component both
+   have none, and ours painted nothing anyway), padding is 8 rather than 12, and leading is
+   tightened. 73.3pt -> the value below. */
+.mprompt{display:flex;align-items:center;gap:10px;background:var(--surface-2);
+  border-radius:var(--radius-md);padding:8px 4px 8px 13px}
 .mprompt[data-status="neg"]{background:var(--st-wash)}
-.mprompt .pic{width:32px;height:32px;border-radius:var(--radius-sm);flex:none;
-  background:var(--surface-3);display:flex;align-items:center;justify-content:center;color:var(--ink-2)}
-.mprompt .pic .svgic{width:20px;height:20px}   /* token size, not an arbitrary 17 */
 .mprompt .ptx{flex:1;min-width:0}
-.mprompt .pt{font-family:var(--display);font-weight:800;font-size:var(--t-label);line-height:1.3}
+.mprompt .pt{font-family:var(--display);font-weight:800;font-size:var(--t-label);line-height:1.25}
 /* Two lines, clamped -- not nowrap+ellipsis. The shipped body copy
    ("Confirm you saved your recovery phrase so you can restore this wallet later.") does
    not fit one line beside an icon, a chevron and a dismiss target, and truncating it
@@ -652,8 +674,8 @@ table.map td code{font-size:12px}
    it is a real i18n string -- so the clamp is 3 lines, which is what the 76-character
    shipped string actually needs in a ~200pt column at 11.5px. The clamp stays as a guard
    against longer localisations rather than as the normal state. */
-.mprompt .pb{font-size:var(--t-caption);color:var(--ink-2);margin-top:2px;line-height:1.35;
-  display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.mprompt .pb{font-size:var(--t-caption);color:var(--ink-2);margin-top:1px;line-height:1.3;
+  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 /* 44pt hit area WITHOUT forcing asymmetric card padding: negative margin lets the target
    overhang the 12px padding instead of the padding shrinking to 4px to accommodate it.
    The chevron that used to sit here is gone -- a 5px glyph 11px from a 44px dismiss target
@@ -2437,8 +2459,8 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
                 <div class="amt">$0.00 <small>USD</small></div></div>
               <div class="bot" data-surface="graphite-deep"><span class="acc">Account #: mtst1ap8…r4fp</span><button class="m" aria-label="Account options"><i>⋯</i></button></div>
             </div>
-            <div class="mprompt"><span class="pic"><span class="svgic" style="--ic:url(assets/icons/key.svg)" aria-hidden="true"></span></span><div class="ptx"><div class="pt">Verify your recovery phrase</div><div class="pb">Confirm you saved your recovery phrase so you can restore this wallet later.</div></div><button class="pdis" aria-label="Dismiss">&#10005;</button></div>
-            <div class="masset-h">Assets<button class="all">All</button></div>
+            <div class="mprompt"><div class="ptx"><div class="pt">Verify your recovery phrase</div><div class="pb">Confirm you saved your recovery phrase so you can restore this wallet later.</div></div><button class="pdis" aria-label="Dismiss">&#10005;</button></div>
+            <div class="masset-h">Assets</div>
             <button class="msearch"><span class="svgic" style="--ic:url(assets/icons/search.svg)" aria-hidden="true"></span>Search for tokens</button>
             <div class="mrow"><div class="ic"><img src="assets/icons/miden.svg" alt=""></div><div><div class="nm">Miden</div><div class="ad">0.00 MIDEN</div></div><div class="rt"><div class="f">$0.00</div><div class="b" style="color:var(--pos)">+0.00%</div></div></div>
           </div>
@@ -2963,8 +2985,8 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
                 <div class="amt">$12,480.50 <small>USD</small></div></div>
               <div class="bot" data-surface="graphite-deep"><span class="acc">Account #: mtst1ap8…r4fp</span><button class="m" aria-label="Account options"><i>⋯</i></button></div>
             </div>
-            <div><div class="mcar"><div class="mprompt"><span class="pic"><span class="svgic" style="--ic:url(assets/icons/key.svg)" aria-hidden="true"></span></span><div class="ptx"><div class="pt">Verify your recovery phrase</div><div class="pb">Confirm you saved your recovery phrase so you can restore this wallet later.</div></div><button class="pdis" aria-label="Dismiss">&#10005;</button></div><div class="mprompt"><span class="pic"><span class="svgic" style="--ic:url(assets/icons/lock.svg)" aria-hidden="true"></span></span><div class="ptx"><div class="pt">Activate device key</div><div class="pb">Generate a device key for this recovered account. Required before sending.</div></div><button class="pdis" aria-label="Dismiss">&#10005;</button></div><div class="mprompt"><span class="pic"><span class="svgic" style="--ic:url(assets/icons/guardian-avatar.svg)" aria-hidden="true"></span></span><div class="ptx"><div class="pt">Guardian changed</div><div class="pb">Your guardian was switched and we couldn&rsquo;t identify the new operator. Enter its URL to reconnect.</div></div><button class="pdis" aria-label="Dismiss">&#10005;</button></div></div><div class="mpdots"><i class="on"></i><i></i><i></i></div></div>
-            <div class="masset-h">Assets<button class="all">All</button></div>
+            <div><div class="mcar"><div class="mprompt"><div class="ptx"><div class="pt">Verify your recovery phrase</div><div class="pb">Confirm you saved your recovery phrase so you can restore this wallet later.</div></div><button class="pdis" aria-label="Dismiss">&#10005;</button></div><div class="mprompt"><div class="ptx"><div class="pt">Activate device key</div><div class="pb">Generate a device key for this recovered account. Required before sending.</div></div><button class="pdis" aria-label="Dismiss">&#10005;</button></div><div class="mprompt"><div class="ptx"><div class="pt">Guardian changed</div><div class="pb">Your guardian was switched and we couldn&rsquo;t identify the new operator. Enter its URL to reconnect.</div></div><button class="pdis" aria-label="Dismiss">&#10005;</button></div></div><div class="mpdots"><i class="on"></i><i></i><i></i></div></div>
+            <div class="masset-h">Assets</div>
             <button class="msearch"><span class="svgic" style="--ic:url(assets/icons/search.svg)" aria-hidden="true"></span>Search for tokens</button>
             <div class="mrow"><div class="ic"><img src="assets/icons/miden.svg" alt=""></div><div><div class="nm">Miden</div><div class="ad">1,204.50 MIDEN</div></div><div class="rt"><div class="f">$12,480.50</div><div class="b" style="color:var(--pos)">+0.32%</div></div></div>
             <div class="mrow"><div class="ic"><img src="assets/icons/usdc.svg" alt=""></div><div><div class="nm">USDC</div><div class="ad">0.00 USDC</div></div><div class="rt"><div class="f">$0.00</div><div class="b">—</div></div></div>
@@ -2973,21 +2995,45 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
         </div></div></div>
         <div class="scrnote">Funded state. Balance and amounts in Nunito tabular; addresses in Geist Mono.</div></div>
 
+      <div><div class="scrcap"><i></i>Account sheet <span class="tag retire">proposed</span></div>
+        <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
+          <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>
+          <div class="mpad" style="flex:1;opacity:.35"><div class="masset-h">Assets</div><button class="msearch"><span class="svgic" style="--ic:url(assets/icons/search.svg)" aria-hidden="true"></span>Search for tokens</button></div>
+          <div class="shscrim"></div>
+          <div class="msheet">
+            <div class="mshandle"></div>
+            <div class="mshead"><button class="shback" aria-label="Back">&lsaquo;</button>Miden Account 3</div>
+            <div class="mbc" data-card="slate" style="margin-bottom:12px">
+              <div class="top" data-surface="graphite" data-pattern=""><div class="balrow"><div class="anm">Miden Account 3</div></div><div class="amt">$12,480.50 <small>USD</small></div></div></div>
+            <div class="afield edit" style="margin-bottom:8px"><span class="k">Name</span><span class="v">Miden Account 3</span></div>
+            <div class="afield" style="margin-bottom:12px"><span class="k">Address</span><span class="v mono">mtst1ap8&hellip;r4fp</span></div>
+            <div class="mstk-lbl2">Card colour</div>
+            <div class="aswatches">
+              <span class="sw on nti" style="background:var(--card-slate)"></span>
+              <span class="sw nti" style="background:var(--card-orange)"></span>
+              <span class="sw nti" style="background:var(--card-blue)"></span>
+              <span class="sw nti" style="background:var(--card-green)"></span>
+              <span class="sw nti" style="background:var(--card-purple)"></span>
+            </div>
+            <div class="zone" style="padding-bottom:max(16px,var(--safe-bottom,0px))"><button class="btn btn-primary">Done</button></div>
+          </div>
+        </div></div></div>
+        <div class="scrnote"><b>The missing link.</b> I specified &ldquo;tap the card to switch, <code>&ctdot;</code> for options&rdquo; and then wired <em>neither</em>, so the Accounts list had no entry point at all &mdash; a real gap. The chain is now: balance-card <code>&ctdot;</code> &rarr; <b>Accounts list</b> (choose) &rarr; per-row <code>&ctdot;</code> &rarr; <b>this sheet</b> (manage one account). Renaming lives here rather than in the list, per the rule that the list answers &ldquo;which account&rdquo; and a rename affordance would fight the selection gesture. The card colour also belongs here, not in the list, because colour is <em>per-account identity</em> &mdash; today it is a single global <code>localStorage</code> value, which is exactly why it currently reads as decoration. The card preview carries no pattern, so the swatch row is the only thing asserting identity while you are choosing it.</div></div>
       <div><div class="scrcap"><i></i>Accounts &middot; list <span class="tag retire">proposed</span></div>
         <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
           <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>
-          <div class="mpad" style="flex:1;opacity:.35"><div class="masset-h">Assets<button class="all">All</button></div><button class="msearch"><span class="svgic" style="--ic:url(assets/icons/search.svg)" aria-hidden="true"></span>Search for tokens</button></div>
+          <div class="mpad" style="flex:1;opacity:.35"><div class="masset-h">Assets</div><button class="msearch"><span class="svgic" style="--ic:url(assets/icons/search.svg)" aria-hidden="true"></span>Search for tokens</button></div>
           <div class="shscrim"></div>
           <div class="msheet">
             <div class="mshandle"></div>
             <div class="mshead">Accounts</div>
             <div class="mlist">
-              <div class="mbc" data-card="blue"><span class="achk">&#10003;</span><div class="top" data-surface="graphite" data-pattern="seigaiha"><div class="balrow"><div class="anm">Miden Account 1</div></div><div class="amt">$1,204.00 <small>USD</small></div></div></div>
-              <div class="mbc" data-card="green"><span class="achk">&#10003;</span><div class="top" data-surface="graphite" data-pattern="seigaiha"><div class="balrow"><div class="anm">Miden Account 2</div></div><div class="amt">$318.90 <small>USD</small></div></div></div>
-              <div class="mbc sel" data-card="slate"><span class="achk">&#10003;</span><div class="top" data-surface="graphite" data-pattern="seigaiha"><div class="balrow"><div class="anm">Miden Account 3</div></div><div class="amt">$12,480.50 <small>USD</small></div></div></div>
+              <div class="mbc" data-card="blue"><span class="achk">&#10003;</span><button class="arow-m" aria-label="Account options"><i>&ctdot;</i></button><div class="top" data-surface="graphite" data-pattern="seigaiha"><div class="balrow"><div class="anm">Miden Account 1</div></div><div class="amt">$1,204.00 <small>USD</small></div></div></div>
+              <div class="mbc" data-card="green"><span class="achk">&#10003;</span><button class="arow-m" aria-label="Account options"><i>&ctdot;</i></button><div class="top" data-surface="graphite" data-pattern="seigaiha"><div class="balrow"><div class="anm">Miden Account 2</div></div><div class="amt">$318.90 <small>USD</small></div></div></div>
+              <div class="mbc sel" data-card="slate"><span class="achk">&#10003;</span><button class="arow-m" aria-label="Account options"><i>&ctdot;</i></button><div class="top" data-surface="graphite" data-pattern="seigaiha"><div class="balrow"><div class="anm">Miden Account 3</div></div><div class="amt">$12,480.50 <small>USD</small></div></div></div>
             </div>
-            <div class="mstk-lbl" style="margin-top:12px"><span class="chk nti"></span>Miden Account 3 selected</div>
-            <div class="zone" style="padding-bottom:max(16px,var(--safe-bottom,0px))"><button class="btn btn-primary">Add account</button></div>
+            
+            <div class="setgroup" style="margin-top:12px"><div class="setrow"><span class="svgic" style="--ic:url(assets/icons/settings-new.svg)" aria-hidden="true"></span>Settings<span class="ch">&rsaquo;</span></div></div><div class="zone" style="padding-bottom:max(16px,var(--safe-bottom,0px))"><button class="btn btn-primary">Add account</button></div>
           </div>
         </div></div></div>
         <div class="scrnote"><b>Proposed &mdash; multi-account does not exist yet.</b> The shipped <code>AccountsDrawer</code> lists <em>no accounts at all</em>: it is a card-colour picker, a Settings link, and a <em>disabled</em> &ldquo;Add account (coming soon)&rdquo; button whose dashed outline also breaks the no-bordered-controls rule. <b>Vertical list, not an Apple-Wallet stack</b> &mdash; the stack was built first and failed on three counts: in <b>dark</b> every card is near-black so overlapping merged all three into one block (tinting each with its account hue at 12&percnt; measured <b>1.00&ndash;1.04:1</b> between adjacent cards, because hue separates almost nothing at near-black); the collapsed band forced a choice between the name and the balance, with one card&rsquo;s amount butting into the next card&rsquo;s name; and it grew 64px per account, stopping around six. Blocks here are the card&rsquo;s top half &mdash; name and balance, which is what you choose between &mdash; with no delta, since performance is not why this sheet is open. Selection is a filled check rather than a ring, because an outline round a card would read as a bordered control. <b>Renaming is deliberately not here:</b> the list answers &ldquo;which account&rdquo;, and a rename affordance would compete with the selection gesture.</div></div>

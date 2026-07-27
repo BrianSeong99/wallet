@@ -29,6 +29,24 @@
 // which makes both the theme flip and the section reveal resolve instantly.
 
 import { chromium } from 'playwright';
+import { readdirSync, readFileSync } from 'node:fs';
+import { join } from 'node:path';
+
+// Icon PRESENCE lint. The .svgic mask paints the icon's own alpha, so an SVG with
+// `fill="none"` and no stroke paints NOTHING -- an invisible icon. The icon-contrast check
+// cannot catch it: it measures the element's currentColor against its parent, which is a
+// perfectly good ratio whether or not the mask has any coverage. key.svg and search.svg
+// were both shipped invisible this way. The app gets away with these files because its
+// <Icon> component injects fill/stroke as a prop; a CSS mask uses the raw file.
+const lintIcons = dir => {
+  const bad = [];
+  for (const f of readdirSync(dir).filter(n => n.endsWith('.svg'))) {
+    const src = readFileSync(join(dir, f), 'utf8');
+    const paints = [...src.matchAll(/(?:fill|stroke)="([^"]+)"/g)].map(m => m[1]);
+    if (!paints.some(v => v && v !== 'none')) bad.push(f);
+  }
+  return bad;
+};
 
 const URL = process.env.DS_URL ?? 'http://localhost:4599';
 const SHOT = process.argv.includes('--shot') ? process.argv[process.argv.indexOf('--shot') + 1] : null;
@@ -226,6 +244,12 @@ const run = async () => {
   }
   await page.evaluate(cleanup);
 
+  const unpaintable = lintIcons('design-system/assets/icons');
+  if (unpaintable.length) {
+    console.log(`\n  \u2717 UNPAINTABLE ICONS (fill="none", no stroke -> invisible under a mask):`);
+    unpaintable.forEach(f => console.log(`      ${f}`));
+  }
+
   let total = 0;
   const tally = { inSafeArea: 0, clipped: 0, overflow: 0, contrast: 0, icons: 0, fills: 0, targets: 0, tiny: 0 };
   for (const [theme, screens] of Object.entries(results)) {
@@ -254,6 +278,7 @@ const run = async () => {
   console.log(`  fill contrast   : ${tally.fills}   (.nti indicators vs surround, 3:1)`);
   console.log(`  targets < 44pt  : ${tally.targets}`);
   console.log(`  text < 11pt     : ${tally.tiny}`);
+  console.log(`  unpaintable svg : ${unpaintable.length}   (invisible under a CSS mask)`);
   if (errors.length) console.log(`  console errors  : ${errors.length} → ${errors[0]}`);
   console.log(`${'─'.repeat(64)}`);
 
@@ -273,7 +298,7 @@ const run = async () => {
   }
 
   await browser.close();
-  process.exit(total ? 1 : 0);
+  process.exit(total || unpaintable.length ? 1 : 0);
 };
 
 run().catch(e => { console.error(e); process.exit(2); });
