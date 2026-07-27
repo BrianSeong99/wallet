@@ -4,9 +4,9 @@ import classNames from 'clsx';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 
-import { Button, ButtonVariant } from 'components/Button';
+import { Icon, IconName } from 'app/icons/v2';
 import { ProgressIndicator } from 'components/ProgressIndicator';
-import { ActionZone } from 'components/ui/ActionZone';
+import { hapticLight } from 'lib/mobile/haptics';
 import { isMobile } from 'lib/platform';
 import type { WalletAccount } from 'lib/shared/types';
 
@@ -62,11 +62,20 @@ const STEP_TO_PROGRESS: Partial<Record<OnboardingStep, number>> = {
 };
 
 const Header: React.FC<{
-  onBack: () => void;
+  /**
+   * Omitted on steps with nowhere to go back to, which is what hides the
+   * chevron. Welcome never renders a header at all; Confirmation renders one
+   * without a back affordance because the wallet already exists by then —
+   * both match the design system, where 20 of the 23 `.obtop` rows carry a
+   * back button and the three that don't are the Confirmation states.
+   */
+  onBack?: () => void;
   currentStep: number | null;
   totalSteps: number;
   onboardingType?: 'import' | 'create' | null;
-}> = ({ currentStep, totalSteps }) => {
+}> = ({ onBack, currentStep, totalSteps }) => {
+  const { t } = useTranslation();
+
   return (
     // The design system's `.obtop`: the step chrome row, gap 0.625rem, padded
     // 0.25rem above / 0.875rem below, inside the onboarding gutter (`px-6`,
@@ -75,6 +84,37 @@ const Header: React.FC<{
     // both sat on a different gutter to the screens and dumped the whole gap
     // onto whatever the step rendered first.
     <div className="w-full flex items-center gap-2.5 px-6 pt-1 pb-3.5">
+      {onBack && (
+        // `.obtop .obback` — the back chevron shares the progress row, so it
+        // costs no vertical space while still carrying a full 44pt tap target
+        // (`size-11` = 2.75rem, the touch floor). The negative left margin is
+        // the spec's exact -0.8125rem: it is between `-ml-3` (0.75rem) and
+        // `-ml-3.5` (0.875rem) on the Tailwind scale, so it is written as an
+        // arbitrary rem value rather than rounded to a step that would put the
+        // glyph off the gutter line.
+        <button
+          type="button"
+          aria-label={t('back')}
+          onClick={() => {
+            hapticLight();
+            onBack();
+          }}
+          className={classNames(
+            'size-11 -ml-[0.8125rem] flex-none',
+            'flex items-center justify-center',
+            'p-0 border-0 bg-transparent cursor-pointer',
+            'text-ink rounded-full',
+            'transition-colors active:bg-surface-2'
+          )}
+        >
+          {/* The mock draws a text `‹`, whose ink measures 6.25 x 9.5px at its
+              specified 1.25rem. A text glyph's optical alignment drifts with
+              the font, so this uses the repo's own stroked chevron instead:
+              at `xs` (1rem) its ink is 5.33 x 9.33px, effectively the same
+              mark, and it inherits `text-ink` through `currentColor`. */}
+          <Icon name={IconName.ChevronLeftLucide} size="xs" fill="none" aria-hidden />
+        </button>
+      )}
       <div className="flex-1 flex justify-center">
         <ProgressIndicator
           currentStep={currentStep ?? 1}
@@ -101,7 +141,6 @@ export const OnboardingFlow: FC<OnboardingFlowProps> = ({
   onBiometricChange,
   onAction
 }) => {
-  const { t } = useTranslation();
   const reduceMotion = useReducedMotion();
   const [navigationDirection, setNavigationDirection] = useState<'forward' | 'backward'>('forward');
 
@@ -304,7 +343,11 @@ export const OnboardingFlow: FC<OnboardingFlowProps> = ({
         <AnimatePresence mode={'wait'} initial={false}>
           {step !== OnboardingStep.Welcome && (
             <Header
-              onBack={onBack}
+              // Welcome is the first step and renders no header at all, so it
+              // is already back-less. Confirmation is the other step the design
+              // system leaves without a chevron — the wallet has been created
+              // by then, so there is nothing to go back to.
+              onBack={step === OnboardingStep.Confirmation ? undefined : onBack}
               currentStep={currentProgress}
               totalSteps={totalSteps}
               onboardingType={onboardingType}
@@ -339,37 +382,10 @@ export const OnboardingFlow: FC<OnboardingFlowProps> = ({
               }
             }}
           >
+            {/* Back now lives in `.obtop` as the design system draws it, so the
+                bottom secondary "Back" button that used to stack a second
+                ActionZone underneath the step's own one is gone. */}
             {renderStep()}
-            {step !== OnboardingStep.Welcome &&
-              step !== OnboardingStep.ChooseProtection &&
-              step !== OnboardingStep.SetupPasscode &&
-              step !== OnboardingStep.SetupBiometric &&
-              step !== OnboardingStep.ChooseGuardian &&
-              step !== OnboardingStep.Confirmation && (
-                // The shell's own bottom action, so it gets the shared zone
-                // geometry (16 above / 16 below, centred) rather than the
-                // hand-rolled `pt-2 pb-4` it had — that was the only bottom
-                // action in onboarding still setting its own padding, and it
-                // sat 8px higher than every other one. `px-6` matches the
-                // onboarding gutter so it aligns with the step's own zone
-                // directly above it. Button is already `w-full`, so the
-                // explicit `w-full` was redundant.
-                // `pt-0` because this zone stacks directly under the step's own
-                // one. Each zone pads 16 above and below, so leaving both tops
-                // in put 32px between Continue and Back where the system's
-                // primary-to-secondary gap is 12. Zeroing the top of the LOWER
-                // zone leaves the upper zone's 16px bottom as the single gap.
-                //
-                // This is a mitigation, not the shape the system draws: the
-                // mocks put back as the `‹` chevron in `.obtop`, and `Header`
-                // here already accepts an `onBack` it drops on the floor. Moving
-                // it there would also add a back affordance to four steps that
-                // currently have none, which is a navigation change rather than
-                // a restyle — so it needs a decision, not a refactor.
-                <ActionZone className="px-6 pt-0">
-                  <Button title={t('back')} variant={ButtonVariant.Secondary} onClick={onBack} />
-                </ActionZone>
-              )}
           </motion.div>
         </AnimatePresence>
       </div>

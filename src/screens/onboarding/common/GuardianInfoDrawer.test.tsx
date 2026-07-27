@@ -30,10 +30,13 @@ jest.mock('app/icons/v2', () => ({
 }));
 
 // `Button` — render the title and forward the click so the "gotIt" wiring can
-// be verified.
+// be verified. `ButtonVariant` has to come along: the dismiss is a SECONDARY
+// action, so the component reads the enum at render and a bare `Button` mock
+// would throw.
 jest.mock('components/Button', () => ({
-  Button: ({ title, onClick }: { title: string; onClick?: () => void }) => (
-    <button data-testid={`btn-${title}`} onClick={onClick}>
+  ButtonVariant: { Primary: 'primary', Secondary: 'secondary', Ghost: 'ghost' },
+  Button: ({ title, onClick, variant }: { title: string; onClick?: () => void; variant?: string }) => (
+    <button data-testid={`btn-${title}`} data-variant={variant} onClick={onClick}>
       {title}
     </button>
   )
@@ -128,11 +131,12 @@ describe('GuardianInfoDrawer', () => {
     expect(screen.getByText('!')).toBeInTheDocument();
   });
 
-  it('draws a divider under exactly the first two rows and none under the last (hasDivider branch)', () => {
+  it('draws a divider between rows only — the first row has none (hasDivider branch)', () => {
     const { container } = renderDrawer();
-    // Only the InfoRow divider wrappers use `border-b`; the third row passes
-    // `hasDivider={false}` so its wrapper class is `undefined`.
-    expect(container.querySelectorAll('.border-b')).toHaveLength(2);
+    // The rule sits BETWEEN rows (`.isrow + .isrow`), so it is a top border on
+    // rows 2 and 3; the first row passes `hasDivider={false}`. Same invariant as
+    // before — exactly two rules for three rows — just anchored to the top edge.
+    expect(container.querySelectorAll('.border-t')).toHaveLength(2);
   });
 
   it('closes the drawer when the "gotIt" button is clicked', () => {

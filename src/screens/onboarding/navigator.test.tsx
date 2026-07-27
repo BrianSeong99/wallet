@@ -2,6 +2,8 @@ import React from 'react';
 
 import { render, screen, fireEvent, act } from '@testing-library/react';
 
+import { hapticLight } from 'lib/mobile/haptics';
+
 import { OnboardingFlow } from './navigator';
 import { ImportType, OnboardingStep, OnboardingType, WalletType } from './types';
 
@@ -63,16 +65,17 @@ jest.mock('lib/platform', () => ({
   isMobile: () => mockPlatform.isMobile
 }));
 
-// `Button` (bottom "back" nav) — surface title, variant and the onClick wiring.
-jest.mock('components/Button', () => ({
-  Button: ({ title, onClick, variant, className }: any) =>
-    require('react').createElement(
-      'button',
-      { 'data-testid': 'back-button', 'data-variant': variant, 'data-classname': className, onClick },
-      title
-    ),
-  ButtonVariant: { Primary: 'Primary', Secondary: 'Secondary' }
+// Back is the `.obtop` chevron now, not a bottom `Button`. Stub the icon so the
+// glyph it asks for is assertable without pulling in ~150 real SVG imports.
+jest.mock('app/icons/v2', () => ({
+  Icon: ({ name, fill }: { name: string; fill?: string }) =>
+    require('react').createElement('span', { 'data-testid': 'back-icon', 'data-name': name, 'data-fill': fill }),
+  IconName: { ChevronLeftLucide: 'ChevronLeftLucide' }
 }));
+
+// The chevron is a raw <button>, so it fires haptics itself (the old `Button`
+// did that internally). Stub the native bridge and assert the call.
+jest.mock('lib/mobile/haptics', () => ({ hapticLight: jest.fn() }));
 
 // `ProgressIndicator` — expose currentStep / steps / className as data attrs so
 // every progress-computation branch is assertable.
@@ -136,10 +139,14 @@ const baseProps = {
 const renderFlow = (overrides: Record<string, any> = {}) => render(<OnboardingFlow {...baseProps} {...overrides} />);
 
 const progress = () => screen.queryByTestId('progress');
+// The back affordance is the `.obtop` chevron, labelled with the `back` key
+// (the i18n mock echoes keys, so the accessible name is literally 'back').
+const backButton = () => screen.queryByRole('button', { name: 'back' });
 
 beforeEach(() => {
   mockPlatform.isMobile = false;
   mockReduceMotion = false;
+  (hapticLight as jest.Mock).mockClear();
   for (const k of Object.keys(mockCaptured)) delete mockCaptured[k];
 });
 
@@ -148,25 +155,29 @@ describe('OnboardingFlow — per-step rendering, header & back-button visibility
     renderFlow({ step: OnboardingStep.Welcome });
     expect(screen.getByTestId('screen-welcome')).toBeInTheDocument();
     expect(progress()).not.toBeInTheDocument();
-    expect(screen.queryByTestId('back-button')).not.toBeInTheDocument();
+    expect(backButton()).not.toBeInTheDocument();
     expect(document.querySelector('[data-onboarding-root="true"]')).toBeInTheDocument();
   });
 
-  const headerNoBack: Array<[OnboardingStep, string]> = [
-    [OnboardingStep.ChooseProtection, 'screen-choose-protection'],
-    [OnboardingStep.SetupPasscode, 'screen-setup-passcode'],
-    [OnboardingStep.SetupBiometric, 'screen-setup-biometric'],
-    [OnboardingStep.ChooseGuardian, 'screen-choose-guardian'],
-    [OnboardingStep.Confirmation, 'screen-confirmation']
-  ];
+  // Confirmation is the only step that keeps a header without a back chevron:
+  // the wallet exists by then. It is also the only back-less `.obtop` in the
+  // design system (3 Confirmation states out of 23 rows).
+  const headerNoBack: Array<[OnboardingStep, string]> = [[OnboardingStep.Confirmation, 'screen-confirmation']];
   it.each(headerNoBack)('renders %s with a header but no back button', (step, testid) => {
     renderFlow({ step });
     expect(screen.getByTestId(testid)).toBeInTheDocument();
     expect(progress()).toBeInTheDocument();
-    expect(screen.queryByTestId('back-button')).not.toBeInTheDocument();
+    expect(backButton()).not.toBeInTheDocument();
   });
 
   const headerWithBack: Array<[OnboardingStep, string]> = [
+    // These four gained a back affordance with the move to the `.obtop`
+    // chevron — they previously had none at all.
+    [OnboardingStep.ChooseProtection, 'screen-choose-protection'],
+    [OnboardingStep.SetupPasscode, 'screen-setup-passcode'],
+    [OnboardingStep.SetupBiometric, 'screen-setup-biometric'],
+    [OnboardingStep.ChooseGuardian, 'screen-choose-guardian'],
+    // These already had one, as the bottom secondary button.
     [OnboardingStep.BackupSeedPhrase, 'screen-backup-seed'],
     [OnboardingStep.VerifySeedPhrase, 'screen-verify-seed'],
     [OnboardingStep.SelectImportType, 'screen-select-import-type'],
@@ -182,9 +193,20 @@ describe('OnboardingFlow — per-step rendering, header & back-button visibility
     renderFlow({ step, onboardingType: OnboardingType.Import });
     expect(screen.getByTestId(testid)).toBeInTheDocument();
     expect(progress()).toBeInTheDocument();
-    const back = screen.getByTestId('back-button');
-    expect(back).toHaveTextContent('back');
-    expect(back).toHaveAttribute('data-variant', 'Secondary');
+    expect(backButton()).toBeInTheDocument();
+  });
+
+  it('draws back as the chevron glyph inside the progress row', () => {
+    renderFlow({ step: OnboardingStep.BackupSeedPhrase, onboardingType: OnboardingType.Import });
+    const back = backButton();
+    expect(back).toHaveAttribute('type', 'button');
+    // 44pt touch target, pulled left onto the gutter line per the design system.
+    expect(back).toHaveClass('size-11', '-ml-[0.8125rem]', 'rounded-full', 'text-ink');
+    expect(screen.getByTestId('back-icon')).toHaveAttribute('data-name', 'ChevronLeftLucide');
+    expect(screen.getByTestId('back-icon')).toHaveAttribute('data-fill', 'none');
+    // First child of the row, ahead of the progress indicator.
+    expect(back?.parentElement?.firstElementChild).toBe(back);
+    expect(back?.parentElement).toContainElement(progress());
   });
 
   it('renders an empty screen (default switch case) with a back button for an unmapped step', () => {
@@ -193,7 +215,7 @@ describe('OnboardingFlow — per-step rendering, header & back-button visibility
     expect(document.querySelector('[data-testid^="screen-"]')).toBeNull();
     // Header still shows (not Welcome) and the back button shows (not excluded).
     expect(progress()).toBeInTheDocument();
-    expect(screen.getByTestId('back-button')).toBeInTheDocument();
+    expect(backButton()).toBeInTheDocument();
   });
 });
 
@@ -407,13 +429,28 @@ describe('OnboardingFlow — back navigation', () => {
     const onAction = jest.fn();
     renderFlow({ step: OnboardingStep.BackupSeedPhrase, onboardingType: OnboardingType.Import, onAction });
 
-    fireEvent.click(screen.getByTestId('back-button'));
+    fireEvent.click(backButton()!);
     expect(onAction).toHaveBeenLastCalledWith({ id: 'back' });
   });
 
   it('back button does not throw when onAction is omitted', () => {
     renderFlow({ step: OnboardingStep.BackupSeedPhrase, onboardingType: OnboardingType.Import });
-    expect(() => fireEvent.click(screen.getByTestId('back-button'))).not.toThrow();
+    expect(() => fireEvent.click(backButton()!)).not.toThrow();
+  });
+
+  it('back button fires haptic feedback on tap', () => {
+    // The bottom `Button` used to do this internally; the raw chevron has to
+    // call it itself, so mobile keeps the same tap feedback.
+    renderFlow({ step: OnboardingStep.BackupSeedPhrase, onboardingType: OnboardingType.Import });
+    fireEvent.click(backButton()!);
+    expect(hapticLight).toHaveBeenCalledTimes(1);
+  });
+
+  it('back is reachable on the steps that previously had no back at all', () => {
+    const onAction = jest.fn();
+    renderFlow({ step: OnboardingStep.ChooseGuardian, onboardingType: OnboardingType.Create, onAction });
+    fireEvent.click(backButton()!);
+    expect(onAction).toHaveBeenLastCalledWith({ id: 'back' });
   });
 });
 
@@ -503,7 +540,7 @@ describe('OnboardingFlow — motion variants (reduced motion & direction)', () =
 
     // Forward branch already evaluated on mount; clicking back flips direction
     // to 'backward' and re-renders, evaluating the backward variant branch.
-    fireEvent.click(screen.getByTestId('back-button'));
+    fireEvent.click(backButton()!);
     expect(onAction).toHaveBeenLastCalledWith({ id: 'back' });
     expect(screen.getByTestId('screen-backup-seed')).toBeInTheDocument();
   });

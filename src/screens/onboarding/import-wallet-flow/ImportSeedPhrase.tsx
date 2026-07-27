@@ -72,8 +72,8 @@ export const ImportSeedPhraseScreen: React.FC<ImportSeedPhraseScreenProps> = ({
     <OnboardingScreen className={className} testId="import-seed-phrase">
       <div className="flex w-full flex-col gap-stack-loose py-stack-loose">
         <div className="flex flex-col gap-stack-tight">
-          <OnboardingHeading>{t('importWallet')}</OnboardingHeading>
-          <OnboardingSubcopy>{t('enterYourWalletSeedPhrase')}</OnboardingSubcopy>
+          <OnboardingHeading className="text-left">{t('importWallet')}</OnboardingHeading>
+          <OnboardingSubcopy className="text-left">{t('enterYourWalletSeedPhrase')}</OnboardingSubcopy>
         </div>
 
         <div className="flex flex-col gap-stack-tight">

@@ -76,9 +76,9 @@ export const VerifySeedPhraseScreen: React.FC<VerifySeedPhraseScreenProps> = ({
     >
       {showIntro && (
         <div className="flex flex-col gap-stack-tight">
-          <OnboardingHeading>{t('verifySeedPhrase')}</OnboardingHeading>
-          <OnboardingSubcopy>{t('verifyMessagePrefix')}</OnboardingSubcopy>
-          <OnboardingSubcopy>
+          <OnboardingHeading className="text-left">{t('verifySeedPhrase')}</OnboardingHeading>
+          <OnboardingSubcopy className="text-left">{t('verifyMessagePrefix')}</OnboardingSubcopy>
+          <OnboardingSubcopy className="text-left">
             <Trans i18nKey="verifyMessageSuffix" components={{ b: <span className="font-bold" /> }} />
           </OnboardingSubcopy>
         </div>

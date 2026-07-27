@@ -91,8 +91,8 @@ export const ImportRecoveryMethodScreen: React.FC<ImportRecoveryMethodScreenProp
     <OnboardingScreen testId="import-recovery-method">
       <div className="flex w-full flex-col gap-stack-loose py-stack-loose">
         <div className="flex flex-col gap-stack-tight">
-          <OnboardingHeading>{t('importRecoveryMethodTitle')}</OnboardingHeading>
-          <OnboardingSubcopy>{t('chooseRecoveryMethodDescription')}</OnboardingSubcopy>
+          <OnboardingHeading className="text-left">{t('importRecoveryMethodTitle')}</OnboardingHeading>
+          <OnboardingSubcopy className="text-left">{t('chooseRecoveryMethodDescription')}</OnboardingSubcopy>
         </div>
 
         <div className="flex w-full flex-col gap-stack-tight">

@@ -1,6 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 
-import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
 
 import { ReactComponent as GatewayLogo } from 'app/icons/guardian-operator-logs/gateway.svg';
@@ -16,13 +15,17 @@ import type { GuardianOption } from 'lib/shared/types';
 import { cn } from 'lib/ui/util';
 
 import { GuardianInfoDrawer } from './GuardianInfoDrawer';
-import { OnboardingScreen } from './layout';
+import { OnboardingHeading, OnboardingScreen, OnboardingSubcopy } from './layout';
 
 export type { GuardianOption };
 
-// Brand wordmark per guardian option id. Paths are hardcoded brand-grey
-// (#484848); `[&_path]:fill-heading-gray` recolors them to the auto-flipping
-// heading token so they stay legible in both themes.
+// Brand wordmark per guardian option id. The marks are third-party trademarks
+// shipped at a fixed #484848 and are deliberately NOT recoloured: altering a
+// partner's mark is a usage problem, not a design choice. #484848 measures
+// 9.15:1 on the light card but only 1.72:1 on the dark one, so dark mode puts
+// each mark on a white plate (see `.glogo` below) instead of repainting it.
+// `paddingXClass` is per-mark optical padding — the wordmarks have very
+// different aspect ratios and would otherwise touch the plate's edges.
 const GUARDIAN_LOGOS: Record<string, { Logo: ImportedSVGComponent; paddingXClass: string }> = {
   'open-zeppelin': { Logo: OpenZeppelinLogo, paddingXClass: 'px-4' },
   gateway: { Logo: GatewayLogo, paddingXClass: 'px-3' },
@@ -110,14 +113,14 @@ export const ChooseGuardianScreen: React.FC<ChooseGuardianScreenProps> = ({
   return (
     <OnboardingScreen testId="onboarding-choose-guardian">
       {!hideHeader && (
-        // `.obh` / `.obp`, left-aligned as on `06`. Hand-rolled rather than
-        // `OnboardingHeading`, which bakes in `text-center` and composes with
-        // clsx, so a `text-left` override would not reliably win.
-        <div className="pt-8 shrink-0 flex flex-col gap-stack-tight">
-          <h1 className="font-heading font-black text-title leading-[1.12] text-ink">
-            {title ?? t('chooseYourGuardian')}
-          </h1>
-          <p className="text-label leading-[1.45] text-ink-2">{description ?? t('chooseGuardianDescription')}</p>
+        // `.obh` / `.obp`, LEFT-aligned as screen `06` draws them. Both compose
+        // through `cn` (twMerge), so the `text-left` override beats the
+        // components' own `text-center` default instead of merely tying with it.
+        // `pt-4` is `.obh`'s own `margin-top:1rem`; the step chrome row
+        // (`.obtop`) above is the navigator's and carries its own padding.
+        <div className="shrink-0 flex flex-col gap-stack-tight pt-4">
+          <OnboardingHeading className="text-left">{title ?? t('chooseYourGuardian')}</OnboardingHeading>
+          <OnboardingSubcopy className="text-left">{description ?? t('chooseGuardianDescription')}</OnboardingSubcopy>
           <button
             type="button"
             onClick={() => {
@@ -125,70 +128,95 @@ export const ChooseGuardianScreen: React.FC<ChooseGuardianScreenProps> = ({
               setIsInfoOpen(true);
             }}
             // `--accent-ink`, not `--accent`: the raw brand orange measures
-            // 2.90:1 on paper and fails SC 1.4.3 at any text size.
-            className="self-start text-caption font-bold text-accent-ink underline underline-offset-4"
+            // 2.90:1 on paper and fails SC 1.4.3 at any text size. It flips to
+            // the brand hue in dark, where the same orange clears on #191919.
+            // No underline — the mock draws this as weight-700 accent text.
+            className="self-start text-caption font-bold text-accent-ink"
           >
             {t('learnMoreAboutGuardian')}
           </button>
         </div>
       )}
 
-      {/* Equal columns rather than two fixed 177px tracks, so the grid keeps its
-          gutters on a 320px-wide popup instead of overflowing it. */}
-      <div className="grid grid-cols-2 auto-rows-fr gap-stack-tight mt-stack-loose">
+      {/* `.gguard`. Equal fractional columns rather than two fixed 177px tracks,
+          so the grid keeps its gutters on a 320px-wide popup instead of
+          overflowing it, and `auto-rows-fr` equalises rows whatever the option
+          count is — the provider list is data (3 on this network, 4 in the
+          mock), so the grid must not assume a count. */}
+      <div className="mt-stack grid shrink-0 grid-cols-2 auto-rows-fr gap-[0.5625rem]">
         {options.map(option => {
           const isSelected = selectedId === option.id;
           const isDefault = option.id === defaultId;
           const isCurrent = currentEndpoint != null && option.endpoint === currentEndpoint;
           const { Logo, paddingXClass } = GUARDIAN_LOGOS[option.id]!;
           return (
-            <div key={option.id} className="flex flex-col">
-              <button
-                type="button"
-                onClick={() => handleSelect(option.id)}
+            // `.gcard` — the WHOLE card is the tap target, meta included, so the
+            // hit area matches the thing the user is choosing.
+            <button
+              key={option.id}
+              type="button"
+              onClick={() => handleSelect(option.id)}
+              aria-pressed={isSelected}
+              className={cn(
+                'relative flex min-h-[6.3125rem] w-full flex-col overflow-hidden rounded-md-token bg-surface text-center',
+                // `pt-5` reserves the band's height on EVERY card, badged or
+                // not, which is what keeps all cards the same box.
+                'pt-5',
+                // The hairline is the CARD's edge — structural separation, not
+                // an outlined tap target — so it is a 1.5px shadow rim rather
+                // than a border that would shift layout when it changed.
+                'shadow-[0_0_0_0.09375rem_var(--rule-strong)]',
+                // Selection is a ring held OFF the card by a gap, so it reads
+                // as the card lifting rather than as its border thickening.
+                // `--accent-ink`, not `--accent`: the raw brand orange is
+                // 2.90:1 on paper and would fail SC 1.4.11 as a ring.
+                'outline-3 outline-offset-5 outline-transparent',
+                'transition-[outline-color,outline-offset] duration-150 motion-reduce:transition-none',
+                isSelected && 'outline-accent-ink outline-offset-3',
+                // The always-on outline would otherwise swallow the browser's
+                // default focus ring, so keyboard focus gets its own.
+                'focus-visible:ring-3 focus-visible:ring-accent/50'
+              )}
+            >
+              {(isCurrent || isDefault) && (
+                // `.band` — absolutely positioned into the reserved `pt-5`.
+                <span
+                  className={cn(
+                    'absolute inset-x-0 top-0 flex h-5 items-center justify-center',
+                    'text-caption font-extrabold tracking-[0.02em]',
+                    // A small glyph on the accent fill needs `--on-accent-sm`
+                    // (near-black); white on it is 2.9:1 and fails.
+                    isCurrent ? 'bg-surface-3 text-ink' : 'bg-accent text-on-accent-sm'
+                  )}
+                >
+                  {isCurrent ? t('currentLabel') : t('default')}
+                </span>
+              )}
+              {/* `.glogo` — flex:1 so wordmarks of different intrinsic heights
+                  still centre in the same well. In dark mode the well becomes a
+                  white plate: the marks are fixed #484848 and fall to 1.72:1 on
+                  the dark card, well under the 3:1 a meaningful graphic needs.
+                  `pure-white`, not `white` — `bg-white` is an auto-flipping
+                  token here and would turn the plate dark again. */}
+              <div
                 className={cn(
-                  'relative flex min-h-25 w-full flex-col overflow-hidden rounded-md-token bg-surface',
-                  // The hairline is the CARD's edge — structural separation, not
-                  // an outlined tap target. Selection is a ring held OFF the
-                  // card by a gap, so it reads as the card lifting rather than
-                  // as the border thickening from 2px to 4px.
-                  'border border-rule-strong transition-all duration-150',
-                  'outline-3 outline-offset-5',
-                  isSelected ? 'outline-accent-ink outline-offset-3' : 'outline-transparent',
-                  // The always-on outline would otherwise swallow the browser's
-                  // default focus ring, so keyboard focus gets its own.
-                  'focus-visible:ring-3 focus-visible:ring-accent/50'
+                  'flex flex-1 items-center justify-center gap-[0.3125rem] px-2.5 py-1.5 min-h-[2.375rem]',
+                  'dark:mx-2.5 dark:my-1.5 dark:min-h-[1.875rem] dark:rounded-sm-token dark:bg-pure-white dark:px-2',
+                  '[&>svg]:max-h-6 [&>svg]:w-auto [&>svg]:max-w-full'
                 )}
               >
-                {(isCurrent || isDefault) && (
-                  <div
-                    className={cn(
-                      'flex h-5 w-full shrink-0 items-center justify-center',
-                      // A small glyph on the accent fill needs `--on-accent-sm`
-                      // (near-black); white on it is 2.9:1 and fails.
-                      isCurrent ? 'bg-surface-3 text-ink' : 'bg-accent text-on-accent-sm'
-                    )}
-                  >
-                    <span className="text-caption font-extrabold tracking-wide">
-                      {isCurrent ? t('currentLabel') : t('default')}
-                    </span>
-                  </div>
-                )}
-                <div className="flex flex-1 items-center justify-center py-2">
-                  <Logo className={clsx('[&_path]:fill-ink', paddingXClass)} />
-                </div>
-              </button>
-              {/* 11px is the type floor; this row was 10px. */}
-              <div className="mt-stack-tight px-1 text-center text-caption leading-[1.4] text-ink-2">
+                <Logo className={paddingXClass} />
+              </div>
+              {/* `.gmeta` — 11px is the type floor; this row was 10px. */}
+              <div className="px-1 pb-[0.4375rem] text-caption leading-[1.4] text-ink-2">
                 <p>
                   {t('guardianOperatedBy')} <span className="font-bold">{option.operatedBy}</span>
                 </p>
-                <div className="w-18.75 mx-auto bg-rule h-px" />
-                <p className="mt-0.5">
+                <p>
                   {t('guardianLocation')} <span className="font-bold">{option.location}</span>
                 </p>
               </div>
-            </div>
+            </button>
           );
         })}
       </div>

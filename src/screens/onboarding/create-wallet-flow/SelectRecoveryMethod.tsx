@@ -56,8 +56,8 @@ export const SelectRecoveryMethodScreen = ({
   return (
     <div className="flex-1 flex flex-col items-center bg-transparent pt-6 h-full px-6 gap-stack" {...props}>
       <div className="flex flex-col gap-stack-tight w-full">
-        <OnboardingHeading>{t('chooseRecoveryMethod')}</OnboardingHeading>
-        <OnboardingSubcopy>{t('chooseRecoveryMethodDescription')}</OnboardingSubcopy>
+        <OnboardingHeading className="text-left">{t('chooseRecoveryMethod')}</OnboardingHeading>
+        <OnboardingSubcopy className="text-left">{t('chooseRecoveryMethodDescription')}</OnboardingSubcopy>
       </div>
       <div className="flex flex-col w-full">
         {options.map(option => (
