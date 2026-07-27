@@ -1141,7 +1141,7 @@ ul.tick li:before{content:"→";position:absolute;left:0.125rem;color:var(--acce
 /* onboarding form bits */
 .opw{width:100%;background:var(--surface-2);border:0;border-radius:var(--radius-md);padding:0.8125rem 0.875rem;
   font-family:var(--ui);font-size:1rem;color:var(--ink);margin-top:0.5625rem}
-.opw.ok{box-shadow:0 0 0 1.5px var(--pos)}
+.opw.ok{box-shadow:0 0 0 1.5px var(--rule-strong)}
 .opwmeta{display:flex;align-items:center;justify-content:space-between;gap:0.75rem;margin-top:0.5rem;font-size:var(--t-caption);color:var(--ink-2)}
 .opwbar{display:flex;gap:0.25rem;margin-top:0.5rem}
 .opwbar i{height:0.25rem;flex:1;border-radius:var(--radius-full);background:var(--surface-3);display:block}
@@ -1558,8 +1558,8 @@ ul.tick li:before{content:"→";position:absolute;left:0.125rem;color:var(--acce
 .liverow .lv .la{font-family:var(--mono);font-size:var(--t-label);color:var(--ink);
   overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .liverow .lv .ls{font-size:var(--t-caption);color:var(--ink-3);margin-top:0.125rem}
-.liverow[data-state="ok"] .lic{background:var(--pos-wash)}
-.liverow[data-state="ok"] .ls{color:var(--pos)}
+
+
 /* Counting up as characters arrive is the honest progress signal for a fixed-
    length string -- it tells you how far you are, which a spinner cannot. */
 .liverow .lcount{font-family:var(--num);font-feature-settings:var(--num-feat);
@@ -1572,20 +1572,18 @@ ul.tick li:before{content:"→";position:absolute;left:0.125rem;color:var(--acce
 .mrow.tap{cursor:pointer}
 .mrow .go,.liverow .go{margin-left:auto;flex:none;color:var(--ink-3);font-size:var(--t-body)}
 .liverow[data-state="ok"]{cursor:pointer}
-/* Detected address family. Format identifies the FAMILY and never the chain --
-   an 0x string is simultaneously valid on every EVM network, which is exactly
-   why detection has to end in a question rather than an answer. Three outcomes:
-   ok (Miden, send directly), ask (a family we can reach, network still unknown),
-   blocked (a family we recognise but cannot send to). */
+/* Detected address family. All three are CORRECT addresses -- a Solana address is
+   not a worse address than a Miden one, it is a different network. So the family
+   is labelled neutrally and semantic colour is not used to grade it; green/amber/red
+   here would read as valid/warning/invalid, which is a claim about the string and
+   the wrong one. What actually differs is what we can DO with each, and that is
+   carried by the words plus the presence or absence of a chevron -- both non-colour,
+   so it also satisfies SC 1.4.1 without leaning on hue at all.
+   Format identifies the FAMILY and never the chain: an 0x string is simultaneously
+   valid on every EVM network, which is why that row ends in a question. */
 .fam{font-size:var(--t-caption);font-weight:800;padding:0.125rem 0.4375rem;
-  border-radius:var(--radius-sm);flex:none;letter-spacing:.02em}
-.liverow[data-state="ask"] .lic{background:var(--accent-wash)}
-.liverow[data-state="ask"] .ls{color:var(--accent-ink)}
-.liverow[data-state="ask"] .fam{background:var(--accent-wash);color:var(--accent-ink)}
-.liverow[data-state="ok"] .fam{background:var(--pos-wash);color:var(--pos)}
-.liverow[data-state="blocked"] .lic{background:var(--neg-wash,color-mix(in srgb,var(--neg) 12%,transparent))}
-.liverow[data-state="blocked"] .ls{color:var(--neg)}
-.liverow[data-state="blocked"] .fam{background:color-mix(in srgb,var(--neg) 12%,transparent);color:var(--neg)}
+  border-radius:var(--radius-sm);flex:none;letter-spacing:.02em;
+  background:var(--surface-2);color:var(--ink-2)}
 .liverow[data-state="blocked"]{cursor:not-allowed}
 .tsteps{display:flex;flex-direction:column;gap:0.125rem;margin-top:1.125rem}
 .tstep{display:flex;align-items:center;gap:0.625rem;padding:0.5625rem 0.125rem;font-size:var(--t-label)}
@@ -3509,6 +3507,75 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
           <div class="mnav"><button class="t on"><span class="svgic" style="--ic:url(assets/icons/home-new.svg)" aria-hidden="true"></span><span>Home</span></button><button class="t"><span class="svgic" style="--ic:url(assets/icons/explore.svg)" aria-hidden="true"></span><span>Explore</span></button><button class="t"><span class="svgic" style="--ic:url(assets/icons/activity.svg)" aria-hidden="true"></span><span>Activity</span></button></div>
         </div></div></div>
         <div class="scrnote"><b>Redrawn — the previous version broke three form rules at once.</b> The address input was a borderless 32px mono placeholder with <em>no label</em>, so it read as a heading rather than a field: placeholder-as-only-label and an input that looks like plain text are both named anti-patterns. Worse, the placeholder was <b>larger than the page heading</b> (32px against 26px), so the emptiest element on the screen was the loudest thing on it. And 311pt — <b>37% of the screen</b> — was dead, while offering exactly one way to enter a 49-character bech32 string. Now: a labelled field, <b>Paste and Scan beside it</b> because pasting is how addresses are actually entered, and the recovered space holds recents. Named contacts above raw addresses — recognition over recall. Dead space is down to 12%. <b>Proposed, not shipped:</b> there is no recents feature in the code, and <code>qr-scan.svg</code> sits in <code>assets/icons/</code> referenced by nothing. Shipped <code>SelectRecipient.tsx</code> renders the borderless textarea, the Address Book pill, and nothing else.</div></div>
+      <div><div class="scrcap"><i></i>Send &middot; recipient, new address</div>
+        <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
+          <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>
+          <div class="mpad" style="flex:1;display:flex;flex-direction:column">
+            <div class="mseg" data-seg>
+              <div class="seg"><span class="svgic" style="--ic:url(assets/icons/wallet.svg);" aria-hidden="true"></span><span class="lbl">Overview</span></div>
+              <div class="seg on" data-act="send"><span class="svgic" style="--ic:url(assets/icons/send-new.svg);" aria-hidden="true"></span><span class="lbl">Send</span></div>
+              <div class="seg" data-act="receive"><span class="svgic" style="--ic:url(assets/icons/receive-new.svg);" aria-hidden="true"></span><span class="lbl">Receive</span></div>
+              <div class="seg" data-act="swap"><span class="svgic" style="--ic:url(assets/icons/convert.svg);" aria-hidden="true"></span><span class="lbl">Swap</span></div>
+            </div>
+            <div class="pgtitle">Choose recipient</div>
+            <div class="fld" style="width:auto"><label>To</label>
+              <div class="fieldrow">
+                <div class="searchf" style="width:auto;flex:1;min-width:0;background:var(--surface);box-shadow:0 0 0 1.5px var(--rule-strong);color:var(--ink);font-family:var(--mono);font-size:var(--t-label)">mtst1zz9&hellip;41mn</div>
+                <button class="tokchip" style="align-self:auto">Paste</button>
+                <button class="scanbtn" aria-label="Scan a QR code"><span class="svgic" style="--ic:url(assets/icons/qr-scan.svg)" aria-hidden="true"></span></button>
+              </div>
+            </div>
+            <div class="liverow" data-state="ok"><span class="lic"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M1.6 6.3l2.7 2.7L10.4 3" fill="none" stroke="var(--ink-2)" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="lv"><span class="la">mtst1zz9&hellip;41mn</span><span class="ls">Not in your contacts</span></span><span class="fam">Miden</span><span class="go" aria-hidden="true">&rsaquo;</span></div>
+          </div>
+          <div class="mnav"><button class="t on"><span class="svgic" style="--ic:url(assets/icons/home-new.svg)" aria-hidden="true"></span><span>Home</span></button><button class="t"><span class="svgic" style="--ic:url(assets/icons/explore.svg)" aria-hidden="true"></span><span>Explore</span></button><button class="t"><span class="svgic" style="--ic:url(assets/icons/activity.svg)" aria-hidden="true"></span><span>Activity</span></button></div>
+        </div></div></div>
+        <div class="scrnote"><b>&ldquo;No results&rdquo; is the wrong frame here.</b> In a wallet an unmatched address is the <em>normal</em> case &mdash; the first time you pay anyone nothing matches, and the address is perfectly valid. Rendering that as a dead end would tell the user something is wrong when nothing is. So the row states the fact, confirms the address is valid, and <b>Confirm stays enabled</b> &mdash; the green field ring is the same check the error state fails. It also answers the question this state actually raises, <em>should I save this?</em>, by saying saving happens afterwards, so a send is never blocked on a housekeeping decision. <b>Proposed:</b> there is no contact list on this screen today and no save-after-send flow.</div></div>
+      <div><div class="scrcap"><i></i>Send &middot; recipient, EVM detected</div>
+        <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
+          <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>
+          <div class="mpad" style="flex:1;display:flex;flex-direction:column">
+            <div class="mseg" data-seg>
+              <div class="seg"><span class="svgic" style="--ic:url(assets/icons/wallet.svg);" aria-hidden="true"></span><span class="lbl">Overview</span></div>
+              <div class="seg on" data-act="send"><span class="svgic" style="--ic:url(assets/icons/send-new.svg);" aria-hidden="true"></span><span class="lbl">Send</span></div>
+              <div class="seg" data-act="receive"><span class="svgic" style="--ic:url(assets/icons/receive-new.svg);" aria-hidden="true"></span><span class="lbl">Receive</span></div>
+              <div class="seg" data-act="swap"><span class="svgic" style="--ic:url(assets/icons/convert.svg);" aria-hidden="true"></span><span class="lbl">Swap</span></div>
+            </div>
+            <div class="pgtitle">Choose recipient</div>
+            <div class="fld" style="width:auto"><label>To</label>
+              <div class="fieldrow">
+                <div class="searchf" style="width:auto;flex:1;min-width:0;background:var(--surface);box-shadow:0 0 0 1.5px var(--rule-strong);color:var(--ink);font-family:var(--mono);font-size:var(--t-label)">0x71C7656EC7ab88b0&hellip;8976F</div>
+                <button class="tokchip" style="align-self:auto">Paste</button>
+                <button class="scanbtn" aria-label="Scan a QR code"><span class="svgic" style="--ic:url(assets/icons/qr-scan.svg)" aria-hidden="true"></span></button>
+              </div>
+            </div>
+            <div class="liverow" data-state="ask"><span class="lic"><span class="svgic" style="--ic:url(assets/icons/globe.svg);width:1rem;height:1rem;background-color:var(--ink-2)" aria-hidden="true"></span></span><span class="lv"><span class="la">0x71C7656EC7ab88b0&hellip;8976F</span><span class="ls">Ethereum-family address &mdash; choose a network</span></span><span class="fam">EVM</span><span class="go" aria-hidden="true">&rsaquo;</span></div>
+          </div>
+          <div class="mnav"><button class="t on"><span class="svgic" style="--ic:url(assets/icons/home-new.svg)" aria-hidden="true"></span><span>Home</span></button><button class="t"><span class="svgic" style="--ic:url(assets/icons/explore.svg)" aria-hidden="true"></span><span>Explore</span></button><button class="t"><span class="svgic" style="--ic:url(assets/icons/activity.svg)" aria-hidden="true"></span><span>Activity</span></button></div>
+        </div></div></div>
+        <div class="scrnote"><b>Detection resolves to a FAMILY, never to a chain.</b> An <code>0x</code> string is simultaneously valid on Ethereum, Base, Arbitrum, Optimism and every other EVM network, so the format carries no signal about where the money should go. That is precisely why the row ends in a question and a chevron rather than a tick: tapping opens the network sheet, which is the one thing the address genuinely cannot tell us. Guessing here is how funds are lost irrecoverably &mdash; an exchange deposit address on the wrong chain does not come back. <b>Proposed:</b> today this string is rejected outright with <code>invalidMidenAccountId</code>.</div></div>
+      <div><div class="scrcap"><i></i>Send &middot; recipient, unsupported</div>
+        <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
+          <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>
+          <div class="mpad" style="flex:1;display:flex;flex-direction:column">
+            <div class="mseg" data-seg>
+              <div class="seg"><span class="svgic" style="--ic:url(assets/icons/wallet.svg);" aria-hidden="true"></span><span class="lbl">Overview</span></div>
+              <div class="seg on" data-act="send"><span class="svgic" style="--ic:url(assets/icons/send-new.svg);" aria-hidden="true"></span><span class="lbl">Send</span></div>
+              <div class="seg" data-act="receive"><span class="svgic" style="--ic:url(assets/icons/receive-new.svg);" aria-hidden="true"></span><span class="lbl">Receive</span></div>
+              <div class="seg" data-act="swap"><span class="svgic" style="--ic:url(assets/icons/convert.svg);" aria-hidden="true"></span><span class="lbl">Swap</span></div>
+            </div>
+            <div class="pgtitle">Choose recipient</div>
+            <div class="fld" style="width:auto"><label>To</label>
+              <div class="fieldrow">
+                <div class="searchf" style="width:auto;flex:1;min-width:0;background:var(--surface);box-shadow:0 0 0 1.5px var(--rule-strong);color:var(--ink);font-family:var(--mono);font-size:var(--t-label)">7xKXtg2CW87d97TXJSDpbD5jBkheTqA&hellip;</div>
+                <button class="tokchip" style="align-self:auto">Paste</button>
+                <button class="scanbtn" aria-label="Scan a QR code"><span class="svgic" style="--ic:url(assets/icons/qr-scan.svg)" aria-hidden="true"></span></button>
+              </div>
+            </div>
+            <div class="liverow" data-state="blocked"><span class="lic"><span class="svgic" style="--ic:url(assets/icons/lock.svg);width:1rem;height:1rem;background-color:var(--ink-2)" aria-hidden="true"></span></span><span class="lv"><span class="la">7xKXtg2CW87d97TXJSDpbD5jBkheTqA&hellip;</span><span class="ls">Solana address &mdash; Miden cannot send here</span></span><span class="fam">Solana</span></div>
+          </div>
+          <div class="mnav"><button class="t on"><span class="svgic" style="--ic:url(assets/icons/home-new.svg)" aria-hidden="true"></span><span>Home</span></button><button class="t"><span class="svgic" style="--ic:url(assets/icons/explore.svg)" aria-hidden="true"></span><span>Explore</span></button><button class="t"><span class="svgic" style="--ic:url(assets/icons/activity.svg)" aria-hidden="true"></span><span>Activity</span></button></div>
+        </div></div></div>
+        <div class="scrnote"><b>&ldquo;Recognised but unsupported&rdquo; is a different message from &ldquo;invalid&rdquo;, and the difference matters.</b> This is a perfectly well-formed Solana address; nothing is wrong with what the user typed. Today the app answers <code>invalidMidenAccountId</code> = &ldquo;Invalid Miden account ID&rdquo;, which tells them they made a mistake they did not make, and sends them off to re-check a string that is already correct. Naming the family turns a dead end into an explanation. The row is deliberately not tappable and carries no chevron &mdash; there is nowhere for it to go. <b>Proposed:</b> no non-Miden detection exists in the code.</div></div>
       <div><div class="scrcap"><i></i>Send · recipient, typing</div>
         <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
           <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>
@@ -3527,82 +3594,13 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
                 <button class="scanbtn" aria-label="Scan a QR code"><span class="svgic" style="--ic:url(assets/icons/qr-scan.svg)" aria-hidden="true"></span></button>
               </div>
             </div>
-            <div class="liverow" data-state="detecting"><span class="lic"><svg viewBox="0 0 12 12" aria-hidden="true"><circle cx="2" cy="6" r="1.2" fill="var(--ink-3)"/><circle cx="6" cy="6" r="1.2" fill="var(--ink-3)"/><circle cx="10" cy="6" r="1.2" fill="var(--ink-3)"/></svg></span><span class="lv"><span class="la">mtst1ap8qz4v</span><span class="ls">Miden address &mdash; keep typing</span></span><span class="lcount">12 / 49</span></div>
+            <div class="liverow" data-state="detecting"><span class="lic"><svg viewBox="0 0 12 12" aria-hidden="true"><circle cx="2" cy="6" r="1.2" fill="var(--ink-3)"/><circle cx="6" cy="6" r="1.2" fill="var(--ink-3)"/><circle cx="10" cy="6" r="1.2" fill="var(--ink-3)"/></svg></span><span class="lv"><span class="la">mtst1ap8qz4v</span><span class="ls">Keep typing</span></span><span class="fam">Miden</span><span class="lcount">12 / 49</span></div>
             <div class="shlab" style="margin-top:1.125rem">Matches</div>
             <div class="mrow tap"><div class="ic" style="background:var(--tx-sent)"></div><div><div class="nm">Wiktor</div><div class="ad addr"><mark>mtst1ap8qz4v</mark>&hellip;r4fp</div></div><span class="go" aria-hidden="true">&rsaquo;</span></div>
           </div>
           <div class="mnav"><button class="t on"><span class="svgic" style="--ic:url(assets/icons/home-new.svg)" aria-hidden="true"></span><span>Home</span></button><button class="t"><span class="svgic" style="--ic:url(assets/icons/explore.svg)" aria-hidden="true"></span><span>Explore</span></button><button class="t"><span class="svgic" style="--ic:url(assets/icons/activity.svg)" aria-hidden="true"></span><span>Activity</span></button></div>
         </div></div></div>
-        <div class="scrnote">Focused and mid-entry. The field takes <code>--focus-ring</code> and switches to mono once there is an address in it, because a bech32 string is read character by character. <b>Recents filter as you type</b> &mdash; the one match survives &mdash; which is the affordance that makes typing tolerable at all. Confirm stays inert until <code>isValidMidenAddress</code> passes; that gate is real (<code>SendManager.tsx:365&ndash;379</code>), the filtering is pro
-      <div><div class="scrcap"><i></i>Send &middot; recipient, new address</div>
-        <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
-          <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>
-          <div class="mpad" style="flex:1;display:flex;flex-direction:column">
-            <div class="mseg" data-seg>
-              <div class="seg"><span class="svgic" style="--ic:url(assets/icons/wallet.svg);" aria-hidden="true"></span><span class="lbl">Overview</span></div>
-              <div class="seg on" data-act="send"><span class="svgic" style="--ic:url(assets/icons/send-new.svg);" aria-hidden="true"></span><span class="lbl">Send</span></div>
-              <div class="seg" data-act="receive"><span class="svgic" style="--ic:url(assets/icons/receive-new.svg);" aria-hidden="true"></span><span class="lbl">Receive</span></div>
-              <div class="seg" data-act="swap"><span class="svgic" style="--ic:url(assets/icons/convert.svg);" aria-hidden="true"></span><span class="lbl">Swap</span></div>
-            </div>
-            <div class="pgtitle">Choose recipient</div>
-            <div class="fld" style="width:auto"><label>To</label>
-              <div class="fieldrow">
-                <div class="searchf" style="width:auto;flex:1;min-width:0;background:var(--surface);box-shadow:0 0 0 1.5px var(--pos);color:var(--ink);font-family:var(--mono);font-size:var(--t-label)">mtst1zz9&hellip;41mn</div>
-                <button class="tokchip" style="align-self:auto">Paste</button>
-                <button class="scanbtn" aria-label="Scan a QR code"><span class="svgic" style="--ic:url(assets/icons/qr-scan.svg)" aria-hidden="true"></span></button>
-              </div>
-            </div>
-            <div class="liverow" data-state="ok"><span class="lic"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M1.6 6.3l2.7 2.7L10.4 3" fill="none" stroke="var(--pos)" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="lv"><span class="la">mtst1zz9&hellip;41mn</span><span class="ls">Miden &middot; not in your contacts</span></span><span class="go" aria-hidden="true">&rsaquo;</span></div>
-          </div>
-          <div class="mnav"><button class="t on"><span class="svgic" style="--ic:url(assets/icons/home-new.svg)" aria-hidden="true"></span><span>Home</span></button><button class="t"><span class="svgic" style="--ic:url(assets/icons/explore.svg)" aria-hidden="true"></span><span>Explore</span></button><button class="t"><span class="svgic" style="--ic:url(assets/icons/activity.svg)" aria-hidden="true"></span><span>Activity</span></button></div>
-        </div></div></div>
-        <div class="scrnote"><b>&ldquo;No results&rdquo; is the wrong frame here.</b> In a wallet an unmatched address is the <em>normal</em> case &mdash; the first time you pay anyone nothing matches, and the address is perfectly valid. Rendering that as a dead end would tell the user something is wrong when nothing is. So the row states the fact, confirms the address is valid, and <b>Confirm stays enabled</b> &mdash; the green field ring is the same check the error state fails. It also answers the question this state actually raises, <em>should I save this?</em>, by saying saving happens afterwards, so a send is never blocked on a housekeeping decision. <b>Proposed:</b> there is no contact list on this screen today and no save-after-send flow.</div></div>
-      <div><div class="scrcap"><i></i>Send &middot; recipient, EVM detected</div>
-        <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
-          <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>
-          <div class="mpad" style="flex:1;display:flex;flex-direction:column">
-            <div class="mseg" data-seg>
-              <div class="seg"><span class="svgic" style="--ic:url(assets/icons/wallet.svg);" aria-hidden="true"></span><span class="lbl">Overview</span></div>
-              <div class="seg on" data-act="send"><span class="svgic" style="--ic:url(assets/icons/send-new.svg);" aria-hidden="true"></span><span class="lbl">Send</span></div>
-              <div class="seg" data-act="receive"><span class="svgic" style="--ic:url(assets/icons/receive-new.svg);" aria-hidden="true"></span><span class="lbl">Receive</span></div>
-              <div class="seg" data-act="swap"><span class="svgic" style="--ic:url(assets/icons/convert.svg);" aria-hidden="true"></span><span class="lbl">Swap</span></div>
-            </div>
-            <div class="pgtitle">Choose recipient</div>
-            <div class="fld" style="width:auto"><label>To</label>
-              <div class="fieldrow">
-                <div class="searchf" style="width:auto;flex:1;min-width:0;background:var(--surface);box-shadow:0 0 0 1.5px var(--accent);color:var(--ink);font-family:var(--mono);font-size:var(--t-label)">0x71C7656EC7ab88b0&hellip;8976F</div>
-                <button class="tokchip" style="align-self:auto">Paste</button>
-                <button class="scanbtn" aria-label="Scan a QR code"><span class="svgic" style="--ic:url(assets/icons/qr-scan.svg)" aria-hidden="true"></span></button>
-              </div>
-            </div>
-            <div class="liverow" data-state="ask"><span class="lic"><span class="svgic" style="--ic:url(assets/icons/globe.svg);width:1rem;height:1rem;background-color:var(--accent-ink)" aria-hidden="true"></span></span><span class="lv"><span class="la">0x71C7656EC7ab88b0&hellip;8976F</span><span class="ls">Ethereum-family address &mdash; choose a network</span></span><span class="fam">EVM</span><span class="go" aria-hidden="true">&rsaquo;</span></div>
-          </div>
-          <div class="mnav"><button class="t on"><span class="svgic" style="--ic:url(assets/icons/home-new.svg)" aria-hidden="true"></span><span>Home</span></button><button class="t"><span class="svgic" style="--ic:url(assets/icons/explore.svg)" aria-hidden="true"></span><span>Explore</span></button><button class="t"><span class="svgic" style="--ic:url(assets/icons/activity.svg)" aria-hidden="true"></span><span>Activity</span></button></div>
-        </div></div></div>
-        <div class="scrnote"><b>Detection resolves to a FAMILY, never to a chain.</b> An <code>0x</code> string is simultaneously valid on Ethereum, Base, Arbitrum, Optimism and every other EVM network, so the format carries no signal about where the money should go. That is precisely why the row ends in a question and a chevron rather than a tick: tapping opens the network sheet, which is the one thing the address genuinely cannot tell us. Guessing here is how funds are lost irrecoverably &mdash; an exchange deposit address on the wrong chain does not come back. <b>Proposed:</b> today this string is rejected outright with <code>invalidMidenAccountId</code>.</div></div>
-      <div><div class="scrcap"><i></i>Send &middot; recipient, unsupported</div>
-        <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
-          <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>
-          <div class="mpad" style="flex:1;display:flex;flex-direction:column">
-            <div class="mseg" data-seg>
-              <div class="seg"><span class="svgic" style="--ic:url(assets/icons/wallet.svg);" aria-hidden="true"></span><span class="lbl">Overview</span></div>
-              <div class="seg on" data-act="send"><span class="svgic" style="--ic:url(assets/icons/send-new.svg);" aria-hidden="true"></span><span class="lbl">Send</span></div>
-              <div class="seg" data-act="receive"><span class="svgic" style="--ic:url(assets/icons/receive-new.svg);" aria-hidden="true"></span><span class="lbl">Receive</span></div>
-              <div class="seg" data-act="swap"><span class="svgic" style="--ic:url(assets/icons/convert.svg);" aria-hidden="true"></span><span class="lbl">Swap</span></div>
-            </div>
-            <div class="pgtitle">Choose recipient</div>
-            <div class="fld" style="width:auto"><label>To</label>
-              <div class="fieldrow">
-                <div class="searchf" style="width:auto;flex:1;min-width:0;background:var(--surface);box-shadow:0 0 0 1.5px var(--neg);color:var(--ink);font-family:var(--mono);font-size:var(--t-label)">7xKXtg2CW87d97TXJSDpbD5jBkheTqA&hellip;</div>
-                <button class="tokchip" style="align-self:auto">Paste</button>
-                <button class="scanbtn" aria-label="Scan a QR code"><span class="svgic" style="--ic:url(assets/icons/qr-scan.svg)" aria-hidden="true"></span></button>
-              </div>
-            </div>
-            <div class="liverow" data-state="blocked"><span class="lic"><span class="svgic" style="--ic:url(assets/icons/lock.svg);width:1rem;height:1rem;background-color:var(--neg)" aria-hidden="true"></span></span><span class="lv"><span class="la">7xKXtg2CW87d97TXJSDpbD5jBkheTqA&hellip;</span><span class="ls">Solana address &mdash; Miden cannot send here</span></span><span class="fam">Solana</span></div>
-          </div>
-          <div class="mnav"><button class="t on"><span class="svgic" style="--ic:url(assets/icons/home-new.svg)" aria-hidden="true"></span><span>Home</span></button><button class="t"><span class="svgic" style="--ic:url(assets/icons/explore.svg)" aria-hidden="true"></span><span>Explore</span></button><button class="t"><span class="svgic" style="--ic:url(assets/icons/activity.svg)" aria-hidden="true"></span><span>Activity</span></button></div>
-        </div></div></div>
-        <div class="scrnote"><b>&ldquo;Recognised but unsupported&rdquo; is a different message from &ldquo;invalid&rdquo;, and the difference matters.</b> This is a perfectly well-formed Solana address; nothing is wrong with what the user typed. Today the app answers <code>invalidMidenAccountId</code> = &ldquo;Invalid Miden account ID&rdquo;, which tells them they made a mistake they did not make, and sends them off to re-check a string that is already correct. Naming the family turns a dead end into an explanation. The row is deliberately not tappable and carries no chevron &mdash; there is nowhere for it to go. <b>Proposed:</b> no non-Miden detection exists in the code.</div></div>posed.</div></div>
+        <div class="scrnote">Focused and mid-entry. The field takes <code>--focus-ring</code> and switches to mono once there is an address in it, because a bech32 string is read character by character. <b>Recents filter as you type</b> &mdash; the one match survives &mdash; which is the affordance that makes typing tolerable at all. Confirm stays inert until <code>isValidMidenAddress</code> passes; that gate is real (<code>SendManager.tsx:365&ndash;379</code>), the filtering is pro</div></div>
       <div><div class="scrcap"><i></i>Send · recipient, invalid</div>
         <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
           <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>
