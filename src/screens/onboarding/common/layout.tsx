@@ -32,11 +32,26 @@ export const OnboardingScreen: FC<PropsWithChildren & { className?: string; test
 );
 
 /**
- * The centred content block between the header and the action zone.
- * `flex-1` lets it take the slack so the action zone stays pinned.
+ * Zone 2 of the design system's three-zone screen model (chrome / content /
+ * action zone). It absorbs ALL the slack — that is the actual rule, and the one
+ * most often broken: "slack belongs to the content zone, never below it.
+ * Top-anchoring the content and letting the remainder pool above the buttons is
+ * the single most common way a step screen reads as unfinished."
+ *
+ * `pb-[7%]` is optical centring, not padding. `justify-center` centres
+ * geometrically, and the eye reads geometric centre as slightly low, so the
+ * block is lifted ~7% — the same reason a book's text block sits above centre.
+ * Without it the screen carries one obviously empty band under the content,
+ * which is exactly the symptom the system uses to detect this bug, and exactly
+ * what the Protection-method screen was caught on.
+ *
+ * The falsifiable form of the rule: in a step screen no single vertical gap may
+ * exceed ~22% of screen height (~190pt at 874). A gap larger than that means
+ * either the content is top-anchored when it should be centred, or the hero is
+ * undersized (spec: 30–38% of screen width, ~120–150px at 402pt).
  */
 export const OnboardingBody: FC<PropsWithChildren & { className?: string }> = ({ children, className }) => (
-  <div className={cn('flex-1 flex flex-col items-center justify-center w-full', 'gap-stack', className)}>
+  <div className={cn('flex-1 flex flex-col items-center justify-center w-full', 'gap-stack pb-[7%]', className)}>
     {children}
   </div>
 );
