@@ -3392,30 +3392,18 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
         <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
           <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>
           <div class="mpad" style="flex:1;display:flex;flex-direction:column">
-            <div class="mseg" data-seg>
-              <div class="seg"><span class="svgic" style="--ic:url(assets/icons/wallet.svg);" aria-hidden="true"></span><span class="lbl">Overview</span></div>
-              <div class="seg on" data-act="send"><span class="svgic" style="--ic:url(assets/icons/send-new.svg);" aria-hidden="true"></span><span class="lbl">Send</span></div>
-              <div class="seg" data-act="receive"><span class="svgic" style="--ic:url(assets/icons/receive-new.svg);" aria-hidden="true"></span><span class="lbl">Receive</span></div>
-              <div class="seg" data-act="swap"><span class="svgic" style="--ic:url(assets/icons/convert.svg);" aria-hidden="true"></span><span class="lbl">Swap</span></div>
-            </div>
+            <div class="sh2"><span class="bk2">&lsaquo;</span><span class="t2">Send</span></div>
             <div class="bigamt">100.00</div>
             <div class="amtmeta">Available 200 USDC &middot; &asymp; $200.00 USD</div>
             <button class="tokchip"><img src="assets/icons/usdc.svg" alt="">USDC<span class="cv">&rsaquo;</span></button>
             <div class="zone"><button class="btn btn-primary">Confirm</button></div>
                   </div>
-        
-          <div class="mnav"><button class="t on"><span class="svgic" style="--ic:url(assets/icons/home-new.svg)" aria-hidden="true"></span><span>Home</span></button><button class="t"><span class="svgic" style="--ic:url(assets/icons/explore.svg)" aria-hidden="true"></span><span>Explore</span></button><button class="t"><span class="svgic" style="--ic:url(assets/icons/activity.svg)" aria-hidden="true"></span><span>Activity</span></button></div>
         </div></div></div></div>
       <div><div class="scrcap"><i></i>Send · token picker <span class="tag merge">sheet</span></div>
         <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
           <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>
           <div class="mpad" style="flex:1;display:flex;flex-direction:column">
-            <div class="mseg" data-seg>
-              <div class="seg"><span class="svgic" style="--ic:url(assets/icons/wallet.svg);" aria-hidden="true"></span><span class="lbl">Overview</span></div>
-              <div class="seg on" data-act="send"><span class="svgic" style="--ic:url(assets/icons/send-new.svg);" aria-hidden="true"></span><span class="lbl">Send</span></div>
-              <div class="seg" data-act="receive"><span class="svgic" style="--ic:url(assets/icons/receive-new.svg);" aria-hidden="true"></span><span class="lbl">Receive</span></div>
-              <div class="seg" data-act="swap"><span class="svgic" style="--ic:url(assets/icons/convert.svg);" aria-hidden="true"></span><span class="lbl">Swap</span></div>
-            </div>
+            <div class="sh2"><span class="bk2">&lsaquo;</span><span class="t2">Send</span></div>
             <div class="bigamt" style="opacity:.35">100.00</div>
           </div>
           <div class="shscrim"></div>
@@ -3426,8 +3414,6 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
             <div class="mrow"><div class="ic"><img src="assets/icons/usdc.svg" alt=""></div><div><div class="nm">USDC</div><div class="ad">200 USDC</div></div><div class="rt"><div class="f">$200.00</div><div class="b">+0.01%</div></div></div>
             <div class="zone"><button class="btn btn-secondary">Cancel</button></div>
           </div>
-        
-          <div class="mnav"><button class="t on"><span class="svgic" style="--ic:url(assets/icons/home-new.svg)" aria-hidden="true"></span><span>Home</span></button><button class="t"><span class="svgic" style="--ic:url(assets/icons/explore.svg)" aria-hidden="true"></span><span>Explore</span></button><button class="t"><span class="svgic" style="--ic:url(assets/icons/activity.svg)" aria-hidden="true"></span><span>Activity</span></button></div>
         </div></div></div>
         <div class="scrnote">The shipped picker is a vaul sheet (<code>SelectTokenDrawer</code>), reusing the same overlay primitive as every other picker. <b>Two gaps in the code this cannot show:</b> <code>SelectToken.tsx:63-79</code> maps the filtered list with <em>no empty branch and no loading branch</em>, so a search matching nothing &mdash; or balances still loading &mdash; renders an empty box. The contacts drawer beside it <em>does</em> have an empty state, which makes the omission look accidental.</div></div>
       <div><div class="scrcap"><i></i>Send · review <span class="tag retire">From row added</span></div>
