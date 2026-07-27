@@ -430,38 +430,13 @@ table.map td code{font-size:var(--t-label)}
    vertical space rather than adding a band. The chart BLEEDS to the card's right edge
    (-16px, the card's own padding) and stretches the full block height -- boxed and inset it
    read as a widget dropped on the card rather than the card's own data. */
-.mbc .balmain{display:flex;align-items:stretch;justify-content:space-between;gap:0.875rem}
-/* flex-shrink:0 on the number, and the chart disappears entirely below the width where both
-   fit. Letting both shrink proportionally is what a bare flex row does by default, and it
-   produced the worst of the three outcomes: at 320 the balance got 144px for 191px of
-   unbreakable digits, so "$12,480.50" was clipped mid-number by the card's overflow:hidden --
-   a wrong number rendered as a plausible one. Priority here is not negotiable: the balance is
-   why the card exists, the sparkline is a garnish on it. So the number holds, the chart yields,
-   so what gets cut at 320 is the right edge of a decorative curve rather than two digits of a
-   number. Residual: below ~330 the row still wants ~16pt more than it has and .mbc's
-   overflow:hidden takes it off the chart. That is under every width the product ships to
-   (375 smallest device, 360 extension popup) and is left visible to the sweep rather than
-   papered over. A container query would hide .perf outright, but these are zoom-scaled mocks —
-   length-based container queries do not resolve against the pt geometry being specified, so
-   the rule would read as spec and behave as something else. */
-.mbc .balmain .bl{min-width:0;flex:0 0 auto;display:flex;flex-direction:column;justify-content:flex-end}
-/* flex:0 1 124px, NOT flex:none. At 124px rigid, the balance and the sparkline stopped fitting
-   at 320 and .balmain overflowed by 16pt — on the one screen every user opens first. A
-   sparkline has no minimum legible width the way a number does: it is a shape, it reads at 90
-   as well as at 124. So the number holds its size and the chart yields. preserveAspectRatio is
-   already "none", so the path restretches rather than clipping. */
-.mbc .perf{width:124px;flex:0 1 124px;min-width:0;display:block;align-self:stretch;margin-right:-1rem;
-  min-height:52px;overflow:visible}
-.mbc .perf .ln{fill:none;stroke:var(--pc,var(--st-up));stroke-width:2;
-  stroke-linecap:round;stroke-linejoin:round;vector-effect:non-scaling-stroke}
-/* Vertical fade, not a flat 16% wash: a hard-edged block of colour under the line reads as a
-   filled shape, where a fade reads as depth under a trend. */
-/* Fallback is mandatory. --pc is set by data-dir; with the attribute missing, fill:var(--pc)
-   is invalid and SVG falls back to its default BLACK -- which is exactly how this shipped
-   as a solid black block. Same for the line. */
-.mbc .perf .ar{fill:var(--pc,var(--st-up));stroke:none;opacity:.18}
-.mbc .perf[data-dir="up"]  {--pc:var(--st-up)}
-.mbc .perf[data-dir="down"]{--pc:var(--st-down)}
+/* The card no longer carries a sparkline. It was removed for the same reason the per-asset
+   sparklines were: a 124px trace of an unlabelled series, on a balance whose 24h delta is
+   already stated in words beside it, is decoration priced as information. Removing it also
+   retires the whole 320pt fight it caused -- the number and the chart competed for one row,
+   and the number was losing (measured 144pt of space for 191pt of unbreakable digits, so
+   "$12,480.50" clipped mid-number). .balmain went with it: a flex row that sat the number
+   beside the chart has nothing left to sit beside. */
 .mbc .delta[data-dir="down"]{--st-glyph:var(--st-down)}
 .mbc .delta[data-dir="down"] .tri{transform:rotate(180deg)}
 /* Solid hairline, not dashed: the dashed rule read as a receipt tear and is the one
@@ -844,8 +819,9 @@ table.map td code{font-size:var(--t-label)}
 .mbc [data-pattern]::after{content:'';position:absolute;inset:0;pointer-events:none;z-index:0;
   background-image:var(--pat-img);background-size:var(--pat-size,auto);
   background-position:var(--pat-pos,0 0);
-  /* Mask moved from top-right to bottom-left:the performance chart now lives top-right, and
-     information beats decoration when they want the same space. */
+  /* Mask anchored bottom-left. It was placed to keep the top-right clear for the sparkline;
+     the sparkline is gone, but the anchor stays -- top-right is where the balance and its
+     delta sit, and a pattern is decoration wherever information already is. */
   -webkit-mask-image:radial-gradient(circle at 0% 100%,#000 0%,rgba(0,0,0,.5) 40%,transparent 74%);
   mask-image:radial-gradient(circle at 0% 100%,#000 0%,rgba(0,0,0,.5) 40%,transparent 74%)}
 .mbc [data-pattern] > *{position:relative;z-index:1}
@@ -3621,8 +3597,7 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
           <div class="mpad" style="flex:1;display:flex;flex-direction:column">
             <h2 class="obh" style="text-align:left;margin:0;font-size:var(--t-heading)">Forgot Password?</h2>
             <div class="notice" style="margin-top:0.25rem"><span>&#9888;</span><span>Do not sign out unless you know your 12-word Seed phrase or have an encrypted backup file.</span></div>
-            <div class="shlab" style="margin:0.875rem 0 0">Confirm all four to continue</div>
-            <div class="acklist" style="margin-top:0.5rem"><div class="shlab">Confirm all four to continue</div>
+                        <div class="acklist" style="margin-top:0.5rem"><div class="shlab">Confirm all four to continue</div>
             <label class="ackl on"><span class="box"></span><span class="tx"><span class="t">This wallet is erased from this browser</span></span></label>
             <label class="ackl on"><span class="box"></span><span class="tx"><span class="t">Accounts, contacts and history go with it</span></span></label>
             <label class="ackl"><span class="box"></span><span class="tx"><span class="t">My Guardian cannot bring it back</span></span></label>
@@ -3701,14 +3676,9 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
             <div class="mbc hero" data-card="slate">
               <div class="top" data-surface="graphite" data-pattern="">
                 <div class="balrow"><div class="tl">Total Balance</div></div>
-                <div class="balmain"><div class="bl">
-                  <div class="amt">$12,480.50 <small>USD</small></div>
-                  <div class="delta"><svg class="tri" viewBox="0 0 8 7" aria-hidden="true"><path d="M4 0 8 7 0 7Z"/></svg>+$40.00 (0.32%)<span class="per">today</span></div>
-                </div>
-                <svg class="perf" data-dir="up" viewBox="0 0 124 52" preserveAspectRatio="none" aria-label="Balance today, up 0.32 percent">
-                  <path class="ar" d="M0,40 15,35 31,38 46,26 62,31 77,17 93,22 108,9 124,13 124,52 0,52Z"/>
-                  <polyline class="ln" points="0,40 15,35 31,38 46,26 62,31 77,17 93,22 108,9 124,13"/>
-                </svg></div></div>
+                <div class="amt">$12,480.50 <small>USD</small></div>
+                <div class="delta"><svg class="tri" viewBox="0 0 8 7" aria-hidden="true"><path d="M4 0 8 7 0 7Z"/></svg>+$40.00 (0.32%)<span class="per">today</span></div>
+              </div>
               <div class="bot" data-surface="graphite-deep"><span class="acc">mtst1ap8…r4fp</span><button class="acopy2" aria-label="Copy address"><span class="svgic" style="--ic:url(assets/icons/copy.svg)" aria-hidden="true"></span></button></div>
             </div>
             <div><div class="mcar"><div class="mprompt"><div class="ptx"><div class="pt">Verify your recovery phrase</div><div class="pb">Confirm you saved your recovery phrase so you can restore this wallet later.</div></div><button class="pdis" aria-label="Dismiss">&#10005;</button></div><div class="mprompt"><div class="ptx"><div class="pt">Activate device key</div><div class="pb">Generate a device key for this recovered account. Required before sending.</div></div><button class="pdis" aria-label="Dismiss">&#10005;</button></div><div class="mprompt"><div class="ptx"><div class="pt">Guardian changed</div><div class="pb">Your guardian was switched and we couldn&rsquo;t identify the new operator. Enter its URL to reconnect.</div></div><button class="pdis" aria-label="Dismiss">&#10005;</button></div></div><div class="mpdots"><i class="on"></i><i></i><i></i></div></div>
@@ -3808,14 +3778,8 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
             <div class="mbc hero" data-card="slate">
               <div class="top" data-surface="graphite" data-pattern="">
                 <div class="balrow"><div class="tl">Total Balance</div></div>
-                <div class="balmain"><div class="bl">
-                  <div class="amt">$12,480.50 <small>USD</small></div>
-                  <div class="delta"><svg class="tri" viewBox="0 0 8 7" aria-hidden="true"><path d="M4 0 8 7 0 7Z"/></svg>+$40.00 (0.32%)<span class="per">today</span></div>
-                </div>
-                <svg class="perf" data-dir="up" viewBox="0 0 124 52" preserveAspectRatio="none" aria-label="Balance today, up 0.32 percent">
-                  <path class="ar" d="M0,40 15,35 31,38 46,26 62,31 77,17 93,22 108,9 124,13 124,52 0,52Z"/>
-                  <polyline class="ln" points="0,40 15,35 31,38 46,26 62,31 77,17 93,22 108,9 124,13"/>
-                </svg></div>
+                <div class="amt">$12,480.50 <small>USD</small></div>
+                <div class="delta"><svg class="tri" viewBox="0 0 8 7" aria-hidden="true"><path d="M4 0 8 7 0 7Z"/></svg>+$40.00 (0.32%)<span class="per">today</span></div>
                 <div class="bnote">1 asset has no price and is not counted</div>
               </div>
               <div class="bot" data-surface="graphite-deep"><span class="acc">mtst1ap8&hellip;r4fp</span><button class="acopy2" aria-label="Copy address"><span class="svgic" style="--ic:url(assets/icons/copy.svg)" aria-hidden="true"></span></button></div>
@@ -3890,14 +3854,8 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
             <div class="mbc hero" data-card="slate" style="margin-top:0.75rem">
               <div class="top" data-surface="graphite" data-pattern="">
                 <div class="balrow"><div class="tl">Total Balance</div></div>
-                <div class="balmain"><div class="bl">
-                  <div class="amt">$12,480.50 <small>USD</small></div>
-                  <div class="delta"><svg class="tri" viewBox="0 0 8 7" aria-hidden="true"><path d="M4 0 8 7 0 7Z"/></svg>+$40.00 (0.32%)<span class="per">today</span></div>
-                </div>
-                <svg class="perf" data-dir="up" viewBox="0 0 124 52" preserveAspectRatio="none" aria-label="Balance today, up 0.32 percent">
-                  <path class="ar" d="M0,40 15,35 31,38 46,26 62,31 77,17 93,22 108,9 124,13 124,52 0,52Z"/>
-                  <polyline class="ln" points="0,40 15,35 31,38 46,26 62,31 77,17 93,22 108,9 124,13"/>
-                </svg></div>
+                <div class="amt">$12,480.50 <small>USD</small></div>
+                <div class="delta"><svg class="tri" viewBox="0 0 8 7" aria-hidden="true"><path d="M4 0 8 7 0 7Z"/></svg>+$40.00 (0.32%)<span class="per">today</span></div>
                 <div class="bnote">52.50 MIDEN unclaimed, not counted</div>
               </div>
               <div class="bot" data-surface="graphite-deep"><span class="acc">mtst1ap8&hellip;r4fp</span><button class="acopy2" aria-label="Copy address"><span class="svgic" style="--ic:url(assets/icons/copy.svg)" aria-hidden="true"></span></button></div>
