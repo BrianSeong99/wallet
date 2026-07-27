@@ -475,3 +475,68 @@ disappear the moment typing starts and fail SC 3.3.2. Cost of enforcing it: `en.
 keys, only the placeholder strings `enterUsername` / `enterAddress`, so **two new i18n keys are
 required** to ship this. Flagged rather than quietly invented.
 
+
+---
+
+## Coverage pass — 164 screens
+
+The design system had 60 captioned screens against ~270 distinct states enumerated from the
+shipped code. This pass closed the gap for Home, Activity, Receive/claim, Settings and the
+dApp browser. Six components fell out of it, and one law.
+
+### The negative-margin law
+
+**A negative margin may cancel a parent's padding. It may never outrun it.**
+
+This was caught four separate times in one pass, in code that had shipped and passed review:
+
+| Element | Pull | Parent padding | Overflow |
+|---|---|---|---|
+| `.mbc .bot .acopy2` | `-0.625rem` | `0.375rem` | 4pt |
+| `.mprompt .pdis` | `-0.375rem` | `0.25rem` | 2pt |
+| `.shgear` on `.pghead` | `-0.625rem` | `0` | 10pt |
+| `.balhide` in `.balrow` | `-1rem` | `0` (row has none) | 16pt |
+
+Every one is invisible: an ancestor's `overflow:hidden` clips it. What it costs is real — the
+right edge of a 44pt touch target sits outside the box it appears to belong to. When the pull
+belongs to a *layout* rather than a button, put it on the layout: `.pghead` carries the pull and
+`.pghead .shgear` zeroes it.
+
+### New components
+
+- **`.pghead`** — page header, title plus optional trailing gear. Was an inline style repeated on
+  seven screens with `padding-right:0`, which is what left `.shgear` nothing to cancel.
+- **`.emptyb`** — empty-list block: `.et` title, `.eb` body, one `btn-secondary`. No illustration;
+  the app ships no empty-state art and inventing some would be a spec the implementation cannot
+  honour. Secondary, not primary — an empty state is usually the normal resting state, not a
+  failure to correct.
+- **`.mprompt .pcta`** — trailing action inside a prompt, for the connectivity banners and the
+  claim prompt. When a dismiss sits beside it the pair is held 8pt apart.
+- **`.mbc .bnote`** — footnote under a balance, with a warn dot. Exists because *a total computed
+  from incomplete data is a different number from a total*, and the card is the only place that
+  difference can be stated. Used by both money bugs: the unpriced asset and the unclaimed note.
+- **`.mbc .balhide` / `.amt .msk`** — balance mask and its toggle. The mask covers **every**
+  number including the delta and sparkline: a visible `+0.32%` beside a masked total leaks the
+  direction and rough size of the move, which defeats the point.
+- **`.addr2`** — now has a base rule. It was authored only as `.drow .v.addr2`, so every bare
+  `<span class="addr2">` outside a detail row silently rendered in the UI face at body size.
+
+### Two priority rules written into CSS
+
+`.mbc .balmain .bl` is `flex:0 0 auto`. A bare flex row shrinks both children proportionally,
+which at 320 gave the balance 144pt for 191pt of unbreakable digits — **"$12,480.50" clipped
+mid-number by `overflow:hidden`, a wrong number rendered as a plausible one.** The balance is why
+the card exists; the sparkline is a garnish on it. The number holds, the chart yields.
+
+A container query would be the better tool for dropping the chart entirely, and it is *not* used:
+these are `zoom`-scaled mocks, so a length-based container query does not resolve against the pt
+geometry being specified. A rule that reads as spec and behaves as something else is worse than
+the residual it would fix.
+
+### Harness change
+
+The reflow sweep no longer flags elements authored to truncate (`overflow:hidden` +
+`white-space:nowrap` + `text-overflow:ellipsis`). Those have `scrollWidth > clientWidth` **by
+definition** on any string long enough to need the ellipsis — the check was crying wolf on the
+exact mechanism that prevents reflow breaks. All three properties must be set, so a container
+that merely clips its children is still caught.
