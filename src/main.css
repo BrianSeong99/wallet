@@ -558,6 +558,11 @@ body[data-hide-navbar] [data-tabbar-footer='true'] {
     --accent-critical: #d9661f;
     --on-accent: #ffffff;
     --on-accent-sm: #1c1a18;
+    /* Channels of --accent, for the few places that need the accent at an
+     * arbitrary alpha inside a gradient or shadow. color-mix() would be the
+     * modern way, but .browserslistrc targets Safari >= 14 and color-mix needs
+     * 16.4+, whereas rgb(R G B / A) is supported back to 12.1. */
+    --accent-rgb: 231 117 55;
 
     /* Status is FOUR meanings, so four tokens. Declared as the INK role —
      * each passes 4.5:1 as text; fill and wash roles derive from them. */
@@ -708,6 +713,7 @@ body[data-hide-navbar] [data-tabbar-footer='true'] {
     --accent-critical: #d9661f;
     --on-accent: #ffffff;
     --on-accent-sm: #191919;
+    --accent-rgb: 231 117 55;
 
     /* Dark exposed a three-way hue collision: --accent (21°), --pend (15°)
      * and the old --neg (9°) were the same orange at the same lightness, so
@@ -755,5 +761,45 @@ body[data-hide-navbar] [data-tabbar-footer='true'] {
     --accent-primary: var(--accent);
     --text-on-accent: var(--on-accent);
     --rule-default: var(--rule);
+  }
+
+  /* ==================================================================
+   * Devnet accent — the environment tell.
+   *
+   * On devnet the whole accent group swaps from Bread orange to slate, so it
+   * is obvious at a glance which network you are on. That mechanism already
+   * shipped, but only through the Tailwind palette (`primary-500`), which is
+   * resolved from MIDEN_NETWORK at build time in tailwind.config.ts. The Crust
+   * CSS vars were a fixed hex, so anything migrated onto --accent would have
+   * silently lost the devnet branding -- which is why the button family's
+   * colours are still on primary-500.
+   *
+   * `data-network` is stamped on <html> by initTheme() from the same build-time
+   * constant (utils/brand-colors `isDevnet`), so the token layer now inherits
+   * the shipped mechanism rather than duplicating it.
+   *
+   * Values come from utils/brand-colors. --accent-ink is NOT the raw slate:
+   * #7286A0 as text on paper is 3.53:1, so the light ink uses the deeper
+   * #4E5F73 (6.9:1), exactly as the orange ramp uses #A84A1A rather than
+   * #E77537. In dark, the slate already clears 4.95:1, so it collapses back.
+   * ================================================================== */
+  :root[data-network='devnet'] {
+    --accent: #7286a0;
+    --accent-hover: #5a6b80;
+    --accent-ink: #4e5f73;
+    --accent-wash: #eef1f4;
+    --accent-critical: #5a6b80;
+    --accent-rgb: 114 134 160;
+  }
+
+  /* Must follow the light devnet block: equal specificity, so source order
+   * decides which wins when <html> carries both `dark` and the attribute. */
+  .dark[data-network='devnet'] {
+    --accent: #7286a0;
+    --accent-hover: #8a9db5;
+    --accent-ink: #7286a0;
+    --accent-wash: #1f2830;
+    --accent-critical: #5a6b80;
+    --accent-rgb: 114 134 160;
   }
 }
