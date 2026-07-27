@@ -2,6 +2,10 @@
 
 ## 1.15.12 (TBD)
 
+### Changes
+
+* [CHANGE][all] **Inter, Nunito and Geist Mono are now self-hosted, and the design-system token layer has landed.** Every HTML entrypoint used to fetch Inter and Nunito from `fonts.googleapis.com` at runtime; they are now bundled, so boot makes no third-party request and the fonts work offline and under the extension's CSP. Inter is imported as its optical-size cut to match what the Google Fonts URL requested — the weight-only cut drops the axis and reflows every paragraph. `font-mono` also stops being a lie: it mapped to Inter, and now resolves to the Geist Mono that already shipped in `fonts/` unreferenced, which affects the two surfaces that use it (advanced transaction details and the public key in Advanced Settings). Alongside this, the Crust colour/type/spacing/motion tokens are declared in `src/main.css` and exposed through `tailwind.config.ts`; only legacy names whose values are byte-identical in both themes are re-pointed at them, so nothing else moves on screen.
+
 ### Fixes
 
 * [FIX][all] **The home action bar (Overview/Send/Receive/Swap) now announces itself as navigation instead of a tab widget.** Its segments change the route rather than swapping a tabpanel, so `role="tablist"`/`role="tab"` were wrong on two counts: screen readers announced "tab, selected, 1 of 5" for what is page navigation, and `role="tab"` advertises an arrow-key traversal contract the component never implemented. The bar is now a labelled `<nav>` whose active segment carries `aria-current="page"` — the same semantics the bottom nav already used. No visual or animation change.

@@ -175,6 +175,44 @@ export default {
         'card-blue-deep': 'var(--card-blue-deep)',
         'card-green-deep': 'var(--card-green-deep)',
         'card-purple-deep': 'var(--card-purple-deep)',
+        // ---- Crust design system tokens ----
+        // Added alongside the legacy names above so P1/P2 have something to
+        // migrate *to*. Adding an unused utility name cannot change rendering;
+        // the call-site rewrites are the later phases' job.
+        paper: 'var(--paper)',
+        surface: 'var(--surface)',
+        'surface-2': 'var(--surface-2)',
+        'surface-3': 'var(--surface-3)',
+        ink: 'var(--ink)',
+        'ink-2': 'var(--ink-2)',
+        'ink-3': 'var(--ink-3)',
+        rule: 'var(--rule)',
+        accent: 'var(--accent)',
+        'accent-hover': 'var(--accent-hover)',
+        'accent-ink': 'var(--accent-ink)',
+        'accent-wash': 'var(--accent-wash)',
+        'accent-critical': 'var(--accent-critical)',
+        'on-accent': 'var(--on-accent)',
+        'on-accent-sm': 'var(--on-accent-sm)',
+        pos: 'var(--pos)',
+        'pos-wash': 'var(--pos-wash)',
+        pend: 'var(--pend)',
+        neg: 'var(--neg)',
+        'neg-wash': 'var(--neg-wash)',
+        warn: 'var(--warn)',
+        'warn-wash': 'var(--warn-wash)',
+        'act-send': 'var(--act-send)',
+        'act-receive': 'var(--act-receive)',
+        'act-swap': 'var(--act-swap)',
+        'act-earn': 'var(--act-earn)',
+        'tx-glyph': 'var(--tx-glyph)',
+        'nav-pill': 'var(--nav-pill)',
+        'nav-bg': 'var(--nav-bg)',
+        'nav-ink-off': 'var(--nav-ink-off)',
+        balance: 'var(--balance)',
+        'balance-deep': 'var(--balance-deep)',
+        'balance-fg': 'var(--balance-fg)',
+        'balance-fg-muted': 'var(--balance-fg-muted)',
         ...customColors,
         // Override primary from customColors with network-conditional values
         primary: primaryPalette
@@ -182,12 +220,20 @@ export default {
       return baseColors;
     })(),
 
-    // Custom font families with Geist
+    // Font families. The "Variable" suffix is the family name the self-hosted
+    // @fontsource packages actually register — plain 'Inter' matches nothing
+    // now that the Google Fonts <link> is gone, so it stays only as a fallback
+    // for anyone with the font installed locally.
+    //
+    // `mono` was previously ['Inter'], i.e. font-mono rendered as a
+    // proportional face. Crust reserves mono for addresses, hashes and ids;
+    // Geist Mono already shipped in fonts/ and was simply never referenced.
     fontFamily: {
-      sans: ['Inter'],
-      serif: ['Inter'],
-      mono: ['Inter'],
-      inter: ['Inter']
+      sans: ['Inter Variable', 'Inter'],
+      serif: ['Inter Variable', 'Inter'],
+      mono: ['Geist Mono', 'ui-monospace', 'SFMono-Regular', 'monospace'],
+      inter: ['Inter Variable', 'Inter'],
+      display: ['Nunito Variable', 'Nunito']
     },
 
     extend: {
@@ -207,10 +253,27 @@ export default {
         '4xl': '2rem',
         5: '5px',
         10: '10px',
-        // Design system semantic radii (Foundations · Radius)
+        // Design system semantic radii (Foundations · Radius).
+        // These three already ARE the Crust scale (8/12/16) under older
+        // names; P1 collapses the 11+ ad-hoc radii onto them. `full` is the
+        // fourth and last step.
         'sm-token': 'var(--radius-sm)',
         'md-token': 'var(--radius-md-token)',
-        'lg-token': 'var(--radius-lg-token)'
+        'lg-token': 'var(--radius-lg-token)',
+        'full-token': 'var(--radius-full)'
+      },
+      // Crust type ramp — nine steps, the only sizes screens may use. P1
+      // rewrites the 96 one-off text-[…] utilities onto these.
+      fontSize: {
+        caption: 'var(--t-caption)',
+        label: 'var(--t-label)',
+        body: 'var(--t-body)',
+        subhead: 'var(--t-subhead)',
+        cta: 'var(--t-cta)',
+        heading: 'var(--t-heading)',
+        title: 'var(--t-title)',
+        balance: 'var(--t-balance)',
+        'display-xl': 'var(--t-display)'
       },
       // Custom stroke color
       stroke: {
