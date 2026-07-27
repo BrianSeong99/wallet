@@ -598,6 +598,10 @@ table.map td code{font-size:var(--t-label)}
 /* The sheet already reserves the home-indicator inset, so an action zone inside
    one must not reserve it a second time. */
 .msheet .zone{padding-bottom:0}
+/* Same reason: the sheet owns the inset, so a trailing list must not add its own.
+   Safe because a .mlist in this position holds no selectable cards -- nothing
+   with a ring to clip at the bottom edge. */
+.msheet > .mlist:last-child{padding-bottom:0}
 .mshandle{width:40px;height:5px;border-radius:var(--radius-full);background:var(--rule-strong);
   margin:0 auto 14px;flex:none}
 .mshead{font-family:var(--display);font-weight:800;font-size:var(--t-subhead);margin-bottom:12px;
@@ -609,10 +613,10 @@ table.map td code{font-size:var(--t-label)}
    destination, so the header (a utility position) says 'way out of here' where the footer
    (an action position) implied it was an action on this sheet.
    That also leaves the footer with the one action it actually has. */
-.mshead .shgear{margin-left:auto;min-width:44px;min-height:44px;margin-top:-11px;
+.shgear{margin-left:auto;min-width:44px;min-height:44px;margin-top:-11px;
   margin-bottom:-11px;margin-right:-10px;border:0;background:none;padding:0;display:flex;
   align-items:center;justify-content:center;color:var(--ink-2);cursor:pointer}
-.mshead .shgear .svgic{width:19px;height:19px}
+.shgear .svgic{width:19px;height:19px}
 /* Leading icon on a button: gap from the label, sized to the label's cap height. */
 .btn.withic{display:flex;align-items:center;justify-content:center;gap:8px}
 .btn.withic .svgic{width:17px;height:17px;flex:none}
@@ -634,7 +638,11 @@ table.map td code{font-size:var(--t-label)}
    Blocks are the balance card's top half only: name plus balance, which is what you choose
    between. No delta -- performance is not why this sheet is open. */
 .mlist{display:flex;flex-direction:column;gap:var(--stack);overflow-y:auto;
-  padding:2px 7px 4px;margin-inline:-7px}
+  /* overflow-y:auto forces overflow-x:auto, so this clips on all four sides.
+     Inline padding is cancelled by an equal negative margin (card width is
+     unchanged); block padding is NOT cancelled, because the list wanted more
+     breathing room above and below regardless of the ring. */
+  padding:10px 9px 14px;margin-inline:-9px}
 .mlist>*{flex:none}
 /* A 3px LEFT stripe in the account colour. This was lost when the Apple-Wallet stack was
    rewritten as a list -- --card-rim stayed defined and stopped being used, so in DARK all
@@ -651,7 +659,7 @@ table.map td code{font-size:var(--t-label)}
    (name + figure) wherever you are choosing or previewing an account, and .hero (adds the
    delta line, the chart and the account row) on Home, which is the only place those belong. */
 .mbc .anm{font-size:var(--t-caption);font-weight:700;color:var(--ink);
-  display:flex;align-items:center;gap:6px;min-height:22px}
+  display:flex;align-items:center;gap:0;min-height:22px}
 .mbc .amt{font-size:26px}
 .mbc.hero .amt{font-size:var(--t-balance)}
 /* Selection is a filled check, not a ring: an outline round a card would read as a bordered
@@ -687,10 +695,16 @@ table.map td code{font-size:var(--t-label)}
    --paper: inside data-surface="graphite" --ink resolves to WHITE, so a white badge with a
    paper tick measured 1.03:1. --ink means "readable ink on THIS surface", so anything using it
    as a background must take its foreground from the surface too. */
-.mlist .achk{width:15px;height:15px;border-radius:50%;background:var(--ink);display:none;flex:none}
+.mlist .achk{height:15px;border-radius:50%;background:var(--ink);flex:none;
+  display:inline-block;overflow:hidden;
+  width:0;margin-right:0;opacity:0;transform:scale(.5);
+  transition:width var(--dur-normal) var(--ease-out-cubic),
+             margin-right var(--dur-normal) var(--ease-out-cubic),
+             opacity var(--dur-fast) var(--ease-out-cubic),
+             transform var(--dur-normal) var(--ease-out-cubic)}
 .mlist .achk path{fill:none;stroke:var(--balance);stroke-width:1.9;stroke-linecap:round;
   stroke-linejoin:round}
-.mbc.sel .achk{display:inline-block;vertical-align:-3px}
+.mbc.sel .achk{width:15px;margin-right:6px;opacity:1;transform:none}
 
 /* ---- Per-account sheet: where renaming and identity live -------------------------------
    Separated from the stack deliberately. The stack answers "which account"; this answers
@@ -1217,11 +1231,18 @@ ul.tick li:before{content:"→";position:absolute;left:2px;color:var(--accent-in
    and the selected card reads as lifted rather than tagged with orange.
    .ropt has no --card-rim and falls back to the accent, which is correct for a
    settings option that has no colour of its own. */
-.mbc.sel{outline:3px solid var(--card-rim,var(--ink));outline-offset:3px}
+@media (prefers-reduced-motion: reduce){
+  .mbc,.gcard,.ropt,.mlist .achk{transition:none}
+}
+.mbc,.gcard,.ropt{outline:3px solid transparent;outline-offset:5px;
+  transition:outline-color var(--dur-fast) var(--ease-out-cubic),
+             outline-offset var(--dur-normal) var(--ease-out-cubic)}
+.mbc.sel,.gcard.sel,.ropt.sel{outline-offset:3px}
+.mbc.sel{outline-color:var(--card-rim,var(--ink))}
 /* No card hue here, so the ring stays orange -- but --accent-ink, not --accent:
    --accent measures 2.90:1 on --paper and 2.74:1 on --surface-2, so the ring these
    used before this change was itself failing SC 1.4.11. */
-.gcard.sel,.ropt.sel{outline:3px solid var(--accent-ink);outline-offset:3px}
+.gcard.sel,.ropt.sel{outline-color:var(--accent-ink)}
 .gcard .band{position:absolute;top:0;left:0;right:0;height:20px;display:flex;align-items:center;justify-content:center;
   background:var(--accent);color:var(--on-accent-sm);font-size:var(--t-caption);font-weight:800;letter-spacing:.02em}
 /* Partner marks sit on a LIGHT PLATE in dark mode. lambdaclass.svg, open-zeppelin.svg and
@@ -3253,14 +3274,14 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
           <div class="shscrim"></div>
           <div class="msheet">
             <div class="mshandle"></div>
-            <div class="mshead">Accounts<button class="shgear" aria-label="Settings"><span class="svgic" style="--ic:url(assets/icons/settings-new.svg)" aria-hidden="true"></span></button></div>
+            <div class="mshead">Accounts</div>
             <div class="mlist">
               <div class="mbc" data-card="blue"><div class="top" data-surface="graphite" data-pattern=""><button class="aedit">Edit</button><div class="balrow"><div class="anm"><svg class="achk" viewBox="0 0 12 12" aria-hidden="true"><path d="M3 6.4 5 8.6 9 3.8"/></svg>Miden Account 1</div></div><div class="amt">$1,204.00 <small>USD</small></div></div></div>
               <div class="mbc" data-card="green"><div class="top" data-surface="graphite" data-pattern=""><button class="aedit">Edit</button><div class="balrow"><div class="anm"><svg class="achk" viewBox="0 0 12 12" aria-hidden="true"><path d="M3 6.4 5 8.6 9 3.8"/></svg>Miden Account 2</div></div><div class="amt">$318.90 <small>USD</small></div></div></div>
               <div class="mbc sel" data-card="slate"><div class="top" data-surface="graphite" data-pattern=""><button class="aedit">Edit</button><div class="balrow"><div class="anm"><svg class="achk" viewBox="0 0 12 12" aria-hidden="true"><path d="M3 6.4 5 8.6 9 3.8"/></svg>Miden Account 3</div></div><div class="amt">$12,480.50 <small>USD</small></div></div></div>
             </div>
             
-            <div class="zone" style="padding-bottom:max(16px,var(--safe-bottom,0px))"><button class="btn btn-secondary withic"><span class="svgic" style="--ic:url(assets/icons/add.svg)" aria-hidden="true"></span>Add account</button></div>
+            <div class="zone"><button class="btn btn-secondary withic"><span class="svgic" style="--ic:url(assets/icons/add.svg)" aria-hidden="true"></span>Add account</button></div>
           </div>
         </div></div></div>
         <div class="scrnote"><b>Proposed &mdash; multi-account does not exist yet.</b> The shipped <code>AccountsDrawer</code> lists <em>no accounts at all</em>: it is a card-colour picker, a Settings link, and a <em>disabled</em> &ldquo;Add account (coming soon)&rdquo; button whose dashed outline also breaks the no-bordered-controls rule. <b>Vertical list, not an Apple-Wallet stack</b> &mdash; the stack was built first and failed on three counts: in <b>dark</b> every card was then near-black, so overlapping merged all three into one block (tinting each with its account hue at 12&percnt; measured <b>1.00&ndash;1.04:1</b> between adjacent cards, because hue separates almost nothing at near-black). <i>That premise is now retired:</i> dark cards keep their hue instead of collapsing to near-black, so adjacent cards are separable &mdash; but the other two objections below still stand, which is why this is a list and not a stack; the collapsed band forced a choice between the name and the balance, with one card&rsquo;s amount butting into the next card&rsquo;s name; and it grew 64px per account, stopping around six. Blocks here are the card&rsquo;s top half &mdash; name and balance, which is what you choose between &mdash; with no delta, since performance is not why this sheet is open. Selection is <b>a ring in the card&rsquo;s own colour, held off the card by a gap</b> of the surround. The filled check stays as the redundant carrier: with ring and fill sharing a hue, the gap is the only thing making them two objects, so on a low-DPR screen or a clipped container the check is what still reads. The ring is <code>--accent-ink</code> rather than <code>--accent</code> wherever a card has no colour of its own &mdash; bare <code>--accent</code> measures <b>2.90:1</b> on <code>--paper</code>, so the orange ring this replaced was itself failing SC 1.4.11. <b>Renaming is deliberately not here:</b> the list answers &ldquo;which account&rdquo;, and a rename affordance would compete with the selection gesture.</div></div>
@@ -3284,7 +3305,7 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
               <span class="sw nti" style="background:var(--card-green)"></span>
               <span class="sw nti" style="background:var(--card-purple)"></span>
             </div>
-            <div class="zone" style="padding-bottom:max(16px,var(--safe-bottom,0px))"><button class="btn btn-primary">Done</button></div>
+            <div class="zone"><button class="btn btn-primary">Done</button></div>
           </div>
         </div></div></div>
         <div class="scrnote"><b>The missing link.</b> I specified &ldquo;tap the card to switch, <code>&ctdot;</code> for options&rdquo; and then wired <em>neither</em>, so the Accounts list had no entry point at all &mdash; a real gap. The chain is now: balance-card <code>&ctdot;</code> &rarr; <b>Accounts list</b> (choose) &rarr; per-row <code>&ctdot;</code> &rarr; <b>this sheet</b> (manage one account). Renaming lives here rather than in the list, per the rule that the list answers &ldquo;which account&rdquo; and a rename affordance would fight the selection gesture. The card colour also belongs here, not in the list, because colour is <em>per-account identity</em> &mdash; today it is a single global <code>localStorage</code> value, which is exactly why it currently reads as decoration. The card preview carries no pattern, so the swatch row is the only thing asserting identity while you are choosing it.</div></div>
@@ -3329,7 +3350,7 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
             <div class="mshead">Select a token</div>
             <div class="mrow"><div class="ic"><img src="assets/icons/miden.svg" alt=""></div><div><div class="nm">Miden</div><div class="ad">500 MDN</div></div><div class="rt"><div class="f">$17.65</div><div class="b">&minus;2.58%</div></div></div>
             <div class="mrow"><div class="ic"><img src="assets/icons/usdc.svg" alt=""></div><div><div class="nm">USDC</div><div class="ad">200 USDC</div></div><div class="rt"><div class="f">$200.00</div><div class="b">+0.01%</div></div></div>
-            <div class="zone" style="padding-bottom:max(16px,var(--safe-bottom,0px))"><button class="btn btn-secondary">Cancel</button></div>
+            <div class="zone"><button class="btn btn-secondary">Cancel</button></div>
           </div>
         </div></div></div>
         <div class="scrnote">The shipped picker is a vaul sheet (<code>SelectTokenDrawer</code>), reusing the same overlay primitive as every other picker. <b>Two gaps in the code this cannot show:</b> <code>SelectToken.tsx:63-79</code> maps the filtered list with <em>no empty branch and no loading branch</em>, so a search matching nothing &mdash; or balances still loading &mdash; renders an empty box. The contacts drawer beside it <em>does</em> have an empty state, which makes the omission look accidental.</div></div>
@@ -3542,16 +3563,16 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
         <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
           <div class="stat"><span>9:41</span><span class="r">✦ ▪ ▪</span></div>
           <div class="mpad" style="flex:1;display:flex;flex-direction:column">
-            <div style="font-family:var(--display);font-weight:800;font-size:var(--t-title);padding:6px 0 12px">Activity</div>
-            <div class="filters"><span class="fc on">All</span><span class="fc">Sent</span><span class="fc">Received</span><span class="fc">Earn</span></div>
+            <div style="display:flex;align-items:center;padding:6px 0 12px"><span style="font-family:var(--display);font-weight:800;font-size:var(--t-title)">Activity</span><button class="shgear" aria-label="Settings"><span class="svgic" style="--ic:url(assets/icons/settings-new.svg)" aria-hidden="true"></span></button></div>
+            <div class="filters"><span class="fc on">All</span><span class="fc">Sent</span><span class="fc">Received</span><span class="fc" data-earn-surface>Earn</span></div>
             <div style="font-size:var(--t-caption);color:var(--ink-2);font-weight:700;margin:6px 0 2px">TODAY</div>
             <div class="mrow"><div class="ic sq"><span class="svgic" style="--ic:url(assets/icons/receive-new.svg);" aria-hidden="true"></span></div><div><div class="nm">Received</div><div class="ad addr">mtst1kq2…88xz</div></div><div class="rt"><div class="f" style="color:var(--pos)">+40.00</div><div class="b">2m ago</div></div></div>
             <div class="mrow"><div class="ic sq"><span class="svgic" style="--ic:url(assets/icons/send-new.svg);" aria-hidden="true"></span></div><div><div class="nm">Sent</div><div class="ad addr">mtst1ap8…r4fp</div></div><div class="rt"><div class="f">−12.50</div><div class="b">1h ago</div></div></div>
             <div style="font-size:var(--t-caption);color:var(--ink-2);font-weight:700;margin:12px 0 2px">YESTERDAY</div>
-            <div class="mrow"><div class="ic sq"><span class="svgic" style="--ic:url(assets/icons/earn.svg);" aria-hidden="true"></span></div><div><div class="nm">Earn deposit</div><div class="ad">Aave · MIDEN</div></div><div class="rt"><div class="f">−500.00</div><div class="b">Confirmed</div></div></div>
+            <div class="mrow" data-earn-surface><div class="ic sq"><span class="svgic" style="--ic:url(assets/icons/earn.svg);" aria-hidden="true"></span></div><div><div class="nm">Earn deposit</div><div class="ad">Aave · MIDEN</div></div><div class="rt"><div class="f">−500.00</div><div class="b">Confirmed</div></div></div>
             <div class="mrow"><div class="ic sq"><span class="svgic" style="--ic:url(assets/icons/send-new.svg);" aria-hidden="true"></span></div><div><div class="nm">Sent</div><div class="ad addr">mtst1zz9…41mn</div></div><div class="rt"><div class="f" style="color:var(--neg)">Failed</div><div class="b">Not sent</div></div></div>
           </div>
-          <div class="mnav"><button class="t on"><span class="svgic" style="--ic:url(assets/icons/home-new.svg)" aria-hidden="true"></span><span>Home</span></button><button class="t"><span class="svgic" style="--ic:url(assets/icons/explore.svg)" aria-hidden="true"></span><span>Explore</span></button><button class="t"><span class="svgic" style="--ic:url(assets/icons/activity.svg)" aria-hidden="true"></span><span>Activity</span></button></div>
+          <div class="mnav" style="--i:2"><button class="t"><span class="svgic" style="--ic:url(assets/icons/home-new.svg)" aria-hidden="true"></span><span>Home</span></button><button class="t"><span class="svgic" style="--ic:url(assets/icons/explore.svg)" aria-hidden="true"></span><span>Explore</span></button><button class="t on"><span class="svgic" style="--ic:url(assets/icons/activity.svg)" aria-hidden="true"></span><span>Activity</span></button></div>
         </div></div></div>
         <div class="scrnote">Failed rows say <b>"Not sent"</b> in the value column — status is never colour-only, and never ambiguous about the money.</div></div>
 <div><div class="scrcap"><i></i>Transaction detail</div>
@@ -3663,7 +3684,7 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
               <div class="setrow"><span class="svgic" style="--ic:url(assets/icons/coins.svg);" aria-hidden="true"></span>About<span class="ch">›</span></div>
             </div>
           </div>
-          <div class="mnav"><button class="t on"><span class="svgic" style="--ic:url(assets/icons/home-new.svg)" aria-hidden="true"></span><span>Home</span></button><button class="t"><span class="svgic" style="--ic:url(assets/icons/explore.svg)" aria-hidden="true"></span><span>Explore</span></button><button class="t"><span class="svgic" style="--ic:url(assets/icons/activity.svg)" aria-hidden="true"></span><span>Activity</span></button></div>
+          <div class="mnav" style="--i:2"><button class="t"><span class="svgic" style="--ic:url(assets/icons/home-new.svg)" aria-hidden="true"></span><span>Home</span></button><button class="t"><span class="svgic" style="--ic:url(assets/icons/explore.svg)" aria-hidden="true"></span><span>Explore</span></button><button class="t on"><span class="svgic" style="--ic:url(assets/icons/activity.svg)" aria-hidden="true"></span><span>Activity</span></button></div>
         </div></div></div>
         <div class="scrnote">Grouped soft blocks rather than a divided table — the same stacking idiom as everywhere else.</div></div>
 <div><div class="scrcap"><i></i>Reveal recovery phrase</div>
@@ -3697,7 +3718,7 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
             </div>
             <div class="notice" style="background:var(--surface-2);color:var(--ink-2);margin-top:16px"><span>ⓘ</span><span>Connected sites can request signatures. You approve every transaction.</span></div>
           </div>
-          <div class="mnav"><button class="t on"><span class="svgic" style="--ic:url(assets/icons/home-new.svg)" aria-hidden="true"></span><span>Home</span></button><button class="t"><span class="svgic" style="--ic:url(assets/icons/explore.svg)" aria-hidden="true"></span><span>Explore</span></button><button class="t"><span class="svgic" style="--ic:url(assets/icons/activity.svg)" aria-hidden="true"></span><span>Activity</span></button></div>
+          <div class="mnav" style="--i:1"><button class="t"><span class="svgic" style="--ic:url(assets/icons/home-new.svg)" aria-hidden="true"></span><span>Home</span></button><button class="t on"><span class="svgic" style="--ic:url(assets/icons/explore.svg)" aria-hidden="true"></span><span>Explore</span></button><button class="t"><span class="svgic" style="--ic:url(assets/icons/activity.svg)" aria-hidden="true"></span><span>Activity</span></button></div>
         </div></div></div>
         <div class="scrnote">Browser rejoins the app: same header scale, same tiles, same nav. The trust statement is on the surface, not buried.</div></div>
     </div>
