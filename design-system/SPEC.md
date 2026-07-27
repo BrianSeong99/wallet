@@ -131,7 +131,7 @@ Playwright, exits non-zero on any failure. Per screen, in **both themes**, it ch
 | Type | nothing below the 11pt floor |
 
 **The harness is necessary, not sufficient — always look at the render.** Every numeric check
-can pass while the screen is visibly wrong. Three defects this session were invisible to it and
+can pass while the screen is visibly wrong. Several defects this session were invisible to it and
 found only by opening the screenshot:
 
 | Defect | Why no check caught it |
@@ -139,6 +139,15 @@ found only by opening the screenshot:
 | Account cards merged into one black block in dark | Each card passed contrast individually; *adjacent-card* separation is not a WCAG quantity |
 | A permanent "Tap to rename" + blinking caret on the resting state | An editing variant left switched on is valid markup with valid contrast |
 | Card colour swatches rendered fully transparent | No text and not marked as indicators, so nothing measured them |
+
+The contacts pass added four more, every check passing while the screen looked broken: a divider
+that rendered as a dead gap, a badge that rendered as bare text, an icon plate with no size, and
+`Enter Miden Address` broken mid-word across two lines as `Addres` / `s`. The harness has no
+opinion about an unstyled element or an ugly line break.
+
+It did catch two things the render made look fine, though: text inputs flex-shrunk from 44pt to
+20pt, and content sitting under the home indicator. Neither is visible without measuring. **The two
+methods fail in opposite directions, which is the whole argument for running both every time.**
 
 Related blind spot: the harness reads `background-color` and is **blind to `background-image`**, so
 gradients, patterns and washes are unverified by it — the wagara pattern's contrast is
