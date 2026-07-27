@@ -1647,6 +1647,27 @@ ul.tick li:before{content:"→";position:absolute;left:0.125rem;color:var(--acce
 .lskel .sk2{height:0.6875rem;width:34%;margin-top:0.375rem}
 .lskel .skc{width:1.125rem;height:1.125rem;border-radius:50%;flex:none}
 @media (prefers-reduced-motion: reduce){.lskel .sk{animation-duration:.01ms}}
+/* Token detail. A 257-line shipped screen that had no mock at all -- it is what
+   tapping any asset row on Home opens. Hero balance, two coloured actions, a
+   price chart with five timeframes, a token-info card and a filtered history. */
+.tkhero{display:flex;flex-direction:column;align-items:center;padding:0.5rem 0 0.25rem}
+.tkhero .tkbal{font-family:var(--num);font-feature-settings:var(--num-feat);font-weight:800;
+  font-size:var(--t-balance);line-height:1;margin-top:0.5rem}
+.tkhero .tkfiat{font-size:var(--t-label);color:var(--ink-2);margin-top:0.25rem}
+.tkacts{display:flex;gap:0.625rem;margin-top:0.75rem}
+.tkact{flex:1;min-height:44px;border:0;border-radius:var(--radius-md);display:flex;
+  align-items:center;justify-content:center;gap:0.5rem;font-family:var(--ui);
+  font-size:var(--t-label);font-weight:700;color:var(--on-accent-sm);cursor:pointer}
+.tkact .svgic{width:1rem;height:1rem;background-color:var(--on-accent-sm)}
+.tftabs{display:flex;gap:0.25rem;margin-top:0.625rem}
+/* 44pt, not the 32 a timeframe strip is usually drawn at. Five targets in a row
+   across 350pt gives each ~66pt of width but height is the binding dimension,
+   and SC 2.5.5 does not care that the control is small by convention. */
+.tftab{flex:1;min-height:2.75rem;border:0;border-radius:var(--radius-sm);background:none;
+  font-family:var(--ui);font-size:var(--t-caption);font-weight:700;color:var(--ink-2);cursor:pointer}
+.tftab.on{background:var(--surface-2);color:var(--ink)}
+.seclab{font-size:var(--t-caption);font-weight:800;color:var(--ink-3);letter-spacing:.06em;
+  text-transform:uppercase;text-align:center;display:block;margin:1.125rem 0 0.625rem}
 .tsteps{display:flex;flex-direction:column;gap:0.125rem;margin-top:1.125rem}
 .tstep{display:flex;align-items:center;gap:0.625rem;padding:0.5625rem 0.125rem;font-size:var(--t-label)}
 .tstep .tsi{width:1.125rem;height:1.125rem;flex:none;border-radius:50%;display:flex;align-items:center;
@@ -3047,6 +3068,21 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
     <h2 class="h">Onboarding</h2>
     <p class="sub">Mirrors the shipped <code>STEP_TO_PROGRESS</code> model: <b>4 steps</b> (3 when the protection choice is skipped) &mdash; not the 7 I had invented. Detours never move the bar. Every screen the app ships is now represented, including the import path, the biometric fallback and the error states.</p>
     <div class="scrgrid">
+      <div><div class="scrcap"><i></i>Forgot password</div>
+        <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
+          <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>
+          <div class="mpad" style="flex:1;display:flex;flex-direction:column">
+            <div class="sh2"><span class="bk2">&times;</span><span class="t2">Forgot Password?</span></div>
+            <div class="rcpt" style="padding-top:1.5rem">
+              <div class="eic" style="background:var(--warn-wash);color:var(--warn)"><span class="svgic" style="--ic:url(assets/icons/key.svg)" aria-hidden="true"></span></div>
+              <div class="et">Forgot Password?</div>
+              <div class="es">If you&rsquo;ve forgotten your password, you need to sign out and re-import your account. After that, you can create a new password.</div>
+              <div class="es" style="margin-top:0.75rem;color:var(--ink);font-weight:700">Do not sign out unless you know your 12-word Seed phrase or have an encrypted backup file.</div>
+            </div>
+            <div class="zone"><button class="btn btn-primary" style="width:100%">Sign Out</button></div>
+          </div>
+        </div></div></div>
+        <div class="scrnote">Shipped and undrawn until now (<code>ForgotPasswordInfo.tsx</code>), copy verbatim. It is reached from the unlock screen and it is the <b>most destructive route in the product</b>: signing out runs <code>clearClientStorage()</code> and the only way back is a 12-word seed phrase. <b>Two gaps.</b> There is no second confirmation &mdash; one tap on a primary button wipes the wallet, where deleting a single <em>contact</em> gets a confirm dialog. And the warning is the last thing on the screen, below the fold-line of the explanation, when it is the sentence that decides whether the user should be here at all. Drawn here with the warning promoted and given weight; the shipped version renders it as ordinary body text.</div></div>
       <div><div class="scrcap"><i></i>01 &middot; Splash</div>
         <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
           
@@ -3465,6 +3501,56 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
         <h2 class="h">Home &amp; overview</h2>
     <p class="sub">The resting state, and everything reached from the balance card. The card <em>is</em> the account: tapping it opens the list, and the list reaches one account's own sheet.</p>
     <div class="scrgrid">
+      <div><div class="scrcap"><i></i>Token detail &middot; price unavailable</div>
+        <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
+          <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>
+          <div class="mpad" style="flex:1;display:flex;flex-direction:column;overflow:hidden">
+            <div class="sh2"><span class="bk2">&lsaquo;</span><span class="t2">MIDEN</span></div>
+            <div class="tkhero">
+              <span class="ic" style="width:2.75rem;height:2.75rem"><img src="assets/icons/usdc.svg" alt=""></span>
+              <span class="tkbal">200.00</span><span class="tkfiat">$200.00</span>
+            </div>
+            <div class="tkacts">
+              <button class="tkact" style="background:var(--act-send)"><span class="svgic" style="--ic:url(assets/icons/send-new.svg)" aria-hidden="true"></span>Send</button>
+              <button class="tkact" style="background:var(--act-receive)"><span class="svgic" style="--ic:url(assets/icons/receive-new.svg)" aria-hidden="true"></span>Receive</button>
+            </div>
+            <span class="seclab">Token Price</span>
+            <div style="height:5.5rem;display:flex;align-items:center;justify-content:center;background:var(--surface-2);border-radius:var(--radius-md)">
+              <span style="font-size:var(--t-label);color:var(--ink-2)">Price data unavailable</span>
+            </div>
+            <span class="seclab">Token Info</span>
+            <div class="dmeta">
+              <div class="drow"><span class="k">Contract</span><span class="v addr2">mtst1zz4&hellip;90ab</span></div>
+              <div class="drow"><span class="k">Type</span><span class="v">Fungible</span></div>
+              <div class="drow"><span class="k">Network</span><span class="v">Miden Testnet</span></div>
+            </div>
+          </div>
+        </div></div></div>
+        <div class="scrnote"><b>GAP.</b> The chart is fed by <code>useRetryableSWR(['kline', symbol, timeframe])</code> against Binance, which fails for any token Binance does not list &mdash; which is <em>every</em> token on a testnet. There is no error branch and no empty branch in <code>PriceChart</code>, so today the area simply renders nothing and the section label sits above a void. Most tokens in this wallet will never have a price, so this is the common case, not the edge case.</div></div>
+      <div><div class="scrcap"><i></i>Token detail</div>
+        <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
+          <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>
+          <div class="mpad" style="flex:1;display:flex;flex-direction:column;overflow:hidden">
+            <div class="sh2"><span class="bk2">&lsaquo;</span><span class="t2">MIDEN</span></div>
+            <div class="tkhero">
+              <span class="ic" style="width:2.75rem;height:2.75rem"><img src="assets/icons/miden.svg" alt=""></span>
+              <span class="tkbal">1,204.50</span><span class="tkfiat">$12,480.50</span>
+            </div>
+            <div class="tkacts">
+              <button class="tkact" style="background:var(--act-send)"><span class="svgic" style="--ic:url(assets/icons/send-new.svg)" aria-hidden="true"></span>Send</button>
+              <button class="tkact" style="background:var(--act-receive)"><span class="svgic" style="--ic:url(assets/icons/receive-new.svg)" aria-hidden="true"></span>Receive</button>
+            </div>
+            <span class="seclab">Token Price</span><svg viewBox="0 0 300 88" preserveAspectRatio="none" style="width:100%;height:5.5rem;display:block" aria-hidden="true"><path d="M0 66 L30 60 L60 68 L90 44 L120 50 L150 30 L180 38 L210 22 L240 28 L270 14 L300 18" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <div class="tftabs"><button class="tftab">1H</button><button class="tftab on">1D</button><button class="tftab">1W</button><button class="tftab">1M</button><button class="tftab">YTD</button></div>
+            <span class="seclab">Token Info</span>
+            <div class="dmeta">
+              <div class="drow"><span class="k">Contract</span><span class="v addr2">mtst1qq9&hellip;4f2p</span></div>
+              <div class="drow"><span class="k">Type</span><span class="v">Fungible</span></div>
+              <div class="drow"><span class="k">Network</span><span class="v">Miden Testnet</span></div>
+            </div>
+          </div>
+        </div></div></div>
+        <div class="scrnote"><b>A 257-line shipped screen with no mock at all until now</b> &mdash; it is what tapping any asset row on Home opens (<code>/token-detail/:tokenId</code>). Hero balance at 44px, two brand-coloured actions that deep-link to <code>/send?tokenId=</code> and <code>/receive</code>, a <code>recharts</code> line chart with five timeframes (<code>1H 1D 1W 1M YTD</code>, defaulting to 1D), a token-info card, and a history list filtered to this token. Two things the shipped version gets wrong: the section labels are <b>centred uppercase</b>, a treatment used nowhere else in the product &mdash; every other section head is left-aligned sentence case &mdash; and the contract row copies to the clipboard with <b>no confirmation of any kind</b>, unlike every other copy affordance which toasts.</div></div>
 <div><div class="scrcap"><i></i>Home / Overview</div>
         <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
           <div class="stat"><span>9:41</span><span class="r">✦ ▪ ▪</span></div>
