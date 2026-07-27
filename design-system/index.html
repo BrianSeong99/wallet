@@ -556,8 +556,16 @@ table.map td code{font-size:var(--t-label)}
 .mseg .seg[data-act="receive"] .svgic{background-color:var(--act-receive)}
 .mseg .seg[data-act="swap"]    .svgic{background-color:var(--act-swap)}
 .mseg .seg[data-act="earn"]    .svgic{background-color:var(--act-earn)}
+/* Layout is NOT animated here, deliberately. Animating the label's width morphs
+   the pill, but it also means the segment you just tapped is momentarily its
+   smallest -- flex:0 0 auto cannot grow, and its label starts at max-width:0, so
+   for one frame the tapped segment collapses to 48px while the untouched ones
+   balloon to 107. Measured. The incoming label then snaps while the outgoing one
+   shrinks for 14+ more frames, so the two halves of the switch are asymmetric.
+   Width now changes in a single layout pass and only the fill crossfades, which
+   is also what the bottom nav does -- it slides a ::before rather than reflowing. */
 .mseg .seg .lbl{max-width:0;opacity:0;overflow:hidden;white-space:nowrap;
-  transition:max-width var(--dur-spatial) var(--ease-spatial),opacity var(--dur-fast) ease var(--dur-fast),margin-left var(--dur-spatial) var(--ease-spatial)}
+  transition:opacity var(--dur-fast) ease}
 .mseg .seg.on .lbl{max-width:12rem;opacity:1;margin-left:0.5rem}
 @media (prefers-reduced-motion: reduce){.mseg .seg,.mseg .seg .lbl{transition-duration:.01ms}}
 /* fund-wallet prompt */
