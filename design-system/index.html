@@ -121,6 +121,7 @@
   --accent:#E77537; --accent-hover:#D3651F; --accent-ink:#A84A1A; --accent-wash:#FFF3EC;
   --accent-critical:#D9661F;
   --on-accent:#FFFFFF;        /* CTA labels — 3.00:1, valid as large text (>=18.66px bold) */
+  --on-neg:#FFFFFF;           /* label on a --neg fill — 6.84:1 in light */
   --on-accent-sm:#1C1A18;     /* small labels on accent — 5.78:1, valid at any size */
   --pos:#4A6B44; --pos-wash:#EAF1E8; --pend:#A8421F; --neg:#A33421; --warn:#8A5A00;
   --warn-wash:#F6EEDC; --neg-wash:#F7EAE7;
@@ -174,6 +175,7 @@
   --on-accent:#FFFFFF;
   --on-accent-sm:#191919;
   --pos:#90BA89; --pos-wash:#26301F; --pend:#EE6B38; --neg:#F5736B; --warn:#E8B33F;
+  --on-neg:#1C1A18;           /* dark --neg is a light coral; white on it fails, near-black is 6.23:1 */
   --warn-wash:#33290F; --neg-wash:#3A1F1C;
   --act-send:#91ACC1; --act-receive:#99AC94; --act-swap:#BEACD2; --act-earn:#777487;
   --tx-received:#A8BBA3; --tx-sent:#A3BCCF; --tx-swap:#C9BAD9; --tx-earn:#BDB9CC; --tx-faucet:#CDB0DE;
@@ -310,6 +312,13 @@ hr.rule{border:0;border-top:1px solid var(--rule);margin:2.5rem 0}
    conforms only as WCAG "large text" (>=14pt bold = 18.66px bold). Shrink this label
    below 18.66px bold and the button silently becomes non-conformant. */
 .btn-primary{background:var(--accent);color:var(--on-accent);border-radius:var(--radius-full);padding:0.875rem 1.625rem;font-size:var(--text-cta);font-weight:700}
+/* Destructive fill. Exists because the accent means "recommended", and a control that erases the
+   wallet must not wear the same clothes as Continue. Filled, not outlined, per the no-bordered-
+   controls rule -- the weight comes from the hue, not from a border. --on-neg flips with the
+   theme: white is 6.84:1 on the light --neg and would fail on the dark one, which is a light
+   coral, so dark uses near-black at 6.23:1. */
+.btn-danger{background:var(--neg);color:var(--on-neg);border-radius:var(--radius-full);padding:0.875rem 1.625rem;font-size:var(--text-cta);font-weight:700}
+.btn[disabled]{opacity:.45;pointer-events:none}
 .btn-primary:hover{background:var(--accent-hover)}
 .btn-primary:disabled{background:var(--surface-3);color:var(--ink-3);cursor:not-allowed}
 .btn-secondary{background:var(--surface-2);color:var(--ink);border-radius:var(--radius-full);padding:0.9375rem 1.625rem}
@@ -1504,8 +1513,9 @@ ul.tick li:before{content:"→";position:absolute;left:0.125rem;color:var(--acce
 .amtent .sub2{font-size:var(--t-label);color:var(--ink-2);margin-top:0.375rem}
 .maxb{background:var(--surface-2);border:0;border-radius:var(--radius-full);padding:0.4375rem 0.9375rem;font-weight:700;font-size:var(--t-label);cursor:pointer;color:var(--ink);font-family:var(--ui)}
 .chk,.rad{display:inline-flex;align-items:center;gap:0.5625rem;font-size:var(--t-body);cursor:pointer;color:var(--ink);font-family:var(--ui)}
-.chk .box{width:1.375rem;height:1.375rem;border-radius:var(--radius-sm);background:var(--surface-3);display:flex;align-items:center;justify-content:center;color:transparent;font-size:var(--t-label);font-weight:800;transition:background var(--dur-base) ease,color var(--dur-base) ease,transform var(--dur-base) var(--ease-spatial)}
-.chk.on .box{background:var(--accent);color:var(--on-accent);transform:scale(1.06)}
+.chk .box{width:1.375rem;height:1.375rem;border-radius:var(--radius-sm);background:var(--surface-3);display:flex;align-items:center;justify-content:center;font-size:var(--t-label);font-weight:800;transition:background var(--dur-base) ease,transform var(--dur-base) var(--ease-spatial)}
+.chk.on .box::after{content:'\2713';color:var(--on-accent)}
+.chk.on .box{background:var(--accent);transform:scale(1.06)}
 .rad .cir{width:1.375rem;height:1.375rem;border-radius:50%;background:var(--surface-3);display:flex;align-items:center;justify-content:center;transition:background var(--dur-base) ease}
 .rad .cir i{width:0.5625rem;height:0.5625rem;border-radius:50%;background:transparent;transform:scale(.4);transition:background var(--dur-base) ease,transform var(--dur-base) var(--ease-spatial);display:block}
 .rad.on .cir{background:var(--accent)} .rad.on .cir i{background:var(--on-accent);transform:scale(1)}
@@ -3137,21 +3147,6 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
     <h2 class="h">Onboarding</h2>
     <p class="sub">Mirrors the shipped <code>STEP_TO_PROGRESS</code> model: <b>4 steps</b> (3 when the protection choice is skipped) &mdash; not the 7 I had invented. Detours never move the bar. Every screen the app ships is now represented, including the import path, the biometric fallback and the error states.</p>
     <div class="scrgrid">
-      <div><div class="scrcap"><i></i>Forgot password</div>
-        <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
-          <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>
-          <div class="mpad" style="flex:1;display:flex;flex-direction:column">
-            <div class="sh2"><span class="bk2">&times;</span><span class="t2">Forgot Password?</span></div>
-            <div class="rcpt" style="padding-top:1.5rem">
-              <div class="eic" style="background:var(--warn-wash);color:var(--warn)"><span class="svgic" style="--ic:url(assets/icons/key.svg)" aria-hidden="true"></span></div>
-              <div class="et">Forgot Password?</div>
-              <div class="es">If you&rsquo;ve forgotten your password, you need to sign out and re-import your account. After that, you can create a new password.</div>
-              <div class="es" style="margin-top:0.75rem;color:var(--ink);font-weight:700">Do not sign out unless you know your 12-word Seed phrase or have an encrypted backup file.</div>
-            </div>
-            <div class="zone"><button class="btn btn-primary" style="width:100%">Sign Out</button></div>
-          </div>
-        </div></div></div>
-        <div class="scrnote">Shipped and undrawn until now (<code>ForgotPasswordInfo.tsx</code>), copy verbatim. It is reached from the unlock screen and it is the <b>most destructive route in the product</b>: signing out runs <code>clearClientStorage()</code> and the only way back is a 12-word seed phrase. <b>Two gaps.</b> There is no second confirmation &mdash; one tap on a primary button wipes the wallet, where deleting a single <em>contact</em> gets a confirm dialog. And the warning is the last thing on the screen, below the fold-line of the explanation, when it is the sentence that decides whether the user should be here at all. Drawn here with the warning promoted and given weight; the shipped version renders it as ordinary body text.</div></div>
       <div><div class="scrcap"><i></i>01 &middot; Splash</div>
         <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
           
@@ -3523,6 +3518,23 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
     <h3 class="sh">Chrome / Firefox extension &mdash; password-only <span class="small">360&times;600</span></h3>
     <p class="sub">On the extension there is no biometric hardware and no passcode, so the app sets <code>protectionChoiceSkipped = Create &amp;&amp; !isMobile()</code> &rarr; <b>3 steps</b>, and <code>CreatePassword</code> takes the passcode position (so it reads <b>1 of 3</b>, not 3). Frame is the popup&rsquo;s real <b>360&times;600</b> &mdash; the shortest viewport we support, with no notch and no home indicator.</p>
     <div class="scrgrid">
+      <div><div class="scrcap"><i></i>12a &middot; Forgot passcode <span class="tag retire">redrawn</span></div>
+        <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
+          <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>
+          <div class="mpad" style="flex:1;display:flex;flex-direction:column">
+            <div class="sh2"><span class="bk2">&times;</span><span class="t2">Forgot Passcode?</span></div>
+            <p class="obp" style="text-align:left;margin-top:0.25rem">If you&rsquo;ve forgotten your passcode, you need to sign out and re-import your account. After that, you can create a new one.</p>
+            <div class="notice" style="margin-top:0.875rem"><span>&#9888;</span><span>Do not sign out unless you know your 12-word Seed phrase or have an encrypted backup file.</span></div>
+            <div style="margin-top:0.5rem">
+              <div class="isrow"><div class="ish"><span class="isb" style="background:var(--ink-3)">1</span>What you need</div><div class="isdd">Your 12-word recovery phrase, or an encrypted backup file and its password. Your Guardian cannot restore a wallet you have signed out of on this device.</div></div>
+              <div class="isrow"><div class="ish"><span class="isb" style="background:var(--neg)">2</span>What happens</div><div class="isdd">This wallet is erased from this device. Accounts, contacts and history go with it.</div></div>
+              <div class="isrow"><div class="ish"><span class="isb" style="background:var(--pos)">3</span>What you get back</div><div class="isdd">Re-import with your phrase or file, then set a new passcode. Your funds are on the network, not on this device.</div></div>
+            </div>
+            <label class="chk" style="margin-top:0.875rem"><span class="box"></span>I have my recovery phrase or backup file</label>
+            <div class="zone"><div class="zpair"><button class="btn btn-secondary">Cancel</button><button class="btn btn-danger" disabled>Sign Out</button></div></div>
+          </div>
+        </div></div></div>
+        <div class="scrnote"><b>Redrawn, and moved to sit after Unlock &mdash; it is a branch off the lock screen, not an onboarding step.</b> Shipped copy is verbatim (<code>ForgotPasswordInfo.tsx</code>); everything else here is a change. <b>The previous draft wasted 40&percnt; of the screen.</b> A centred icon, a title that repeated the header word for word, two paragraphs, then roughly 350pt of nothing above the button &mdash; on the one screen in the product where the user most needs to understand what they are about to do. The dead space is now the explanation: what you need, what happens, what you get back. <b>The warning is a notice, not a bold sentence.</b> It is the line that decides whether the user should be on this screen at all, so it carries the negative wash rather than sitting as the fourth paragraph of prose. <b>Sign out is no longer orange.</b> The accent means <em>recommended</em>, and it was being used for the control that erases the wallet &mdash; identical treatment to &ldquo;Continue&rdquo;. It is now <code>.btn-danger</code>, a new variant: filled per the no&#8209;bordered&#8209;controls rule, weight from the hue. <code>--on-neg</code> flips with the theme because white measures <b>6.84:1</b> on the light <code>--neg</code> and fails on the dark one, which is a light coral; dark uses near&#8209;black at <b>6.23:1</b>. <b>The acknowledgement closes the gap this screen was drawn to document.</b> One tap on a primary button wiped the wallet, where deleting a single <em>contact</em> gets a confirm dialog. Rather than add a second screen, the destructive action is gated on the precondition the shipped copy already states &mdash; the same pattern <code>RevealSecret.tsx:348&ndash;356</code> uses before showing a private key. Cancel is the safe default and takes the left, larger-weight position. <b>New i18n keys required:</b> <code>forgotPasscodeNeedTitle</code> / <code>forgotPasscodeNeedBody</code>, <code>forgotPasscodeHappensTitle</code> / <code>forgotPasscodeHappensBody</code>, <code>forgotPasscodeAfterTitle</code> / <code>forgotPasscodeAfterBody</code>, <code>forgotPasscodeAcknowledge</code>.</div></div>
       <div><div class="scrcap"><i></i>E1 &middot; Create password <span class="tag survive">1/3</span></div>
         <div class="phone ext"><div class="screen"><div class="mock">
           <div class="extbar" style="padding-left:1rem"><span class="dot0 nti"></span>Bread &middot; Miden Testnet</div>
@@ -3586,6 +3598,21 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
           </div>
         </div></div></div>
         <div class="scrnote">Extension unlock is a <b>password field</b>, not a numpad &mdash; there is no passcode on this platform. Keeps &ldquo;Forgot password?&rdquo; so the screen is never a dead end.</div></div>
+      <div><div class="scrcap"><i></i>E5 &middot; Forgot password <span class="tag merge">extension</span></div>
+        <div class="phone ext"><div class="screen"><div class="mock">
+          <div class="extbar" style="padding-left:1rem"><span class="dot0 nti"></span>Bread &middot; Miden Testnet</div>
+          <div class="mpad" style="flex:1;display:flex;flex-direction:column">
+            <div class="sh2"><span class="bk2">&times;</span><span class="t2">Forgot Password?</span></div>
+            <p class="obp" style="text-align:left;margin-top:0.25rem">Sign out and re-import your account, then create a new password.</p>
+            <div class="notice" style="margin-top:0.75rem"><span>&#9888;</span><span>Do not sign out unless you know your 12-word Seed phrase or have an encrypted backup file.</span></div>
+            <div style="margin-top:0.375rem">
+              <div class="isrow"><div class="ish"><span class="isb" style="background:var(--neg)">!</span>This wallet is erased here</div><div class="isdd">Accounts, contacts and history are removed from this browser. Your funds are on the network.</div></div>
+            </div>
+            <label class="chk" style="margin-top:0.75rem"><span class="box"></span>I have my recovery phrase or backup file</label>
+            <div class="zone"><div class="zpair"><button class="btn btn-secondary">Cancel</button><button class="btn btn-danger" disabled>Sign Out</button></div></div>
+          </div>
+        </div></div></div>
+        <div class="scrnote"><b>The extension had no forgot-password screen in this spec at all</b>, although <code>Unlock.tsx:389&ndash;396</code> renders the link on this platform too &mdash; so the one route out of a forgotten password was drawn for mobile only. Same structure, three differences forced by the frame. <b>Copy says password, not passcode:</b> there is no numpad on this platform, and <code>Unlock.tsx:352</code> already gets this wrong in the other direction, rendering &ldquo;wrong <em>password</em> three times&rdquo; on the mobile passcode screen. <b>One consequence row, not three:</b> the popup is 600pt tall against 874, and the row that survives is the one naming what is destroyed &mdash; the other two are reassurance, and reassurance is what you cut first. <b>The acknowledgement does not shrink.</b> It is the gate on an irreversible action, so it keeps its 44pt target and its full sentence at every frame size.</div></div>
     </div>
 
     <div class="callout"><b>What changed.</b> The bar now derives from the shipped <code>STEP_TO_PROGRESS</code> map instead of an invented 7-step model; detours hold their step; and <b>six screens the app already ships</b> are represented for the first time &mdash; passcode-mismatch, create-password, account-recovery, creating-wallet, verify-seed, and the whole import path. The spec no longer describes behaviour the product lacks, nor omits behaviour it has.</div>
