@@ -1587,7 +1587,8 @@ ul.tick li:before{content:"→";position:absolute;left:0.125rem;color:var(--acce
    so it also satisfies SC 1.4.1 without leaning on hue at all.
    Format identifies the FAMILY and never the chain: an 0x string is simultaneously
    valid on every EVM network, which is why that row ends in a question. */
-.fam{font-size:var(--t-caption);font-weight:800;padding:0.125rem 0.4375rem;
+.fam{display:inline-flex;align-items:center;gap:0.3125rem;
+  font-size:var(--t-caption);font-weight:800;padding:0.1875rem 0.5rem 0.1875rem 0.1875rem;
   border-radius:var(--radius-sm);flex:none;letter-spacing:.02em;
   background:var(--surface-2);color:var(--ink-2)}
 .liverow[data-state="blocked"]{cursor:not-allowed}
@@ -1603,7 +1604,6 @@ ul.tick li:before{content:"→";position:absolute;left:0.125rem;color:var(--acce
 .netopt{display:inline-flex;align-items:center;gap:0.4375rem;min-height:2.75rem;
   padding:0 0.75rem;border-radius:var(--radius-full);background:var(--surface-2);
   font-size:var(--t-label);font-weight:700;color:var(--ink);cursor:pointer;border:0}
-.netopt .nd{width:0.625rem;height:0.625rem;border-radius:50%;flex:none}
 /* Recent is send HISTORY, not the address book, so most entries will not be
    contacts. The two cases invert: a saved contact leads with the name and
    carries the address beneath; an unsaved one has no name to lead with, so the
@@ -1613,6 +1613,20 @@ ul.tick li:before{content:"→";position:absolute;left:0.125rem;color:var(--acce
 .mrow .ini{font-family:var(--ui);font-size:var(--t-label);font-weight:800;
   color:var(--on-accent-sm)}
 .mrow .nm.addr{font-family:var(--mono);font-weight:600;font-size:var(--t-label)}
+/* Network mark: a real logo where the asset exists, the brand colour where it
+   does not. The repo holds exactly ONE chain logo -- miden.svg -- and none for
+   Ethereum, Base, Arbitrum, Optimism or Solana.
+   An initial-letter fallback was tried and removed: at a size that fits the
+   disc the glyph is 9px, under the 11pt floor, and white on the brand colours
+   runs 1.50-3.97:1, all under 4.5. It was redundant anyway, since the network
+   NAME is always directly beside the mark.
+   Hand-drawing the missing marks is the wrong fix: a poor approximation of a
+   brand logo reads as amateur and misrepresents the brand. So this is a SLOT --
+   drop an official SVG into assets/icons and add one <img> line per network,
+   with no other change required. */
+.nlg{width:1.125rem;height:1.125rem;border-radius:50%;flex:none;display:flex;
+  align-items:center;justify-content:center;overflow:hidden}
+.nlg img{width:100%;height:100%;display:block}
 .tsteps{display:flex;flex-direction:column;gap:0.125rem;margin-top:1.125rem}
 .tstep{display:flex;align-items:center;gap:0.625rem;padding:0.5625rem 0.125rem;font-size:var(--t-label)}
 .tstep .tsi{width:1.125rem;height:1.125rem;flex:none;border-radius:50%;display:flex;align-items:center;
@@ -3527,9 +3541,9 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
               </div>
             </div>
             <div class="shlab" style="margin-top:1.125rem">Recent</div>
-            <div class="mrow tap"><div class="ic" style="background:var(--tx-sent)"><span class="ini">W</span></div><div><div class="nm">Wiktor</div><div class="ad addr">mtst1ap8&hellip;r4fp</div></div><span class="fam">Miden</span><span class="go" aria-hidden="true">&rsaquo;</span></div>
-            <div class="mrow tap"><div class="ic" style="background:var(--tx-swap)"><span class="ini">D</span></div><div><div class="nm">Dominik</div><div class="ad addr">0x4E1a2b&hellip;7c90</div></div><span class="fam">Base</span><span class="go" aria-hidden="true">&rsaquo;</span></div>
-            <div class="mrow tap"><div class="ic anon"></div><div><div class="nm addr">mtst1zz9&hellip;41mn</div><div class="ad">Sent 2 days ago</div></div><span class="fam">Miden</span><span class="go" aria-hidden="true">&rsaquo;</span></div>
+            <div class="mrow tap"><div class="ic" style="background:var(--tx-sent)"><span class="ini">W</span></div><div><div class="nm">Wiktor</div><div class="ad addr">mtst1ap8&hellip;r4fp</div></div><span class="fam"><span class="nlg" style="background:var(--paper)"><img src="assets/icons/miden.svg" alt=""></span>Miden</span><span class="go" aria-hidden="true">&rsaquo;</span></div>
+            <div class="mrow tap"><div class="ic" style="background:var(--tx-swap)"><span class="ini">D</span></div><div><div class="nm">Dominik</div><div class="ad addr">0x4E1a2b&hellip;7c90</div></div><span class="fam"><span class="nlg" style="background:#0052FF"></span>Base</span><span class="go" aria-hidden="true">&rsaquo;</span></div>
+            <div class="mrow tap"><div class="ic anon"></div><div><div class="nm addr">mtst1zz9&hellip;41mn</div><div class="ad">Sent 2 days ago</div></div><span class="fam"><span class="nlg" style="background:var(--paper)"><img src="assets/icons/miden.svg" alt=""></span>Miden</span><span class="go" aria-hidden="true">&rsaquo;</span></div>
             <div class="mrow tap"><div class="ic" style="background:var(--surface-3)"><span class="svgic" style="--ic:url(assets/icons/contacts-book.svg);width:1.0625rem;height:1.0625rem;background-color:var(--ink-2)" aria-hidden="true"></span></div><div><div class="nm">Address Book</div><div class="ad">All saved contacts</div></div><span class="go" aria-hidden="true">&rsaquo;</span></div>
           </div>
         
@@ -3554,7 +3568,7 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
                 <button class="scanbtn" aria-label="Scan a QR code"><span class="svgic" style="--ic:url(assets/icons/qr-scan.svg)" aria-hidden="true"></span></button>
               </div>
             </div>
-            <div class="liverow" data-state="ok"><span class="lv"><span class="la">mtst1zz9&hellip;41mn</span><span class="ls">Not in your contacts</span></span><span class="fam">Miden</span><span class="go" aria-hidden="true">&rsaquo;</span></div>
+            <div class="liverow" data-state="ok"><span class="lv"><span class="la">mtst1zz9&hellip;41mn</span><span class="ls">Not in your contacts</span></span><span class="fam"><span class="nlg" style="background:var(--paper)"><img src="assets/icons/miden.svg" alt=""></span>Miden</span><span class="go" aria-hidden="true">&rsaquo;</span></div>
           </div>
           <div class="mnav"><button class="t on"><span class="svgic" style="--ic:url(assets/icons/home-new.svg)" aria-hidden="true"></span><span>Home</span></button><button class="t"><span class="svgic" style="--ic:url(assets/icons/explore.svg)" aria-hidden="true"></span><span>Explore</span></button><button class="t"><span class="svgic" style="--ic:url(assets/icons/activity.svg)" aria-hidden="true"></span><span>Activity</span></button></div>
         </div></div></div>
@@ -3579,7 +3593,7 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
             </div>
             <div class="liverow" data-state="ask"><span class="lv"><span class="la">0x71C7656EC7ab88b0&hellip;8976F</span><span class="ls">This address works on several networks</span></span></div>
             <div class="netpick"><div class="npq">Which network is it on?</div>
-              <div class="netopts"><button class="netopt"><span class="nd" style="background:#627EEA"></span>Ethereum</button><button class="netopt"><span class="nd" style="background:#0052FF"></span>Base</button><button class="netopt"><span class="nd" style="background:#28A0F0"></span>Arbitrum</button><button class="netopt"><span class="nd" style="background:#FF0420"></span>Optimism</button></div>
+              <div class="netopts"><button class="netopt"><span class="nlg" style="background:#627EEA"></span>Ethereum</button><button class="netopt"><span class="nlg" style="background:#0052FF"></span>Base</button><button class="netopt"><span class="nlg" style="background:#28A0F0"></span>Arbitrum</button><button class="netopt"><span class="nlg" style="background:#FF0420"></span>Optimism</button></div>
             </div>
           </div>
           <div class="mnav"><button class="t on"><span class="svgic" style="--ic:url(assets/icons/home-new.svg)" aria-hidden="true"></span><span>Home</span></button><button class="t"><span class="svgic" style="--ic:url(assets/icons/explore.svg)" aria-hidden="true"></span><span>Explore</span></button><button class="t"><span class="svgic" style="--ic:url(assets/icons/activity.svg)" aria-hidden="true"></span><span>Activity</span></button></div>
@@ -3603,7 +3617,7 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
                 <button class="scanbtn" aria-label="Scan a QR code"><span class="svgic" style="--ic:url(assets/icons/qr-scan.svg)" aria-hidden="true"></span></button>
               </div>
             </div>
-            <div class="liverow" data-state="blocked"><span class="lv"><span class="la">7xKXtg2CW87d97TXJSDpbD5jBkheTqA&hellip;</span><span class="ls">Miden cannot send to Solana</span></span><span class="fam">Solana</span></div>
+            <div class="liverow" data-state="blocked"><span class="lv"><span class="la">7xKXtg2CW87d97TXJSDpbD5jBkheTqA&hellip;</span><span class="ls">Miden cannot send to Solana</span></span><span class="fam"><span class="nlg" style="background:#14F195"></span>Solana</span></div>
           </div>
           <div class="mnav"><button class="t on"><span class="svgic" style="--ic:url(assets/icons/home-new.svg)" aria-hidden="true"></span><span>Home</span></button><button class="t"><span class="svgic" style="--ic:url(assets/icons/explore.svg)" aria-hidden="true"></span><span>Explore</span></button><button class="t"><span class="svgic" style="--ic:url(assets/icons/activity.svg)" aria-hidden="true"></span><span>Activity</span></button></div>
         </div></div></div>
@@ -3626,9 +3640,9 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
                 <button class="scanbtn" aria-label="Scan a QR code"><span class="svgic" style="--ic:url(assets/icons/qr-scan.svg)" aria-hidden="true"></span></button>
               </div>
             </div>
-            <div class="liverow" data-state="detecting"><span class="lv"><span class="la">mtst1ap8qz4v</span><span class="ls">Keep typing</span></span><span class="fam">Miden</span><span class="lcount">12 / 49</span></div>
+            <div class="liverow" data-state="detecting"><span class="lv"><span class="la">mtst1ap8qz4v</span><span class="ls">Keep typing</span></span><span class="fam"><span class="nlg" style="background:var(--paper)"><img src="assets/icons/miden.svg" alt=""></span>Miden</span><span class="lcount">12 / 49</span></div>
             <div class="shlab" style="margin-top:1.125rem">Matches</div>
-            <div class="mrow tap"><div class="ic" style="background:var(--tx-sent)"><span class="ini">W</span></div><div><div class="nm">Wiktor</div><div class="ad addr"><mark>mtst1ap8qz4v</mark>&hellip;r4fp</div></div><span class="fam">Miden</span><span class="go" aria-hidden="true">&rsaquo;</span></div>
+            <div class="mrow tap"><div class="ic" style="background:var(--tx-sent)"><span class="ini">W</span></div><div><div class="nm">Wiktor</div><div class="ad addr"><mark>mtst1ap8qz4v</mark>&hellip;r4fp</div></div><span class="fam"><span class="nlg" style="background:var(--paper)"><img src="assets/icons/miden.svg" alt=""></span>Miden</span><span class="go" aria-hidden="true">&rsaquo;</span></div>
           </div>
           <div class="mnav"><button class="t on"><span class="svgic" style="--ic:url(assets/icons/home-new.svg)" aria-hidden="true"></span><span>Home</span></button><button class="t"><span class="svgic" style="--ic:url(assets/icons/explore.svg)" aria-hidden="true"></span><span>Explore</span></button><button class="t"><span class="svgic" style="--ic:url(assets/icons/activity.svg)" aria-hidden="true"></span><span>Activity</span></button></div>
         </div></div></div>
