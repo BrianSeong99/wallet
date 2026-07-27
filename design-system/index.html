@@ -1600,10 +1600,6 @@ ul.tick li:before{content:"→";position:absolute;left:0.125rem;color:var(--acce
    would have to look up. Asking on the page also collapses a step. */
 .netpick{margin-top:0.625rem}
 .netpick .npq{font-size:var(--t-caption);font-weight:700;color:var(--ink-2);margin-bottom:0.5rem}
-.netopts{display:flex;flex-wrap:wrap;gap:0.375rem}
-.netopt{display:inline-flex;align-items:center;gap:0.4375rem;min-height:2.75rem;
-  padding:0 0.75rem;border-radius:var(--radius-full);background:var(--surface-2);
-  font-size:var(--t-label);font-weight:700;color:var(--ink);cursor:pointer;border:0}
 /* Recent is send HISTORY, not the address book, so most entries will not be
    contacts. The two cases invert: a saved contact leads with the name and
    carries the address beneath; an unsaved one has no name to lead with, so the
@@ -1627,6 +1623,26 @@ ul.tick li:before{content:"→";position:absolute;left:0.125rem;color:var(--acce
 .nlg{width:1.125rem;height:1.125rem;border-radius:50%;flex:none;display:flex;
   align-items:center;justify-content:center;overflow:hidden}
 .nlg img{width:100%;height:100%;display:block}
+/* Network options are ROWS, not wrapping chips. The page is already a list --
+   the typed address, the recents, the address book -- so a chip cloud was the
+   only thing on it with a different shape, and it wrapped to two ragged lines.
+   As rows they match the resolved-address row directly above them, which is
+   what makes the choice read as continuing that row rather than a new UI. */
+.netrow{display:flex;align-items:center;gap:0.625rem;padding:0.6875rem 0;cursor:pointer;
+  border-bottom:1px solid var(--rule)}
+.netrow:last-child{border-bottom:0}
+.netrow .nname{font-size:var(--t-label);font-weight:700;color:var(--ink)}
+.netrow .go{margin-left:auto}
+/* Detecting: the row that will hold the answer is present and shimmering, so the
+   layout does not jump when it resolves and the wait has somewhere to live. */
+.lskel{display:flex;align-items:center;gap:0.625rem;padding:0.6875rem 0}
+.lskel .sk{border-radius:var(--radius-sm);
+  background:linear-gradient(90deg,var(--surface-2) 25%,var(--surface-3) 37%,var(--surface-2) 63%);
+  background-size:400% 100%;animation:shimmer 1.4s ease infinite}
+.lskel .sk1{height:0.8125rem;width:58%}
+.lskel .sk2{height:0.6875rem;width:34%;margin-top:0.375rem}
+.lskel .skc{width:1.125rem;height:1.125rem;border-radius:50%;flex:none}
+@media (prefers-reduced-motion: reduce){.lskel .sk{animation-duration:.01ms}}
 .tsteps{display:flex;flex-direction:column;gap:0.125rem;margin-top:1.125rem}
 .tstep{display:flex;align-items:center;gap:0.625rem;padding:0.5625rem 0.125rem;font-size:var(--t-label)}
 .tstep .tsi{width:1.125rem;height:1.125rem;flex:none;border-radius:50%;display:flex;align-items:center;
@@ -3593,7 +3609,12 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
             </div>
             <div class="liverow" data-state="ask"><span class="lv"><span class="la">0x71C7656EC7ab88b0&hellip;8976F</span><span class="ls">This address works on several networks</span></span></div>
             <div class="netpick"><div class="npq">Which network is it on?</div>
-              <div class="netopts"><button class="netopt"><span class="nlg" style="background:#627EEA"></span>Ethereum</button><button class="netopt"><span class="nlg" style="background:#0052FF"></span>Base</button><button class="netopt"><span class="nlg" style="background:#28A0F0"></span>Arbitrum</button><button class="netopt"><span class="nlg" style="background:#FF0420"></span>Optimism</button></div>
+              <div class="netlist">
+              <div class="netrow"><span class="nlg" style="background:#627EEA"><span class="svgic" style="--ic:url(assets/icons/ethereum.svg);width:0.75rem;height:0.75rem;background-color:#FFFFFF" aria-hidden="true"></span></span><span class="nname">Ethereum</span><span class="go" aria-hidden="true">&rsaquo;</span></div>
+              <div class="netrow"><span class="nlg" style="background:#0052FF"></span><span class="nname">Base</span><span class="go" aria-hidden="true">&rsaquo;</span></div>
+              <div class="netrow"><span class="nlg" style="background:var(--paper)"><img src="assets/icons/arbitrum.svg" alt=""></span><span class="nname">Arbitrum</span><span class="go" aria-hidden="true">&rsaquo;</span></div>
+              <div class="netrow"><span class="nlg" style="background:#FF0420"><span class="svgic" style="--ic:url(assets/icons/optimism.svg);width:0.75rem;height:0.75rem;background-color:#FFFFFF" aria-hidden="true"></span></span><span class="nname">Optimism</span><span class="go" aria-hidden="true">&rsaquo;</span></div>
+            </div>
             </div>
           </div>
           <div class="mnav"><button class="t on"><span class="svgic" style="--ic:url(assets/icons/home-new.svg)" aria-hidden="true"></span><span>Home</span></button><button class="t"><span class="svgic" style="--ic:url(assets/icons/explore.svg)" aria-hidden="true"></span><span>Explore</span></button><button class="t"><span class="svgic" style="--ic:url(assets/icons/activity.svg)" aria-hidden="true"></span><span>Activity</span></button></div>
@@ -3641,6 +3662,7 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
               </div>
             </div>
             <div class="liverow" data-state="detecting"><span class="lv"><span class="la">mtst1ap8qz4v</span><span class="ls">Keep typing</span></span><span class="fam"><span class="nlg" style="background:var(--paper)"><img src="assets/icons/miden.svg" alt=""></span>Miden</span><span class="lcount">12 / 49</span></div>
+            <div class="lskel"><span class="sk skc"></span><span style="flex:1"><span class="sk sk1" style="display:block"></span><span class="sk sk2" style="display:block"></span></span></div>
             <div class="shlab" style="margin-top:1.125rem">Matches</div>
             <div class="mrow tap"><div class="ic" style="background:var(--tx-sent)"><span class="ini">W</span></div><div><div class="nm">Wiktor</div><div class="ad addr"><mark>mtst1ap8qz4v</mark>&hellip;r4fp</div></div><span class="fam"><span class="nlg" style="background:var(--paper)"><img src="assets/icons/miden.svg" alt=""></span>Miden</span><span class="go" aria-hidden="true">&rsaquo;</span></div>
           </div>
