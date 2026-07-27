@@ -1380,6 +1380,10 @@ ul.tick li:before{content:"→";position:absolute;left:2px;color:var(--accent-in
 /* Centred empty/no-results block inside a sheet. */
 .shempty{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
   text-align:center;padding:26px 14px 38px}
+/* Success summary pill: "amount -> recipient" (SuccessSummaryPill). */
+.sumpill{display:inline-flex;align-items:center;gap:7px;margin-top:13px;padding:9px 14px;
+  border-radius:var(--radius-full);background:var(--surface-2);
+  font-size:var(--t-label);font-weight:700;color:var(--ink)}
 .tsteps{display:flex;flex-direction:column;gap:2px;margin-top:18px}
 .tstep{display:flex;align-items:center;gap:10px;padding:9px 2px;font-size:var(--t-label)}
 .tstep .tsi{width:18px;height:18px;flex:none;border-radius:50%;display:flex;align-items:center;
@@ -3352,7 +3356,7 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
               <div class="tstep" data-state="pending"><span class="tsi"></span><span class="tsl">Syncing with Guardian</span></div>
             </div>
             <div class="scrnote2" style="margin-top:14px">This may take a moment depending on network traffic. You can close this &mdash; we&rsquo;ll notify you when it&rsquo;s done.</div>
-            <div class="zone"><button class="btn btn-secondary">Hide</button></div>
+            <div class="zone"><button class="btn btn-secondary" style="width:100%">Hide</button></div>
                   </div>
         </div></div></div></div>
         <div class="scrnote">The four steps are the shipped ones (<code>constants.ts:10-31</code>). <b>But this sequence is optimistic and the code says so:</b> the non-guardian path emits only <code>syncing</code> then <code>sending</code> before entering the SDK pipeline, so <b>step 3 jumps from pending straight to complete and is never active</b>, and for a public send or <em>any swap</em> steps 2&ndash;4 never animate at all. Step 4 is labelled &ldquo;Syncing with Guardian&rdquo; while what happens there is note confirmation and delivery. The failure state surfaces nothing either: <code>row.error</code> exists on <code>ITransaction</code> and this screen never reads it, offering only <code>done</code> with no reason and no retry.</div></div>
@@ -3361,18 +3365,17 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
           <div class="stat"><span>9:41</span><span class="r">✦ ▪ ▪</span></div>
           <div class="mpad" style="flex:1;display:flex;flex-direction:column">
             <div class="rcpt"><div class="ok2">✓</div>
-              <div style="font-family:var(--display);font-weight:900;font-size:var(--t-heading)">Sent</div>
-              <div style="font-family:var(--num);font-feature-settings:var(--num-feat);font-weight:800;font-size:26px;margin-top:8px">100.00 USDC</div>
-              <div style="font-size:var(--t-label);color:var(--ink-2);margin-top:4px">≈ $200.00 USD</div></div>
+              <div style="font-family:var(--display);font-weight:900;font-size:var(--t-heading)">Payment Sent!</div>
+              <div class="sumpill"><span class="num">100.00 USDC</span><span style="color:var(--ink-2)">&rarr;</span><span class="addr2">mtst1kq2…88xz</span></div></div>
             <div class="dmeta" style="margin-top:20px">
               <div class="drow"><span class="k">To</span><span class="v"><span class="av3"><span class="dot3"></span><span class="addr2">mtst1kq2…88xz</span></span></span></div>
-              <div class="drow"><span class="k">Network fee</span><span class="v num">0.0021</span></div>
-              <div class="drow"><span class="k">Transaction</span><span class="v addr2">0ab3…77df</span></div>
+              <div class="drow"><span class="k">Total Paid</span><span class="v num">100.00 USDC</span></div>
+              <div class="drow" style="min-height:44px"><span class="k">Source TX</span><span class="v addr2">0ab3…77df</span><span style="color:var(--accent-ink);font-size:var(--t-caption);font-weight:700;margin-left:8px">View on Midenscan</span></div>
             </div>
-            <div class="zone"><button class="btn btn-primary" style="width:100%">Done</button><div class="gh">View in explorer ›</div></div>
+            <div class="zone"><button class="btn btn-primary" style="width:100%">Done</button><button class="btn btn-secondary" style="width:100%;margin-top:8px">View in Activities</button></div>
           </div>
         </div></div></div>
-        <div class="scrnote">Confirmation is a rare high-stakes moment, so it earns the drawn tick — but stays factual, not celebratory.</div></div>
+        <div class="scrnote">Rows are <code>buildReceiptRows</code> verbatim: <b>To &rarr; Total Paid &rarr; Source TX</b> (<code>receipt.ts:30&ndash;65</code>), each appended only when its data exists. There is deliberately <b>no fee row</b> &mdash; the wallet surfaces no fee anywhere in the send flow, so an earlier draft of this screen invented one. The <code>Route</code> row between To and Total Paid only appears for a bridged send, which is unreachable, so it never renders. Note two shipped oddities: the recipient is shown <b>twice</b>, once in the pill and once as the To row; and <code>totalPaid</code>, <code>sourceTx</code> and <code>transactionComplete</code> are <b>absent from en.json</b> &mdash; they survive only on <code>defaultValue</code> fallbacks in code, so every non-English locale shows the raw key. Confirmation is a rare high-stakes moment, so it earns the drawn tick — but stays factual, not celebratory.</div></div>
 <div><div class="scrcap"><i></i>Contacts &middot; picker <span class="tag merge">sheet</span></div>
         <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
           <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>
