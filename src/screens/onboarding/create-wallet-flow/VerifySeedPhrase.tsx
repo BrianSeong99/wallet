@@ -122,7 +122,7 @@ export const VerifySeedPhraseScreen: React.FC<VerifySeedPhraseScreenProps> = ({
             </div>
           </>
         )}
-        <Button disabled={!isCorrectWordSelected} title={t('continue')} onClick={onSubmit} className="" />
+        <Button disabled={!isCorrectWordSelected} title={t('continue')} onClick={onSubmit} />
       </div>
     </div>
   );

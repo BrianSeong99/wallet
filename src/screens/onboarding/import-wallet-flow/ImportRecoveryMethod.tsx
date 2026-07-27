@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { Icon, IconName } from 'app/icons/v2';
 import { Button } from 'components/Button';
 import { Input } from 'components/Input';
+import { ActionZone } from 'components/ui/ActionZone';
 import { DEFAULT_NETWORK, GUARDIAN_OPTIONS, getGuardianOptionsForNetwork } from 'lib/miden-chain/constants';
 import { isValidGuardianUrl, sanitizeGuardianUrl } from 'lib/settings/helpers';
 import { Badge } from 'lib/ui/badge';
@@ -173,9 +174,9 @@ export const ImportRecoveryMethodScreen: React.FC<ImportRecoveryMethodScreenProp
         })}
       </div>
 
-      <div className="flex flex-col gap-2 self-center w-full mt-auto">
-        <Button title={t('continue')} onClick={handleContinue} disabled={!canContinue} className="text-base" />
-      </div>
+      <ActionZone>
+        <Button title={t('continue')} onClick={handleContinue} disabled={!canContinue} />
+      </ActionZone>
     </div>
   );
 };

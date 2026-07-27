@@ -4,6 +4,7 @@ import classNames from 'clsx';
 import { useTranslation } from 'react-i18next';
 
 import { Button } from 'components/Button';
+import { ActionZone } from 'components/ui/ActionZone';
 import { Badge } from 'lib/ui/badge';
 
 import { WalletType } from '../types';
@@ -85,9 +86,9 @@ export const SelectRecoveryMethodScreen = ({
           </div>
         ))}
       </div>
-      <div className="flex flex-col gap-2 self-center w-full mt-auto">
-        <Button title={t('continue')} onClick={handleContinue} className="text-base" />
-      </div>
+      <ActionZone>
+        <Button title={t('continue')} onClick={handleContinue} />
+      </ActionZone>
     </div>
   );
 };

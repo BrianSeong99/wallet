@@ -8,6 +8,7 @@ import { ReactComponent as LambdaClassLogo } from 'app/icons/guardian-operator-l
 import { ReactComponent as OpenZeppelinLogo } from 'app/icons/guardian-operator-logs/open-zeppelin.svg';
 import { Button } from 'components/Button';
 import { Input } from 'components/Input';
+import { ActionZone } from 'components/ui/ActionZone';
 import { getGuardianOptionsForNetwork } from 'lib/miden-chain/constants';
 import { hapticLight } from 'lib/mobile/haptics';
 import { isValidGuardianUrl, sanitizeGuardianUrl } from 'lib/settings/helpers';
@@ -107,7 +108,7 @@ export const ChooseGuardianScreen: React.FC<ChooseGuardianScreenProps> = ({
 
   return (
     <div className="bg-app-bg h-full overflow-y-auto" data-testid="onboarding-choose-guardian">
-      <div className="min-h-full flex flex-col px-6 pb-6">
+      <div className="min-h-full flex flex-col px-6">
         {!hideHeader && (
           <div className="pt-8 shrink-0">
             <h1 className="text-numeric-hero font-semibold font-heading text-heading-gray leading-[105%] tracking-tight">
@@ -204,9 +205,9 @@ export const ChooseGuardianScreen: React.FC<ChooseGuardianScreenProps> = ({
           </div>
         )}
 
-        <div className="w-full flex flex-col items-center gap-4 pt-6 mt-auto shrink-0">
+        <ActionZone>
           <Button title={submitLabel ?? t('continue')} onClick={handleContinue} />
-        </div>
+        </ActionZone>
       </div>
 
       <GuardianInfoDrawer open={isInfoOpen} onOpenChange={setIsInfoOpen} />

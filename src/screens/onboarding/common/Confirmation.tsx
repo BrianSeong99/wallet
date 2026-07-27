@@ -5,6 +5,7 @@ import { Trans, useTranslation } from 'react-i18next';
 import Spinner from 'app/atoms/Spinner/Spinner';
 import { ReactComponent as ConfirmationHero } from 'app/icons/onboarding/confirmation-illustrantion.svg';
 import { Button, ButtonVariant } from 'components/Button';
+import { ActionZone } from 'components/ui/ActionZone';
 
 const MAX_BIOMETRIC_ATTEMPTS = 3;
 
@@ -55,7 +56,7 @@ export const ConfirmationScreen: React.FC<ConfirmationScreenProps> = ({
 
   return (
     <div {...props} className="bg-app-bg max-w-full h-full overflow-hidden" data-testid="onboarding-confirmation">
-      <div className="min-h-full flex flex-col items-center px-6 pb-8">
+      <div className="min-h-full flex flex-col items-center px-6">
         <div className="flex-1 flex flex-col items-center justify-center w-full text-center py-8">
           <ConfirmationHero style={{ width: 240, height: 'auto' }} />
           <h1 className="mt-6 text-5xl font-semibold font-heading text-heading-gray leading-[100%] tracking-tight">
@@ -65,7 +66,7 @@ export const ConfirmationScreen: React.FC<ConfirmationScreenProps> = ({
           <p className="mt-3 text-lg text-heading-gray leading-[130%] font-medium">
             {t('recoveryPhraseSevenDayReminder')}
           </p>
-          <p className="mt-4 text-lg text-heading-gray leading-[130%]" font-medium>
+          <p className="mt-4 text-lg font-medium text-heading-gray leading-[130%]">
             {t('recoveryPhraseDailyReminder')}
           </p>
 
@@ -81,7 +82,7 @@ export const ConfirmationScreen: React.FC<ConfirmationScreenProps> = ({
           )}
         </div>
 
-        <div className="w-full flex flex-col items-center gap-y-3 shrink-0">
+        <ActionZone>
           {showPasswordFallback ? (
             <>
               <Button
@@ -103,13 +104,15 @@ export const ConfirmationScreen: React.FC<ConfirmationScreenProps> = ({
             <Button
               tabIndex={0}
               title={primaryButtonTitle}
-              className="self-center w-full text-base"
+              // No text-base override here: it would beat Button's text-cta and
+              // put the label back below the size white-on-accent needs.
+              className="self-center w-full"
               onClick={onSubmit}
               isLoading={isLoading}
               data-testid="onboarding-confirmation-submit"
             />
           )}
-        </div>
+        </ActionZone>
       </div>
     </div>
   );

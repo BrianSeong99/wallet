@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { IconName } from 'app/icons/v2';
 import { Button, ButtonVariant } from 'components/Button';
 import { Chip } from 'components/Chip';
+import { ActionZone } from 'components/ui/ActionZone';
 
 export interface BackUpSeedPhraseScreenProps extends HTMLAttributes<HTMLDivElement> {
   seedPhrase: string[];
@@ -78,25 +79,29 @@ export const BackUpSeedPhraseScreen: React.FC<BackUpSeedPhraseScreenProps> = ({
       </article>
 
       <div className="flex gap-2 w-full text-heading-gray">
+        {/* Both are filled-secondary rather than one outlined and one bare:
+            these sit side by side doing the same kind of job, and an outline on
+            a tap target reads as structural separation. They also disagreed
+            with each other, which is the drift in miniature. */}
         <Button
-          className="border-border-card border-[0.5px] text-xs font-medium h-8 w-1/2 py-5"
-          variant={ButtonVariant.Ghost}
+          className="text-xs font-medium h-8 w-1/2 py-5"
+          variant={ButtonVariant.Secondary}
           title={t(isWordsVisible ? 'hide' : 'show')}
           iconLeft={isWordsVisible ? IconName.EyeOff : IconName.Eye}
           onClick={onWordsVisibilityToggle}
         />
         <Button
-          className="text-xs font-medium h-8 border-0 w-1/2 py-5"
-          variant={ButtonVariant.Ghost}
+          className="text-xs font-medium h-8 w-1/2 py-5"
+          variant={ButtonVariant.Secondary}
           title={t(isCopied ? 'copied' : 'copyToClipboard')}
           iconLeft={isCopied ? IconName.CheckboxCircleFill : IconName.FileCopy}
           onClick={onCopyToClipboard}
         />
       </div>
 
-      <div className="flex flex-col gap-2 self-center w-full mt-auto">
-        <Button title={t('continue')} onClick={onSubmit} className="text-base" />
-      </div>
+      <ActionZone>
+        <Button title={t('continue')} onClick={onSubmit} />
+      </ActionZone>
     </div>
   );
 };

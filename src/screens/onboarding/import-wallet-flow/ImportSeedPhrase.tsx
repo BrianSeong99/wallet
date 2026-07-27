@@ -7,6 +7,7 @@ import { useTranslation } from 'react-i18next';
 import { formatMnemonic } from 'app/defaults';
 import { Button } from 'components/Button';
 import { Input } from 'components/Input';
+import { ActionZone } from 'components/ui/ActionZone';
 
 const DELIMITERS = /[\s,;.\-:/\\_|]+/;
 const PHRASE_LENGTH = 12;
@@ -99,7 +100,7 @@ export const ImportSeedPhraseScreen: React.FC<ImportSeedPhraseScreenProps> = ({
       {isError && <p className="text-red-500 text-xs mt-4">{t('importSeedPhraseError')}</p>}
       {isChecksumError && <p className="text-red-500 text-xs mt-4">{t('justValidPreGeneratedMnemonic')}</p>}
 
-      <div className="mt-auto w-full">
+      <ActionZone>
         <Button
           id={'submit-button'}
           title={t('continue')}
@@ -107,7 +108,7 @@ export const ImportSeedPhraseScreen: React.FC<ImportSeedPhraseScreenProps> = ({
           disabled={!isValid}
           className="w-full"
         />
-      </div>
+      </ActionZone>
     </div>
   );
 };

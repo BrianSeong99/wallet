@@ -116,7 +116,10 @@ describe('SelectRecoveryMethodScreen', () => {
 
       const button = screen.getByTestId('continue-button');
       expect(button).toHaveTextContent('continue');
-      expect(button).toHaveAttribute('data-classname', 'text-base');
+      // The screen no longer passes className="text-base". That override beat
+      // Button's own text-cta and put the label back under the size that
+      // white-on-accent requires to stay legible.
+      expect(button).not.toHaveAttribute('data-classname', 'text-base');
 
       fireEvent.click(button);
       expect(onSubmit).toHaveBeenCalledTimes(1);

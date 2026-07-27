@@ -6,6 +6,7 @@ import { ReactComponent as FaceIcon } from 'app/icons/onboarding/face.svg';
 import { ReactComponent as FingerprintIcon } from 'app/icons/onboarding/fingerprint.svg';
 import { Icon, IconName } from 'app/icons/v2';
 import { Button, ButtonVariant } from 'components/Button';
+import { ActionZone } from 'components/ui/ActionZone';
 import { authenticate, checkBiometricAvailability } from 'lib/biometric';
 import { hapticLight } from 'lib/mobile/haptics';
 import { isIOS, isMobile } from 'lib/platform';
@@ -109,7 +110,7 @@ export const SetupBiometricScreen: React.FC<SetupBiometricScreenProps> = ({ onSw
 
   return (
     <div className="bg-app-bg h-full overflow-y-auto" data-testid="onboarding-setup-biometric">
-      <div className="min-h-full flex flex-col items-center px-6 pb-6">
+      <div className="min-h-full flex flex-col items-center px-6">
         <div className="flex-1 flex flex-col items-center justify-center w-full">
           {phase === 'prompt' ? (
             <>
@@ -138,13 +139,13 @@ export const SetupBiometricScreen: React.FC<SetupBiometricScreenProps> = ({ onSw
           )}
         </div>
 
-        <div className="w-full flex flex-col items-center gap-2 shrink-0">
+        <ActionZone>
           {phase === 'prompt' ? (
             <Button title={t('usePasscodeInstead')} variant={ButtonVariant.Ghost} onClick={onSwitchToPasscode} />
           ) : (
             <Button title={t('continue')} onClick={onContinue} />
           )}
-        </div>
+        </ActionZone>
       </div>
     </div>
   );
