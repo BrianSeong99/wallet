@@ -10,6 +10,10 @@
 
 ### Fixes
 
+* [FIX][all] **Keyboard focus is no longer thrown away every time a button is clicked.** `Button` called `blur()` on every click, which sent focus back to the top of the document — so anyone navigating onboarding by keyboard lost their place on every single step, and had to tab back from the beginning. The blur existed to stop a focus ring sticking after a touch tap; that is now handled by `:focus-visible`, so the ring appears for keyboard users and not for touch.
+* [FIX][all] **The primary button label is now large enough to be legible on the orange fill.** White on the brand orange measures exactly 3.00:1, which only meets the contrast standard at "large text" sizes — but the label was being drawn at 16px, below that threshold, so every primary action in the app fell short. The label is now 19px bold, which conforms. Secondary and ghost buttons are unchanged.
+* [FIX][all] **The ghost button no longer draws an outline.** Buttons are filled or borderless; an outline on a tap target reads as structural separation and made ghost actions compete with the primary action next to them.
+
 * [FIX][all] **The home action bar (Overview/Send/Receive/Swap) now announces itself as navigation instead of a tab widget.** Its segments change the route rather than swapping a tabpanel, so `role="tablist"`/`role="tab"` were wrong on two counts: screen readers announced "tab, selected, 1 of 5" for what is page navigation, and `role="tab"` advertises an arrow-key traversal contract the component never implemented. The bar is now a labelled `<nav>` whose active segment carries `aria-current="page"` — the same semantics the bottom nav already used. No visual or animation change.
 
 ## 1.15.11 (2026-07-26)
