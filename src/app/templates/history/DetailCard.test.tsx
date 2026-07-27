@@ -113,11 +113,11 @@ describe('StatusPill', () => {
     const { container } = render(<StatusPill status={ITransactionStatus.Completed} />);
 
     expect(pill(container)).toHaveClass('flex', 'items-center', 'rounded-full', 'bg-green-600/20');
-    expect(dot(container)).toHaveClass('bg-[#1A9C52]');
+    expect(dot(container)).toHaveClass('bg-pos');
     expect(dot(container)).not.toHaveClass('bg-status-negative', 'bg-blue-500');
 
     const text = label(container);
-    expect(text).toHaveClass('text-[#1A9C52]');
+    expect(text).toHaveClass('text-pos');
     expect(text).toHaveTextContent('t:confirmed');
   });
 
@@ -125,7 +125,7 @@ describe('StatusPill', () => {
     const { container } = render(<StatusPill status={ITransactionStatus.Failed} />);
 
     expect(dot(container)).toHaveClass('bg-status-negative');
-    expect(dot(container)).not.toHaveClass('bg-[#1A9C52]', 'bg-blue-500');
+    expect(dot(container)).not.toHaveClass('bg-pos', 'bg-blue-500');
 
     const text = label(container);
     expect(text).toHaveClass('text-status-negative');
@@ -136,7 +136,7 @@ describe('StatusPill', () => {
     const { container } = render(<StatusPill />);
 
     expect(dot(container)).toHaveClass('bg-blue-500');
-    expect(dot(container)).not.toHaveClass('bg-[#1A9C52]', 'bg-status-negative');
+    expect(dot(container)).not.toHaveClass('bg-pos', 'bg-status-negative');
 
     const text = label(container);
     expect(text).toHaveClass('text-blue-500');

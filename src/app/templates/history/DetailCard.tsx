@@ -30,8 +30,10 @@ export const StatusPill: FC<{ status?: ITransactionStatus }> = memo(({ status })
   const isCompleted = status === ITransactionStatus.Completed;
   const isFailed = status === ITransactionStatus.Failed;
 
-  const dotColor = isCompleted ? 'bg-[#1A9C52]' : isFailed ? 'bg-status-negative' : 'bg-blue-500';
-  const textColor = isCompleted ? 'text-[#1A9C52]' : isFailed ? 'text-status-negative' : 'text-blue-500';
+  // --pos, not the raw #1A9C52: the green was a light-mode-only value and stayed
+  // put when the theme flipped.
+  const dotColor = isCompleted ? 'bg-pos' : isFailed ? 'bg-status-negative' : 'bg-blue-500';
+  const textColor = isCompleted ? 'text-pos' : isFailed ? 'text-status-negative' : 'text-blue-500';
   const label = isCompleted ? t('confirmed') : isFailed ? t('failed') : t('inProgress');
 
   return (

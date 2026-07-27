@@ -8,6 +8,12 @@ import { IconOrComponent } from 'utils/icon-or-component';
 
 /**
  * CardItemProps interface for CardItem component
+ *
+ * This is the single list/card row primitive — the near-duplicate `ListItem`
+ * was folded in here, contributing the `iconLeftClassName` / `iconRightClassName`
+ * slot hooks. Asset rows (`ui/AssetListItem`) and transaction rows
+ * (`ui/ActivityRow`) are deliberately NOT part of this: they carry their own
+ * domain layout (sparkline/price, coloured glyph + status dot).
  */
 export interface CardItemProps extends React.ComponentProps<'div'> {
   className?: string;
@@ -22,6 +28,10 @@ export interface CardItemProps extends React.ComponentProps<'div'> {
   subtitleClassName?: string;
   titleRightClassName?: string;
   subtitleRightClassName?: string;
+  /** Extra classes on the left icon slot. */
+  iconLeftClassName?: string;
+  /** Extra classes on the right icon slot. */
+  iconRightClassName?: string;
 }
 
 export const LeftIconOrComponent = ({
@@ -63,6 +73,8 @@ export const CardItem: React.FC<CardItemProps> = ({
   subtitleClassName,
   titleRightClassName,
   subtitleRightClassName,
+  iconLeftClassName,
+  iconRightClassName,
   ...props
 }) => {
   const handleClick = (e: React.MouseEvent<HTMLDivElement>) => {
@@ -83,7 +95,9 @@ export const CardItem: React.FC<CardItemProps> = ({
 
   return (
     <div {...props} className={cardItemClasses} onClick={handleClick}>
-      <div className="shrink-0">{iconLeft && <LeftIconOrComponent icon={iconLeft} color="black" />}</div>
+      <div className={classNames('shrink-0', iconLeftClassName)}>
+        {iconLeft && <LeftIconOrComponent icon={iconLeft} color="black" />}
+      </div>
       <div className="flex overflow-hidden w-full justify-between">
         <div className="flex-col flex justify-center overflow-hidden gap-1">
           {title && (
@@ -123,7 +137,7 @@ export const CardItem: React.FC<CardItemProps> = ({
         )}
       </div>
       {iconRight && (
-        <div className="shrink-0">
+        <div className={classNames('shrink-0', iconRightClassName)}>
           {/* text-black auto-flips with theme; currentColor icons follow it */}
           <IconOrComponent icon={iconRight} color="black" className="text-black" />
         </div>
