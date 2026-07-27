@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="light" data-earn="off">
+<html lang="en" data-earn="off">
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -9,6 +9,15 @@
      cache with ?cb=, a human browser does not. -->
 <meta http-equiv="Cache-Control" content="no-store, must-revalidate" />
 <meta http-equiv="Pragma" content="no-cache" />
+<script>
+/* Resolve the theme BEFORE first paint. Previously data-theme="light" was hardcoded on
+   <html>, so the site ignored the OS setting entirely and only the toggle could change it --
+   which is wrong for reviewing a product whose own GeneralSettings offers Always Light /
+   Always Dark / Follow System. This runs in <head> rather than with the other scripts at the
+   end of <body>: deferring it would paint light first and flash. */
+(function(){var h=document.documentElement;
+  h.dataset.theme=matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light";})();
+</script>
 <title>Crust — the Bread Wallet design system</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -1156,7 +1165,16 @@ ul.tick li:before{content:"→";position:absolute;left:2px;color:var(--accent-in
 .gcard.sel{box-shadow:0 0 0 2px var(--accent)}
 .gcard .band{position:absolute;top:0;left:0;right:0;height:20px;display:flex;align-items:center;justify-content:center;
   background:var(--accent);color:var(--on-accent-sm);font-size:11px;font-weight:800;letter-spacing:.02em}
+/* Partner marks sit on a LIGHT PLATE in dark mode. lambdaclass.svg, open-zeppelin.svg and
+   gateway.svg are all a fixed #484848 and render as <img>, so they cannot adapt to the theme:
+   measured 9.15:1 on the light card but 1.72:1 on the dark one, well under the 3:1 a meaningful
+   graphic needs. Recolouring them is not available -- they are third-party trademarks, and
+   altering a partner's mark is a usage problem rather than a design choice. A plate keeps each
+   mark exactly as its owner supplies it and restores the contrast it was drawn for.
+   Miden's own mark is #FF5500 and needs no plate, so the rule targets partner logos only. */
 .gcard .glogo{flex:1;display:flex;align-items:center;justify-content:center;gap:5px;padding:6px 10px;min-height:38px}
+[data-theme="dark"] .gcard .glogo:has(img:not([src*="miden"])){
+  background:#FFFFFF;border-radius:var(--radius-sm);margin:6px 10px;padding:6px 8px;min-height:30px}
 .gcard .glogo img{max-width:100%;max-height:24px;width:auto;height:auto}
 .gcard .gname{font-family:var(--display);font-weight:800;font-size:12px}
 .gcard .gmeta{font-size:11px;color:var(--ink-2);padding:0 4px 7px;line-height:1.4}
@@ -3520,9 +3538,19 @@ links.forEach(a=>a.addEventListener('click',()=>{go(a.dataset.go);
   go(target);
   if(!location.hash) history.replaceState(null,'','#'+target);
 })();
-document.getElementById('theme').addEventListener('click',()=>{
-  const h=document.documentElement;h.dataset.theme=h.dataset.theme==='dark'?'light':'dark';
-});
+// Follow the OS until the reviewer overrides, then stop following -- an explicit choice
+// should not be undone by the system flipping at sunset.
+(function(){
+  const h=document.documentElement, mq=matchMedia('(prefers-color-scheme: dark)');
+  let manual=false;
+  mq.addEventListener('change',()=>{ if(!manual) h.dataset.theme=mq.matches?'dark':'light'; });
+  const btn=document.getElementById('theme');
+  btn.addEventListener('click',()=>{
+    manual=true;
+    h.dataset.theme=h.dataset.theme==='dark'?'light':'dark';
+    btn.title='Following your explicit choice, not the system setting';
+  });
+})();
 // Earn feature flag — mirrors isEarnEnabled() in src/lib/feature-flags.ts (currently false).
 (function(){
   const h=document.documentElement, btn=document.getElementById('earnflag');
