@@ -11,7 +11,8 @@
 //   1. GEOMETRY  — nothing inside the home-indicator / safe-area band, nothing
 //                  clipped by the frame, no overflow
 //   2. CONTRAST  — text vs composited background (4.5:1, or 3:1 for large text),
-//                  currentColor icons (3:1), and .nti non-text indicators (3:1)
+//                  currentColor icons (3:1), .nti non-text indicators (3:1), and the
+//                  .sel selection ring vs the colour showing through its offset gap (3:1)
 //   3. TARGETS   — every interactive element >= 44pt
 //   4. TYPE      — nothing below the 11pt Apple floor
 //
@@ -121,7 +122,7 @@ const probe = () => {
       ? parseFloat(getComputedStyle(mockEl).getPropertyValue('--safe-bottom')) || 0
       : 0;
     const minBottom = Math.max(16, safeBottom);
-    const f = { screen: cap, inSafeArea: [], clipped: [], overflow: false, contrast: [], icons: [], fills: [], targets: [], tiny: [] };
+    const f = { screen: cap, inSafeArea: [], clipped: [], overflow: false, contrast: [], icons: [], fills: [], rings: [], targets: [], tiny: [] };
 
     const body = scr.querySelector('.mock,.mwel');
     if (body && body.scrollHeight > scr.clientHeight + 2) f.overflow = true;
@@ -192,6 +193,30 @@ const probe = () => {
           if (ratio < 2.95) f.fills.push({ el: label, ratio: +ratio.toFixed(2) });
         }
       }
+      // 2d. selection ring — the .sel outline is the thing that says "this account", "this
+      // guardian", "this recovery option", so it is a meaning-bearing graphical object and
+      // SC 1.4.11 wants 3:1 against what it sits against.
+      // outline-offset leaves a TRANSPARENT gap, so the ring is judged against whatever is
+      // painted BEHIND the element, not against the card it wraps — hence bgOf(el.parentElement),
+      // the same composited resolution the text check uses. A hardcoded page colour would be
+      // wrong: these cards sit on --paper on a screen, on --surface inside a sheet, and on
+      // --surface-2 in a well, and the ring only has to clear 3:1 against the one it is actually on.
+      // Threshold is a strict 3.0 here, not the 2.95 the interpolation-prone checks above use:
+      // both sides are flat tokens with prep() holding transitions frozen, so there is nothing
+      // to round off and a 2.97 ring is a real failure.
+      // outline-width is a PRESENCE gate only, never a reported figure: .phone applies
+      // zoom:0.5, and Chromium scales and snaps the computed width through it, so the same
+      // 3px rule reads "2px" inside a frame and "3px" outside. Colour is not zoom-affected.
+      if (el.matches('.mbc.sel,.gcard.sel,.ropt.sel')) {
+        if (cs.outlineStyle !== 'none' && (parseFloat(cs.outlineWidth) || 0) > 0) {
+          const fg = parse(cs.outlineColor);
+          if (fg && fg.a > 0) {
+            const bg = bgOf(el.parentElement), ratio = cr(over(fg, bg), bg);
+            if (ratio < 3) f.rings.push({ el: label, ratio: +ratio.toFixed(2),
+              ring: cs.outlineColor, gap: `rgb(${Math.round(bg.r)},${Math.round(bg.g)},${Math.round(bg.b)})` });
+          }
+        }
+      }
     });
     out.push(f);
   });
@@ -202,7 +227,7 @@ const probe = () => {
   // so this measures only the declared graphics: .nti fills/borders and .svgic icons.
   const spec = { screen: '· component specimens (outside phone frames)',
                  inSafeArea: [], clipped: [], overflow: false,
-                 contrast: [], icons: [], fills: [], targets: [], tiny: [] };
+                 contrast: [], icons: [], fills: [], rings: [], targets: [], tiny: [] };
   document.querySelectorAll('.nti,.svgic').forEach(el => {
     if (el.closest('.phone')) return;
     const r = el.getBoundingClientRect();
@@ -219,7 +244,7 @@ const probe = () => {
   });
   out.push(spec);
   if (hidden.length) out.push({ screen: `!! ${hidden.length} HIDDEN frame(s) not audited: ${hidden.join(', ')}`,
-    inSafeArea: [], clipped: [], overflow: true, contrast: [], icons: [], fills: [], targets: [], tiny: [] });
+    inSafeArea: [], clipped: [], overflow: true, contrast: [], icons: [], fills: [], rings: [], targets: [], tiny: [] });
   return out;
 };
 
@@ -251,7 +276,7 @@ const run = async () => {
   }
 
   let total = 0;
-  const tally = { inSafeArea: 0, clipped: 0, overflow: 0, contrast: 0, icons: 0, fills: 0, targets: 0, tiny: 0 };
+  const tally = { inSafeArea: 0, clipped: 0, overflow: 0, contrast: 0, icons: 0, fills: 0, rings: 0, targets: 0, tiny: 0 };
   for (const [theme, screens] of Object.entries(results)) {
     for (const s of screens) {
       const hits = Object.entries(tally).filter(([k]) => k === 'overflow' ? s.overflow : s[k]?.length);
@@ -276,6 +301,7 @@ const run = async () => {
   console.log(`  contrast        : ${tally.contrast}`);
   console.log(`  icon contrast   : ${tally.icons}`);
   console.log(`  fill contrast   : ${tally.fills}   (.nti indicators vs surround, 3:1)`);
+  console.log(`  ring contrast   : ${tally.rings}   (.sel outline vs its gap, 3:1)`);
   console.log(`  targets < 44pt  : ${tally.targets}`);
   console.log(`  text < 11pt     : ${tally.tiny}`);
   console.log(`  unpaintable svg : ${unpaintable.length}   (invisible under a CSS mask)`);

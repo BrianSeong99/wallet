@@ -176,12 +176,12 @@
   --nav-pill:rgba(255,255,255,.16); --nav-bg:rgba(38,38,38,.58); --nav-ink-off:#989898;
   --pat:rgba(255,255,255,.05);
   /* Dark keeps the near-black card, so the hue survives only as a rim -- see data-card. */
-  --card-slate:#8E8A9E; --card-orange:#E77537; --card-blue:#91ACC1;
-  --card-green:#A8BBA3; --card-purple:#BEACD2;
-  --card-slate-deep:#000000; --card-orange-deep:#000000; --card-blue-deep:#000000;
-  --card-green-deep:#000000; --card-purple-deep:#000000;
+  --card-slate:#737081; --card-orange:#B1592B; --card-blue:#5A7588;
+  --card-green:#657661; --card-purple:#796C89;
+  --card-slate-deep:#5C5A67; --card-orange-deep:#8E4722; --card-blue-deep:#485D6D;
+  --card-green-deep:#505E4E; --card-purple-deep:#61566E;
   --nav-rim:rgba(255,255,255,.16); --nav-rim-lo:rgba(0,0,0,.35);
-  --balance:#101010; --balance-deep:#000000; --balance-fg:#FFFFFF; --balance-fg-muted:rgba(255,255,255,.70);
+  --balance:#101010; --balance-deep:#000000; --balance-fg:#FFFFFF; --balance-fg-muted:#FFFFFF;
   --shadow-1:0 1px 2px rgba(0,0,0,.4); --shadow-2:0 8px 24px rgba(0,0,0,.5);
   --code-bg:#111111;
 }
@@ -357,7 +357,7 @@ table.map td code{font-size:var(--t-label)}
 .mock::after{content:'';position:absolute;left:50%;transform:translateX(-50%);bottom:9px;width:134px;height:5px;border-radius:var(--radius-full);background:var(--ink);opacity:.28;pointer-events:none}
 .mock .stat{height:var(--safe-top);flex:none;display:flex;align-items:flex-end;justify-content:space-between;padding:0 20px 8px;font-family:var(--mono);font-size:var(--t-label);font-weight:600;color:var(--ink)}
 .mock .stat .r{display:flex;gap:5px;align-items:center}
-.mpad{padding:6px 16px 0;overflow:hidden;gap:var(--stack)}
+.mpad{padding:8px 16px 0;overflow:hidden;gap:var(--stack)}
 .macct{display:flex;align-items:center;justify-content:space-between;padding:8px 4px 14px}
 .macct .l{display:flex;align-items:center;gap:9px}
 .macct .av{width:30px;height:30px;border-radius:50%;background:var(--pos);display:flex;align-items:center;justify-content:center;color:var(--paper);font-weight:800;font-size:var(--t-label);font-family:var(--display)}
@@ -570,7 +570,9 @@ table.map td code{font-size:var(--t-label)}
 [data-card="blue"]  {--balance:var(--card-blue);  --balance-deep:var(--card-blue-deep);  --card-rim:var(--card-blue)}
 [data-card="green"] {--balance:var(--card-green); --balance-deep:var(--card-green-deep); --card-rim:var(--card-green)}
 [data-card="purple"]{--balance:var(--card-purple);--balance-deep:var(--card-purple-deep);--card-rim:var(--card-purple)}
-[data-theme="dark"] [data-card]{--balance:#101010; --balance-deep:#000000}
+/* The dark near-black card override is gone: a card that renders near-black
+   cannot carry a matching selection ring, because the ring would then sit at
+   ~1.5:1 against the sheet and vanish. Dark cards keep their hue instead. */
 /* rim now applied in .mstack for both themes -- see the note there */
 
 /* ---- Prompt carousel: horizontal, scroll-snapped, with peek ---------------------------
@@ -631,7 +633,8 @@ table.map td code{font-size:var(--t-label)}
    A plain list on the --stack rhythm has none of those problems and scales to any count.
    Blocks are the balance card's top half only: name plus balance, which is what you choose
    between. No delta -- performance is not why this sheet is open. */
-.mlist{display:flex;flex-direction:column;gap:var(--stack);overflow-y:auto;padding:2px 0 4px}
+.mlist{display:flex;flex-direction:column;gap:var(--stack);overflow-y:auto;
+  padding:2px 7px 4px;margin-inline:-7px}
 .mlist>*{flex:none}
 /* A 3px LEFT stripe in the account colour. This was lost when the Apple-Wallet stack was
    rewritten as a list -- --card-rim stayed defined and stopped being used, so in DARK all
@@ -1208,7 +1211,17 @@ ul.tick li:before{content:"→";position:absolute;left:2px;color:var(--accent-in
    outline + outline-offset rather than box-shadow, because the gap is transparent: the same rule
    works on the page, inside a sheet, or over a scrim without knowing the surround colour.
    The inline check stays on the account card, so selection is never colour-only (SC 1.4.1). */
-.mbc.sel,.gcard.sel,.ropt.sel{outline:2px solid var(--accent);outline-offset:2px}
+/* Selected: a ring in the card's OWN colour, held off the card by a gap that
+   shows whatever is painted behind -- paper on a page, surface inside a sheet.
+   State is carried by the ring's PRESENCE, not its hue, so SC 1.4.1 still holds
+   and the selected card reads as lifted rather than tagged with orange.
+   .ropt has no --card-rim and falls back to the accent, which is correct for a
+   settings option that has no colour of its own. */
+.mbc.sel{outline:3px solid var(--card-rim,var(--ink));outline-offset:3px}
+/* No card hue here, so the ring stays orange -- but --accent-ink, not --accent:
+   --accent measures 2.90:1 on --paper and 2.74:1 on --surface-2, so the ring these
+   used before this change was itself failing SC 1.4.11. */
+.gcard.sel,.ropt.sel{outline:3px solid var(--accent-ink);outline-offset:3px}
 .gcard .band{position:absolute;top:0;left:0;right:0;height:20px;display:flex;align-items:center;justify-content:center;
   background:var(--accent);color:var(--on-accent-sm);font-size:var(--t-caption);font-weight:800;letter-spacing:.02em}
 /* Partner marks sit on a LIGHT PLATE in dark mode. lambdaclass.svg, open-zeppelin.svg and
@@ -3250,7 +3263,7 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
             <div class="zone" style="padding-bottom:max(16px,var(--safe-bottom,0px))"><button class="btn btn-secondary withic"><span class="svgic" style="--ic:url(assets/icons/add.svg)" aria-hidden="true"></span>Add account</button></div>
           </div>
         </div></div></div>
-        <div class="scrnote"><b>Proposed &mdash; multi-account does not exist yet.</b> The shipped <code>AccountsDrawer</code> lists <em>no accounts at all</em>: it is a card-colour picker, a Settings link, and a <em>disabled</em> &ldquo;Add account (coming soon)&rdquo; button whose dashed outline also breaks the no-bordered-controls rule. <b>Vertical list, not an Apple-Wallet stack</b> &mdash; the stack was built first and failed on three counts: in <b>dark</b> every card is near-black so overlapping merged all three into one block (tinting each with its account hue at 12&percnt; measured <b>1.00&ndash;1.04:1</b> between adjacent cards, because hue separates almost nothing at near-black); the collapsed band forced a choice between the name and the balance, with one card&rsquo;s amount butting into the next card&rsquo;s name; and it grew 64px per account, stopping around six. Blocks here are the card&rsquo;s top half &mdash; name and balance, which is what you choose between &mdash; with no delta, since performance is not why this sheet is open. Selection is a filled check rather than a ring, because an outline round a card would read as a bordered control. <b>Renaming is deliberately not here:</b> the list answers &ldquo;which account&rdquo;, and a rename affordance would compete with the selection gesture.</div></div>
+        <div class="scrnote"><b>Proposed &mdash; multi-account does not exist yet.</b> The shipped <code>AccountsDrawer</code> lists <em>no accounts at all</em>: it is a card-colour picker, a Settings link, and a <em>disabled</em> &ldquo;Add account (coming soon)&rdquo; button whose dashed outline also breaks the no-bordered-controls rule. <b>Vertical list, not an Apple-Wallet stack</b> &mdash; the stack was built first and failed on three counts: in <b>dark</b> every card was then near-black, so overlapping merged all three into one block (tinting each with its account hue at 12&percnt; measured <b>1.00&ndash;1.04:1</b> between adjacent cards, because hue separates almost nothing at near-black). <i>That premise is now retired:</i> dark cards keep their hue instead of collapsing to near-black, so adjacent cards are separable &mdash; but the other two objections below still stand, which is why this is a list and not a stack; the collapsed band forced a choice between the name and the balance, with one card&rsquo;s amount butting into the next card&rsquo;s name; and it grew 64px per account, stopping around six. Blocks here are the card&rsquo;s top half &mdash; name and balance, which is what you choose between &mdash; with no delta, since performance is not why this sheet is open. Selection is <b>a ring in the card&rsquo;s own colour, held off the card by a gap</b> of the surround. The filled check stays as the redundant carrier: with ring and fill sharing a hue, the gap is the only thing making them two objects, so on a low-DPR screen or a clipped container the check is what still reads. The ring is <code>--accent-ink</code> rather than <code>--accent</code> wherever a card has no colour of its own &mdash; bare <code>--accent</code> measures <b>2.90:1</b> on <code>--paper</code>, so the orange ring this replaced was itself failing SC 1.4.11. <b>Renaming is deliberately not here:</b> the list answers &ldquo;which account&rdquo;, and a rename affordance would compete with the selection gesture.</div></div>
 <div><div class="scrcap"><i></i>Account sheet <span class="tag retire">proposed</span></div>
         <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
           <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>
@@ -3979,6 +3992,43 @@ links.forEach(a=>a.addEventListener('click',()=>{go(a.dataset.go);
   document.getElementById('opensheet')?.addEventListener('click',()=>sw.classList.add('open'));
   document.getElementById('closesheet')?.addEventListener('click',()=>sw.classList.remove('open'));
   sw?.querySelector('.sheetback')?.addEventListener('click',()=>sw.classList.remove('open'));
+
+  // Click-to-select, so the selection ring can actually be tried rather than
+  // just looked at. Scoped to one mock so each phone frame selects independently.
+  document.addEventListener('click',e=>{
+    const el=e.target.closest('.mbc,.gcard,.ropt');
+    if(!el) return;
+    const cls=['mbc','gcard','ropt'].find(c=>el.classList.contains(c));
+    const scope=el.closest('.phone')||el.closest('.crow')||document;
+    select(el,cls,scope);
+  });
+  function select(el,cls,scope){
+    scope.querySelectorAll('.'+cls).forEach(x=>{
+      x.classList.toggle('sel',x===el);
+      if(x.getAttribute('role')==='radio') x.setAttribute('aria-checked',x===el?'true':'false');
+      if(x.hasAttribute('tabindex')) x.tabIndex=x===el?0:-1;
+    });
+    el.focus?.();
+  }
+  // Roving tabindex + arrow keys, so selection is not mouse-only.
+  document.querySelectorAll('.mlist,.aswatches,.setgroup').forEach(group=>{
+    const items=[...group.children].filter(c=>c.matches('.mbc,.gcard,.ropt'));
+    if(items.length<2) return;
+    group.setAttribute('role','radiogroup');
+    const cls=items[0].classList.contains('mbc')?'mbc':items[0].classList.contains('gcard')?'gcard':'ropt';
+    items.forEach(it=>{
+      it.setAttribute('role','radio');
+      it.setAttribute('aria-checked',it.classList.contains('sel')?'true':'false');
+      it.tabIndex=it.classList.contains('sel')?0:-1;
+    });
+    if(!items.some(i=>i.classList.contains('sel'))) items[0].tabIndex=0;
+    group.addEventListener('keydown',e=>{
+      const i=items.indexOf(document.activeElement); if(i<0) return;
+      const d=e.key==='ArrowDown'||e.key==='ArrowRight'?1:e.key==='ArrowUp'||e.key==='ArrowLeft'?-1:0;
+      if(d){e.preventDefault();select(items[(i+d+items.length)%items.length],cls,group);}
+      else if(e.key===' '||e.key==='Enter'){e.preventDefault();select(items[i],cls,group);}
+    });
+  });
 })();
 </script>
 </body>
