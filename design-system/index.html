@@ -590,8 +590,12 @@ table.map td code{font-size:var(--t-label)}
 
 /* Sheet chrome, extracted from the inline styles the older Accounts mock used. */
 .msheet{position:absolute;left:0;right:0;bottom:0;background:var(--surface);
-  border-radius:var(--radius-lg) var(--radius-lg) 0 0;padding:12px 16px 0;
+  border-radius:var(--radius-lg) var(--radius-lg) 0 0;
+  padding:12px 16px max(16px,var(--safe-bottom,0px));
   display:flex;flex-direction:column;max-height:76%}
+/* The sheet already reserves the home-indicator inset, so an action zone inside
+   one must not reserve it a second time. */
+.msheet .zone{padding-bottom:0}
 .mshandle{width:40px;height:5px;border-radius:var(--radius-full);background:var(--rule-strong);
   margin:0 auto 14px;flex:none}
 .mshead{font-family:var(--display);font-weight:800;font-size:var(--t-subhead);margin-bottom:12px;
@@ -628,6 +632,7 @@ table.map td code{font-size:var(--t-label)}
    Blocks are the balance card's top half only: name plus balance, which is what you choose
    between. No delta -- performance is not why this sheet is open. */
 .mlist{display:flex;flex-direction:column;gap:var(--stack);overflow-y:auto;padding:2px 0 4px}
+.mlist>*{flex:none}
 /* A 3px LEFT stripe in the account colour. This was lost when the Apple-Wallet stack was
    rewritten as a list -- --card-rim stayed defined and stopped being used, so in DARK all
    three cards were near-black and identical apart from their pattern.
@@ -1114,7 +1119,7 @@ ul.tick li:before{content:"→";position:absolute;left:2px;color:var(--accent-in
 
 .ropt .rt2{font-family:var(--display);font-weight:800;font-size:var(--t-body);display:flex;align-items:center;gap:7px}
 .ropt .rd{font-size:var(--t-caption);color:var(--ink-2);line-height:1.45;margin-top:4px}
-.ropt .rbadge{font-size:var(--t-caption);font-weight:800;background:var(--accent);color:var(--on-accent-sm);
+.rbadge{font-size:var(--t-caption);font-weight:800;background:var(--accent);color:var(--on-accent-sm);
   padding:1px 7px;border-radius:var(--radius-sm);letter-spacing:.02em}
 .sword{background:var(--surface-2);border-radius:var(--radius-sm);padding:7px 8px;font-size:var(--t-caption);
   display:flex;gap:6px;align-items:baseline}
@@ -1295,7 +1300,7 @@ ul.tick li:before{content:"→";position:absolute;left:2px;color:var(--accent-in
 .critical{background:var(--accent-critical)}
 /* ---------- error / failure screens ---------- */
 .errscr{width:238px;border:1px solid var(--rule);border-radius:var(--radius-lg);background:var(--paper);padding:20px 17px;display:flex;flex-direction:column;align-items:center;text-align:center;min-height:322px}
-.errscr .eic{width:50px;height:50px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:var(--t-heading);margin-bottom:13px}
+.eic{width:50px;height:50px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:var(--t-heading);margin-bottom:13px}
 .errscr .et{font-family:var(--display);font-weight:800;font-size:16.5px;line-height:1.2}
 .errscr .es{font-size:var(--t-label);color:var(--ink-2);margin-top:8px;line-height:1.5}
 .errscr .reassure{margin-top:13px;background:var(--pos-wash);color:var(--pos);border-radius:var(--radius-md);padding:9px 11px;font-size:var(--t-caption);font-weight:700;line-height:1.4}
@@ -1308,8 +1313,9 @@ ul.tick li:before{content:"→";position:absolute;left:2px;color:var(--accent-in
 .ccol{display:flex;flex-direction:column;gap:10px}
 .clabel{font-family:var(--mono);font-size:10px;color:var(--ink-3);letter-spacing:.03em;margin-bottom:2px}
 .fld{width:270px}
+.msheet .fld{width:auto}
 .fld label{display:block;font-size:var(--t-label);font-weight:600;color:var(--ink-2);margin-bottom:6px}
-.fld .inp{width:100%;background:var(--surface-2);border:0;border-radius:var(--radius-md);padding:13px 14px;font-family:var(--ui);font-size:var(--t-body);color:var(--ink);outline:none;transition:box-shadow var(--dur-fast) ease,background var(--dur-fast) ease}
+.fld .inp{width:100%;min-height:44px;background:var(--surface-2);border:0;border-radius:var(--radius-md);padding:13px 14px;font-family:var(--ui);font-size:var(--t-body);color:var(--ink);outline:none;transition:box-shadow var(--dur-fast) ease,background var(--dur-fast) ease}
 .fld .inp::placeholder{color:var(--ink-3)}
 .fld .inp:focus{box-shadow:var(--focus-ring);background:var(--surface)}
 .fld.err .inp{box-shadow:0 0 0 1.5px var(--neg)}
@@ -1352,6 +1358,28 @@ ul.tick li:before{content:"→";position:absolute;left:2px;color:var(--accent-in
    The tick and spinner are SHAPES, not glyph characters -- a 9px character trips the 11pt text
    floor, which caught me twice before on the delta triangle and the selection check. */
 .scrnote2{font-size:var(--t-caption);color:var(--ink-2);line-height:1.45;margin-top:10px}
+/* ---- hero input --------------------------------------------------------
+   Recipient and amount are one pattern: a borderless field where the typed
+   value IS the screen. Shipped draws the address at 40px. 40 is not a step on
+   our ramp, so this ENFORCES --t-balance rather than adding a tenth step for a
+   single screen. Mono because the system reserves Geist Mono for addresses and
+   hashes; shipped uses the display face here and we diverge deliberately. */
+.heroin{font-family:var(--mono);font-size:var(--t-balance);font-weight:700;line-height:1.15;
+  letter-spacing:-.02em;color:var(--ink-3);word-break:normal;overflow-wrap:anywhere;margin:6px 0 18px}
+/* Inert primary drops the accent fill rather than dimming it, so the control
+   reads as unavailable instead of as a washed-out orange button. */
+.btn-primary[disabled]{background:var(--surface-2);color:var(--ink-2);pointer-events:none}
+/* Trailing tick on a picker row (shipped: CheckboxCircleFill). A SHAPE, not a
+   check character -- a 10px glyph would trip the 11pt type floor. */
+.rtick{width:20px;height:20px;flex:none;margin-left:auto;border-radius:50%;background:var(--accent);
+  display:flex;align-items:center;justify-content:center}
+.rtick svg{width:11px;height:11px;display:block}
+/* Section label inside a sheet, e.g. "Current Contacts". */
+.shlab{font-size:var(--t-caption);font-weight:700;color:var(--ink-2);letter-spacing:.02em;margin:0 0 8px}
+.shlab.hi{font-size:var(--t-label);color:var(--ink);letter-spacing:0}
+/* Centred empty/no-results block inside a sheet. */
+.shempty{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  text-align:center;padding:26px 14px 38px}
 .tsteps{display:flex;flex-direction:column;gap:2px;margin-top:18px}
 .tstep{display:flex;align-items:center;gap:10px;padding:9px 2px;font-size:var(--t-label)}
 .tstep .tsi{width:18px;height:18px;flex:none;border-radius:50%;display:flex;align-items:center;
@@ -1498,7 +1526,11 @@ pre.code code{background:none;padding:0;font-family:var(--mono);font-size:var(--
 .sheetc .shandle{width:40px;height:4px;border-radius:var(--radius-full);background:var(--rule-strong);margin:0 auto 12px}
 .sheetc .shttl{font-family:var(--display);font-weight:800;font-size:var(--t-subhead);color:var(--ink)}
 .sheetc .shsub{font-size:var(--t-label);color:var(--ink-2);line-height:1.5;margin-top:7px}
-.sheetc .shdiv{height:1px;background:var(--rule);margin:15px -20px}
+/* Divider inside a sheet. Full-bleed, so the negative margin has to match
+   the host sheet's own padding -- hence a rule per sheet shell. */
+.shdiv{height:1px;background:var(--rule);margin:15px 0}
+.sheetc .shdiv{margin:15px -20px}
+.msheet .shdiv{margin:14px -16px}
 .sheetc .shrow{display:flex;align-items:center;gap:11px;padding:9px 0}
 .sheetc .shrow+.shrow{border-top:1px solid var(--rule)}
 .sheetc .shav{width:32px;height:32px;border-radius:50%;flex:none;display:flex;align-items:center;justify-content:center;overflow:hidden}
@@ -3247,13 +3279,11 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
         <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
           <div class="stat"><span>9:41</span><span class="r">✦ ▪ ▪</span></div>
           <div class="mpad" style="flex:1;display:flex;flex-direction:column">
-            <div class="sh2"><span class="bk2">‹</span><span class="t2">Send to</span></div>
-            <div class="fieldrow"><div class="searchf" style="width:auto;flex:1">Address, name or ENS</div><button class="scanbtn" aria-label="Scan a QR code"><span class="svgic" style="--ic:url(assets/icons/qr-scan.svg)" aria-hidden="true"></span></button></div>
-            <div style="font-size:var(--t-caption);color:var(--ink-2);margin:16px 0 4px;font-weight:600">Recent</div>
-            <div class="mrow" style="padding:9px 0"><div class="ic" style="background:var(--tx-sent)"></div><div><div class="nm">Wiktor</div><div class="ad addr">mtst1ap8…r4fp</div></div></div>
-            <div class="mrow" style="padding:9px 0"><div class="ic" style="background:var(--tx-swap)"></div><div><div class="nm">Dominik</div><div class="ad addr">mtst1kq2…88xz</div></div></div>
-            <div class="mrow" style="padding:9px 0"><div class="ic" style="background:var(--tx-earn)"></div><div><div class="nm">Savings</div><div class="ad addr">mtst1zz9…41mn</div></div></div>
-            <div class="zone"><button class="btn btn-primary" style="width:100%">Continue</button></div>
+            <div class="sh2"><span class="bk2">&lsaquo;</span><span class="t2">Send</span></div>
+            <div style="font-family:var(--display);font-weight:800;font-size:var(--t-title);line-height:1.1">Choose recipient</div>
+            <div class="heroin">Enter Miden Address</div>
+            <button class="tokchip"><span class="svgic" style="--ic:url(assets/icons/contacts-book.svg)" aria-hidden="true"></span>Address Book</button>
+            <div class="zone"><button class="btn btn-primary" style="width:100%" disabled>Confirm</button></div>
           </div>
         </div></div></div>
         <div class="scrnote">Named contacts above raw addresses — recognition over recall, and it reduces mis-paste risk.</div></div>
@@ -3343,6 +3373,113 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
           </div>
         </div></div></div>
         <div class="scrnote">Confirmation is a rare high-stakes moment, so it earns the drawn tick — but stays factual, not celebratory.</div></div>
+<div><div class="scrcap"><i></i>Contacts &middot; picker <span class="tag merge">sheet</span></div>
+        <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
+          <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>
+          <div class="mpad" style="flex:1;display:flex;flex-direction:column">
+            <div class="sh2"><span class="bk2">&lsaquo;</span><span class="t2">Send</span></div>
+            <div style="font-family:var(--display);font-weight:800;font-size:var(--t-title);line-height:1.1;opacity:.4">Choose recipient</div>
+            <div class="heroin" style="opacity:.4">Enter Miden Address</div>
+          </div>
+          <div class="shscrim"></div>
+          <div class="msheet" style="height:55%">
+            <div class="mshandle"></div>
+            <div class="mshead">Contacts</div>
+            <div class="mlist" style="flex:1">
+              <div class="mrow"><div class="ic" style="background:var(--tx-swap)"></div><div><div class="nm">Savings</div><div class="ad addr">Private &middot; mtst1zz9&hellip;41mn</div></div></div>
+              <div class="mrow"><div class="ic" style="background:var(--tx-earn)"></div><div><div class="nm">Guardian vault</div><div class="ad addr">Public &middot; mtst1gv4&hellip;07qd</div></div><span class="rbadge" style="margin-left:auto">Guardian</span></div>
+              <div class="mrow"><div class="ic" style="background:var(--tx-sent)"></div><div><div class="nm">Wiktor</div><div class="ad addr">External &middot; mtst1ap8&hellip;r4fp</div></div><span class="rtick"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M1.6 6.3l2.7 2.7L10.4 3" fill="none" stroke="var(--on-accent-sm)" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/></svg></span></div>
+              <div class="mrow"><div class="ic" style="background:var(--tx-sent)"></div><div><div class="nm">Dominik</div><div class="ad addr">External &middot; mtst1kq2&hellip;88xz</div></div></div>
+            </div>
+          </div>
+        </div></div></div>
+        <div class="scrnote">Reached from the <b>Address Book</b> pill on the recipient step &mdash; <code>SendManager.tsx:488</code>. A <b>read-only picker</b>: no add, no delete, and <b>no search</b>, though the settings address book has one. The order is the user&rsquo;s own accounts first, then external contacts (<code>SendManager.tsx:87&ndash;108</code>); the settings list orders them the reverse way, and neither sorts alphabetically nor separates the two groups with a heading. Rows carry no chevron and no secondary action &mdash; tapping fills the address and closes the sheet. The trailing tick marks the already-chosen recipient and is a shape, not a check character.</div></div>
+<div><div class="scrcap"><i></i>Contacts &middot; picker, empty <span class="tag merge">sheet</span></div>
+        <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
+          <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>
+          <div class="mpad" style="flex:1;display:flex;flex-direction:column">
+            <div class="sh2"><span class="bk2">&lsaquo;</span><span class="t2">Send</span></div>
+            <div style="font-family:var(--display);font-weight:800;font-size:var(--t-title);line-height:1.1;opacity:.4">Choose recipient</div>
+            <div class="heroin" style="opacity:.4">Enter Miden Address</div>
+          </div>
+          <div class="shscrim"></div>
+          <div class="msheet" style="height:55%">
+            <div class="mshandle"></div>
+            <div class="mshead">Contacts</div>
+            <div class="shempty">
+              <div class="eic" style="background:var(--surface-2);color:var(--ink-2)"><span class="svgic" style="--ic:url(assets/icons/contacts-book.svg)" aria-hidden="true"></span></div>
+              <div class="et">No other accounts</div>
+              <div class="es">You have not created any other accounts yet</div>
+            </div>
+          </div>
+        </div></div></div>
+        <div class="scrnote">Drawn to show a <b>copy bug</b>, not to endorse it. The sheet is titled <code>contacts</code> = &ldquo;Contacts&rdquo; but empties to <code>noOtherAccounts</code> / <code>noOtherAccountsDescription</code> (<code>AccountsList.tsx:46&ndash;47</code>), so a user with no saved <i>contacts</i> is told they have created no <i>accounts</i> &mdash; and is given no way to add one from here. The right copy is a contacts-shaped empty state with an <b>Add contact</b> action; the shipped sheet has neither.</div></div>
+<div><div class="scrcap"><i></i>Address book <span class="tag merge">sheet</span></div>
+        <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
+          <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>
+          <div class="mpad" style="flex:1;display:flex;flex-direction:column">
+            <div class="sh2"><span class="bk2">&lsaquo;</span><span class="t2">Preferences</span></div>
+          </div>
+          <div class="shscrim"></div>
+          <div class="msheet" style="max-height:90%">
+            <div class="mshandle"></div>
+            <div class="mshead">Address Book</div>
+            <div class="mlist" style="flex:1">
+              <div class="shlab hi">Add Contact</div>
+              <div class="fld"><label>Name</label><input class="inp" value="" placeholder="Enter username"></div>
+              <div class="fld"><label>Address</label><input class="inp" value="" placeholder="Enter Address"></div>
+              <button class="btn btn-primary" style="width:100%;margin-top:4px" disabled>Add Contact</button>
+              <div class="shdiv" style="margin:16px 0 14px"></div>
+              <div class="shlab">Current Contacts</div>
+              <div class="searchf" style="width:auto"><span class="svgic" style="--ic:url(assets/icons/search.svg)" aria-hidden="true"></span>Search</div>
+              <div class="mrow"><div class="ic" style="background:var(--tx-sent)"></div><div><div class="nm">Wiktor</div><div class="ad addr">External &middot; mtst1ap8&hellip;r4fp</div></div></div>
+              <div class="mrow"><div class="ic" style="background:var(--tx-sent)"></div><div><div class="nm">Dominik</div><div class="ad addr">External &middot; mtst1kq2&hellip;88xz</div></div></div>
+            </div>
+          </div>
+        </div></div></div>
+        <div class="scrnote">The settings address book, mounted as a drawer rather than a page (<code>Settings.tsx:420&ndash;431</code>) &mdash; so <code>/settings/address-book</code> is routable but renders the plain settings menu, because <code>activeTab</code> filters drawer tabs out (<code>Settings.tsx:303</code>). The create form sits always-expanded above the list rather than behind an add button. Two defects the mock cannot show: <b>tapping a contact row deletes it</b> &mdash; the whole row is the delete trigger, with no trash icon, swipe or menu (<code>AddressBook.tsx:77&ndash;78</code>), and there is no way to <i>use</i> a contact from here at all; and <b>there is no edit</b>, since no <code>editContact</code> mutation exists, so fixing a typo means delete and retype. Submitting also leaves the sheet open with no toast: <code>onClose</code> is passed by Settings but <code>AddressBook</code> declares no props and silently drops it.</div></div>
+<div><div class="scrcap"><i></i>Address book &middot; duplicate <span class="tag merge">sheet</span></div>
+        <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
+          <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>
+          <div class="mpad" style="flex:1;display:flex;flex-direction:column">
+            <div class="sh2"><span class="bk2">&lsaquo;</span><span class="t2">Preferences</span></div>
+          </div>
+          <div class="shscrim"></div>
+          <div class="msheet" style="max-height:90%">
+            <div class="mshandle"></div>
+            <div class="mshead">Address Book</div>
+            <div class="mlist" style="flex:1">
+              <div class="shlab hi">Add Contact</div>
+              <div class="fld"><label>Name</label><input class="inp" value="Wiktor"></div>
+              <div class="fld err"><label>Address</label><input class="inp" value="mtst1ap8qz&hellip;r4fp"><div class="hint">Contact with the same address already exists</div></div>
+              <button class="btn btn-primary" style="width:100%;margin-top:12px">Add Contact</button>
+            </div>
+          </div>
+        </div></div></div>
+        <div class="scrnote">Every failure lands on the <b>address</b> field: the bech32 rejection (<code>invalidAddress</code>) and this duplicate check are both funnelled into <code>setError(&#39;address&#39;)</code> at <code>AddressBook.tsx:128</code>. No form-level banner, no toast. Worth flagging: the duplicate check runs against <code>allContacts</code>, which includes the user&rsquo;s own wallet accounts &mdash; so <b>saving your own account as a contact fails with this same message</b>, which is accurate and baffling. The address field also inherits the name field&rsquo;s <code>maximalAmount</code> = &ldquo;Maximal: 50&rdquo; cap, and a testnet address is already 49 characters.</div></div>
+<div><div class="scrcap"><i></i>Address book &middot; empty <span class="tag merge">sheet</span></div>
+        <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
+          <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>
+          <div class="mpad" style="flex:1;display:flex;flex-direction:column">
+            <div class="sh2"><span class="bk2">&lsaquo;</span><span class="t2">Preferences</span></div>
+          </div>
+          <div class="shscrim"></div>
+          <div class="msheet" style="max-height:90%">
+            <div class="mshandle"></div>
+            <div class="mshead">Address Book</div>
+            <div class="mlist" style="flex:1">
+              <div class="shlab hi">Add Contact</div>
+              <div class="fld"><label>Name</label><input class="inp" value="" placeholder="Enter username"></div>
+              <div class="fld"><label>Address</label><input class="inp" value="" placeholder="Enter Address"></div>
+              <button class="btn btn-primary" style="width:100%;margin-top:4px" disabled>Add Contact</button>
+              <div class="shdiv" style="margin:16px 0 14px"></div>
+              <div class="shlab">Current Contacts</div>
+              <div class="searchf" style="width:auto"><span class="svgic" style="--ic:url(assets/icons/search.svg)" aria-hidden="true"></span>Search</div>
+              <div style="text-align:center;color:var(--ink-2);font-size:var(--t-label);padding:18px 0">No contacts found</div>
+            </div>
+          </div>
+        </div></div></div>
+        <div class="scrnote"><b>Empty and no-search-results are the same string.</b> <code>AddressBook.tsx:68</code> renders <code>noContactsFound</code> = &ldquo;No contacts found&rdquo; for both, so a brand-new user with zero contacts gets a <i>search-failure</i> message under a search box they never typed into. Note the inconsistency across surfaces: the send-flow sheet gets a real icon-and-description empty state, this one gets a bare line of grey text. The unused key <code>addressBookDescription</code> = &ldquo;Manage your contacts here&rdquo; already sits in <code>en.json</code>, rendered by nothing.</div></div>
     </div>
     <h2 class="h">Receive flow</h2>
     <p class="sub">Address, QR and share. Receive is address-only since claimable notes moved to their own screen.</p>

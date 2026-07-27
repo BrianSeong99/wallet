@@ -403,3 +403,75 @@ padding instead of the padding collapsing to 4px to fit it.
 
 Body clamps at 3 lines because that is what the real 76-character i18n string needs in a
 ~200pt column. Card height went 86.8pt → 73.3pt.
+
+## Parent-scoped classes are a trap — three promoted to components
+
+The single most expensive class of bug in this system, hit **four separate times**. A rule written
+as `.parent .thing{…}` looks like a component and is not one. Reuse it anywhere else and it
+silently does nothing — no error, no warning, and the harness passes, because an unstyled element
+is rarely a *contrast* or *target* failure. It just looks wrong.
+
+Found while drawing contacts. Three classes I reached for were all parent-scoped:
+
+| Was | Symptom when reused | Now |
+|---|---|---|
+| `.sheetc .shdiv` | divider invisible — a dead 30px gap in the address book | `.shdiv` + per-shell full-bleed margin |
+| `.ropt .rbadge` | the Guardian chip rendered as bare text, no fill | `.rbadge` |
+| `.errscr .eic` | icon plate had no size, so the empty state had a stray 20px glyph | `.eic` |
+
+The promotion rule: **two consumers make it a component.** One consumer is a one-off and should
+stay scoped. All three had a second real consumer, so all three got promoted, and their original
+scoped rules were kept only where they carry genuinely shell-specific geometry — `.shdiv`'s
+negative margin has to match its host sheet's padding (`-20px` in `.sheetc`, `-16px` in `.msheet`),
+so that part stays scoped while the appearance does not.
+
+Related and already recorded above: the `data-surface` scope trap. Same root cause — a style's
+reach is not obvious from the markup that uses it.
+
+## Sheets own the bottom safe inset
+
+`.msheet` now carries `padding-bottom:max(16px,var(--safe-bottom,0px))`, and `.msheet .zone`
+zeroes its own bottom padding so the inset is not reserved twice. Before this, any sheet whose
+content ran to the bottom edge put that content under the home indicator; only sheets that
+happened to end in a `.zone` were safe, which made correctness accidental. Sixteen safe-area
+failures across four screens collapsed to zero from this one rule.
+
+## A scroll container must not compress its children
+
+`.mlist` is a flex column. Flex children shrink by default, so a list taller than its sheet
+squashed the elements inside it instead of scrolling — text inputs specified at 44pt rendered at
+**20pt**, silently breaking the touch-target floor. Fixed with `.mlist>*{flex:none}`.
+
+This is why the target check earns its keep: the CSS said 44, the DOM said 20, and nothing about
+the markup hinted at it.
+
+## Text fields are touch targets
+
+`.fld .inp` gained `min-height:44px` (SC 2.5.5). Padding alone had it at ~41pt, and any flex
+context could and did take it lower.
+
+## Contacts — one picker, one manager, and no way to use a contact
+
+Two surfaces, deliberately different, drawn as five screens:
+
+- **`Contacts · picker`** — the send-flow sheet. Read-only: no add, no delete, **no search**.
+  Fixed height in both states, matching shipped `h-120`, so a short list does not make the sheet
+  jump. Trailing `.rtick` marks the current recipient — a shape, not a check character, because a
+  10px glyph trips the 11pt type floor.
+- **`Address book`** — the settings drawer. Create form always expanded above the list, plus the
+  search the picker lacks.
+
+New: `.heroin` (borderless hero input), `.rtick`, `.shlab` / `.shlab.hi`, `.shempty`,
+`.btn-primary[disabled]`.
+
+`.heroin` is where the "enforce or update" rule got exercised. Shipped draws the recipient address
+at **40px**; 40 is not a step on our nine-step ramp. Adding a tenth step for one screen would
+break the ramp's whole purpose, so this **enforces `--t-balance` (32px)** and accepts the 8px
+divergence. It also uses Geist Mono, because the system reserves mono for addresses and hashes
+while shipped uses the display face here — a deliberate divergence, recorded rather than silent.
+
+The form uses **visible labels** where shipped is placeholder-only. Placeholder-only labels
+disappear the moment typing starts and fail SC 3.3.2. Cost of enforcing it: `en.json` has no label
+keys, only the placeholder strings `enterUsername` / `enterAddress`, so **two new i18n keys are
+required** to ship this. Flagged rather than quietly invented.
+
