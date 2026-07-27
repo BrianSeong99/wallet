@@ -54,8 +54,10 @@ export const ReviewRow: React.FC<ReviewRowProps> = ({ label, value, onEdit, edit
       )}
     </div>
 
+    {/* --ink-2, not a raw hex: #6B6862 was the same value in both themes, so
+        the note stayed dark-on-dark when the theme flipped. */}
     {note && (
-      <div className="mt-2 flex items-start gap-1.5 text-xs text-[#6B6862]">
+      <div className="mt-2 flex items-start gap-1.5 text-xs text-ink-2">
         <InfoIcon className="mt-0.5 h-4 w-4 shrink-0 fill-current" />
         <span>{note}</span>
       </div>

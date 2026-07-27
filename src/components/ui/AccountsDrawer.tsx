@@ -80,7 +80,10 @@ export const AccountsDrawer: FC<AccountsDrawerProps> = ({ open, onOpenChange }) 
               'flex w-full items-center justify-center gap-2 rounded-xl px-4 py-4',
               'bg-surface-input',
               'text-sm font-semibold text-gray-secondary',
-              'transition-colors hover:bg-[#ECEAE7] dark:hover:bg-[#3f3f3f] rounded-2xl'
+              // --surface-button-secondary-hover already holds exactly these two
+              // values (#ECEAE7 / #3F3F3F), so the token replaces the pair and
+              // the dark: variant disappears with it.
+              'transition-colors hover:bg-button-secondary-hover rounded-2xl'
             )}
           >
             <Icon name={IconName.SettingsNew} className="w-4 h-4" fill="currentColor" />
@@ -93,7 +96,9 @@ export const AccountsDrawer: FC<AccountsDrawerProps> = ({ open, onOpenChange }) 
             aria-disabled="true"
             className={classNames(
               'flex w-full items-center justify-center gap-2 rounded-xl px-4 py-4 cursor-default',
-              'border border-dashed border-[#C7C7CC] bg-transparent',
+              // Was a fixed #C7C7CC, i.e. identical in both themes and far too
+              // light to read on the dark sheet.
+              'border border-dashed border-rule-strong bg-transparent',
               'text-sm font-medium text-gray-secondary rounded-2xl'
             )}
           >

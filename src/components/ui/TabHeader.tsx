@@ -20,7 +20,7 @@ export const TabHeader: FC<TabHeaderProps> = ({ title, actions }) => {
   const { t } = useTranslation();
 
   return (
-    <header className="shrink-0 px-4 py-3 flex items-center justify-between border-b border-[#00000017]">
+    <header className="shrink-0 px-4 py-3 flex items-center justify-between border-b border-rule-default">
       <h1 className="font-heading text-[28px] font-bold text-heading-gray dark:text-pure-white">{title}</h1>
       <div className="flex items-center gap-2">
         {actions}

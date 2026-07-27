@@ -63,7 +63,7 @@ const typeCode = (code: string) => {
 const pressDelete = () => fireEvent.click(screen.getByTestId('numpad-delete'));
 
 /** Count the number of "filled" passcode dots currently rendered. */
-const filledDotCount = (container: HTMLElement) => container.querySelectorAll('div.bg-\\[\\#C7C7CC\\]').length;
+const filledDotCount = (container: HTMLElement) => container.querySelectorAll('div.bg-rule-strong').length;
 
 type Props = React.ComponentProps<typeof NamedPasscodeEntry>;
 
