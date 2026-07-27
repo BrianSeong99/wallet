@@ -42,14 +42,38 @@ Verified independently: `grep` finds them only in the type union and the handler
 So seed-phrase backup is unreachable in **both** first-run onboarding and the reset flow. It
 survives only behind Settings → Recovery phrase and a Home prompt pointing there.
 
-**This is probably deliberate** — Guardian-first recovery is the product strategy, and a
-Guardian-recovered wallet does not need the user to write twelve words down on day one. But it has
-not been decided anywhere legible, and the leftovers are now causing real bugs. The decision to
-make: **is seed-phrase backup part of first run, or is Guardian the only day-one recovery path?**
+### Decided 2026-07-27: backup is offered at first run, and is deferrable
 
-- If **Guardian only** — delete the four components, the hash cases, `env.ts:121-126`, and retire
-  mocks `08 · Back up your wallet` and `09 · Verify seed phrase` (already retagged *unreachable*).
-- If **backup returns** — those two mocks are its spec, and the wiring is a few action ids.
+Both. Guardian stays the day-one recovery path; the phrase is the second one, offered during
+onboarding and skippable without penalty.
+
+**Placement: after the wallet exists, not before it.** The phrase cannot be shown until it has
+been generated; the mandatory path stays short; and a skippable step placed mid-chain reads as
+mandatory anyway. So: wallet ready → offer backup → home.
+
+**The deferred half is already built.** `/settings/verify-seed-phrase` is a live route running
+`VerifySeedPhraseFlow`, and `HomePrompts.tsx:24` already renders the
+`verifySeedPhrasePromptTitle` nudge pointing at it. Deferring needs **no new screens** — it needs
+the first-run offer to exist and to hand off to what ships.
+
+Three mocks now specify this: `08 · Back up your wallet`, `08a · Back up later?` (new) and
+`09 · Verify seed phrase`, all tagged *deferrable*. Two changes to `08` fell out of the decision:
+copy-to-clipboard moved off the action zone onto the phrase itself (copying is an operation on
+twelve words; deferring is a decision about the flow — one slot made them read as the same kind of
+choice), and the ghost became **Back up later**.
+
+`08a` deliberately does **not** claim the user is at risk. Under Guardian-first recovery they are
+not, and inventing danger to drive completion is how consent gets manufactured. It states the one
+real consequence — until the phrase is saved, recovery depends on somebody else — and offers both
+paths at equal weight.
+
+**This is a wire-up, not a build.** All four components exist, translated and tested. What is
+missing is that `setStep`'s only writer, the hash effect at `Welcome.tsx:465-537`, cannot produce
+`BackupSeedPhrase`, and `navigator.tsx:165-183` emits action ids `onAction` does not handle
+(`default: break` at `:458-459`). Wiring is a hash case and a handful of action ids.
+
+Still to delete regardless: `SelectTransactionType` and `SelectRecoveryMethod` remain unreachable
+and are not part of this decision, and `/#select-wallet-type` must stop rendering blank.
 
 ## Live user-facing bugs on the recovery path
 

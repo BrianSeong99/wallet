@@ -3412,20 +3412,43 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
           </div>
         </div></div></div>
         <div class="scrnote"><b>A fully-built state with no design.</b> <code>Confirmation.tsx</code> already ships it: <code>biometricFailed</code> in red, and the CTA pair swaps to <code>continueWithPassword</code> + <code>tryBiometricAgain</code> once <code>showPasswordFallback</code> is set. Before attempts run out it instead shows <code>retry</code> plus &ldquo;<em>n</em> attempts remaining&rdquo;. Two decisions: the <b>success illustration and headline stay</b> &mdash; the wallet genuinely was created, and only the unlock method failed, so re-framing the screen as a failure would lie about what happened; and the <b>escape hatch is primary</b>, retry ghost beneath, because a user whose face or finger just failed twice needs the exit more than another attempt.</div></div>
-      <div><div class="scrcap"><i></i>08 &middot; Back up your wallet <span class="tag retire">unreachable</span></div>
+      <div><div class="scrcap"><i></i>08 &middot; Back up your wallet <span class="tag merge">deferrable</span></div>
         <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
           <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>
           <div class="mpad" style="flex:1;display:flex;flex-direction:column">
             <div class="obtop"><button class="obback" aria-label="Go back">&lsaquo;</button><div class="progdots"><i class="on"></i><i></i><i></i><i></i></div></div>
             <h2 class="obh" style="text-align:left">Back up your wallet</h2>
             <p class="obp" style="text-align:left">Save these 12 words and store in a secure place.</p>
+            <button class="tokchip" style="margin-top:0.75rem"><span class="svgic" style="--ic:url(assets/icons/copy.svg);width:1rem;height:1rem" aria-hidden="true"></span>Copy to clipboard</button>
 <div class="seedgrid" style="margin-top:0.875rem"><div class="seedw"><i>1</i>ripple</div><div class="seedw"><i>2</i>canvas</div><div class="seedw"><i>3</i>orbit</div><div class="seedw"><i>4</i>meadow</div><div class="seedw"><i>5</i>tunnel</div><div class="seedw"><i>6</i>crisp</div><div class="seedw"><i>7</i>lantern</div><div class="seedw"><i>8</i>harbor</div><div class="seedw"><i>9</i>velvet</div><div class="seedw"><i>10</i>pigeon</div><div class="seedw"><i>11</i>amber</div><div class="seedw"><i>12</i>quartz</div></div>
             <div class="notice" style="margin-top:0.75rem"><span>&#9940;</span><span>Anyone who knows your recovery phrase can access your wallet and funds.</span></div>
-            <div class="zone"><button class="btn btn-primary" style="width:100%">I&rsquo;ve written it down</button><div class="gh">Copy to clipboard</div></div>
+            <div class="zone"><button class="btn btn-primary" style="width:100%">I&rsquo;ve written it down</button><div class="gh">Back up later</div></div>
           </div>
         </div></div></div>
-        <div class="scrnote">Backup is its own 4-step sub-flow (<code>BackupSeed 1 &middot; VerifySeed 2 &middot; CreatePassword 3 &middot; RecoveryMethod 4</code>). Deliberately <em>not</em> password-shaped: no masking, no strength meter, no autofill.</div></div>
-      <div><div class="scrcap"><i></i>09 &middot; Verify seed phrase <span class="tag retire">unreachable</span></div>
+        <div class="scrnote"><b>Offered at first run, deferrable &mdash; decided 2026-07-27.</b> Backup sits <b>after the wallet exists</b>, not before it: the phrase cannot be shown until it has been generated, the mandatory path stays short, and a skippable step placed mid&#8209;chain reads as mandatory anyway. Guardian remains the day&#8209;one recovery path; this is the second one. <b>The deferred half already ships</b> &mdash; <code>/settings/verify-seed-phrase</code> is a live route running <code>VerifySeedPhraseFlow</code>, and <code>HomePrompts.tsx:24</code> already points at it &mdash; so what is missing is only the first&#8209;run offer and the link between them. <b>Two changes from the previous draft.</b> Copy moved off the action zone and onto the phrase, because copying is an operation on <em>these twelve words</em> and deferring is a decision about <em>the flow</em>; sharing one slot made them read as the same kind of choice. And the ghost is now <b>Back up later</b>, which is the honest label for what the step is. Deliberately not password&#8209;shaped: no masking, no strength meter, no autofill. <b>Wiring:</b> the components exist and are unreachable &mdash; <code>setStep</code>&rsquo;s only writer is the hash effect at <code>Welcome.tsx:465&ndash;537</code>, which cannot produce <code>BackupSeedPhrase</code>, and <code>navigator.tsx:165&ndash;183</code> emits ids <code>onAction</code> does not handle. This is a wire&#8209;up, not a build.</div></div>
+      <div><div class="scrcap"><i></i>08a &middot; Back up later? <span class="tag merge">deferral</span></div>
+        <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
+          <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>
+          <div class="mpad" style="flex:1;display:flex;flex-direction:column">
+            <div class="obtop"><button class="obback" aria-label="Go back">&lsaquo;</button><div class="progdots"><i class="on"></i><i></i><i></i><i></i></div></div>
+            <h2 class="obh" style="text-align:left">Back up your wallet</h2>
+            <p class="obp" style="text-align:left">Save these 12 words and store in a secure place.</p>
+            <div class="seedgrid" style="margin-top:0.875rem"><div class="seedw"><i>1</i>ripple</div><div class="seedw"><i>2</i>canvas</div><div class="seedw"><i>3</i>orbit</div><div class="seedw"><i>4</i>meadow</div><div class="seedw"><i>5</i>tunnel</div><div class="seedw"><i>6</i>crisp</div></div>
+          </div>
+          <div class="shscrim" style="position:absolute;inset:0"></div>
+          <div class="sheetc" style="position:absolute;left:0;right:0;bottom:0;max-height:82%;padding-bottom:max(1rem,var(--safe-bottom))">
+            <div class="shandle"></div>
+            <div class="shttl" style="text-align:center">Back up later?</div>
+            <div class="shsub" style="text-align:center">Your wallet works without this. Your <b>Guardian</b> is your recovery until you finish.</div>
+            <div class="shdiv"></div>
+            <div class="isrow"><div class="ish"><span class="isb" style="background:var(--pos)">&#10003;</span>You can still recover</div><div class="isdd">Your Guardian can restore this wallet on a new device. Nothing is lost by waiting.</div></div>
+            <div class="isrow"><div class="ish"><span class="isb" style="background:var(--accent);color:var(--on-accent-sm)">!</span>One path, not two</div><div class="isdd">Until you save the phrase, your Guardian is the only way back in. The phrase is what lets you recover without anyone&rsquo;s help.</div></div>
+            <div class="isrow"><div class="ish"><span class="isb" style="background:var(--ink-3)">&#8942;</span>Where to find it</div><div class="isdd">Settings &rarr; Recovery phrase, any time. We&rsquo;ll remind you on the home screen.</div></div>
+            <div class="shft zpair"><button class="btn btn-secondary">Back up later</button><button class="btn btn-primary">Continue backup</button></div>
+          </div>
+        </div></div></div>
+        <div class="scrnote"><b>The screen that makes the step genuinely optional rather than nominally optional.</b> A ghost &ldquo;Back up later&rdquo; that silently exits teaches nothing; a modal that scolds is a dark pattern pointed at a decision the product has already said is fine. So this states the true position and nothing more: <b>the wallet works, Guardian is the recovery, and the phrase is the second one.</b> <b>What it deliberately does not do</b> is claim the user is at risk. Under Guardian&#8209;first recovery they are not, and inventing danger to drive completion is how consent gets manufactured. The one real consequence is stated plainly &mdash; until the phrase is saved, recovery depends on <em>somebody else</em> &mdash; because self&#8209;custody without a phrase is custody with extra steps, and that is the thing a user would actually want to know. <b>Button order is deliberate.</b> &ldquo;Continue backup&rdquo; is primary and on the right because it is the recommended path; &ldquo;Back up later&rdquo; is secondary and <em>not</em> a ghost, because the sheet exists to make deferring a real, equal-weight option. Both are filled, per the no&#8209;outlined&#8209;controls rule. <b>The loop is already built:</b> deferring lands on the shipped <code>verifySeedPhrasePromptTitle</code> prompt on Home (drawn on <b>Home / Overview</b>), which routes to <code>/settings/verify-seed-phrase</code> &mdash; a live route running <code>VerifySeedPhraseFlow</code>. So the deferred half needs no new screens at all; it needs the first&#8209;run offer to exist and to hand off to it.</div></div>
+      <div><div class="scrcap"><i></i>09 &middot; Verify seed phrase <span class="tag merge">deferrable</span></div>
         <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
           <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>
           <div class="mpad" style="flex:1;display:flex;flex-direction:column">
