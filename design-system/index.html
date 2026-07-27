@@ -3079,10 +3079,10 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
 
     <div class="callout"><b>What changed.</b> The bar now derives from the shipped <code>STEP_TO_PROGRESS</code> map instead of an invented 7-step model; detours hold their step; and <b>six screens the app already ships</b> are represented for the first time &mdash; passcode-mismatch, create-password, account-recovery, creating-wallet, verify-seed, and the whole import path. The spec no longer describes behaviour the product lacks, nor omits behaviour it has.</div>
 
-    <h2 class="h">Wallet</h2>
+        <h2 class="h">Home &amp; overview</h2>
+    <p class="sub">The resting state, and everything reached from the balance card. The card <em>is</em> the account: tapping it opens the list, and the list reaches one account's own sheet.</p>
     <div class="scrgrid">
-
-      <div><div class="scrcap"><i></i>Home / Overview</div>
+<div><div class="scrcap"><i></i>Home / Overview</div>
         <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
           <div class="stat"><span>9:41</span><span class="r">✦ ▪ ▪</span></div>
           <div class="mpad" style="flex:1;display:flex;flex-direction:column">
@@ -3114,8 +3114,25 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
           <div class="mnav"><button class="t on"><span class="svgic" style="--ic:url(assets/icons/home-new.svg)" aria-hidden="true"></span><span>Home</span></button><button class="t"><span class="svgic" style="--ic:url(assets/icons/explore.svg)" aria-hidden="true"></span><span>Explore</span></button><button class="t"><span class="svgic" style="--ic:url(assets/icons/activity.svg)" aria-hidden="true"></span><span>Activity</span></button></div>
         </div></div></div>
         <div class="scrnote">Funded state. Balance and amounts in Nunito tabular; addresses in Geist Mono.</div></div>
-
-      <div><div class="scrcap"><i></i>Account sheet <span class="tag retire">proposed</span></div>
+<div><div class="scrcap"><i></i>Accounts &middot; list <span class="tag retire">proposed</span></div>
+        <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
+          <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>
+          <div class="mpad" style="flex:1;opacity:.35"><div class="masset-h">Assets</div><button class="msearch"><span class="svgic" style="--ic:url(assets/icons/search.svg)" aria-hidden="true"></span>Search for tokens</button></div>
+          <div class="shscrim"></div>
+          <div class="msheet">
+            <div class="mshandle"></div>
+            <div class="mshead">Accounts</div>
+            <div class="mlist">
+              <div class="mbc" data-card="blue"><div class="top" data-surface="graphite" data-pattern=""><button class="aedit">Edit</button><div class="balrow"><div class="anm"><svg class="achk" viewBox="0 0 12 12" aria-hidden="true"><path d="M3 6.4 5 8.6 9 3.8"/></svg>Miden Account 1</div></div><div class="amt">$1,204.00 <small>USD</small></div></div></div>
+              <div class="mbc" data-card="green"><div class="top" data-surface="graphite" data-pattern=""><button class="aedit">Edit</button><div class="balrow"><div class="anm"><svg class="achk" viewBox="0 0 12 12" aria-hidden="true"><path d="M3 6.4 5 8.6 9 3.8"/></svg>Miden Account 2</div></div><div class="amt">$318.90 <small>USD</small></div></div></div>
+              <div class="mbc sel" data-card="slate"><div class="top" data-surface="graphite" data-pattern=""><button class="aedit">Edit</button><div class="balrow"><div class="anm"><svg class="achk" viewBox="0 0 12 12" aria-hidden="true"><path d="M3 6.4 5 8.6 9 3.8"/></svg>Miden Account 3</div></div><div class="amt">$12,480.50 <small>USD</small></div></div></div>
+            </div>
+            
+            <div class="zone" style="padding-bottom:max(16px,var(--safe-bottom,0px))"><button class="btn btn-primary">Add account</button><div class="gh">Settings &rsaquo;</div></div>
+          </div>
+        </div></div></div>
+        <div class="scrnote"><b>Proposed &mdash; multi-account does not exist yet.</b> The shipped <code>AccountsDrawer</code> lists <em>no accounts at all</em>: it is a card-colour picker, a Settings link, and a <em>disabled</em> &ldquo;Add account (coming soon)&rdquo; button whose dashed outline also breaks the no-bordered-controls rule. <b>Vertical list, not an Apple-Wallet stack</b> &mdash; the stack was built first and failed on three counts: in <b>dark</b> every card is near-black so overlapping merged all three into one block (tinting each with its account hue at 12&percnt; measured <b>1.00&ndash;1.04:1</b> between adjacent cards, because hue separates almost nothing at near-black); the collapsed band forced a choice between the name and the balance, with one card&rsquo;s amount butting into the next card&rsquo;s name; and it grew 64px per account, stopping around six. Blocks here are the card&rsquo;s top half &mdash; name and balance, which is what you choose between &mdash; with no delta, since performance is not why this sheet is open. Selection is a filled check rather than a ring, because an outline round a card would read as a bordered control. <b>Renaming is deliberately not here:</b> the list answers &ldquo;which account&rdquo;, and a rename affordance would compete with the selection gesture.</div></div>
+<div><div class="scrcap"><i></i>Account sheet <span class="tag retire">proposed</span></div>
         <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
           <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>
           <div class="mpad" style="flex:1;opacity:.35"><div class="masset-h">Assets</div><button class="msearch"><span class="svgic" style="--ic:url(assets/icons/search.svg)" aria-hidden="true"></span>Search for tokens</button></div>
@@ -3139,25 +3156,11 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
           </div>
         </div></div></div>
         <div class="scrnote"><b>The missing link.</b> I specified &ldquo;tap the card to switch, <code>&ctdot;</code> for options&rdquo; and then wired <em>neither</em>, so the Accounts list had no entry point at all &mdash; a real gap. The chain is now: balance-card <code>&ctdot;</code> &rarr; <b>Accounts list</b> (choose) &rarr; per-row <code>&ctdot;</code> &rarr; <b>this sheet</b> (manage one account). Renaming lives here rather than in the list, per the rule that the list answers &ldquo;which account&rdquo; and a rename affordance would fight the selection gesture. The card colour also belongs here, not in the list, because colour is <em>per-account identity</em> &mdash; today it is a single global <code>localStorage</code> value, which is exactly why it currently reads as decoration. The card preview carries no pattern, so the swatch row is the only thing asserting identity while you are choosing it.</div></div>
-      <div><div class="scrcap"><i></i>Accounts &middot; list <span class="tag retire">proposed</span></div>
-        <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
-          <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>
-          <div class="mpad" style="flex:1;opacity:.35"><div class="masset-h">Assets</div><button class="msearch"><span class="svgic" style="--ic:url(assets/icons/search.svg)" aria-hidden="true"></span>Search for tokens</button></div>
-          <div class="shscrim"></div>
-          <div class="msheet">
-            <div class="mshandle"></div>
-            <div class="mshead">Accounts</div>
-            <div class="mlist">
-              <div class="mbc" data-card="blue"><div class="top" data-surface="graphite" data-pattern=""><button class="aedit">Edit</button><div class="balrow"><div class="anm"><svg class="achk" viewBox="0 0 12 12" aria-hidden="true"><path d="M3 6.4 5 8.6 9 3.8"/></svg>Miden Account 1</div></div><div class="amt">$1,204.00 <small>USD</small></div></div></div>
-              <div class="mbc" data-card="green"><div class="top" data-surface="graphite" data-pattern=""><button class="aedit">Edit</button><div class="balrow"><div class="anm"><svg class="achk" viewBox="0 0 12 12" aria-hidden="true"><path d="M3 6.4 5 8.6 9 3.8"/></svg>Miden Account 2</div></div><div class="amt">$318.90 <small>USD</small></div></div></div>
-              <div class="mbc sel" data-card="slate"><div class="top" data-surface="graphite" data-pattern=""><button class="aedit">Edit</button><div class="balrow"><div class="anm"><svg class="achk" viewBox="0 0 12 12" aria-hidden="true"><path d="M3 6.4 5 8.6 9 3.8"/></svg>Miden Account 3</div></div><div class="amt">$12,480.50 <small>USD</small></div></div></div>
-            </div>
-            
-            <div class="zone" style="padding-bottom:max(16px,var(--safe-bottom,0px))"><button class="btn btn-primary">Add account</button><div class="gh">Settings &rsaquo;</div></div>
-          </div>
-        </div></div></div>
-        <div class="scrnote"><b>Proposed &mdash; multi-account does not exist yet.</b> The shipped <code>AccountsDrawer</code> lists <em>no accounts at all</em>: it is a card-colour picker, a Settings link, and a <em>disabled</em> &ldquo;Add account (coming soon)&rdquo; button whose dashed outline also breaks the no-bordered-controls rule. <b>Vertical list, not an Apple-Wallet stack</b> &mdash; the stack was built first and failed on three counts: in <b>dark</b> every card is near-black so overlapping merged all three into one block (tinting each with its account hue at 12&percnt; measured <b>1.00&ndash;1.04:1</b> between adjacent cards, because hue separates almost nothing at near-black); the collapsed band forced a choice between the name and the balance, with one card&rsquo;s amount butting into the next card&rsquo;s name; and it grew 64px per account, stopping around six. Blocks here are the card&rsquo;s top half &mdash; name and balance, which is what you choose between &mdash; with no delta, since performance is not why this sheet is open. Selection is a filled check rather than a ring, because an outline round a card would read as a bordered control. <b>Renaming is deliberately not here:</b> the list answers &ldquo;which account&rdquo;, and a rename affordance would compete with the selection gesture.</div></div>
-      <div><div class="scrcap"><i></i>Send · recipient</div>
+    </div>
+    <h2 class="h">Send flow</h2>
+    <p class="sub">Recipient &rarr; amount &rarr; review &rarr; result. <b>Contact management and creation are undrawn</b> &mdash; the app has an <code>AccountsListDrawer</code> for picking a contact and an <code>AddressBook</code> in Settings, and neither has a mock yet. The review step is also missing a <code>From</code> row, which becomes a hazard once multi-account ships.</p>
+    <div class="scrgrid">
+<div><div class="scrcap"><i></i>Send · recipient</div>
         <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
           <div class="stat"><span>9:41</span><span class="r">✦ ▪ ▪</span></div>
           <div class="mpad" style="flex:1;display:flex;flex-direction:column">
@@ -3171,8 +3174,7 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
           </div>
         </div></div></div>
         <div class="scrnote">Named contacts above raw addresses — recognition over recall, and it reduces mis-paste risk.</div></div>
-
-      <div><div class="scrcap"><i></i>Send · success</div>
+<div><div class="scrcap"><i></i>Send · success</div>
         <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
           <div class="stat"><span>9:41</span><span class="r">✦ ▪ ▪</span></div>
           <div class="mpad" style="flex:1;display:flex;flex-direction:column">
@@ -3189,8 +3191,11 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
           </div>
         </div></div></div>
         <div class="scrnote">Confirmation is a rare high-stakes moment, so it earns the drawn tick — but stays factual, not celebratory.</div></div>
-
-      <div><div class="scrcap"><i></i>Receive</div>
+    </div>
+    <h2 class="h">Receive flow</h2>
+    <p class="sub">Address, QR and share. Receive is address-only since claimable notes moved to their own screen.</p>
+    <div class="scrgrid">
+<div><div class="scrcap"><i></i>Receive</div>
         <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
           <div class="stat"><span>9:41</span><span class="r">✦ ▪ ▪</span></div>
           <div class="mpad" style="flex:1;display:flex;flex-direction:column">
@@ -3203,26 +3208,32 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
           </div>
         </div></div></div>
         <div class="scrnote">Wrong-network deposits are unrecoverable, so the constraint is stated inline — not hidden in help.</div></div>
-
-      <div><div class="scrcap"><i></i>Pending notes</div>
+    </div>
+    <h2 class="h">Swap flow</h2>
+    <p class="sub">In-protocol DEX swap. <code>isSwapEnabled()</code> is <b>true</b>, so unlike Earn this ships today.</p>
+    <div class="scrgrid">
+<div><div class="scrcap"><i></i>Swap</div>
         <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
           <div class="stat"><span>9:41</span><span class="r">✦ ▪ ▪</span></div>
           <div class="mpad" style="flex:1;display:flex;flex-direction:column">
-            <div class="sh2"><span class="bk2">‹</span><span class="t2">Pending</span></div>
-            <p class="obp" style="text-align:left;margin-top:0">Notes sent to you that aren't claimed yet.</p>
-            <div class="mrow"><div class="ic sq"><span class="svgic" style="--ic:url(assets/icons/receive-new.svg);" aria-hidden="true"></span></div><div><div class="nm">From mtst1kq2…88xz</div><div class="ad">2 min ago</div></div><div class="rt"><div class="f" style="color:var(--pos)">+40.00</div><div class="b">MIDEN</div></div></div>
-            <div class="mrow"><div class="ic sq"><span class="svgic" style="--ic:url(assets/icons/receive-new.svg);" aria-hidden="true"></span></div><div><div class="nm">From mtst1zz9…41mn</div><div class="ad">1 hr ago</div></div><div class="rt"><div class="f" style="color:var(--pos)">+12.50</div><div class="b">MIDEN</div></div></div>
-            <div class="zone"><button class="btn btn-primary" style="width:100%">Claim all · 52.50</button></div>
+            <div class="sh2"><span class="bk2">‹</span><span class="t2">Swap</span></div>
+            <div class="dmeta" style="padding:12px">
+              <div style="display:flex;align-items:center;gap:10px"><img src="assets/icons/miden.svg" alt="" style="width:30px;height:30px"><div style="flex:1"><div style="font-size:11px;color:var(--ink-2)">You pay</div><div style="font-family:var(--num);font-feature-settings:var(--num-feat);font-weight:800;font-size:20px">100.00</div></div><span class="maxb">MIDEN</span></div>
+            </div>
+            <div style="text-align:center;margin:-6px 0"><span style="display:inline-flex;width:30px;height:30px;border-radius:50%;background:var(--surface);box-shadow:var(--shadow-1);align-items:center;justify-content:center">⇅</span></div>
+            <div class="dmeta" style="padding:12px">
+              <div style="display:flex;align-items:center;gap:10px"><img src="assets/icons/usdc.svg" alt="" style="width:30px;height:30px"><div style="flex:1"><div style="font-size:11px;color:var(--ink-2)">You receive</div><div style="font-family:var(--num);font-feature-settings:var(--num-feat);font-weight:800;font-size:20px">1,030.00</div></div><span class="maxb">USDC</span></div>
+            </div>
+            <div class="availrow" style="margin-top:10px"><span>Rate 1 MIDEN ≈ 10.30 USDC</span></div>
+            <div class="zone"><button class="btn btn-primary" style="width:100%">Review swap</button></div>
           </div>
         </div></div></div>
-        <div class="scrnote">Claim-all carries the total, so the action states its own consequence.</div></div>
-
+        <div class="scrnote">Pay/receive as two stacked blocks with the swap control straddling them — direction is spatial, not just labelled.</div></div>
     </div>
-
-    <h2 class="h">Activity, Earn &amp; Swap</h2>
+    <h2 class="h">Activity flow</h2>
+    <p class="sub">History, one transaction in detail, and claiming. Pending notes belong here rather than under Receive, matching the shipped split.</p>
     <div class="scrgrid">
-
-      <div><div class="scrcap"><i></i>Activity</div>
+<div><div class="scrcap"><i></i>Activity</div>
         <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
           <div class="stat"><span>9:41</span><span class="r">✦ ▪ ▪</span></div>
           <div class="mpad" style="flex:1;display:flex;flex-direction:column">
@@ -3238,8 +3249,7 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
           <div class="mnav"><button class="t on"><span class="svgic" style="--ic:url(assets/icons/home-new.svg)" aria-hidden="true"></span><span>Home</span></button><button class="t"><span class="svgic" style="--ic:url(assets/icons/explore.svg)" aria-hidden="true"></span><span>Explore</span></button><button class="t"><span class="svgic" style="--ic:url(assets/icons/activity.svg)" aria-hidden="true"></span><span>Activity</span></button></div>
         </div></div></div>
         <div class="scrnote">Failed rows say <b>"Not sent"</b> in the value column — status is never colour-only, and never ambiguous about the money.</div></div>
-
-      <div><div class="scrcap"><i></i>Transaction detail</div>
+<div><div class="scrcap"><i></i>Transaction detail</div>
         <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
           <div class="stat"><span>9:41</span><span class="r">✦ ▪ ▪</span></div>
           <div class="mpad" style="flex:1;display:flex;flex-direction:column">
@@ -3259,8 +3269,23 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
           </div>
         </div></div></div>
         <div class="scrnote">Same review card, reused as a receipt — one component, two moments in the flow.</div></div>
-
-      <div data-earn-surface><div class="scrcap"><i></i>Earn · vaults <span class="tag merge">gated off</span></div>
+<div><div class="scrcap"><i></i>Pending notes</div>
+        <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
+          <div class="stat"><span>9:41</span><span class="r">✦ ▪ ▪</span></div>
+          <div class="mpad" style="flex:1;display:flex;flex-direction:column">
+            <div class="sh2"><span class="bk2">‹</span><span class="t2">Pending</span></div>
+            <p class="obp" style="text-align:left;margin-top:0">Notes sent to you that aren't claimed yet.</p>
+            <div class="mrow"><div class="ic sq"><span class="svgic" style="--ic:url(assets/icons/receive-new.svg);" aria-hidden="true"></span></div><div><div class="nm">From mtst1kq2…88xz</div><div class="ad">2 min ago</div></div><div class="rt"><div class="f" style="color:var(--pos)">+40.00</div><div class="b">MIDEN</div></div></div>
+            <div class="mrow"><div class="ic sq"><span class="svgic" style="--ic:url(assets/icons/receive-new.svg);" aria-hidden="true"></span></div><div><div class="nm">From mtst1zz9…41mn</div><div class="ad">1 hr ago</div></div><div class="rt"><div class="f" style="color:var(--pos)">+12.50</div><div class="b">MIDEN</div></div></div>
+            <div class="zone"><button class="btn btn-primary" style="width:100%">Claim all · 52.50</button></div>
+          </div>
+        </div></div></div>
+        <div class="scrnote">Claim-all carries the total, so the action states its own consequence.</div></div>
+    </div>
+    <h2 class="h">Earn flow <span class="tag merge">gated off</span></h2>
+    <p class="sub">Built and routed, but <code>isEarnEnabled()</code> returns <b>false</b>, so none of it is reachable. Kept as spec for a shipped-but-hidden feature.</p>
+    <div class="scrgrid">
+<div data-earn-surface><div class="scrcap"><i></i>Earn · vaults <span class="tag merge">gated off</span></div>
         <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
           <div class="stat"><span>9:41</span><span class="r">✦ ▪ ▪</span></div>
           <div class="mpad" style="flex:1;display:flex;flex-direction:column">
@@ -3279,8 +3304,7 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
           <div class="mnav"><button class="t on"><span class="svgic" style="--ic:url(assets/icons/home-new.svg)" aria-hidden="true"></span><span>Home</span></button><button class="t"><span class="svgic" style="--ic:url(assets/icons/explore.svg)" aria-hidden="true"></span><span>Explore</span></button><button class="t"><span class="svgic" style="--ic:url(assets/icons/activity.svg)" aria-hidden="true"></span><span>Activity</span></button></div>
         </div></div></div>
         <div class="scrnote"><b>Kept, but gated.</b> <code>isEarnEnabled()</code> returns <b>false</b> in <code>src/lib/feature-flags.ts</code> — the single source of truth for both the home swipe pane and the top action-bar segment — so Earn is built and routed (<code>/earn</code> exists) but unreachable until the feature ships. These screens are therefore <em>spec for a shipped-but-hidden feature</em>, not speculation, and stay. The action bar here shows the <b>earn-enabled</b> five-segment state (overview · send · receive · earn · swap); every other screen shows the four-segment shipped state, which ends in <b>Swap</b> because <code>isSwapEnabled()</code> is <b>true</b>. <b>Measured consequence:</b> five segments overflow the 360pt extension popup by <b>9.1pt</b>, because the collapsed chips already sit on their 44pt tap-target floor. Gap tightens 7px → 4px below 380pt, which reclaims 12pt and fits at 312/312 with the smallest chip at 44.7pt. That defect only appears when the flag flips, so it would have shipped with Earn.</div></div>
-
-      <div data-earn-surface><div class="scrcap"><i></i>Vault detail <span class="tag merge">gated off</span></div>
+<div data-earn-surface><div class="scrcap"><i></i>Vault detail <span class="tag merge">gated off</span></div>
         <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
           <div class="stat"><span>9:41</span><span class="r">✦ ▪ ▪</span></div>
           <div class="mpad" style="flex:1;display:flex;flex-direction:column">
@@ -3298,8 +3322,7 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
           </div>
         </div></div></div>
         <div class="scrnote">Yield is stated as variable and risk-bearing — a financial-credibility requirement, not a disclaimer bolted on.</div></div>
-
-      <div data-earn-surface><div class="scrcap"><i></i>Earn · deposit <span class="tag merge">gated off</span></div>
+<div data-earn-surface><div class="scrcap"><i></i>Earn · deposit <span class="tag merge">gated off</span></div>
         <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
           <div class="stat"><span>9:41</span><span class="r">✦ ▪ ▪</span></div>
           <div class="mpad" style="flex:1;display:flex;flex-direction:column">
@@ -3311,31 +3334,11 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
           </div>
         </div></div></div>
         <div class="scrnote">Identical amount-entry pattern to Send — one component, so the muscle memory transfers.</div></div>
-
-      <div><div class="scrcap"><i></i>Swap</div>
-        <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
-          <div class="stat"><span>9:41</span><span class="r">✦ ▪ ▪</span></div>
-          <div class="mpad" style="flex:1;display:flex;flex-direction:column">
-            <div class="sh2"><span class="bk2">‹</span><span class="t2">Swap</span></div>
-            <div class="dmeta" style="padding:12px">
-              <div style="display:flex;align-items:center;gap:10px"><img src="assets/icons/miden.svg" alt="" style="width:30px;height:30px"><div style="flex:1"><div style="font-size:11px;color:var(--ink-2)">You pay</div><div style="font-family:var(--num);font-feature-settings:var(--num-feat);font-weight:800;font-size:20px">100.00</div></div><span class="maxb">MIDEN</span></div>
-            </div>
-            <div style="text-align:center;margin:-6px 0"><span style="display:inline-flex;width:30px;height:30px;border-radius:50%;background:var(--surface);box-shadow:var(--shadow-1);align-items:center;justify-content:center">⇅</span></div>
-            <div class="dmeta" style="padding:12px">
-              <div style="display:flex;align-items:center;gap:10px"><img src="assets/icons/usdc.svg" alt="" style="width:30px;height:30px"><div style="flex:1"><div style="font-size:11px;color:var(--ink-2)">You receive</div><div style="font-family:var(--num);font-feature-settings:var(--num-feat);font-weight:800;font-size:20px">1,030.00</div></div><span class="maxb">USDC</span></div>
-            </div>
-            <div class="availrow" style="margin-top:10px"><span>Rate 1 MIDEN ≈ 10.30 USDC</span></div>
-            <div class="zone"><button class="btn btn-primary" style="width:100%">Review swap</button></div>
-          </div>
-        </div></div></div>
-        <div class="scrnote">Pay/receive as two stacked blocks with the swap control straddling them — direction is spatial, not just labelled.</div></div>
-
     </div>
-
-    <h2 class="h">Settings &amp; Browser</h2>
+    <h2 class="h">Settings &amp; browser</h2>
+    <p class="sub">Reached from Activity's header gear &mdash; Home has no header of its own, which is why Settings also appears as a ghost action in the accounts sheet.</p>
     <div class="scrgrid">
-
-      <div><div class="scrcap"><i></i>Settings</div>
+<div><div class="scrcap"><i></i>Settings</div>
         <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
           <div class="stat"><span>9:41</span><span class="r">✦ ▪ ▪</span></div>
           <div class="mpad" style="flex:1;display:flex;flex-direction:column">
@@ -3358,8 +3361,7 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
           <div class="mnav"><button class="t on"><span class="svgic" style="--ic:url(assets/icons/home-new.svg)" aria-hidden="true"></span><span>Home</span></button><button class="t"><span class="svgic" style="--ic:url(assets/icons/explore.svg)" aria-hidden="true"></span><span>Explore</span></button><button class="t"><span class="svgic" style="--ic:url(assets/icons/activity.svg)" aria-hidden="true"></span><span>Activity</span></button></div>
         </div></div></div>
         <div class="scrnote">Grouped soft blocks rather than a divided table — the same stacking idiom as everywhere else.</div></div>
-
-      <div><div class="scrcap"><i></i>Reveal recovery phrase</div>
+<div><div class="scrcap"><i></i>Reveal recovery phrase</div>
         <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
           <div class="stat"><span>9:41</span><span class="r">✦ ▪ ▪</span></div>
           <div class="mpad" style="flex:1;display:flex;flex-direction:column">
@@ -3375,8 +3377,7 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
           </div>
         </div></div></div>
         <div class="scrnote">Blurred until an explicit hold — friction is the point. Shoulder-surfing is a real attack, so the warning precedes the words.</div></div>
-
-      <div><div class="scrcap"><i></i>dApp browser</div>
+<div><div class="scrcap"><i></i>dApp browser</div>
         <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
           <div class="stat"><span>9:41</span><span class="r">✦ ▪ ▪</span></div>
           <div class="mpad" style="flex:1;display:flex;flex-direction:column">
@@ -3394,8 +3395,8 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
           <div class="mnav"><button class="t on"><span class="svgic" style="--ic:url(assets/icons/home-new.svg)" aria-hidden="true"></span><span>Home</span></button><button class="t"><span class="svgic" style="--ic:url(assets/icons/explore.svg)" aria-hidden="true"></span><span>Explore</span></button><button class="t"><span class="svgic" style="--ic:url(assets/icons/activity.svg)" aria-hidden="true"></span><span>Activity</span></button></div>
         </div></div></div>
         <div class="scrnote">Browser rejoins the app: same header scale, same tiles, same nav. The trust statement is on the surface, not buried.</div></div>
-
     </div>
+
   </section>
 
   <!-- CONSTRAINTS & EVIDENCE -->
