@@ -582,21 +582,46 @@ table.map td code{font-size:12px}
       negative space the operative principle. The motif alone would just be decoration. */
 .mbc [data-pattern]{position:relative}
 .mbc [data-pattern]::after{content:'';position:absolute;inset:0;pointer-events:none;z-index:0;
+  background-image:var(--pat-img);background-size:var(--pat-size,auto);
+  background-position:var(--pat-pos,0 0);
   -webkit-mask-image:radial-gradient(circle at 100% 0%,#000 0%,rgba(0,0,0,.55) 38%,transparent 72%);
   mask-image:radial-gradient(circle at 100% 0%,#000 0%,rgba(0,0,0,.55) 38%,transparent 72%)}
 .mbc [data-pattern] > *{position:relative;z-index:1}
-[data-pattern="seigaiha"]::after{
-  background-image:radial-gradient(circle at 50% 100%,transparent 21%,var(--pat) 22%,var(--pat) 25%,
+/* The five wagara, as reusable tokens. var(--pat) inside them resolves in the USING element's
+   context, so one definition serves both themes at their respective alphas. */
+:root{
+  --pat-seigaiha:radial-gradient(circle at 50% 100%,transparent 21%,var(--pat) 22%,var(--pat) 25%,
     transparent 26%,transparent 40%,var(--pat) 41%,var(--pat) 44%,transparent 45%,
     transparent 59%,var(--pat) 60%,var(--pat) 63%,transparent 64%);
-  background-size:52px 26px}
-[data-pattern="uroko"]::after{
-  background-image:radial-gradient(circle at 50% 0,var(--pat) 33%,transparent 34%),
+  --pat-uroko:radial-gradient(circle at 50% 0,var(--pat) 33%,transparent 34%),
     radial-gradient(circle at 50% 0,var(--pat) 33%,transparent 34%);
-  background-size:22px 11px,22px 11px;background-position:0 0,11px 5.5px}
-[data-pattern="koshi"]::after{
-  background-image:repeating-linear-gradient(45deg,var(--pat) 0 1.5px,transparent 1.5px 13px),
-    repeating-linear-gradient(-45deg,var(--pat) 0 1.5px,transparent 1.5px 13px)}
+  --pat-koshi:repeating-linear-gradient(45deg,var(--pat) 0 1.5px,transparent 1.5px 13px),
+    repeating-linear-gradient(-45deg,var(--pat) 0 1.5px,transparent 1.5px 13px);
+  --pat-shippo:radial-gradient(circle at 0% 50%,transparent 45%,var(--pat) 46%,var(--pat) 48%,transparent 49%),
+    radial-gradient(circle at 100% 50%,transparent 45%,var(--pat) 46%,var(--pat) 48%,transparent 49%),
+    radial-gradient(circle at 50% 0%,transparent 45%,var(--pat) 46%,var(--pat) 48%,transparent 49%),
+    radial-gradient(circle at 50% 100%,transparent 45%,var(--pat) 46%,var(--pat) 48%,transparent 49%);
+  --pat-yagasuri:repeating-linear-gradient(63deg,var(--pat) 0 1.5px,transparent 1.5px 9px),
+    repeating-linear-gradient(-63deg,var(--pat) 0 1.5px,transparent 1.5px 9px);
+}
+/* Each account colour carries its own pattern. The pairing is semantic, not arbitrary:
+   seigaiha is literally "blue sea wave", uroko (fish scales) reads cool and neutral, koshi
+   (lattice) is plant-like, shippo ("seven treasures", cloisonné) is the ornate one, and
+   yagasuri (arrow feathers) is the sharpest -- given to the brand orange.
+   This matters beyond decoration: only five colours exist, and hue alone separates almost
+   nothing at near-black in dark mode (adjacent cards measured 1.00-1.04:1). A distinct
+   pattern per account is a second, luminance-independent identity cue. */
+[data-card="blue"]  {--pat-img:var(--pat-seigaiha);--pat-size:52px 26px}
+[data-card="slate"] {--pat-img:var(--pat-uroko);--pat-size:22px 11px,22px 11px;--pat-pos:0 0,11px 5.5px}
+[data-card="green"] {--pat-img:var(--pat-koshi)}
+[data-card="purple"]{--pat-img:var(--pat-shippo);--pat-size:26px 26px}
+[data-card="orange"]{--pat-img:var(--pat-yagasuri)}
+/* Explicit data-pattern still overrides, for the specimens and for any card with no colour. */
+[data-pattern="seigaiha"]{--pat-img:var(--pat-seigaiha);--pat-size:52px 26px}
+[data-pattern="uroko"]{--pat-img:var(--pat-uroko);--pat-size:22px 11px,22px 11px;--pat-pos:0 0,11px 5.5px}
+[data-pattern="koshi"]{--pat-img:var(--pat-koshi)}
+[data-pattern="shippo"]{--pat-img:var(--pat-shippo);--pat-size:26px 26px}
+[data-pattern="yagasuri"]{--pat-img:var(--pat-yagasuri)}
 
 /* Vertical rhythm lives on the CONTAINER, not inside each component.
    Before: .mpad was a flex column with `gap: normal`, so every child invented its own
