@@ -15,6 +15,9 @@
 //                  .sel selection ring vs the colour showing through its offset gap (3:1)
 //   3. TARGETS   — every interactive element >= 44pt
 //   4. TYPE      — nothing below the 11pt Apple floor
+//   5. SCALING   — targets survive 200% text (root 16px -> 32px): still 44x44, and nothing
+//                  inflating >2.5x, which is what an absolute floor authored in rem does
+//   6. REFLOW    — no horizontal overflow at 320 / 360 / 375 / 402 / 430 CSS px frame widths
 //
 // The theme switch MUST happen in a separate evaluate() call from the measurement —
 // doing both in one synchronous block yields stale computed styles and silently
@@ -248,6 +251,106 @@ const probe = () => {
   return out;
 };
 
+// 5. TARGETS AT 200% TEXT.
+// The px -> rem conversion has one specific hazard: SC 2.5.5's 44x44 is an ABSOLUTE floor,
+// so a `min-height:44px` re-authored as `2.75rem` silently becomes relative — it drops
+// under 44 as soon as the user shrinks text, and inflates the layout when they enlarge it.
+// Doubling the root exposes the inflation directly, and the shrink direction by proxy:
+// anything that grew with the root was relative, so the same rule is undersized at 12px.
+// Element selection is character-for-character the one check 3 uses, so the two figures are
+// directly comparable, and the same zoom normalisation applies — getBoundingClientRect() IS
+// scaled by .phone's zoom (a 44pt button reads 31.7 inside a .72 frame).
+const probeTargets = () => {
+  const out = [];
+  document.querySelectorAll('.phone').forEach(ph => {
+    const scr = ph.querySelector('.screen');
+    if (!scr) return;
+    if (ph.getBoundingClientRect().width < 2) return;
+    const zoom = parseFloat(getComputedStyle(ph).zoom) || 1;
+    const pt = v => v / zoom;
+    const cap = ph.parentElement?.querySelector('.scrcap,.caphead')?.textContent.trim().replace(/\s+/g, ' ').slice(0, 40) || '?';
+    const els = [];
+    scr.querySelectorAll('*').forEach(el => {
+      const r = el.getBoundingClientRect();
+      if (r.width < 2 || r.height < 2) return;
+      const cs = getComputedStyle(el);
+      if (cs.display === 'none' || cs.visibility === 'hidden') return;
+      if (!el.matches('button,a,input,.gh,.azghost,.obback,.seg,.gcard,.ropt')) return;
+      els.push({ el: (el.textContent || '').trim().slice(0, 16) || el.className?.toString().slice(0, 16) || el.tagName,
+        w: Math.round(pt(r.width)), h: Math.round(pt(r.height)) });
+    });
+    out.push({ screen: cap, els });
+  });
+  return out;
+};
+
+// Root font size, set in its OWN evaluate() — same rule as the theme flip, for the same
+// reason. `.phone` pads with 0.625rem, so doubling the root would also narrow the usable
+// screen from 382 to 362px; that padding is review-page bezel chrome, not product, so it is
+// pinned to its 16px-root value. Otherwise this check silently conflates "text is bigger"
+// with "the viewport shrank 20px", and reports reflow damage as a scaling failure.
+const setRoot = px => {
+  document.documentElement.style.fontSize = px ? `${px}px` : '';
+  let st = document.getElementById('audit-root-px');
+  if (px && !st) {
+    st = document.createElement('style');
+    st.id = 'audit-root-px';
+    st.textContent = '.phone{padding:10px}';
+    document.head.appendChild(st);
+  }
+  if (!px) st?.remove();
+};
+
+// 6. REFLOW ACROSS DEVICE WIDTHS.
+// Every mock is authored at one size (iPhone 17, 402x874). `.phone` is a px width and
+// `.screen` derives its height from aspect-ratio, so overriding the frame width genuinely
+// re-lays-out the mock rather than scaling it — verified: 402 -> 320 takes the screen's
+// inner box from 382 to 300 CSS px. run() asserts that inner box actually moves across the
+// sweep, so this can never degrade into a check that passes because nothing reflowed.
+// .phone.ext is skipped on purpose: it is the browser-extension popup, a fixed 360px chrome
+// surface that never runs on a handset, so squeezing it to 320 measures a device that
+// does not exist. Every other frame is a phone and is swept.
+const probeReflow = () => {
+  const out = [];
+  document.querySelectorAll('.phone').forEach(ph => {
+    if (ph.classList.contains('ext')) return;
+    const scr = ph.querySelector('.screen');
+    if (!scr) return;
+    if (ph.getBoundingClientRect().width < 2) return;
+    const zoom = parseFloat(getComputedStyle(ph).zoom) || 1;
+    const pt = v => v / zoom;
+    const sr = scr.getBoundingClientRect();
+    const cap = ph.parentElement?.querySelector('.scrcap,.caphead')?.textContent.trim().replace(/\s+/g, ' ').slice(0, 40) || '?';
+    const bad = [];
+    scr.querySelectorAll('*').forEach(el => {
+      const r = el.getBoundingClientRect();
+      if (r.width < 2 || r.height < 2) return;
+      const cs = getComputedStyle(el);
+      if (cs.display === 'none' || cs.visibility === 'hidden') return;
+      const label = (el.textContent || '').trim().slice(0, 16) || el.className?.toString().slice(0, 16) || el.tagName;
+      // scrollWidth/clientWidth are NOT scaled by zoom — they report the element's own
+      // layout px — whereas getBoundingClientRect() is. Never mix the two into one figure:
+      // sw/cw are raw, the past-edge overshoot goes through pt().
+      // A deliberate horizontal scroller (.mcar) is content wider than its box BY DESIGN, so
+      // it trips the same test. It is still reported — a carousel can break too — but labelled
+      // 'scrollable' rather than suppressed, so nobody has to guess which kind of hit it is.
+      if (el.clientWidth > 0 && el.scrollWidth > el.clientWidth + 1) bad.push({ el: label, why: /auto|scroll/.test(cs.overflowX) ? 'scrollable' : 'content', sw: el.scrollWidth, cw: el.clientWidth });
+      else if (pt(r.right - sr.right) > 1) bad.push({ el: label, why: 'past-edge', byPt: Math.round(pt(r.right - sr.right)) });
+    });
+    out.push({ screen: cap, innerPt: scr.clientWidth, bad });
+  });
+  return out;
+};
+
+// Frame width override, again in its own evaluate(). Inline width beats the .phone rule;
+// clearing it restores the authored 402 with no bookkeeping.
+const setFrameWidth = px => {
+  document.querySelectorAll('.phone').forEach(ph => {
+    if (ph.classList.contains('ext')) return;
+    ph.style.width = px ? `${px}px` : '';
+  });
+};
+
 const run = async () => {
   const browser = await chromium.launch();
   const ctx = await browser.newContext({ viewport: { width: 1500, height: 1000 }, bypassCSP: true });
@@ -267,6 +370,62 @@ const run = async () => {
     await page.waitForTimeout(120);
     results[theme] = await page.evaluate(probe);
   }
+
+  // 5 + 6 are geometry only, so they are theme-independent and run once — but pin the theme
+  // anyway, since the loop above leaves it on dark and a fixed starting state keeps the
+  // numbers reproducible.
+  await page.evaluate(t => { document.documentElement.dataset.theme = t; }, 'light');
+  await page.waitForTimeout(120);
+  const baseTargets = await page.evaluate(probeTargets);
+  await page.evaluate(setRoot, 32);            // separate call — see the setRoot note
+  await page.waitForTimeout(120);
+  const bigTargets = await page.evaluate(probeTargets);
+  await page.evaluate(setRoot, 0);
+  await page.waitForTimeout(120);
+
+  const scaled = [];
+  bigTargets.forEach((b, i) => {
+    const a = baseTargets[i];
+    // Paired by index: same selector, same document order, only the root font size moved.
+    // If the counts diverge, something other than type changed — drop the growth half
+    // rather than compare two different elements.
+    const pair = a && a.screen === b.screen && a.els.length === b.els.length;
+    const under = [], grown = [];
+    b.els.forEach((e, j) => {
+      const o = pair ? a.els[j] : null;
+      if (e.w < 44 || e.h < 44) under.push({ el: e.el, at200: `${e.w}×${e.h}`, was: o ? `${o.w}×${o.h}` : '?' });
+      if (o && o.w > 1 && o.h > 1) {
+        const x = Math.max(e.w / o.w, e.h / o.h);
+        if (x > 2.5) grown.push({ el: e.el, was: `${o.w}×${o.h}`, at200: `${e.w}×${e.h}`, x: +x.toFixed(1) });
+      }
+    });
+    if (under.length || grown.length) scaled.push({ screen: b.screen, under, grown });
+  });
+
+  // Narrowest first, so the first width that produces a hit IS the break point. A screen
+  // that also breaks at the authored 402 is flagged as such: that is a pre-existing defect
+  // at the design's own size, not something the narrow device caused.
+  const WIDTHS = [320, 360, 375, 402, 430];
+  const AUTHORED = 402;
+  const broke = new Map();
+  const innerWidths = new Set();
+  for (const w of WIDTHS) {
+    await page.evaluate(setFrameWidth, w);     // set here...
+    await page.waitForTimeout(120);
+    const frames = await page.evaluate(probeReflow);   // ...measure there
+    frames.forEach((f, i) => {
+      innerWidths.add(f.innerPt);
+      if (!f.bad.length) return;
+      const rec = broke.get(i) ?? { screen: f.screen, at: w, bad: f.bad, widths: [] };
+      rec.widths.push(w);
+      broke.set(i, rec);
+    });
+  }
+  await page.evaluate(setFrameWidth, 0);
+  // A frame width that does not move the screen's inner box means the mock is pinned deeper
+  // in the tree and this check is vacuous. Say so instead of printing a green tick.
+  const reflows = innerWidths.size > 1;
+
   await page.evaluate(cleanup);
 
   const unpaintable = lintIcons('design-system/assets/icons');
@@ -291,6 +450,19 @@ const run = async () => {
     }
   }
 
+  const cut = a => `${JSON.stringify(a.slice(0, 4))}${a.length > 4 ? ` +${a.length - 4} more` : ''}`;
+  let tallyUnder = 0, tallyGrown = 0;
+  for (const s of scaled) {
+    console.log(`\n  ✗ [200% text] ${s.screen}`);
+    if (s.under.length) { tallyUnder += s.under.length; console.log(`      under 44×44: ${cut(s.under)}`); }
+    if (s.grown.length) { tallyGrown += s.grown.length; console.log(`      inflated >2.5×: ${cut(s.grown)}`); }
+  }
+  if (!reflows) console.log(`\n  ! reflow check INERT — overriding .phone width did not move the screen box`);
+  for (const r of [...broke.values()]) {
+    console.log(`\n  ✗ [reflow @${r.at}] ${r.screen}${r.widths.includes(AUTHORED) ? `  (also broken at the authored ${AUTHORED})` : ''}`);
+    console.log(`      overflow: ${cut(r.bad)}`);
+  }
+
   const screens = results.light.length;
   console.log(`\n${'─'.repeat(64)}`);
   console.log(`  screens checked : ${screens} × 2 themes`);
@@ -304,6 +476,9 @@ const run = async () => {
   console.log(`  ring contrast   : ${tally.rings}   (.sel outline vs its gap, 3:1)`);
   console.log(`  targets < 44pt  : ${tally.targets}`);
   console.log(`  text < 11pt     : ${tally.tiny}`);
+  console.log(`  targets @200%   : ${tallyUnder}   (< 44×44 with the root at 32px)`);
+  console.log(`  inflated @200%  : ${tallyGrown}   (grew >2.5× — an absolute floor authored in rem)`);
+  console.log(`  reflow breaks   : ${broke.size}   (screens overflowing at ${WIDTHS.join('/')}${reflows ? '' : ' — CHECK INERT'})`);
   console.log(`  unpaintable svg : ${unpaintable.length}   (invisible under a CSS mask)`);
   if (errors.length) console.log(`  console errors  : ${errors.length} → ${errors[0]}`);
   console.log(`${'─'.repeat(64)}`);
@@ -324,7 +499,7 @@ const run = async () => {
   }
 
   await browser.close();
-  process.exit(total || unpaintable.length ? 1 : 0);
+  process.exit(total || unpaintable.length || scaled.length || broke.size || !reflows ? 1 : 0);
 };
 
 run().catch(e => { console.error(e); process.exit(2); });

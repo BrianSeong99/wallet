@@ -3311,35 +3311,53 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
     <h2 class="h">Send flow</h2>
     <p class="sub">Recipient &rarr; amount &rarr; review &rarr; result. <b>Contact management and creation are undrawn</b> &mdash; the app has an <code>AccountsListDrawer</code> for picking a contact and an <code>AddressBook</code> in Settings, and neither has a mock yet. The review step is also missing a <code>From</code> row, which becomes a hazard once multi-account ships.</p>
     <div class="scrgrid">
-<div><div class="scrcap"><i></i>Send · recipient</div>
+      <div><div class="scrcap"><i></i>Send · recipient</div>
         <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
           <div class="stat"><span>9:41</span><span class="r">✦ ▪ ▪</span></div>
           <div class="mpad" style="flex:1;display:flex;flex-direction:column">
-            <div class="sh2"><span class="bk2">&lsaquo;</span><span class="t2">Send</span></div>
+            <div class="mseg" data-seg>
+              <div class="seg"><span class="svgic" style="--ic:url(assets/icons/wallet.svg);" aria-hidden="true"></span><span class="lbl">Overview</span></div>
+              <div class="seg on" data-act="send"><span class="svgic" style="--ic:url(assets/icons/send-new.svg);" aria-hidden="true"></span><span class="lbl">Send</span></div>
+              <div class="seg" data-act="receive"><span class="svgic" style="--ic:url(assets/icons/receive-new.svg);" aria-hidden="true"></span><span class="lbl">Receive</span></div>
+              <div class="seg" data-act="swap"><span class="svgic" style="--ic:url(assets/icons/convert.svg);" aria-hidden="true"></span><span class="lbl">Swap</span></div>
+            </div>
             <div style="font-family:var(--display);font-weight:800;font-size:var(--t-title);line-height:1.1">Choose recipient</div>
             <div class="heroin">Enter Miden Address</div>
             <button class="tokchip"><span class="svgic" style="--ic:url(assets/icons/contacts-book.svg)" aria-hidden="true"></span>Address Book</button>
             <div class="zone"><button class="btn btn-primary" style="width:100%" disabled>Confirm</button></div>
           </div>
+        
+          <div class="mnav"><button class="t on"><span class="svgic" style="--ic:url(assets/icons/home-new.svg)" aria-hidden="true"></span><span>Home</span></button><button class="t"><span class="svgic" style="--ic:url(assets/icons/explore.svg)" aria-hidden="true"></span><span>Explore</span></button><button class="t"><span class="svgic" style="--ic:url(assets/icons/activity.svg)" aria-hidden="true"></span><span>Activity</span></button></div>
         </div></div></div>
         <div class="scrnote">Named contacts above raw addresses — recognition over recall, and it reduces mis-paste risk.</div></div>
-<div><div class="scrcap"><i></i>Send · amount</div>
+      <div><div class="scrcap"><i></i>Send · amount</div>
         <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
           <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>
           <div class="mpad" style="flex:1;display:flex;flex-direction:column">
-            <div class="sh2"><span class="bk2">&lsaquo;</span><span class="t2">Select Amount</span></div>
+            <div class="mseg" data-seg>
+              <div class="seg"><span class="svgic" style="--ic:url(assets/icons/wallet.svg);" aria-hidden="true"></span><span class="lbl">Overview</span></div>
+              <div class="seg on" data-act="send"><span class="svgic" style="--ic:url(assets/icons/send-new.svg);" aria-hidden="true"></span><span class="lbl">Send</span></div>
+              <div class="seg" data-act="receive"><span class="svgic" style="--ic:url(assets/icons/receive-new.svg);" aria-hidden="true"></span><span class="lbl">Receive</span></div>
+              <div class="seg" data-act="swap"><span class="svgic" style="--ic:url(assets/icons/convert.svg);" aria-hidden="true"></span><span class="lbl">Swap</span></div>
+            </div>
             <div class="bigamt">100.00</div>
             <div class="amtmeta">Available 200 USDC &middot; &asymp; $200.00 USD</div>
             <button class="tokchip"><img src="assets/icons/usdc.svg" alt="">USDC<span class="cv">&rsaquo;</span></button>
             <div class="zone"><button class="btn btn-primary">Confirm</button></div>
                   </div>
+        
+          <div class="mnav"><button class="t on"><span class="svgic" style="--ic:url(assets/icons/home-new.svg)" aria-hidden="true"></span><span>Home</span></button><button class="t"><span class="svgic" style="--ic:url(assets/icons/explore.svg)" aria-hidden="true"></span><span>Explore</span></button><button class="t"><span class="svgic" style="--ic:url(assets/icons/activity.svg)" aria-hidden="true"></span><span>Activity</span></button></div>
         </div></div></div></div>
-        <div class="scrnote"><b>Was undrawn.</b> A real Navigator step &mdash; <code>ROUTES</code> in <code>SendManager.tsx</code> is exactly <code>[SelectRecipient, SelectAmount]</code>, so the flow has two steps and only one was mocked. Copy is the shipped <code>selectAmount</code> / <code>available</code> / <code>approxFiatValue</code>. The CTA is disabled until <code>canProceed</code>; two error states exist and remain undrawn, <code>invalidAmount</code> and <code>amountMustBeLessThanBalance</code>.</div></div>
-<div><div class="scrcap"><i></i>Send · token picker <span class="tag merge">sheet</span></div>
+      <div><div class="scrcap"><i></i>Send · token picker <span class="tag merge">sheet</span></div>
         <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
           <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>
           <div class="mpad" style="flex:1;display:flex;flex-direction:column">
-            <div class="sh2"><span class="bk2">&lsaquo;</span><span class="t2">Select Amount</span></div>
+            <div class="mseg" data-seg>
+              <div class="seg"><span class="svgic" style="--ic:url(assets/icons/wallet.svg);" aria-hidden="true"></span><span class="lbl">Overview</span></div>
+              <div class="seg on" data-act="send"><span class="svgic" style="--ic:url(assets/icons/send-new.svg);" aria-hidden="true"></span><span class="lbl">Send</span></div>
+              <div class="seg" data-act="receive"><span class="svgic" style="--ic:url(assets/icons/receive-new.svg);" aria-hidden="true"></span><span class="lbl">Receive</span></div>
+              <div class="seg" data-act="swap"><span class="svgic" style="--ic:url(assets/icons/convert.svg);" aria-hidden="true"></span><span class="lbl">Swap</span></div>
+            </div>
             <div class="bigamt" style="opacity:.35">100.00</div>
           </div>
           <div class="shscrim"></div>
@@ -3350,9 +3368,11 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
             <div class="mrow"><div class="ic"><img src="assets/icons/usdc.svg" alt=""></div><div><div class="nm">USDC</div><div class="ad">200 USDC</div></div><div class="rt"><div class="f">$200.00</div><div class="b">+0.01%</div></div></div>
             <div class="zone"><button class="btn btn-secondary">Cancel</button></div>
           </div>
+        
+          <div class="mnav"><button class="t on"><span class="svgic" style="--ic:url(assets/icons/home-new.svg)" aria-hidden="true"></span><span>Home</span></button><button class="t"><span class="svgic" style="--ic:url(assets/icons/explore.svg)" aria-hidden="true"></span><span>Explore</span></button><button class="t"><span class="svgic" style="--ic:url(assets/icons/activity.svg)" aria-hidden="true"></span><span>Activity</span></button></div>
         </div></div></div>
         <div class="scrnote">The shipped picker is a vaul sheet (<code>SelectTokenDrawer</code>), reusing the same overlay primitive as every other picker. <b>Two gaps in the code this cannot show:</b> <code>SelectToken.tsx:63-79</code> maps the filtered list with <em>no empty branch and no loading branch</em>, so a search matching nothing &mdash; or balances still loading &mdash; renders an empty box. The contacts drawer beside it <em>does</em> have an empty state, which makes the omission look accidental.</div></div>
-<div><div class="scrcap"><i></i>Send · review <span class="tag retire">From row added</span></div>
+      <div><div class="scrcap"><i></i>Send · review <span class="tag retire">From row added</span></div>
         <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
           <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>
           <div class="mpad" style="flex:1;display:flex;flex-direction:column">
@@ -3370,8 +3390,7 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
             <div class="zone"><button class="btn btn-primary">Send Payment</button></div>
                   </div>
         </div></div></div></div>
-        <div class="scrnote"><b>The From row is the point of this screen.</b> The shipped review renders exactly four things &mdash; <code>youAreSending</code>, <code>to</code>, <code>network</code>, <code>expirationDate</code> &mdash; and <em>never names the sending account</em>, though the <code>publicKey</code> it debits is read at <code>ReviewTransaction.tsx:44</code>. The key <code>"from"</code> already exists in <code>en.json</code>, unused. Harmless with one account; the moment multi-account ships it is the setup for irreversibly sending from the wrong one. <b>Still missing here too:</b> no fee or total-cost line, no note-privacy disclosure (<code>sharePrivately</code> is hardcoded <code>true</code> with the toggle removed), and the CTA has no submitting or error state &mdash; a failed <code>initiateSendTransaction</code> is swallowed by <code>console.error</code> and drops you back on an idle screen.</div></div>
-<div><div class="scrcap"><i></i>Send · in progress</div>
+      <div><div class="scrcap"><i></i>Send · in progress</div>
         <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
           <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>
           <div class="mpad" style="flex:1;display:flex;flex-direction:column">
@@ -3391,8 +3410,7 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
             <div class="zone"><button class="btn btn-secondary" style="width:100%">Hide</button></div>
                   </div>
         </div></div></div></div>
-        <div class="scrnote">The four steps are the shipped ones (<code>constants.ts:10-31</code>). <b>But this sequence is optimistic and the code says so:</b> the non-guardian path emits only <code>syncing</code> then <code>sending</code> before entering the SDK pipeline, so <b>step 3 jumps from pending straight to complete and is never active</b>, and for a public send or <em>any swap</em> steps 2&ndash;4 never animate at all. Step 4 is labelled &ldquo;Syncing with Guardian&rdquo; while what happens there is note confirmation and delivery. The failure state surfaces nothing either: <code>row.error</code> exists on <code>ITransaction</code> and this screen never reads it, offering only <code>done</code> with no reason and no retry.</div></div>
-<div><div class="scrcap"><i></i>Send · success</div>
+      <div><div class="scrcap"><i></i>Send · success</div>
         <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
           <div class="stat"><span>9:41</span><span class="r">✦ ▪ ▪</span></div>
           <div class="mpad" style="flex:1;display:flex;flex-direction:column">
@@ -3408,7 +3426,7 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
           </div>
         </div></div></div>
         <div class="scrnote">Rows are <code>buildReceiptRows</code> verbatim: <b>To &rarr; Total Paid &rarr; Source TX</b> (<code>receipt.ts:30&ndash;65</code>), each appended only when its data exists. There is deliberately <b>no fee row</b> &mdash; the wallet surfaces no fee anywhere in the send flow, so an earlier draft of this screen invented one. The <code>Route</code> row between To and Total Paid only appears for a bridged send, which is unreachable, so it never renders. Note two shipped oddities: the recipient is shown <b>twice</b>, once in the pill and once as the To row; and <code>totalPaid</code>, <code>sourceTx</code> and <code>transactionComplete</code> are <b>absent from en.json</b> &mdash; they survive only on <code>defaultValue</code> fallbacks in code, so every non-English locale shows the raw key. Confirmation is a rare high-stakes moment, so it earns the drawn tick — but stays factual, not celebratory.</div></div>
-<div><div class="scrcap"><i></i>Contacts &middot; picker <span class="tag merge">sheet</span></div>
+      <div><div class="scrcap"><i></i>Contacts &middot; picker <span class="tag merge">sheet</span></div>
         <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
           <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>
           <div class="mpad" style="flex:1;display:flex;flex-direction:column">
@@ -3429,7 +3447,7 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
           </div>
         </div></div></div>
         <div class="scrnote">Reached from the <b>Address Book</b> pill on the recipient step &mdash; <code>SendManager.tsx:488</code>. A <b>read-only picker</b>: no add, no delete, and <b>no search</b>, though the settings address book has one. The order is the user&rsquo;s own accounts first, then external contacts (<code>SendManager.tsx:87&ndash;108</code>); the settings list orders them the reverse way, and neither sorts alphabetically nor separates the two groups with a heading. Rows carry no chevron and no secondary action &mdash; tapping fills the address and closes the sheet. The trailing tick marks the already-chosen recipient and is a shape, not a check character.</div></div>
-<div><div class="scrcap"><i></i>Contacts &middot; picker, empty <span class="tag merge">sheet</span></div>
+      <div><div class="scrcap"><i></i>Contacts &middot; picker, empty <span class="tag merge">sheet</span></div>
         <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
           <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>
           <div class="mpad" style="flex:1;display:flex;flex-direction:column">
@@ -3449,7 +3467,7 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
           </div>
         </div></div></div>
         <div class="scrnote">Drawn to show a <b>copy bug</b>, not to endorse it. The sheet is titled <code>contacts</code> = &ldquo;Contacts&rdquo; but empties to <code>noOtherAccounts</code> / <code>noOtherAccountsDescription</code> (<code>AccountsList.tsx:46&ndash;47</code>), so a user with no saved <i>contacts</i> is told they have created no <i>accounts</i> &mdash; and is given no way to add one from here. The right copy is a contacts-shaped empty state with an <b>Add contact</b> action; the shipped sheet has neither.</div></div>
-<div><div class="scrcap"><i></i>Address book <span class="tag merge">sheet</span></div>
+      <div><div class="scrcap"><i></i>Address book <span class="tag merge">sheet</span></div>
         <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
           <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>
           <div class="mpad" style="flex:1;display:flex;flex-direction:column">
@@ -3473,7 +3491,7 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
           </div>
         </div></div></div>
         <div class="scrnote">The settings address book, mounted as a drawer rather than a page (<code>Settings.tsx:420&ndash;431</code>) &mdash; so <code>/settings/address-book</code> is routable but renders the plain settings menu, because <code>activeTab</code> filters drawer tabs out (<code>Settings.tsx:303</code>). The create form sits always-expanded above the list rather than behind an add button. Two defects the mock cannot show: <b>tapping a contact row deletes it</b> &mdash; the whole row is the delete trigger, with no trash icon, swipe or menu (<code>AddressBook.tsx:77&ndash;78</code>), and there is no way to <i>use</i> a contact from here at all; and <b>there is no edit</b>, since no <code>editContact</code> mutation exists, so fixing a typo means delete and retype. Submitting also leaves the sheet open with no toast: <code>onClose</code> is passed by Settings but <code>AddressBook</code> declares no props and silently drops it.</div></div>
-<div><div class="scrcap"><i></i>Address book &middot; duplicate <span class="tag merge">sheet</span></div>
+      <div><div class="scrcap"><i></i>Address book &middot; duplicate <span class="tag merge">sheet</span></div>
         <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
           <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>
           <div class="mpad" style="flex:1;display:flex;flex-direction:column">
@@ -3492,7 +3510,7 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
           </div>
         </div></div></div>
         <div class="scrnote">Every failure lands on the <b>address</b> field: the bech32 rejection (<code>invalidAddress</code>) and this duplicate check are both funnelled into <code>setError(&#39;address&#39;)</code> at <code>AddressBook.tsx:128</code>. No form-level banner, no toast. Worth flagging: the duplicate check runs against <code>allContacts</code>, which includes the user&rsquo;s own wallet accounts &mdash; so <b>saving your own account as a contact fails with this same message</b>, which is accurate and baffling. The address field also inherits the name field&rsquo;s <code>maximalAmount</code> = &ldquo;Maximal: 50&rdquo; cap, and a testnet address is already 49 characters.</div></div>
-<div><div class="scrcap"><i></i>Address book &middot; empty <span class="tag merge">sheet</span></div>
+      <div><div class="scrcap"><i></i>Address book &middot; empty <span class="tag merge">sheet</span></div>
         <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
           <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>
           <div class="mpad" style="flex:1;display:flex;flex-direction:column">
@@ -3516,7 +3534,7 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
         </div></div></div>
         <div class="scrnote"><b>Empty and no-search-results are the same string.</b> <code>AddressBook.tsx:68</code> renders <code>noContactsFound</code> = &ldquo;No contacts found&rdquo; for both, so a brand-new user with zero contacts gets a <i>search-failure</i> message under a search box they never typed into. Note the inconsistency across surfaces: the send-flow sheet gets a real icon-and-description empty state, this one gets a bare line of grey text. The unused key <code>addressBookDescription</code> = &ldquo;Manage your contacts here&rdquo; already sits in <code>en.json</code>, rendered by nothing.</div></div>
     </div>
-    <h2 class="h">Receive flow</h2>
+  <h2 class="h">Receive flow</h2>
     <p class="sub">Address, QR and share. Receive is address-only since claimable notes moved to their own screen.</p>
     <div class="scrgrid">
 <div><div class="scrcap"><i></i>Receive</div>
