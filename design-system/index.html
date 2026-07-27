@@ -425,16 +425,17 @@ table.map td code{font-size:12px}
   overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 /* 44pt hit area, 24pt visible dot. The shipped button is w-5 h-5 = 20pt, and it slipped
    past the audit because it is a <span>, not a <button>. */
-/* The whole card is the switch target, and the account row is what SAYS so -- it already
-   names the account, so a chevron there reads as "tap to change account" without a separate
-   control. Replaces a 44pt More button, which optimised the rarer action: managing an
-   account is less frequent than switching to one, yet it had the only affordance while
-   switching had none.
-   Implementation note: the shipped row is a CopyButton, so tapping it copies the address
-   today. Making it the switch target moves copy-address -- it lives on the Receive tab
-   (CopyButton + useCopyToClipboard) and in the Account sheet's Address field, both better
-   homes, since sharing an address is what Receive exists for. */
-.mbc .bot .ch{font-size:15px;color:inherit;opacity:.7;flex:none;line-height:1}
+/* The row is the address plus a copy action, nothing else. The "Account #:" prefix was
+   redundant -- a bech32 string is self-evidently an address -- and the chevron is gone because
+   copy is the row's real job. That also restores the shipped behaviour, where the row IS a
+   CopyButton; switching accounts is the whole card's tap target.
+   Trade-off worth stating rather than hiding: with the chevron gone there is no visible
+   "tap to switch" cue on the card. Card-tap-to-switch is a learned wallet pattern (Rainbow,
+   Phantom, Family), but this is discoverability traded for a cleaner row, not a free win. */
+.mbc .bot .acopy2{min-width:44px;min-height:44px;margin:0 -10px 0 0;border:0;background:none;
+  padding:0;flex:none;display:flex;align-items:center;justify-content:center;color:inherit;
+  opacity:.75;cursor:pointer}
+.mbc .bot .acopy2 .svgic{width:16px;height:16px}
 /* action bar */
 .mactions{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:16px}
 .mact{display:flex;flex-direction:column;align-items:center;gap:6px}
@@ -590,7 +591,15 @@ table.map td code{font-size:12px}
    Blocks are the balance card's top half only: name plus balance, which is what you choose
    between. No delta -- performance is not why this sheet is open. */
 .mlist{display:flex;flex-direction:column;gap:var(--stack);overflow-y:auto;padding:2px 0 4px}
-.mlist > .mbc{flex:none;position:relative}
+/* A 3px LEFT stripe in the account colour. This was lost when the Apple-Wallet stack was
+   rewritten as a list -- --card-rim stayed defined and stopped being used, so in DARK all
+   three cards were near-black and identical apart from their pattern.
+   Left rather than top: in a vertical list a left stripe reads as a colour tab per row, where
+   a top border reads as a divider between rows.
+   It matters most in dark, where the near-black rule (Brian's call -- a coloured card in dark
+   floats as a grey box) means hue cannot live in the fill. Light keeps the fill AND the
+   stripe, so the treatment is the same shape in both themes. */
+.mlist > .mbc{flex:none;position:relative;border-left:3px solid var(--card-rim,var(--rule-strong))}
 /* Scoped to .mbc, not .mlist. Scoping it to the list gave the account sheet's card a shorter
    name row for identical content -- three screens showed the same component at 155 / 122 /
    132pt, which read as three accidents rather than a decision. Now TWO sizes: compact
@@ -619,7 +628,7 @@ table.map td code{font-size:12px}
    scope and --ink-2 resolves to the PAGE's dark grey, which on a dark card rendered invisible.
    Third time this trap has bitten: anything positioned onto a scoped surface must take its
    colour from that surface's own tokens, which are theme-level and scope-independent. */
-.mbc .aedit{position:absolute;top:0;right:0;min-height:44px;min-width:52px;padding:0 10px;border:0;
+.mlist [data-pattern] > .aedit{position:absolute;top:0;right:0;min-height:44px;min-width:52px;padding:0 10px;border:0;
   background:none;color:var(--balance-fg-muted);font-family:var(--ui);font-size:var(--t-caption);
   font-weight:700;display:flex;align-items:center;z-index:3;cursor:pointer}
 /* Inline before the name, not in the corner -- the corner now belongs to Edit, and a check
@@ -2543,7 +2552,7 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
               <div class="top" data-surface="graphite" data-pattern="seigaiha">
                 <div class="balrow"><div class="tl">Total Balance</div><div class="delta" data-status="pos">+0.00%</div></div>
                 <div class="amt">$0.00 <small>USD</small></div></div>
-              <div class="bot" data-surface="graphite-deep"><span class="acc">Account #: mtst1ap8…r4fp</span><span class="ch">›</span></div>
+              <div class="bot" data-surface="graphite-deep"><span class="acc">mtst1ap8…r4fp</span><button class="acopy2" aria-label="Copy address"><span class="svgic" style="--ic:url(assets/icons/copy.svg)" aria-hidden="true"></span></button></div>
             </div>
             <div class="mprompt"><div class="ptx"><div class="pt">Verify your recovery phrase</div><div class="pb">Confirm you saved your recovery phrase so you can restore this wallet later.</div></div><button class="pdis" aria-label="Dismiss">&#10005;</button></div>
             <div class="masset-h">Assets</div>
@@ -3076,7 +3085,7 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
                   <path class="ar" d="M0,40 15,35 31,38 46,26 62,31 77,17 93,22 108,9 124,13 124,52 0,52Z"/>
                   <polyline class="ln" points="0,40 15,35 31,38 46,26 62,31 77,17 93,22 108,9 124,13"/>
                 </svg></div></div>
-              <div class="bot" data-surface="graphite-deep"><span class="acc">Account #: mtst1ap8…r4fp</span><span class="ch">›</span></div>
+              <div class="bot" data-surface="graphite-deep"><span class="acc">mtst1ap8…r4fp</span><button class="acopy2" aria-label="Copy address"><span class="svgic" style="--ic:url(assets/icons/copy.svg)" aria-hidden="true"></span></button></div>
             </div>
             <div><div class="mcar"><div class="mprompt"><div class="ptx"><div class="pt">Verify your recovery phrase</div><div class="pb">Confirm you saved your recovery phrase so you can restore this wallet later.</div></div><button class="pdis" aria-label="Dismiss">&#10005;</button></div><div class="mprompt"><div class="ptx"><div class="pt">Activate device key</div><div class="pb">Generate a device key for this recovered account. Required before sending.</div></div><button class="pdis" aria-label="Dismiss">&#10005;</button></div><div class="mprompt"><div class="ptx"><div class="pt">Guardian changed</div><div class="pb">Your guardian was switched and we couldn&rsquo;t identify the new operator. Enter its URL to reconnect.</div></div><button class="pdis" aria-label="Dismiss">&#10005;</button></div></div><div class="mpdots"><i class="on"></i><i></i><i></i></div></div>
             <div class="masset-h">Assets</div>
@@ -3097,7 +3106,7 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
             <div class="mshandle"></div>
             <div class="mshead"><button class="shback" aria-label="Back">&lsaquo;</button>Miden Account 3</div>
             <div class="mbc" data-card="slate" style="margin-bottom:12px">
-              <div class="top" data-surface="graphite" data-pattern=""><button class="aedit">Edit</button><div class="balrow"><div class="anm">Miden Account 3</div></div><div class="amt">$12,480.50 <small>USD</small></div></div></div>
+              <div class="top" data-surface="graphite" data-pattern=""><div class="balrow"><div class="anm">Miden Account 3</div></div><div class="amt">$12,480.50 <small>USD</small></div></div></div>
             <div class="afield edit" style="margin-bottom:8px"><span class="k">Name</span><span class="v">Miden Account 3</span></div>
             <div class="afield" style="margin-bottom:12px"><span class="k">Address</span><span class="v mono">mtst1ap8&hellip;r4fp</span><button class="acopy" aria-label="Copy address"><span class="svgic" style="--ic:url(assets/icons/copy.svg)" aria-hidden="true"></span></button></div>
             <div class="mstk-lbl2">Card colour</div>
