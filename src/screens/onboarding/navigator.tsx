@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next';
 
 import { Icon, IconName } from 'app/icons/v2';
 import { ProgressIndicator } from 'components/ProgressIndicator';
+import { iosPush, pushVariants } from 'lib/animation';
 import { hapticLight } from 'lib/mobile/haptics';
 import { isMobile } from 'lib/platform';
 import type { WalletAccount } from 'lib/shared/types';
@@ -362,25 +363,21 @@ export const OnboardingFlow: FC<OnboardingFlowProps> = ({
             initial="initialState"
             animate="animateState"
             exit="exitState"
-            transition={{
-              type: 'tween',
-              // Only animate on mobile (disable for Chrome extension)
-              duration: isMobile() ? 0.2 : 0
-            }}
-            variants={{
-              initialState: {
-                x: reduceMotion ? 0 : navigationDirection === 'forward' ? '1vw' : '-1vw',
-                opacity: 0
-              },
-              animateState: {
-                x: 0,
-                opacity: 1
-              },
-              exitState: {
-                x: reduceMotion ? 0 : navigationDirection === 'forward' ? '-1vw' : '1vw',
-                opacity: 0
-              }
-            }}
+            // Apple's iOS parallax push, per the design system, which chose it
+            // over the four competing "push from right" specs the audit found.
+            //
+            // What was here travelled `1vw` — about 4px on a 402pt screen —
+            // over 200ms, with both layers moving the same distance. At that
+            // amplitude the transition is essentially invisible, which is why
+            // it read as "no animation at all"; and with equal travel there is
+            // no parallax, so the screens slid together like a carousel rather
+            // than one arriving over the other.
+            //
+            // It was also `duration: 0` off-mobile, i.e. switched off entirely
+            // in the extension and desktop. The design system specifies one
+            // page transition for every target, so that condition is gone.
+            transition={iosPush}
+            variants={pushVariants({ direction: navigationDirection, reduceMotion })}
           >
             {/* Back now lives in `.obtop` as the design system draws it, so the
                 bottom secondary "Back" button that used to stack a second
