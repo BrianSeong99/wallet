@@ -368,13 +368,29 @@ glyph plus a highlighted shape", so this is a deliberate departure from HIG in f
 reference apps and the contrast headroom. The accent stays for CTAs and the balance, where it is
 the point rather than decoration.
 
-**The consequence, stated so it is not forgotten.** With the tint gone and no filled-glyph
-variant available, the **bubble is carrying almost the entire active signal**. The ink step
-between states is only **1.65:1** (light) and **1.92:1** (dark) — both states are perfectly
-legible against their backgrounds, but they are close to *each other*. Every reference app
-closes that gap with an outlined→filled swap, which we cannot do. So the nav is correct and
-accessible today, and it will be materially better once filled nav glyphs exist. That is now the
-top asset task, not a footnote.
+**Strengthening the active state without a filled glyph.** With the tint gone the first
+version left the bubble carrying almost everything, and the ink step between states was only
+**1.65:1** (light) / **1.92:1** (dark) — each state legible against its background, but close to
+*each other*, which reads as a weak selection. Three fixes, all measured:
+
+| Lever | Before | After |
+|---|---|---|
+| inactive ink (nav-scoped `--nav-ink-off`) | `--ink-2` — 1.65:1 from active | **`#727272` light / `#989898` dark** — 2.19:1 / 2.88:1 from active, still 4.7:1 on the bar |
+| bubble in light | `rgba(255,255,255,.78)` — near-invisible white-on-white | **`rgba(63,63,63,.10)`** — a grey step, like Instagram's, which is *greyer* than its surrounding glass |
+| active label weight | 600, never switched | **800** |
+
+The inactive ink is nav-scoped rather than a change to `--ink-2`, so nothing else in the system
+dims. `#727272` is close to the floor: at 4.73:1 on the bar it keeps the 11px label compliant
+with margin, and going dimmer buys separation at the cost of legibility.
+
+**The weight switch reverses an earlier rule of mine, deliberately.** I had banned
+`semibold → bold` on activation because it reflows the label. That was correct when items were
+content-sized — the item grew and pushed its siblings. These items are fixed thirds (`flex:1`),
+so the label re-renders inside its own centred box and nothing moves. Slack does the same.
+
+Even with all three, an **outlined→filled glyph swap** remains the mechanism every reference
+uses and the one we lack. The nav is correct and clearly legible now; filled nav glyphs would
+still make it better.
 
 ## Prompt card — internal spacing
 

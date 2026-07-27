@@ -56,6 +56,11 @@
   /* SCREEN TYPE SCALE — headings may only use these. Six drifting values (72/23/21/20/19/16)
      collapsed to four deliberate steps at ~1.3x. --t-display is intentionally off-scale: it is
      the Welcome brand moment only, never a step screen. */
+  /* Body ramp. The scale previously declared only display/title/heading/subhead, so
+     every body size was invented at the call site: Home alone used 11, 11.5, 12, 12.5,
+     13, 13.5, 14.5, 15 and 17. Three tokens cover all of it. 11.5 is the floor-adjacent
+     caption (Apple's minimum is 11; the harness enforces it). */
+  --t-body:15px; --t-label:13px; --t-caption:11.5px; --t-balance:32px;
   --t-display:72px;   /* hero — Welcome only */
   --t-title:26px;     /* step headline — every onboarding step */
   --t-heading:20px;   /* screen / section header */
@@ -107,7 +112,7 @@
   --tx-received:#A8BBA3; --tx-sent:#A3BCCF; --tx-swap:#C9BAD9; --tx-earn:#BDB9CC; --tx-faucet:#CDB0DE;
   --tx-glyph:#3F3F3F;
   --stack-tight:8px; --stack:12px; --stack-loose:24px;
-  --nav-pill:rgba(255,255,255,.78); --nav-bg:rgba(255,255,255,.62);
+  --nav-pill:rgba(63,63,63,.10); --nav-bg:rgba(255,255,255,.62); --nav-ink-off:#727272;
   --nav-rim:rgba(255,255,255,.85); --nav-rim-lo:rgba(63,63,63,.06);
   --balance:#4F4F4F; --balance-deep:#3D3D3D; --balance-fg:#FFFFFF; --balance-fg-muted:rgba(255,255,255,.70);
   --shadow-1:0 1px 2px rgba(63,63,63,.06),0 1px 3px rgba(63,63,63,.05);
@@ -131,7 +136,7 @@
   --tx-received:#A8BBA3; --tx-sent:#A3BCCF; --tx-swap:#C9BAD9; --tx-earn:#BDB9CC; --tx-faucet:#CDB0DE;
   --tx-glyph:#1C1A18;
   /* Balance card goes near-black in dark mode (colors are light-mode only). */
-  --nav-pill:rgba(255,255,255,.16); --nav-bg:rgba(38,38,38,.58);
+  --nav-pill:rgba(255,255,255,.16); --nav-bg:rgba(38,38,38,.58); --nav-ink-off:#989898;
   --nav-rim:rgba(255,255,255,.16); --nav-rim-lo:rgba(0,0,0,.35);
   --balance:#101010; --balance-deep:#000000; --balance-fg:#FFFFFF; --balance-fg-muted:rgba(255,255,255,.70);
   --shadow-1:0 1px 2px rgba(0,0,0,.4); --shadow-2:0 8px 24px rgba(0,0,0,.5);
@@ -318,18 +323,18 @@ table.map td code{font-size:12px}
    amount, costing a full ~20px band on the screen the user called top-heavy; the delta
    is an attribute OF the balance, so it reads fine beside its label. */
 .mbc .balrow{display:flex;align-items:center;justify-content:space-between;gap:10px}
-.mbc .tl{font-size:11px;font-weight:600;color:var(--ink-2)}
-.mbc .amt{font-family:var(--num);font-feature-settings:var(--num-feat);font-weight:800;font-size:32px;letter-spacing:-.02em;margin-top:5px;display:flex;align-items:baseline;gap:6px}
-.mbc .amt small{font-size:12px;color:var(--ink-2);font-weight:500}
+.mbc .tl{font-size:var(--t-caption);font-weight:600;color:var(--ink-2)}
+.mbc .amt{font-family:var(--num);font-feature-settings:var(--num-feat);font-weight:800;font-size:var(--t-balance);letter-spacing:-.02em;margin-top:5px;display:flex;align-items:baseline;gap:6px}
+.mbc .amt small{font-size:var(--t-caption);color:var(--ink-2);font-weight:500}
 /* Delta uses the data-status scope rather than a per-instance colour. The shipped card
    hardcodes bg-[#A8BBA3] with white text = 2.04:1; the wash+ink pair measures >5:1. */
-.mbc .delta{font-size:11px;font-weight:700;padding:3px 9px;border-radius:var(--radius-full);
+.mbc .delta{font-size:var(--t-caption);font-weight:700;padding:3px 9px;border-radius:var(--radius-full);
   font-family:var(--num);font-feature-settings:var(--num-feat);
   background:var(--st-wash);color:var(--st);white-space:nowrap}
 /* Solid hairline, not dashed: the dashed rule read as a receipt tear and is the one
    decorative flourish left on an otherwise restrained surface. */
 .mbc .bot{border-top:1px solid var(--rule);padding:0 6px 0 16px;display:flex;align-items:center;justify-content:space-between;gap:8px;min-height:44px}
-.mbc .bot .acc{font-family:var(--mono);font-size:11px;font-weight:500;flex:1;min-width:0;
+.mbc .bot .acc{font-family:var(--mono);font-size:var(--t-caption);font-weight:500;flex:1;min-width:0;
   overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 /* 44pt hit area, 24pt visible dot. The shipped button is w-5 h-5 = 20pt, and it slipped
    past the audit because it is a <span>, not a <button>. */
@@ -343,9 +348,14 @@ table.map td code{font-size:12px}
 .mact .sq{width:46px;height:46px;border-radius:var(--radius-md);display:flex;align-items:center;justify-content:center;color:var(--pure-white);font-size:18px}
 .mact .lb{font-size:11px;font-weight:600;color:var(--ink-2)}
 /* assets */
-.masset-h{font-family:var(--display);font-weight:800;font-size:17px;margin-top:calc(var(--stack-loose) - var(--stack));margin-bottom:calc(var(--stack-tight) - var(--stack))}
-.msearch{background:var(--surface-2);border-radius:var(--radius-full);height:38px;display:flex;align-items:center;padding:0 16px;color:var(--ink-3);font-size:13px}
-.mrow{display:flex;align-items:center;gap:12px;padding:11px 4px}
+.masset-h{font-family:var(--display);font-weight:800;font-size:var(--t-heading);margin-top:calc(var(--stack-loose) - var(--stack));margin-bottom:calc(var(--stack-tight) - var(--stack))}
+/* 56px = the app's SearchInput h-14. The mock had it at 38px, which both diverged from
+   shipped and sat under the 44pt tap floor -- invisible to the audit because it was a
+   <div>. It is a <button> now, so the target check sees it. */
+.msearch{background:var(--surface-2);border-radius:var(--radius-full);min-height:56px;width:100%;
+  display:flex;align-items:center;padding:0 16px;color:var(--ink-3);font-size:var(--t-label);
+  border:0;font-family:var(--ui);text-align:left;cursor:pointer}
+.mrow{display:flex;align-items:center;gap:12px;padding:12px 0}
 /* Consecutive rows are one list, so they use the tight tier rather than the
    component tier -- 12px between list items reads as separate cards. */
 .mrow + .mrow{margin-top:calc(var(--stack-tight) - var(--stack))}
@@ -358,12 +368,12 @@ table.map td code{font-size:12px}
 .mrow .ic img[src*='usdc'],.vaultrow img[src*='usdc'],.dapp .tile img[src*='usdc']{background:#2775CA;border-radius:50%}
 .mrow .ic.sq{background:var(--surface-2);border-radius:var(--radius-md)}
 .mrow .ic.sq img,.mrow .ic.sq .svgic{width:21px;height:21px}
-.mrow .nm{font-weight:700;font-size:14.5px}
-.mrow .ad{font-family:var(--num);font-feature-settings:var(--num-feat);font-size:11px;color:var(--ink-2)}
+.mrow .nm{font-weight:700;font-size:var(--t-body)}
+.mrow .ad{font-family:var(--num);font-feature-settings:var(--num-feat);font-size:var(--t-caption);color:var(--ink-2)}
 .mrow .ad.addr{font-family:var(--mono)}   /* addresses stay mono */
 .mrow .rt{margin-left:auto;text-align:right}
-.mrow .rt .f{font-family:var(--num);font-feature-settings:var(--num-feat);font-weight:700;font-size:14.5px}
-.mrow .rt .b{font-family:var(--num);font-feature-settings:var(--num-feat);font-size:11.5px;color:var(--ink-2)}
+.mrow .rt .f{font-family:var(--num);font-feature-settings:var(--num-feat);font-weight:700;font-size:var(--t-body)}
+.mrow .rt .b{font-family:var(--num);font-feature-settings:var(--num-feat);font-size:var(--t-caption);color:var(--ink-2)}
 /* segmented action bar (matches current Overview|Send|Receive|Earn) */
 /* Segmented action bar — the active tab EXPANDS and reveals its label; the others
    COLLAPSE to icon squares. Size change is the signal (Benji: make the progression
@@ -397,7 +407,7 @@ table.map td code{font-size:12px}
              background var(--dur-base) ease,box-shadow var(--dur-base) ease,color var(--dur-base) ease}
 /* Active chip is neutral white — the designer's icons already carry their own colour,
    so tinting the chip the same hue would flatten the glyph against it. */
-.mseg .seg.on{flex:1 1 auto;min-width:max-content;padding:0 13px;font-weight:700;font-size:13.5px;
+.mseg .seg.on{flex:1 1 auto;min-width:max-content;padding:0 13px;font-weight:700;font-size:var(--t-label);
   background:var(--surface);color:var(--ink);box-shadow:var(--shadow-1)}
 .mseg .seg svg{width:19px;height:19px;flex:none}
 .mseg .seg img,.mseg .seg .svgic{width:20px;height:20px;flex:none;display:block}
@@ -441,7 +451,7 @@ table.map td code{font-size:12px}
   background:var(--surface-3);display:flex;align-items:center;justify-content:center;color:var(--ink-2)}
 .mprompt .pic .svgic{width:20px;height:20px}   /* token size, not an arbitrary 17 */
 .mprompt .ptx{flex:1;min-width:0}
-.mprompt .pt{font-family:var(--display);font-weight:800;font-size:12.5px;line-height:1.3}
+.mprompt .pt{font-family:var(--display);font-weight:800;font-size:var(--t-label);line-height:1.3}
 /* Two lines, clamped -- not nowrap+ellipsis. The shipped body copy
    ("Confirm you saved your recovery phrase so you can restore this wallet later.") does
    not fit one line beside an icon, a chevron and a dismiss target, and truncating it
@@ -449,7 +459,7 @@ table.map td code{font-size:12px}
    it is a real i18n string -- so the clamp is 3 lines, which is what the 76-character
    shipped string actually needs in a ~200pt column at 11.5px. The clamp stays as a guard
    against longer localisations rather than as the normal state. */
-.mprompt .pb{font-size:11.5px;color:var(--ink-2);margin-top:2px;line-height:1.35;
+.mprompt .pb{font-size:var(--t-caption);color:var(--ink-2);margin-top:2px;line-height:1.35;
   display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
 /* 44pt hit area WITHOUT forcing asymmetric card padding: negative margin lets the target
    overhang the 12px padding instead of the padding shrinking to 4px to accommodate it.
@@ -470,7 +480,7 @@ table.map td code{font-size:12px}
 .mprompt .fn{font-weight:700;font-size:12.5px;color:var(--accent-ink)}
 .mprompt .cl{color:var(--ink-3);font-size:15px}
 /* bottom nav — floating labeled pill, 3 tabs (Home/Explore/Activity) */
-/* ---- Bottom nav: content-hugging inset capsule ----------------------------------
+/* ---- Bottom nav: Liquid Glass inset capsule -------------------------------------
    Replaces a 16px-radius, near-full-width, bordered bar. Four graded reasons:
    [SPEC]  Apple HIG (Liquid Glass, 2025-07-28) makes the iOS tab bar a floating inset
            capsule sized to its contents, not glued to the edge. HIG also says "Include
@@ -499,6 +509,9 @@ table.map td code{font-size:12px}
    into a well. Going neutral removes that whole problem -- one direction, both themes,
    9.01:1 and 12.63:1. The bar is also translucent with a backdrop blur, matching
    Instagram and the iOS 26 material; the blur is static and must never be animated. */
+/* Nav specimens in Components sit in wide cells; unconstrained they stretch to ~687px and
+   the capsule proportions stop matching a phone. Clamp them to the reference width. */
+.crow .ccol > .mnav{max-width:360px}
 /* Backdrop for the glass demo: the material is only honest over content. */
 .glassdemo{position:relative;height:210px;border-radius:var(--radius-lg);overflow:hidden;
   background:var(--paper);display:flex;flex-direction:column}
@@ -568,10 +581,14 @@ table.map td code{font-size:12px}
 [data-theme="dark"] .mnav{box-shadow:none}   /* dark uses surface-step, not shadow */
 .mnav .t{flex:1;min-width:77px;min-height:49px;padding:5px 10px;border-radius:var(--radius-full);
   display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;
-  color:var(--ink-2);font-size:11px;line-height:13px;font-weight:600;
+  color:var(--nav-ink-off);font-size:11px;line-height:13px;font-weight:600;
   background:none;border:0;cursor:pointer;position:relative;z-index:1}
-/* One weight, never switched: the shipped nav goes semibold -> bold on activation, which
-   reflows the label on every tab change. Active is --ink, NOT the accent: a neutral pill
+/* Weight DOES switch on activation here, and that reverses an earlier rule of mine.
+   The objection to semibold -> bold was reflow -- correct when items were content-sized,
+   because the item resized and pushed its siblings. These items are fixed thirds
+   (`flex:1`), so the label re-renders inside its own centred box and nothing moves. Slack
+   does the same, and with no filled-glyph variant available it is a differentiator we
+   cannot afford to leave on the table. Active is --ink, NOT the accent: a neutral pill
    plus full-contrast ink measures 9.01:1 light / 12.63:1 dark, against 5.08/5.86 for
    orange-on-a-wash -- and it needs no theme-dependent fill direction to get there.
    Instagram does exactly this: neutral grey pill, filled black glyph, and no brand colour
@@ -587,7 +604,7 @@ table.map td code{font-size:12px}
    reference uses (one weight per glyph in our set), so with the tint gone the BUBBLE is
    carrying almost all of the active signal and the --ink-2 -> --ink step is subtle. That is
    the argument for authoring filled nav glyphs. */
-.mnav .t.on{color:var(--ink)}
+.mnav .t.on{color:var(--ink);font-weight:800}
 .mnav .t .svgic{width:24px;height:24px}
 .mnav .t .nbadge{position:absolute;top:2px;right:12px;width:8px;height:8px;border-radius:50%;
   background:var(--neg);box-shadow:0 0 0 1.5px var(--surface)}
@@ -2045,7 +2062,7 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
       <b>(3)</b> it switches the label <code>semibold&nbsp;&rarr;&nbsp;bold</code> on activation, reflowing the text on every tab change.
       Its <code>px-13.5</code> padding also makes it ~367px wide on a 375px viewport &mdash; a near-full-width bar wearing rounded corners, which is why it reads neither as a bar nor as a capsule.</p>
     <div class="crow">
-      <div class="ccol"><div class="clabel">recommended &mdash; content-hugging inset capsule</div><div class="mnav" style="margin:0"><button class="t on"><span class="svgic" style="--ic:url(assets/icons/home-new.svg)" aria-hidden="true"></span><span>Home</span></button><button class="t"><span class="svgic" style="--ic:url(assets/icons/explore.svg)" aria-hidden="true"></span><span>Explore</span></button><button class="t"><span class="svgic" style="--ic:url(assets/icons/activity.svg)" aria-hidden="true"></span><span>Activity</span></button></div>
+      <div class="ccol"><div class="clabel">recommended &mdash; Liquid Glass inset capsule (21pt)</div><div class="mnav" style="margin:0"><button class="t on"><span class="svgic" style="--ic:url(assets/icons/home-new.svg)" aria-hidden="true"></span><span>Home</span></button><button class="t"><span class="svgic" style="--ic:url(assets/icons/explore.svg)" aria-hidden="true"></span><span>Explore</span></button><button class="t"><span class="svgic" style="--ic:url(assets/icons/activity.svg)" aria-hidden="true"></span><span>Activity</span></button></div>
         <div class="small" style="margin-top:8px">Item <b>77&times;49</b> (44 floor cleared) &middot; capsule <b>min-height 61</b>, radius <code>full</code>, <code>width:max-content</code> &middot; icon <b>24</b>, label <b>11/13</b> at <b>one weight</b> &middot; bottom <code>max(12px, safe-area)</code>. Active = ink + pill + filled icon, so never colour alone.</div></div>
       <div class="ccol"><div class="clabel">alternate B &mdash; full-width Material 3</div><div class="mnav m3" style="margin:0"><button class="t on"><span class="m3ind"></span><span class="svgic" style="--ic:url(assets/icons/home-new.svg)" aria-hidden="true"></span><span>Home</span></button><button class="t"><span class="svgic" style="--ic:url(assets/icons/explore.svg)" aria-hidden="true"></span><span>Explore</span></button><button class="t"><span class="svgic" style="--ic:url(assets/icons/activity.svg)" aria-hidden="true"></span><span>Activity</span></button></div>
         <div class="small" style="margin-top:8px"><b>64</b> tall, <b>56&times;32</b> active indicator, edge-to-edge per M3&rsquo;s &ldquo;span the full length of the window&rdquo;. The only <em>Material-3-compliant</em> option and the easiest fit in the 360px popup &mdash; but generic, and it contradicts iOS 26.</div></div>
@@ -2224,7 +2241,7 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
             </div>
             <div class="mprompt"><span class="pic"><span class="svgic" style="--ic:url(assets/icons/key.svg)" aria-hidden="true"></span></span><div class="ptx"><div class="pt">Verify your recovery phrase</div><div class="pb">Confirm you saved your recovery phrase so you can restore this wallet later.</div></div><button class="pdis" aria-label="Dismiss">&#10005;</button></div>
             <div class="masset-h">Assets</div>
-            <div class="msearch">Search for tokens</div>
+            <button class="msearch">Search for tokens</button>
             <div class="mrow"><div class="ic"><img src="assets/icons/miden.svg" alt=""></div><div><div class="nm">Miden</div><div class="ad">0.00 MIDEN</div></div><div class="rt"><div class="f">$0.00</div><div class="b" style="color:var(--pos)">+0.00%</div></div></div>
           </div>
           <div class="mnav"><button class="t on"><span class="svgic" style="--ic:url(assets/icons/home-new.svg)" aria-hidden="true"></span><span>Home</span></button><button class="t"><span class="svgic" style="--ic:url(assets/icons/explore.svg)" aria-hidden="true"></span><span>Explore</span></button><button class="t"><span class="svgic" style="--ic:url(assets/icons/activity.svg)" aria-hidden="true"></span><span>Activity</span></button></div>
@@ -2750,7 +2767,7 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
             </div>
             <div class="mprompt"><span class="pic"><span class="svgic" style="--ic:url(assets/icons/key.svg)" aria-hidden="true"></span></span><div class="ptx"><div class="pt">Verify your recovery phrase</div><div class="pb">Confirm you saved your recovery phrase so you can restore this wallet later.</div></div><button class="pdis" aria-label="Dismiss">&#10005;</button></div>
             <div class="masset-h">Assets</div>
-            <div class="msearch">Search for tokens</div>
+            <button class="msearch">Search for tokens</button>
             <div class="mrow"><div class="ic"><img src="assets/icons/miden.svg" alt=""></div><div><div class="nm">Miden</div><div class="ad">1,204.50 MIDEN</div></div><div class="rt"><div class="f">$12,480.50</div><div class="b" style="color:var(--pos)">+0.32%</div></div></div>
             <div class="mrow"><div class="ic"><img src="assets/icons/usdc.svg" alt=""></div><div><div class="nm">USDC</div><div class="ad">0.00 USDC</div></div><div class="rt"><div class="f">$0.00</div><div class="b">—</div></div></div>
           </div>
