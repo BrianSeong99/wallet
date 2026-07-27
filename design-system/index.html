@@ -596,6 +596,20 @@ table.map td code{font-size:var(--t-label)}
   margin:0 auto 14px;flex:none}
 .mshead{font-family:var(--display);font-weight:800;font-size:var(--t-subhead);margin-bottom:12px;
   flex:none;display:flex;align-items:center;gap:4px}
+/* Settings is a gear at the header's top-right, not a footer button. Two reasons, and the
+   first is consistency rather than taste: the app ALREADY uses this exact placement --
+   TabHeader puts a 36px gear top-right and navigates to /settings. Reusing it enforces an
+   existing convention instead of inventing a placement. Second, Settings is a global
+   destination, so the header (a utility position) says 'way out of here' where the footer
+   (an action position) implied it was an action on this sheet.
+   That also leaves the footer with the one action it actually has. */
+.mshead .shgear{margin-left:auto;min-width:44px;min-height:44px;margin-top:-11px;
+  margin-bottom:-11px;margin-right:-10px;border:0;background:none;padding:0;display:flex;
+  align-items:center;justify-content:center;color:var(--ink-2);cursor:pointer}
+.mshead .shgear .svgic{width:19px;height:19px}
+/* Leading icon on a button: gap from the label, sized to the label's cap height. */
+.btn.withic{display:inline-flex;align-items:center;justify-content:center;gap:8px}
+.btn.withic .svgic{width:17px;height:17px;flex:none}
 /* 44pt target, negative-margined so it does not inflate the sheet header. */
 .shback{min-width:44px;min-height:44px;margin:-11px -8px -11px -12px;border:0;background:none;
   padding:0;display:flex;align-items:center;justify-content:center;color:var(--ink);
@@ -623,6 +637,13 @@ table.map td code{font-size:var(--t-label)}
    floats as a grey box) means hue cannot live in the fill. Light keeps the fill AND the
    stripe, so the treatment is the same shape in both themes. */
 .mlist > .mbc{flex:none;position:relative;border-left:3px solid var(--card-rim,var(--rule-strong))}
+/* Selection is the system's existing card idiom: a 2px accent ring. Both .gcard.sel (Guardian)
+   and .ropt.sel (recovery option) already use exactly this, so reusing it enforces a convention
+   rather than inventing a third treatment -- an inline check alone was too quiet to read as
+   state. The check STAYS alongside it so selection is never colour-only (SC 1.4.1).
+   The left stripe and the ring do not compete: the stripe is per-account IDENTITY and never
+   changes, the ring is STATE and moves as you choose. Different jobs, different edges. */
+.mlist > .mbc.sel{box-shadow:0 0 0 2px var(--accent)}
 /* Scoped to .mbc, not .mlist. Scoping it to the list gave the account sheet's card a shorter
    name row for identical content -- three screens showed the same component at 155 / 122 /
    132pt, which read as three accidents rather than a decision. Now TWO sizes: compact
@@ -3145,14 +3166,14 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
           <div class="shscrim"></div>
           <div class="msheet">
             <div class="mshandle"></div>
-            <div class="mshead">Accounts</div>
+            <div class="mshead">Accounts<button class="shgear" aria-label="Settings"><span class="svgic" style="--ic:url(assets/icons/settings-new.svg)" aria-hidden="true"></span></button></div>
             <div class="mlist">
               <div class="mbc" data-card="blue"><div class="top" data-surface="graphite" data-pattern=""><button class="aedit">Edit</button><div class="balrow"><div class="anm"><svg class="achk" viewBox="0 0 12 12" aria-hidden="true"><path d="M3 6.4 5 8.6 9 3.8"/></svg>Miden Account 1</div></div><div class="amt">$1,204.00 <small>USD</small></div></div></div>
               <div class="mbc" data-card="green"><div class="top" data-surface="graphite" data-pattern=""><button class="aedit">Edit</button><div class="balrow"><div class="anm"><svg class="achk" viewBox="0 0 12 12" aria-hidden="true"><path d="M3 6.4 5 8.6 9 3.8"/></svg>Miden Account 2</div></div><div class="amt">$318.90 <small>USD</small></div></div></div>
               <div class="mbc sel" data-card="slate"><div class="top" data-surface="graphite" data-pattern=""><button class="aedit">Edit</button><div class="balrow"><div class="anm"><svg class="achk" viewBox="0 0 12 12" aria-hidden="true"><path d="M3 6.4 5 8.6 9 3.8"/></svg>Miden Account 3</div></div><div class="amt">$12,480.50 <small>USD</small></div></div></div>
             </div>
             
-            <div class="zone" style="padding-bottom:max(16px,var(--safe-bottom,0px))"><div class="zpair"><button class="btn btn-secondary">Add account</button><button class="btn btn-secondary">Settings</button></div></div>
+            <div class="zone" style="padding-bottom:max(16px,var(--safe-bottom,0px))"><button class="btn btn-secondary withic"><span class="svgic" style="--ic:url(assets/icons/add.svg)" aria-hidden="true"></span>Add account</button></div>
           </div>
         </div></div></div>
         <div class="scrnote"><b>Proposed &mdash; multi-account does not exist yet.</b> The shipped <code>AccountsDrawer</code> lists <em>no accounts at all</em>: it is a card-colour picker, a Settings link, and a <em>disabled</em> &ldquo;Add account (coming soon)&rdquo; button whose dashed outline also breaks the no-bordered-controls rule. <b>Vertical list, not an Apple-Wallet stack</b> &mdash; the stack was built first and failed on three counts: in <b>dark</b> every card is near-black so overlapping merged all three into one block (tinting each with its account hue at 12&percnt; measured <b>1.00&ndash;1.04:1</b> between adjacent cards, because hue separates almost nothing at near-black); the collapsed band forced a choice between the name and the balance, with one card&rsquo;s amount butting into the next card&rsquo;s name; and it grew 64px per account, stopping around six. Blocks here are the card&rsquo;s top half &mdash; name and balance, which is what you choose between &mdash; with no delta, since performance is not why this sheet is open. Selection is a filled check rather than a ring, because an outline round a card would read as a bordered control. <b>Renaming is deliberately not here:</b> the list answers &ldquo;which account&rdquo;, and a rename affordance would compete with the selection gesture.</div></div>
