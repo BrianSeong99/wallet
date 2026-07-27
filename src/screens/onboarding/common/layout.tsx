@@ -20,14 +20,37 @@ import { cn } from 'lib/ui/util';
  * *shrinks* text.
  */
 
-/** Page shell: the cream ground, the 24px gutter, and a full-height column. */
+/**
+ * Page shell: the cream ground, the gutter, and a full-height column.
+ *
+ * Two adaptivity rules live here, and only here — the system is explicit that
+ * these are the *only* things allowed to respond to viewport width. "Width is
+ * fluid; the scale is not": type sizes, radii and touch targets are the same on
+ * a 360pt popup as on a 440pt Pro Max, so nothing below this line scales.
+ *
+ * 1. `px-4 min-[360px]:px-6` — "the gutter steps once. 24px at >=360pt,
+ *    dropping to 16px below 360. It never goes lower — that's the only
+ *    responsive spacing rule." Written as an arbitrary min-width variant rather
+ *    than a config breakpoint because it is a one-off threshold, not a tier the
+ *    rest of the app lays out against; adding it to `tailwind.config.ts` would
+ *    invite other components to hang layout off it.
+ *
+ * 2. `mx-auto max-w-125` — 31.25rem, i.e. 500px. "Pro Max gets more breathing
+ *    room, not bigger components… above ~500pt the content column caps so it
+ *    never becomes a stretched phone layout." Note this caps the column, not
+ *    the components inside it: extra width becomes margin. It is inert on every
+ *    phone target (440 max) and inside the onboarding navigator, whose shell is
+ *    already `max-w-105`; it earns its keep on the extension's full-page tab
+ *    and on desktop, where a screen used standalone would otherwise run the
+ *    full width of a monitor.
+ */
 export const OnboardingScreen: FC<PropsWithChildren & { className?: string; testId?: string }> = ({
   children,
   className,
   testId
 }) => (
   <div className={cn('bg-app-bg h-full overflow-y-auto', className)} data-testid={testId}>
-    <div className="min-h-full flex flex-col px-6">{children}</div>
+    <div className="min-h-full flex flex-col mx-auto max-w-125 px-4 min-[360px]:px-6">{children}</div>
   </div>
 );
 

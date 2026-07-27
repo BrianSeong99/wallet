@@ -61,15 +61,19 @@ export const AssetListItem: FC<AssetListItemProps> = ({
 
         <div className="flex flex-col min-w-0 shrink-0 font-bold">
           <div className="text-base  leading-tight text-heading-gray truncate">{name}</div>
-          <div className="font-heading text-sm leading-tight text-black opacity-50 ">{amount}</div>
+          {/* amount / price / delta are live values — tabular + lining figures so
+              the digits don't jitter on refresh and the column of prices in the
+              asset list lines up. The token NAME above is copy, so it stays
+              proportional. */}
+          <div className="font-heading font-tnum text-sm leading-tight text-black opacity-50 ">{amount}</div>
         </div>
       </div>
 
       <div className="flex items-center justify-center">{chart}</div>
 
       <div className="flex flex-col items-end font-bold">
-        {price && <div className="text-base font-semibold leading-tight text-heading-gray">{price}</div>}
-        {delta && <div className={classNames('text-xs leading-tight', deltaColor)}>{delta.value}</div>}
+        {price && <div className="font-tnum text-base font-semibold leading-tight text-heading-gray">{price}</div>}
+        {delta && <div className={classNames('font-tnum text-xs leading-tight', deltaColor)}>{delta.value}</div>}
       </div>
     </div>
   );

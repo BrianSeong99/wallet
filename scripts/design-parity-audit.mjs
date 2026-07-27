@@ -121,7 +121,14 @@ const add = (status, area, title, detail, evidence = '') => findings.push({ stat
 
 // ---------------------------------------------------------------- radius
 {
-  const raw = sh(`grep -rhoE 'rounded-\\[[0-9.]+px\\]' src/screens src/components --include='*.tsx' ${excludeArgs}`);
+  // Only APPLIED radii count. Test files and comment lines were being scored as
+  // divergences, so a comment explaining why a radius was retired read as the
+  // radius still being there — the same false positive the colour check already
+  // filters out, applied here for the same reason.
+  const raw = sh(
+    `grep -rnE 'rounded-\\[[0-9.]+px\\]' src/screens src/components --include='*.tsx' ${excludeArgs}` +
+      ` | grep -v '\\.test\\.' | grep -vE ':[[:space:]]*(//|/\\*|\\*)' | grep -oE 'rounded-\\[[0-9.]+px\\]'`
+  );
   const vals = [...new Set(raw.split('\n').filter(Boolean))];
   add(
     vals.length === 0 ? 'OK' : 'OPEN',
@@ -153,13 +160,17 @@ const add = (status, area, title, detail, evidence = '') => findings.push({ stat
 
 // ---------------------------------------------------------------- fonts
 {
-  const mono = Number(sh(`grep -rho '\\bfont-mono\\b' src --include='*.tsx' | wc -l`));
+  // `.font-address` is the class that CARRIES the address role: Geist Mono plus
+  // the tnum/lnum figure setting the spec attaches to it. Counting bare
+  // `font-mono` alone scored the correct end state as a regression — moving an
+  // address off `font-mono` and onto `font-address` made this read 0.
+  const mono = Number(sh(`grep -rhoE '\\bfont-(mono|address)\\b' src --include='*.tsx' | wc -l`));
   const tnum = Number(sh(`grep -rho 'font-tnum\\|tabular-nums' src --include='*.tsx' | wc -l`));
   add(
     mono > 0 ? 'OK' : 'OPEN',
     'type',
     'Addresses / hashes / ids are set in mono',
-    `font-mono used ${mono}x`,
+    `font-mono / font-address used ${mono}x`,
     mono === 0 ? 'Crust reserves Geist Mono for addresses, hashes and ids; nothing uses it.' : ''
   );
   add(

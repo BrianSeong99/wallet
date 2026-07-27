@@ -245,8 +245,24 @@ button,
   filter: brightness(0.75);
 }
 
-.font-tnum {
-  font-feature-settings: 'tnum';
+/* Tabular + LINING figures. `tnum` alone keeps digits from jittering as a value
+ * changes; `lnum` keeps them from dropping below the baseline in faces that
+ * default to old-style figures. The design system states both via --num-feat,
+ * so this reads the token rather than restating half of it — "numbers are the
+ * product" is one of the system's six principles, and it was applied twice in
+ * the whole app before this. */
+.font-tnum,
+.tabular {
+  font-feature-settings: var(--num-feat);
+  font-variant-numeric: tabular-nums lining-nums;
+}
+
+/* Addresses, hashes and ids only — never body copy, never numbers. Numbers use
+ * the display face with tabular figures; a monospace FONT is a different thing
+ * from a tabular FIGURE setting. */
+.font-address {
+  font-family: var(--mono);
+  font-feature-settings: var(--num-feat);
 }
 
 /* Fix CSS transition flickering in Firefox */

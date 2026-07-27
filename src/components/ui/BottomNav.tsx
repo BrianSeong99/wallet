@@ -31,7 +31,13 @@ export const BottomNav: FC<BottomNavProps> = ({ items, activeId, onChange, class
       className={classNames(
         'flex items-center gap-8 justify-center',
         'bg-white rounded-3xl px-13.5 py-2',
-        'shadow-[0_4px_12px_rgba(0,0,0,0.08),0_12px_40px_rgba(0,0,0,0.15)]',
+        // Elevation · raised (e1). The design system names this component in the
+        // e1 bullet ("prompts, the floating bottom-nav pill — a whisper of
+        // lift"), so this matches the SPEC, not the old look: the hand-rolled
+        // pair was a 12px + 40px double drop closer to an overlay than a
+        // whisper, and being a literal rgba it also could not step down in dark
+        // mode, where the system communicates lift by surface step instead.
+        'shadow-e1',
         className
       )}
     >

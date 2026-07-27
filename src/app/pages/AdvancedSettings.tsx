@@ -54,7 +54,7 @@ const AdvancedSettings: FC<{ onClose?: () => void }> = ({ onClose }) => {
       <div className="flex items-center justify-between text-heading-gray">
         <div className="flex flex-col">
           <span className="font-medium text-base">{t('accountPublicKey')}</span>
-          <span className="text-xs font-mono text-text-muted select-text">{truncatedPublicKey}</span>
+          <span className="text-xs font-address text-text-muted select-text">{truncatedPublicKey}</span>
         </div>
         <button
           type="button"

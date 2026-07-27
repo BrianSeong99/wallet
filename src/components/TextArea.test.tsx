@@ -52,7 +52,7 @@ describe('TextArea', () => {
       const el = getTextArea();
       expect(el).toHaveClass(
         'border',
-        'rounded-[10px]',
+        'rounded-sm-token',
         'border-border-light',
         'transition-colors',
         'duration-150',

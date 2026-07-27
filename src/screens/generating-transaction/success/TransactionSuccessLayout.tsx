@@ -88,7 +88,9 @@ export const SuccessAmountBlock: FC<{ amountText?: string; subline?: ReactNode }
 
   return (
     <div className="mt-4 flex w-full flex-col items-center">
-      <div className="font-heading text-center text-3xl font-bold leading-none text-pure-black">{amountText}</div>
+      <div className="font-heading font-tnum text-center text-3xl font-bold leading-none text-pure-black">
+        {amountText}
+      </div>
       {subline}
     </div>
   );

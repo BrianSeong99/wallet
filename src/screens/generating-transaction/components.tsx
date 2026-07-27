@@ -181,7 +181,11 @@ export const TransactionStepRow: React.FC<TransactionStepRowProps> = ({ step, st
           {resolvedLabel}
         </span>
       </div>
-      {meta && <span className="shrink-0 font-heading text-base font-medium leading-none text-ink-3">{meta}</span>}
+      {/* Per-step elapsed time ticks up live; tabular figures keep the row from
+          reflowing as "9 sec" becomes "10 sec". */}
+      {meta && (
+        <span className="shrink-0 font-heading font-tnum text-base font-medium leading-none text-ink-3">{meta}</span>
+      )}
     </motion.div>
   );
 };

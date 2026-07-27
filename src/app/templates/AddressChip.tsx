@@ -1,5 +1,7 @@
 import React, { ComponentProps, FC, HTMLAttributes } from 'react';
 
+import classNames from 'clsx';
+
 import AddressShortView from 'app/atoms/AddressShortView';
 import CopyButton, { CopyButtonProps } from 'app/atoms/CopyButton';
 import { Icon, IconName } from 'app/icons/v2';
@@ -21,7 +23,15 @@ const AddressChip: FC<AddressChipProps> = ({
 }) => (
   <CopyButton text={address} type={type} {...rest} className="p-0!">
     <span className="flex flex-row items-center">
-      <span className="mr-1 break-all text-heading-gray text-xs leading-none font-medium opacity-64">
+      {/* Geist Mono is reserved for the address itself. When `displayName` is set
+          AddressShortView renders a human name instead ("you (Main account)"),
+          which is body copy and must stay in the UI face. */}
+      <span
+        className={classNames(
+          'mr-1 break-all text-heading-gray text-xs leading-none font-medium opacity-64',
+          !displayName && 'font-address'
+        )}
+      >
         <AddressShortView address={address} displayName={displayName} trim={trim} />
       </span>
       {copyIcon && <Icon name={IconName.Copy} size={size} className={className} />}

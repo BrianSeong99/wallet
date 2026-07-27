@@ -49,7 +49,14 @@ export const BackUpSeedPhraseScreen: React.FC<BackUpSeedPhraseScreenProps> = ({
   }, []);
 
   return (
-    <div className={classNames('flex flex-col flex-1', 'bg-app-bg gap-stack-loose px-6 pt-4', className)} {...props}>
+    <div
+      className={classNames(
+        'flex flex-col flex-1 min-h-0 overflow-y-auto',
+        'bg-app-bg gap-stack-loose px-6 pt-4',
+        className
+      )}
+      {...props}
+    >
       <div className="flex flex-col gap-stack-tight">
         <OnboardingHeading className="text-left">{t('backUpYourWallet')}</OnboardingHeading>
         <OnboardingSubcopy className="text-left">{t('backUpWalletInstructions')}</OnboardingSubcopy>

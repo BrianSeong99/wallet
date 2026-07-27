@@ -47,7 +47,7 @@ const HistoryContent: FC<HistoryItemProps> = ({ fullHistory, entry, lastEntry })
     >
       {/* Icon */}
       <div
-        className="flex items-center justify-center shrink-0 rounded-[10px]  bg-transparent text-primary-500"
+        className="flex items-center justify-center shrink-0 rounded-sm-token  bg-transparent text-primary-500"
         style={{ width: 40, height: 40 }}
       >
         <TransactionIcon entry={entry} size="sm" />
@@ -60,7 +60,11 @@ const HistoryContent: FC<HistoryItemProps> = ({ fullHistory, entry, lastEntry })
         {entry.secondaryAddress && (
           <span className="text-xs text-text-muted truncate flex gap-0.5">
             <p className="font-medium">{`${isReceive ? t('from') : t('to')}: `}</p>
-            <AddressShortView address={entry.secondaryAddress} trim={isMobile() || compact} />
+            {/* Only the counterparty address takes the mono role — the
+                "From:"/"To:" label beside it is copy. */}
+            <span className="font-address">
+              <AddressShortView address={entry.secondaryAddress} trim={isMobile() || compact} />
+            </span>
           </span>
         )}
       </div>
@@ -70,7 +74,7 @@ const HistoryContent: FC<HistoryItemProps> = ({ fullHistory, entry, lastEntry })
         <div className="flex flex-col items-end shrink-0">
           <span
             className={classNames(
-              'font-heading text-sm font-medium leading-none',
+              'font-heading font-tnum text-sm font-medium leading-none',
               isReceive ? 'text-receive-green' : 'text-[#DC2626]'
             )}
           >

@@ -35,7 +35,7 @@ describe('ColorIdenticon', () => {
     // Avatar root div: base classes + size(md → w-6 h-6) + default className.
     expect(root).toBeInTheDocument();
     expect(root.tagName.toLowerCase()).toBe('div');
-    expect(root).toHaveClass('rounded-[3.21px]', 'overflow-hidden', 'w-6', 'h-6', 'm-auto');
+    expect(root).toHaveClass('rounded-full', 'overflow-hidden', 'w-6', 'h-6', 'm-auto');
 
     // seeded background colour is applied inline (jsdom normalises to rgb()).
     expect(root.style.backgroundColor).toBeTruthy();
@@ -55,7 +55,7 @@ describe('ColorIdenticon', () => {
     // the default is a fallback for a *missing* prop, so it must not appear here.
     expect(root).not.toHaveClass('m-auto');
     // base + default-md size classes still present.
-    expect(root).toHaveClass('rounded-[3.21px]', 'overflow-hidden', 'w-6', 'h-6');
+    expect(root).toHaveClass('rounded-full', 'overflow-hidden', 'w-6', 'h-6');
   });
 
   it('maps each supported size token to the Avatar size class', () => {

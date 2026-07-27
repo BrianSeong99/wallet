@@ -100,7 +100,7 @@ export const AddressTab: React.FC<AddressTabProps> = ({ address }) => {
               text={address}
               className="w-full rounded-full! text-center py-5 bg-surface-interactive hover:bg-surface-interactive"
             >
-              <span className="text-base font-heading font-bold text-heading-gray">
+              <span className="text-base font-address font-bold text-heading-gray">
                 {truncateAddress(address, false, 16, 8)}
               </span>
             </CopyButton>

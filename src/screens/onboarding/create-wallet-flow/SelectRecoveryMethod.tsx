@@ -54,7 +54,10 @@ export const SelectRecoveryMethodScreen = ({
   };
 
   return (
-    <div className="flex-1 flex flex-col items-center bg-transparent pt-6 h-full px-6 gap-stack" {...props}>
+    <div
+      className="flex-1 flex flex-col items-center bg-transparent pt-6 h-full min-h-0 overflow-y-auto px-6 gap-stack"
+      {...props}
+    >
       <div className="flex flex-col gap-stack-tight w-full">
         <OnboardingHeading className="text-left">{t('chooseRecoveryMethod')}</OnboardingHeading>
         <OnboardingSubcopy className="text-left">{t('chooseRecoveryMethodDescription')}</OnboardingSubcopy>

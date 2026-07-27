@@ -76,7 +76,7 @@ interface ResolvedAsset {
  */
 const SwapAmountText: FC<{ amount: string; symbol: string }> = ({ amount, symbol }) => (
   <span className="min-w-0 truncate whitespace-nowrap text-2xl font-extrabold">
-    <span className="text-heading-gray">{amount}</span>
+    <span className="font-tnum text-heading-gray">{amount}</span>
     <span className="text-gray">{symbol}</span>
   </span>
 );
@@ -147,10 +147,10 @@ export const useTransactionSummaryBadgeContent = (
     if (!amount || !recipient) return undefined;
 
     return {
-      lhs: `${amount} ${symbol}`,
+      lhs: <span className="font-tnum">{`${amount} ${symbol}`}</span>,
       rhs: (
         <>
-          <span className="min-w-0 truncate">{recipient}</span>
+          <span className="min-w-0 truncate font-address">{recipient}</span>
         </>
       )
     };

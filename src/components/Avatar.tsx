@@ -48,7 +48,10 @@ export const Avatar: React.FC<AvatarProps> = ({
     return null;
   }, [image, identiconPublicKey, isCollectible, t]);
   return (
-    <div {...props} className={classNames('rounded-[3.21px] overflow-hidden', classPerSize[size], className)}>
+    // The 3.21px radius this replaces was a Figma export artefact, not a
+    // decision — no step on any scale is a fraction of a pixel. Crust puts
+    // avatars on radius-full.
+    <div {...props} className={classNames('rounded-full overflow-hidden', classPerSize[size], className)}>
       {imageComponent()}
     </div>
   );

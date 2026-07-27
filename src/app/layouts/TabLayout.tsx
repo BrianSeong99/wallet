@@ -100,6 +100,13 @@ const TabLayout: FC<PropsWithChildren> = ({ children }) => {
     }
   ];
 
+  // Action identity: each glyph keeps its OWN hue, but the hue now comes from a
+  // theme-flipping --act-* token instead of a hex baked into the SVG. The SVGs are
+  // currentColor, so the tint is applied here, per action — the app equivalent of
+  // the design system's `data-act` attribute. Light values are darkened from the
+  // shipped pastels: a collapsed segment is icon-only with no label, so SC 1.4.11's
+  // 3:1 applies and the pastels measured 2.37-2.42:1 on the chip. Dark keeps the
+  // pastels. Overview deliberately has no tint — wallet.svg follows the ink.
   const actionItems = [
     {
       id: 'overview',
@@ -109,12 +116,12 @@ const TabLayout: FC<PropsWithChildren> = ({ children }) => {
     {
       id: 'send',
       label: 'Send',
-      icon: <Icon name={IconName.Send} className="w-5 h-5" />
+      icon: <Icon name={IconName.Send} className="w-5 h-5 text-act-send" />
     },
     {
       id: 'receive',
       label: 'Receive',
-      icon: <Icon name={IconName.Receive} className="w-5 h-5" />
+      icon: <Icon name={IconName.Receive} className="w-5 h-5 text-act-receive" />
     },
     // Earn and Swap segments are feature-gated (isEarnEnabled / isSwapEnabled).
     ...(isEarnEnabled()
@@ -122,7 +129,7 @@ const TabLayout: FC<PropsWithChildren> = ({ children }) => {
           {
             id: 'earn',
             label: 'Earn',
-            icon: <Icon name={IconName.Earn} className="w-5 h-5" />
+            icon: <Icon name={IconName.Earn} className="w-5 h-5 text-act-earn" />
           }
         ]
       : []),
@@ -131,7 +138,7 @@ const TabLayout: FC<PropsWithChildren> = ({ children }) => {
           {
             id: 'swap',
             label: 'Swap',
-            icon: <Icon name={IconName.Convert} className="w-5 h-5" fill="currentColor" />
+            icon: <Icon name={IconName.Convert} className="w-5 h-5 text-act-swap" />
           }
         ]
       : [])

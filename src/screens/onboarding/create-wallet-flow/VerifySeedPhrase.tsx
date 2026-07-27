@@ -70,7 +70,11 @@ export const VerifySeedPhraseScreen: React.FC<VerifySeedPhraseScreenProps> = ({
 
   return (
     <div
-      className={classNames('flex flex-col flex-1', 'bg-app-bg gap-stack-loose px-6 pt-4', className)}
+      className={classNames(
+        'flex flex-col flex-1 min-h-0 overflow-y-auto',
+        'bg-app-bg gap-stack-loose px-6 pt-4',
+        className
+      )}
       data-testid="verify-seed-phrase"
       {...props}
     >

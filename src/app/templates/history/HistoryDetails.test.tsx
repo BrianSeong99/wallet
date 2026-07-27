@@ -222,8 +222,10 @@ describe('HistoryDetails', () => {
 
       expect(screen.getByText('smthWentWrong')).toBeInTheDocument();
       expect(screen.getByText('boom-failure')).toBeInTheDocument();
-      // ID line echoes the transactionId.
-      expect(screen.getByText('ID: tx-1')).toBeInTheDocument();
+      // ID line echoes the transactionId. The id itself now sits in its own
+      // `.font-address` span (the label beside it stays in the UI face), so the
+      // paragraph is matched by its label and asserted on its full text.
+      expect(screen.getByText(/^ID:/)).toHaveTextContent('ID: tx-1');
       expect(screen.queryByTestId('spinner')).not.toBeInTheDocument();
     });
 

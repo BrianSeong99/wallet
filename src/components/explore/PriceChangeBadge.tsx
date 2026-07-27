@@ -37,10 +37,12 @@ export const PriceChangeBadge = ({ account }: { account: WalletAccount }) => {
 
   return (
     <div className="flex items-center gap-1">
-      <Badge variant={variant} className="font-medium">
+      {/* Both halves re-render on every price tick, so tabular + lining figures:
+          the badge must not change width as the delta moves. */}
+      <Badge variant={variant} className="font-medium font-tnum">
         {isNeutral ? '' : isPositive ? '+' : '-'}${Math.abs(portfolioChange).toFixed(2)}
       </Badge>
-      <p className={clsx('text-xs', isNeutral ? 'text-ink-3' : isPositive ? 'text-pos' : 'text-neg')}>
+      <p className={clsx('font-tnum text-xs', isNeutral ? 'text-ink-3' : isPositive ? 'text-pos' : 'text-neg')}>
         {percentageChange.toFixed(2)}%
       </p>
     </div>
