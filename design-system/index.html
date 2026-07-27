@@ -32,6 +32,12 @@
 @font-face{font-family:'Geist Mono';src:url('assets/fonts/GeistMono-SemiBold.woff2') format('woff2');font-weight:600;font-display:swap}
 
 :root{
+  /* Spacing is theme-INDEPENDENT and must be declared here, not in a theme block.
+     It lived in [data-theme="light"] only, so in dark every var(--stack) was
+     invalid and gap silently fell back to `normal` (0). Invisible in the HTML,
+     invisible in light, and the harness measures contrast and targets, not gaps. */
+  --stack-tight:0.5rem; --stack:0.75rem; --stack-loose:1rem;
+
   /* type roles */
   --display:'Nunito',system-ui,sans-serif;      /* warmth:onboarding, headings */
   --ui:'Inter',system-ui,sans-serif;            /* clarity:body, controls */
@@ -134,7 +140,6 @@
      the 20px/800 heading against 15px body already marks the section, so the gap only
      needs to separate. A tight ramp is right on a screen where the card and carousel
      already take ~45% before the list starts. */
-  --stack-tight:0.5rem; --stack:0.75rem; --stack-loose:1rem;
   --nav-pill:rgba(63,63,63,.10); --nav-bg:rgba(255,255,255,.62); --nav-ink-off:#727272;
   --pat:rgba(255,255,255,.035);
   /* Account card colours. These were REFERENCED by the colour picker but never defined,
@@ -589,13 +594,26 @@ table.map td code{font-size:var(--t-label)}
 .mcar > .mprompt{flex:0 0 88%;scroll-snap-align:start}
 
 /* Sheet chrome, extracted from the inline styles the older Accounts mock used. */
-.msheet{position:absolute;left:0;right:0;bottom:0;background:var(--surface);
+.msheet{position:absolute;left:0;right:0;bottom:0;background:var(--surface);box-shadow:var(--shadow-2);
   border-radius:var(--radius-lg) var(--radius-lg) 0 0;
   padding:0.75rem 1rem max(1rem,var(--safe-bottom,0));
   display:flex;flex-direction:column;max-height:76%}
 /* The sheet already reserves the home-indicator inset, so an action zone inside
    one must not reserve it a second time. */
 .msheet .zone{padding-bottom:0}
+/* Elevation, not dimming. 55% black over a #191919 page is #0b0b0b -- a 1.12:1
+   step -- so the scrim conveyed neither "the layer behind is inert" nor "tap to
+   dismiss", and the sheet edge separated from its backdrop at 1.25:1. Dark lifts
+   the SHEET instead: lighter surface, a rim light along its own top edge, and a
+   shadow. A pure tonal step cannot reach 3:1 here without turning the sheet light
+   grey, which is exactly why the rim carries the boundary.
+   Lifting the sheet fill to --surface-3 was tried first and rejected: it cost the
+   contrast of everything sitting ON the sheet -- the slate selection ring fell to
+   2.63:1 and the colour swatches to 2.60:1. So the fill stays and the rim does the
+   work. 34% white over #232323 lands at ~#6E6E6E, which is 3.43:1 against the
+   #191919 page -- clearing SC 1.4.11 on a 1px edge rather than a whole surface. */
+[data-theme="dark"] .msheet{box-shadow:inset 0 1px 0 rgba(255,255,255,.34),var(--shadow-2)}
+[data-theme="dark"] .shscrim{background:rgba(0,0,0,.62)}
 /* Same reason: the sheet owns the inset, so a trailing list must not add its own.
    Safe because a .mlist in this position holds no selectable cards -- nothing
    with a ring to clip at the bottom edge. */
@@ -1303,7 +1321,12 @@ ul.tick li:before{content:"→";position:absolute;left:0.125rem;color:var(--acce
 .vpinner.tight .mpad{padding:0.875rem 1rem 0}    /* <360: gutter drops to 16 */
 /* ---------- send → review → sign flow ---------- */
 .sh2{display:flex;align-items:center;gap:0.625rem;padding:0.125rem 0 0.875rem}
-.sh2 .bk2{width:1.875rem;height:1.875rem;border-radius:50%;background:var(--surface-2);display:flex;align-items:center;justify-content:center;flex:none;font-size:var(--t-body)}
+/* 44pt hit area, 30px disc. The disc is drawn by ::before so the target can be
+   bigger than the thing you see -- this is the only back affordance on every
+   pushed step, and it measured 30x30. Sized in px: SC 2.5.5 is an absolute floor. */
+.sh2 .bk2{width:44px;height:44px;margin-left:-7px;background:none;position:relative;isolation:isolate;
+  display:flex;align-items:center;justify-content:center;flex:none;font-size:var(--t-body)}
+.sh2 .bk2::before{content:"";position:absolute;inset:7px;border-radius:50%;background:var(--surface-2);z-index:-1}
 .sh2 .t2{font-family:var(--display);font-weight:800;font-size:var(--t-subhead)}
 .recip{display:flex;align-items:center;gap:0.625rem;background:var(--surface-2);border-radius:var(--radius-md);padding:0.6875rem 0.8125rem}
 .recip .rav{width:1.625rem;height:1.625rem;border-radius:50%;background:var(--tx-sent);flex:none}
@@ -1400,7 +1423,11 @@ ul.tick li:before{content:"→";position:absolute;left:0.125rem;color:var(--acce
   letter-spacing:-.02em;color:var(--ink-3);word-break:normal;overflow-wrap:anywhere;margin:0.375rem 0 1.125rem}
 /* Inert primary drops the accent fill rather than dimming it, so the control
    reads as unavailable instead of as a washed-out orange button. */
-.btn-primary[disabled]{background:var(--surface-2);color:var(--ink-2);pointer-events:none}
+/* Must not read like .btn-secondary, which is also surface-2 at the same size.
+   Fill washes toward the page and the label drops to --ink-3, so enabled-secondary
+   and disabled-primary are no longer the same object with a paler word on it. */
+.btn-primary[disabled]{background:color-mix(in srgb,var(--surface-2) 45%,var(--paper));
+  color:var(--ink-3);pointer-events:none}
 /* Trailing tick on a picker row (shipped: CheckboxCircleFill). A SHAPE, not a
    check character -- a 10px glyph would trip the 11pt type floor. */
 .rtick{width:1.25rem;height:1.25rem;flex:none;margin-left:auto;border-radius:50%;background:var(--accent);
@@ -1425,6 +1452,17 @@ ul.tick li:before{content:"→";position:absolute;left:0.125rem;color:var(--acce
 .rchip .cnet{font-size:var(--t-label);font-weight:800;color:var(--ink)}
 .rchip .cadr{font-family:var(--mono);font-size:var(--t-caption);color:var(--ink-2);
   overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1;min-width:0}
+/* The privacy cliff is a sentence, not a key/value row. Inside .dmeta it competed
+   with "~1 hour" on equal terms and lost: it measured 5.40:1 against 9.60:1 for the
+   neutral rows beside it, so the most consequential fact in the product was the
+   least prominent value on the screen -- and "public" vs "private" was carried by
+   hue alone. Text is --ink so the meaning survives without colour (SC 1.4.1); the
+   amber lives in the wash and the rule, where it signals rather than informs. */
+.pcliff{display:flex;gap:0.5rem;align-items:flex-start;padding:0.625rem 0.75rem;
+  border-radius:var(--radius-md);background:var(--warn-wash);
+  border-left:3px solid var(--warn);color:var(--ink);
+  font-size:var(--t-label);line-height:1.45;margin:0.875rem 0 0.5rem}
+.pcliff b{font-weight:800}
 .tsteps{display:flex;flex-direction:column;gap:0.125rem;margin-top:1.125rem}
 .tstep{display:flex;align-items:center;gap:0.625rem;padding:0.5625rem 0.125rem;font-size:var(--t-label)}
 .tstep .tsi{width:1.125rem;height:1.125rem;flex:none;border-radius:50%;display:flex;align-items:center;
@@ -3351,9 +3389,9 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
             </div>
             <div style="font-family:var(--display);font-weight:800;font-size:var(--t-title);line-height:1.1">Choose recipient</div>
             <div class="heroin" style="font-size:var(--t-heading);color:var(--ink)">0x71C7656EC7ab88b098defB751B7401B5f6d8976F</div>
-            <div class="rchip"><span class="cdot" style="background:#0052FF"></span><span class="cnet">Base</span><span class="cadr">0x71C7&hellip;8976F</span><span class="pdis" style="margin:0">&rsaquo;</span></div>
-            <div class="dmeta" style="margin-top:0.875rem">
-              <div class="drow"><span class="k">Visibility</span><span class="v" style="color:var(--warn)">Public on Base</span></div>
+            <div class="rchip"><span class="cdot" style="background:#0052FF"></span><span class="cnet">Base</span><span class="cadr">0x71C7&hellip;8976F</span><span aria-hidden="true" style="color:var(--ink-2);flex:none">&rsaquo;</span></div>
+            <div class="pcliff"><span>This transfer leaves Miden. On Base the amount and recipient are <b>public</b>.</span></div>
+            <div class="dmeta">
               <div class="drow"><span class="k">Arrives</span><span class="v">~1 hour</span></div>
               <div class="drow"><span class="k">If unclaimed</span><span class="v">Returns in 7 days</span></div>
             </div>
@@ -3428,7 +3466,7 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
               <div class="drow"><span class="k">From</span><span class="v">Miden Account 3</span></div>
               <div class="drow"><span class="k">To</span><span class="v addr2">mtst1kq2&hellip;88xz</span></div>
               <div class="drow"><span class="k">Network</span><span class="v">Miden</span></div>
-              <div class="drow"><span class="k">Expiration Date</span><span class="v">In 7 days <span style="color:var(--accent-ink)">Edit</span></span></div>
+              <div class="drow" style="min-height:44px" role="button" tabindex="0" aria-label="Expiration date, in 7 days. Change"><span class="k">Expiration Date</span><span class="v">In 7 days</span><span aria-hidden="true" style="color:var(--ink-2);margin-left:0.375rem;flex:none">&rsaquo;</span></div>
             </div>
             <div class="scrnote2">If unclaimed by then, the 100 USDC returns to your wallet automatically. No funds are lost.</div>
             <div class="zone"><button class="btn btn-primary">Send Payment</button></div>
@@ -3464,7 +3502,7 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
             <div class="dmeta" style="margin-top:1.25rem">
               <div class="drow"><span class="k">To</span><span class="v"><span class="av3"><span class="dot3"></span><span class="addr2">mtst1kq2…88xz</span></span></span></div>
               <div class="drow"><span class="k">Total Paid</span><span class="v num">100.00 USDC</span></div>
-              <div class="drow" style="min-height:44px"><span class="k">Source TX</span><span class="v addr2">0ab3…77df</span><span style="color:var(--accent-ink);font-size:var(--t-caption);font-weight:700;margin-left:0.5rem">View on Midenscan</span></div>
+              <div class="drow" style="min-height:44px" role="button" tabindex="0" aria-label="Source transaction 0ab3…77df. View on Midenscan"><span class="k">Source TX</span><span class="v addr2">0ab3…77df</span><span aria-hidden="true" style="color:var(--ink-2);margin-left:0.375rem;flex:none">&rsaquo;</span></div>
             </div>
             <div class="zone"><button class="btn btn-primary" style="width:100%">Done</button><button class="btn btn-secondary" style="width:100%;margin-top:0.5rem">View in Activities</button></div>
           </div>

@@ -141,7 +141,7 @@ const probe = () => {
       // full-bleed art and scrims are meant to reach the frame edge
       const fullBleed = el.matches('.shot,.splash,.splash *') ||
         (cs.position === 'absolute' && parseFloat(cs.inset || '1') === 0);
-      const interactive = el.matches('button,a,input,.gh,.azghost,.obback,.seg,.gcard,.ropt');
+      const interactive = el.matches('button,a,input,.gh,.azghost,.obback,.seg,.gcard,.ropt,.bk2,.pdis,.acopy2,.aedit,.shgear');
       const leaf = el.children.length === 0;
 
       // 1. geometry — interactive or leaf content must not sit in the safe-area bands
@@ -275,7 +275,7 @@ const probeTargets = () => {
       if (r.width < 2 || r.height < 2) return;
       const cs = getComputedStyle(el);
       if (cs.display === 'none' || cs.visibility === 'hidden') return;
-      if (!el.matches('button,a,input,.gh,.azghost,.obback,.seg,.gcard,.ropt')) return;
+      if (!el.matches('button,a,input,.gh,.azghost,.obback,.seg,.gcard,.ropt,.bk2,.pdis,.acopy2,.aedit,.shgear')) return;
       els.push({ el: (el.textContent || '').trim().slice(0, 16) || el.className?.toString().slice(0, 16) || el.tagName,
         w: Math.round(pt(r.width)), h: Math.round(pt(r.height)) });
     });
