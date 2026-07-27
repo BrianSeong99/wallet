@@ -817,7 +817,7 @@ table.map td code{font-size:var(--t-label)}
    Three tiers by hierarchy, all on the grid:
      --stack-tight  8  within a group (section header -> search -> rows)
      --stack        12 between stacked components in one group (bar -> card -> prompt)
-     --stack-loose  24 before a new section
+     --stack-loose  16 before a new section (was 24; it read as a shout above Assets)
    Components stop carrying their own outer spacing; .mpad owns it. */
 /* Height floor for this card is set by two lines of the real 76-character i18n string at
    the 11.5px caption token -- the copy cannot shrink and 11 is the type floor. So the
@@ -1476,6 +1476,22 @@ ul.tick li:before{content:"→";position:absolute;left:0.125rem;color:var(--acce
 .rcaddr{font-family:var(--mono);font-size:var(--t-label);line-height:1.5;color:var(--ink-2);
   word-spacing:0.15em;margin-top:0.25rem}
 .rcaddr b{color:var(--ink);font-weight:700}
+/* A page title after the action bar starts a new section, so it takes --stack-loose,
+   not the --stack used between components within a group. At 12px it crowded the bar. */
+.pgtitle{font-family:var(--display);font-weight:800;font-size:var(--t-title);line-height:1.1;
+  margin-top:0.25rem}
+/* Camera viewfinder. Full-bleed dark regardless of theme -- a camera preview has no
+   light mode. Corner brackets rather than a full rule: the frame guides aim without
+   implying the code must be perfectly inscribed. */
+.vfinder{position:absolute;inset:0;background:#0B0B0B;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:1.25rem}
+.vfbox{width:11.5rem;height:11.5rem;position:relative}
+.vfbox i{position:absolute;width:1.75rem;height:1.75rem;border:3px solid #FFFFFF}
+.vfbox i:nth-child(1){top:0;left:0;border-right:0;border-bottom:0;border-radius:0.5rem 0 0 0}
+.vfbox i:nth-child(2){top:0;right:0;border-left:0;border-bottom:0;border-radius:0 0.5rem 0 0}
+.vfbox i:nth-child(3){bottom:0;left:0;border-right:0;border-top:0;border-radius:0 0 0 0.5rem}
+.vfbox i:nth-child(4){bottom:0;right:0;border-left:0;border-top:0;border-radius:0 0 0.5rem 0}
+.vftext{color:#FFFFFF;font-size:var(--t-label);font-weight:600}
 .tsteps{display:flex;flex-direction:column;gap:0.125rem;margin-top:1.125rem}
 .tstep{display:flex;align-items:center;gap:0.625rem;padding:0.5625rem 0.125rem;font-size:var(--t-label)}
 .tstep .tsi{width:1.125rem;height:1.125rem;flex:none;border-radius:50%;display:flex;align-items:center;
@@ -3381,7 +3397,7 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
               <div class="seg" data-act="receive"><span class="svgic" style="--ic:url(assets/icons/receive-new.svg);" aria-hidden="true"></span><span class="lbl">Receive</span></div>
               <div class="seg" data-act="swap"><span class="svgic" style="--ic:url(assets/icons/convert.svg);" aria-hidden="true"></span><span class="lbl">Swap</span></div>
             </div>
-            <div style="font-family:var(--display);font-weight:800;font-size:var(--t-title);line-height:1.1">Choose recipient</div>
+            <div class="pgtitle">Choose recipient</div>
             <div class="fld" style="width:auto;margin-top:0.75rem"><label>To</label>
               <div class="fieldrow">
                 <div class="searchf" style="width:auto;flex:1;min-width:0">Address or name</div>
@@ -3399,6 +3415,67 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
           <div class="mnav"><button class="t on"><span class="svgic" style="--ic:url(assets/icons/home-new.svg)" aria-hidden="true"></span><span>Home</span></button><button class="t"><span class="svgic" style="--ic:url(assets/icons/explore.svg)" aria-hidden="true"></span><span>Explore</span></button><button class="t"><span class="svgic" style="--ic:url(assets/icons/activity.svg)" aria-hidden="true"></span><span>Activity</span></button></div>
         </div></div></div>
         <div class="scrnote"><b>Redrawn — the previous version broke three form rules at once.</b> The address input was a borderless 32px mono placeholder with <em>no label</em>, so it read as a heading rather than a field: placeholder-as-only-label and an input that looks like plain text are both named anti-patterns. Worse, the placeholder was <b>larger than the page heading</b> (32px against 26px), so the emptiest element on the screen was the loudest thing on it. And 311pt — <b>37% of the screen</b> — was dead, while offering exactly one way to enter a 49-character bech32 string. Now: a labelled field, <b>Paste and Scan beside it</b> because pasting is how addresses are actually entered, and the recovered space holds recents. Named contacts above raw addresses — recognition over recall. Dead space is down to 12%. <b>Proposed, not shipped:</b> there is no recents feature in the code, and <code>qr-scan.svg</code> sits in <code>assets/icons/</code> referenced by nothing. Shipped <code>SelectRecipient.tsx</code> renders the borderless textarea, the Address Book pill, and nothing else.</div></div>
+      <div><div class="scrcap"><i></i>Send · recipient, typing</div>
+        <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
+          <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>
+          <div class="mpad" style="flex:1;display:flex;flex-direction:column">
+            <div class="mseg" data-seg>
+              <div class="seg"><span class="svgic" style="--ic:url(assets/icons/wallet.svg);" aria-hidden="true"></span><span class="lbl">Overview</span></div>
+              <div class="seg on" data-act="send"><span class="svgic" style="--ic:url(assets/icons/send-new.svg);" aria-hidden="true"></span><span class="lbl">Send</span></div>
+              <div class="seg" data-act="receive"><span class="svgic" style="--ic:url(assets/icons/receive-new.svg);" aria-hidden="true"></span><span class="lbl">Receive</span></div>
+              <div class="seg" data-act="swap"><span class="svgic" style="--ic:url(assets/icons/convert.svg);" aria-hidden="true"></span><span class="lbl">Swap</span></div>
+            </div>
+            <div class="pgtitle">Choose recipient</div>
+            <div class="fld" style="width:auto;margin-top:0.75rem"><label>To</label>
+              <div class="fieldrow">
+                <div class="searchf" style="width:auto;flex:1;min-width:0;box-shadow:var(--focus-ring);background:var(--surface);color:var(--ink);font-family:var(--mono);font-size:var(--t-label)">mtst1ap8qz4v<span style="border-left:1.5px solid var(--accent);margin-left:1px"></span></div>
+                <button class="tokchip" style="align-self:auto">Paste</button>
+                <button class="scanbtn" aria-label="Scan a QR code"><span class="svgic" style="--ic:url(assets/icons/qr-scan.svg)" aria-hidden="true"></span></button>
+              </div>
+            </div>
+            <div class="shlab" style="margin-top:1.125rem">Recent</div>
+            <div class="mrow"><div class="ic" style="background:var(--tx-sent)"></div><div><div class="nm">Wiktor</div><div class="ad addr">mtst1ap8&hellip;r4fp</div></div></div>
+            <div class="zone"><button class="btn btn-primary" style="width:100%" disabled>Confirm</button></div>
+          </div>
+          <div class="mnav"><button class="t on"><span class="svgic" style="--ic:url(assets/icons/home-new.svg)" aria-hidden="true"></span><span>Home</span></button><button class="t"><span class="svgic" style="--ic:url(assets/icons/explore.svg)" aria-hidden="true"></span><span>Explore</span></button><button class="t"><span class="svgic" style="--ic:url(assets/icons/activity.svg)" aria-hidden="true"></span><span>Activity</span></button></div>
+        </div></div></div>
+        <div class="scrnote">Focused and mid-entry. The field takes <code>--focus-ring</code> and switches to mono once there is an address in it, because a bech32 string is read character by character. <b>Recents filter as you type</b> &mdash; the one match survives &mdash; which is the affordance that makes typing tolerable at all. Confirm stays inert until <code>isValidMidenAddress</code> passes; that gate is real (<code>SendManager.tsx:365&ndash;379</code>), the filtering is proposed.</div></div>
+      <div><div class="scrcap"><i></i>Send · recipient, invalid</div>
+        <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
+          <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>
+          <div class="mpad" style="flex:1;display:flex;flex-direction:column">
+            <div class="mseg" data-seg>
+              <div class="seg"><span class="svgic" style="--ic:url(assets/icons/wallet.svg);" aria-hidden="true"></span><span class="lbl">Overview</span></div>
+              <div class="seg on" data-act="send"><span class="svgic" style="--ic:url(assets/icons/send-new.svg);" aria-hidden="true"></span><span class="lbl">Send</span></div>
+              <div class="seg" data-act="receive"><span class="svgic" style="--ic:url(assets/icons/receive-new.svg);" aria-hidden="true"></span><span class="lbl">Receive</span></div>
+              <div class="seg" data-act="swap"><span class="svgic" style="--ic:url(assets/icons/convert.svg);" aria-hidden="true"></span><span class="lbl">Swap</span></div>
+            </div>
+            <div class="pgtitle">Choose recipient</div>
+            <div class="fld err" style="width:auto;margin-top:0.75rem"><label>To</label>
+              <div class="fieldrow">
+                <div class="searchf" style="width:auto;flex:1;min-width:0;box-shadow:0 0 0 1.5px var(--neg);background:var(--surface);color:var(--ink);font-family:var(--mono);font-size:var(--t-label)">0x71C7656EC7ab88b0&hellip;</div>
+                <button class="tokchip" style="align-self:auto">Paste</button>
+                <button class="scanbtn" aria-label="Scan a QR code"><span class="svgic" style="--ic:url(assets/icons/qr-scan.svg)" aria-hidden="true"></span></button>
+              </div>
+              <div class="hint">Invalid Miden account ID</div>
+            </div>
+            <div class="zone"><button class="btn btn-primary" style="width:100%" disabled>Confirm</button></div>
+          </div>
+          <div class="mnav"><button class="t on"><span class="svgic" style="--ic:url(assets/icons/home-new.svg)" aria-hidden="true"></span><span>Home</span></button><button class="t"><span class="svgic" style="--ic:url(assets/icons/explore.svg)" aria-hidden="true"></span><span>Explore</span></button><button class="t"><span class="svgic" style="--ic:url(assets/icons/activity.svg)" aria-hidden="true"></span><span>Activity</span></button></div>
+        </div></div></div>
+        <div class="scrnote">The <b>shipped</b> error, verbatim: <code>invalidMidenAccountId</code> = &ldquo;Invalid Miden account ID&rdquo;, set on every keystroke that fails <code>isValidMidenAddress</code> (<code>SendManager.tsx:365&ndash;379</code>). This is what pasting an EVM address does <em>today</em> &mdash; the string is rejected outright, not routed to a bridge. Two things the shipped screen gets wrong and this fixes: the message is announced to nobody (no <code>role="alert"</code>, no <code>aria-live</code>, no <code>aria-invalid</code>), and it renders in <code>text-red-500</code> at <b>3.64:1</b>, under the 4.5:1 floor. Here it uses <code>.fld.err</code> + <code>.hint</code>, the system&rsquo;s one error treatment.</div></div>
+      <div><div class="scrcap"><i></i>Send · scan <span class="tag merge">mobile only</span></div>
+        <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
+          <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>
+          <div class="vfinder">
+            <div class="vfbox"><i></i><i></i><i></i><i></i></div>
+            <div class="vftext">Point at a Miden QR code</div>
+          </div>
+          <div class="zone" style="position:absolute;left:0;right:0;bottom:0;padding:0 1rem max(1rem,var(--safe-bottom,0))">
+            <button class="btn btn-secondary" style="width:100%">Cancel</button>
+          </div>
+        </div></div></div>
+        <div class="scrnote"><b>The scanner is already built and wired to nothing.</b> <code>lib/qr/scanner.ts</code> ships <code>scanQRCode()</code> against the iOS native plugin and <code>capacitor-barcode-scanner</code> on Android, strips the <code>miden:</code> prefix via <code>decodeAddress</code>, validates, and returns <code>{success, address, errorKey}</code>. It has <b>zero callers</b> &mdash; connecting it to this button is the whole job. <code>isScanAvailable()</code> is <code>isMobile()</code>, so <b>the scan button must not render on the extension</b> at all, which is why this screen is tagged mobile only. The failure path already has copy too: <code>noQrCodeFound</code>. Corner brackets rather than a closed frame &mdash; they guide aim without implying the code has to be perfectly inscribed.</div></div>
       <div><div class="scrcap"><i></i>Send · other chain <span class="tag merge">proposed</span></div>
         <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
           <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>
@@ -3409,7 +3486,7 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
               <div class="seg" data-act="receive"><span class="svgic" style="--ic:url(assets/icons/receive-new.svg);" aria-hidden="true"></span><span class="lbl">Receive</span></div>
               <div class="seg" data-act="swap"><span class="svgic" style="--ic:url(assets/icons/convert.svg);" aria-hidden="true"></span><span class="lbl">Swap</span></div>
             </div>
-            <div style="font-family:var(--display);font-weight:800;font-size:var(--t-title);line-height:1.1">Confirm recipient</div>
+            <div class="pgtitle">Confirm recipient</div>
             <div class="rcard">
               <div class="rcnet"><span class="cdot" style="background:#0052FF"></span><span class="nn">Base</span><span class="chg">Change</span></div>
               <div class="rcaddr"><b>0x71C7</b> 656E C7ab 88b0 98de fB75 1B74 01B5 f6d8 <b>976F</b></div>
