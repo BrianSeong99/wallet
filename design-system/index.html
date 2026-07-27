@@ -1604,6 +1604,15 @@ ul.tick li:before{content:"→";position:absolute;left:0.125rem;color:var(--acce
   padding:0 0.75rem;border-radius:var(--radius-full);background:var(--surface-2);
   font-size:var(--t-label);font-weight:700;color:var(--ink);cursor:pointer;border:0}
 .netopt .nd{width:0.625rem;height:0.625rem;border-radius:50%;flex:none}
+/* Recent is send HISTORY, not the address book, so most entries will not be
+   contacts. The two cases invert: a saved contact leads with the name and
+   carries the address beneath; an unsaved one has no name to lead with, so the
+   address becomes the title and WHEN you sent becomes the subtitle -- which is
+   the thing that makes it "recent" and the only other fact we hold. */
+.mrow .ic.anon{background:var(--surface-2)}
+.mrow .ini{font-family:var(--ui);font-size:var(--t-label);font-weight:800;
+  color:var(--on-accent-sm)}
+.mrow .nm.addr{font-family:var(--mono);font-weight:600;font-size:var(--t-label)}
 .tsteps{display:flex;flex-direction:column;gap:0.125rem;margin-top:1.125rem}
 .tstep{display:flex;align-items:center;gap:0.625rem;padding:0.5625rem 0.125rem;font-size:var(--t-label)}
 .tstep .tsi{width:1.125rem;height:1.125rem;flex:none;border-radius:50%;display:flex;align-items:center;
@@ -3518,8 +3527,9 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
               </div>
             </div>
             <div class="shlab" style="margin-top:1.125rem">Recent</div>
-            <div class="mrow tap"><div class="ic" style="background:var(--tx-sent)"></div><div><div class="nm">Wiktor</div><div class="ad addr">mtst1ap8&hellip;r4fp</div></div><span class="fam">Miden</span><span class="go" aria-hidden="true">&rsaquo;</span></div>
-            <div class="mrow tap"><div class="ic" style="background:var(--tx-swap)"></div><div><div class="nm">Dominik</div><div class="ad addr">0x4E1a2b&hellip;7c90</div></div><span class="fam">Base</span><span class="go" aria-hidden="true">&rsaquo;</span></div>
+            <div class="mrow tap"><div class="ic" style="background:var(--tx-sent)"><span class="ini">W</span></div><div><div class="nm">Wiktor</div><div class="ad addr">mtst1ap8&hellip;r4fp</div></div><span class="fam">Miden</span><span class="go" aria-hidden="true">&rsaquo;</span></div>
+            <div class="mrow tap"><div class="ic" style="background:var(--tx-swap)"><span class="ini">D</span></div><div><div class="nm">Dominik</div><div class="ad addr">0x4E1a2b&hellip;7c90</div></div><span class="fam">Base</span><span class="go" aria-hidden="true">&rsaquo;</span></div>
+            <div class="mrow tap"><div class="ic anon"></div><div><div class="nm addr">mtst1zz9&hellip;41mn</div><div class="ad">Sent 2 days ago</div></div><span class="fam">Miden</span><span class="go" aria-hidden="true">&rsaquo;</span></div>
             <div class="mrow tap"><div class="ic" style="background:var(--surface-3)"><span class="svgic" style="--ic:url(assets/icons/contacts-book.svg);width:1.0625rem;height:1.0625rem;background-color:var(--ink-2)" aria-hidden="true"></span></div><div><div class="nm">Address Book</div><div class="ad">All saved contacts</div></div><span class="go" aria-hidden="true">&rsaquo;</span></div>
           </div>
         
@@ -3618,7 +3628,7 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
             </div>
             <div class="liverow" data-state="detecting"><span class="lv"><span class="la">mtst1ap8qz4v</span><span class="ls">Keep typing</span></span><span class="fam">Miden</span><span class="lcount">12 / 49</span></div>
             <div class="shlab" style="margin-top:1.125rem">Matches</div>
-            <div class="mrow tap"><div class="ic" style="background:var(--tx-sent)"></div><div><div class="nm">Wiktor</div><div class="ad addr"><mark>mtst1ap8qz4v</mark>&hellip;r4fp</div></div><span class="fam">Miden</span><span class="go" aria-hidden="true">&rsaquo;</span></div>
+            <div class="mrow tap"><div class="ic" style="background:var(--tx-sent)"><span class="ini">W</span></div><div><div class="nm">Wiktor</div><div class="ad addr"><mark>mtst1ap8qz4v</mark>&hellip;r4fp</div></div><span class="fam">Miden</span><span class="go" aria-hidden="true">&rsaquo;</span></div>
           </div>
           <div class="mnav"><button class="t on"><span class="svgic" style="--ic:url(assets/icons/home-new.svg)" aria-hidden="true"></span><span>Home</span></button><button class="t"><span class="svgic" style="--ic:url(assets/icons/explore.svg)" aria-hidden="true"></span><span>Explore</span></button><button class="t"><span class="svgic" style="--ic:url(assets/icons/activity.svg)" aria-hidden="true"></span><span>Activity</span></button></div>
         </div></div></div>
@@ -3806,7 +3816,7 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
             <div class="mlist" style="flex:1">
               <div class="mrow"><div class="ic" style="background:var(--tx-swap)"></div><div><div class="nm">Savings</div><div class="ad addr">Private &middot; mtst1zz9&hellip;41mn</div></div></div>
               <div class="mrow"><div class="ic" style="background:var(--tx-earn)"></div><div><div class="nm">Guardian vault</div><div class="ad addr">Public &middot; mtst1gv4&hellip;07qd</div></div><span class="rbadge" style="margin-left:auto">Guardian</span></div>
-              <div class="mrow"><div class="ic" style="background:var(--tx-sent)"></div><div><div class="nm">Wiktor</div><div class="ad addr">External &middot; mtst1ap8&hellip;r4fp</div></div><span class="rtick"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M1.6 6.3l2.7 2.7L10.4 3" fill="none" stroke="var(--on-accent-sm)" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/></svg></span></div>
+              <div class="mrow"><div class="ic" style="background:var(--tx-sent)"><span class="ini">W</span></div><div><div class="nm">Wiktor</div><div class="ad addr">External &middot; mtst1ap8&hellip;r4fp</div></div><span class="rtick"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M1.6 6.3l2.7 2.7L10.4 3" fill="none" stroke="var(--on-accent-sm)" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/></svg></span></div>
               <div class="mrow"><div class="ic" style="background:var(--tx-sent)"></div><div><div class="nm">Dominik</div><div class="ad addr">External &middot; mtst1kq2&hellip;88xz</div></div></div>
             </div>
           </div>
@@ -3850,7 +3860,7 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
               <div class="shdiv" style="margin:1rem 0 0.875rem"></div>
               <div class="shlab">Current Contacts</div>
               <div class="searchf" style="width:auto"><span class="svgic" style="--ic:url(assets/icons/search.svg)" aria-hidden="true"></span>Search</div>
-              <div class="mrow"><div class="ic" style="background:var(--tx-sent)"></div><div><div class="nm">Wiktor</div><div class="ad addr">External &middot; mtst1ap8&hellip;r4fp</div></div></div>
+              <div class="mrow"><div class="ic" style="background:var(--tx-sent)"><span class="ini">W</span></div><div><div class="nm">Wiktor</div><div class="ad addr">External &middot; mtst1ap8&hellip;r4fp</div></div></div>
               <div class="mrow"><div class="ic" style="background:var(--tx-sent)"></div><div><div class="nm">Dominik</div><div class="ad addr">External &middot; mtst1kq2&hellip;88xz</div></div></div>
             </div>
           </div>
