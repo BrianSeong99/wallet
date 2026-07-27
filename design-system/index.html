@@ -1416,6 +1416,15 @@ ul.tick li:before{content:"→";position:absolute;left:0.125rem;color:var(--acce
 .sumpill{display:inline-flex;align-items:center;gap:0.4375rem;margin-top:0.8125rem;padding:0.5625rem 0.875rem;
   border-radius:var(--radius-full);background:var(--surface-2);
   font-size:var(--t-label);font-weight:700;color:var(--ink)}
+/* Resolved recipient: the pasted address collapses into a chip that names the
+   network it resolved to. Network is a PROPERTY of the recipient, shown next to
+   the address so the two can be verified together -- not a separate step. */
+.rchip{display:flex;align-items:center;gap:0.5rem;min-height:2.75rem;padding:0.5rem 0.75rem;
+  border-radius:var(--radius-md);background:var(--surface-2);cursor:pointer}
+.rchip .cdot{width:0.625rem;height:0.625rem;border-radius:50%;flex:none}
+.rchip .cnet{font-size:var(--t-label);font-weight:800;color:var(--ink)}
+.rchip .cadr{font-family:var(--mono);font-size:var(--t-caption);color:var(--ink-2);
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1;min-width:0}
 .tsteps{display:flex;flex-direction:column;gap:0.125rem;margin-top:1.125rem}
 .tstep{display:flex;align-items:center;gap:0.625rem;padding:0.5625rem 0.125rem;font-size:var(--t-label)}
 .tstep .tsi{width:1.125rem;height:1.125rem;flex:none;border-radius:50%;display:flex;align-items:center;
@@ -3330,6 +3339,55 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
           <div class="mnav"><button class="t on"><span class="svgic" style="--ic:url(assets/icons/home-new.svg)" aria-hidden="true"></span><span>Home</span></button><button class="t"><span class="svgic" style="--ic:url(assets/icons/explore.svg)" aria-hidden="true"></span><span>Explore</span></button><button class="t"><span class="svgic" style="--ic:url(assets/icons/activity.svg)" aria-hidden="true"></span><span>Activity</span></button></div>
         </div></div></div>
         <div class="scrnote">Named contacts above raw addresses — recognition over recall, and it reduces mis-paste risk.</div></div>
+      <div><div class="scrcap"><i></i>Send · other chain <span class="tag merge">proposed</span></div>
+        <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
+          <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>
+          <div class="mpad" style="flex:1;display:flex;flex-direction:column">
+            <div class="mseg" data-seg>
+              <div class="seg"><span class="svgic" style="--ic:url(assets/icons/wallet.svg);" aria-hidden="true"></span><span class="lbl">Overview</span></div>
+              <div class="seg on" data-act="send"><span class="svgic" style="--ic:url(assets/icons/send-new.svg);" aria-hidden="true"></span><span class="lbl">Send</span></div>
+              <div class="seg" data-act="receive"><span class="svgic" style="--ic:url(assets/icons/receive-new.svg);" aria-hidden="true"></span><span class="lbl">Receive</span></div>
+              <div class="seg" data-act="swap"><span class="svgic" style="--ic:url(assets/icons/convert.svg);" aria-hidden="true"></span><span class="lbl">Swap</span></div>
+            </div>
+            <div style="font-family:var(--display);font-weight:800;font-size:var(--t-title);line-height:1.1">Choose recipient</div>
+            <div class="heroin" style="font-size:var(--t-heading);color:var(--ink)">0x71C7656EC7ab88b098defB751B7401B5f6d8976F</div>
+            <div class="rchip"><span class="cdot" style="background:#0052FF"></span><span class="cnet">Base</span><span class="cadr">0x71C7&hellip;8976F</span><span class="pdis" style="margin:0">&rsaquo;</span></div>
+            <div class="dmeta" style="margin-top:0.875rem">
+              <div class="drow"><span class="k">Visibility</span><span class="v" style="color:var(--warn)">Public on Base</span></div>
+              <div class="drow"><span class="k">Arrives</span><span class="v">~1 hour</span></div>
+              <div class="drow"><span class="k">If unclaimed</span><span class="v">Returns in 7 days</span></div>
+            </div>
+            <div class="zone"><button class="btn btn-primary" style="width:100%">Confirm</button></div>
+          </div>
+          <div class="mnav"><button class="t on"><span class="svgic" style="--ic:url(assets/icons/home-new.svg)" aria-hidden="true"></span><span>Home</span></button><button class="t"><span class="svgic" style="--ic:url(assets/icons/explore.svg)" aria-hidden="true"></span><span>Explore</span></button><button class="t"><span class="svgic" style="--ic:url(assets/icons/activity.svg)" aria-hidden="true"></span><span>Activity</span></button></div>
+        </div></div></div>
+        <div class="scrnote"><b>Proposed &mdash; none of this exists.</b> <code>grep -rnwE "evm|EVM" src/</code> returns <b>nothing</b>, there is no chain picker, no chain metadata, and <b>no chain name anywhere in <code>en.json</code></b> &mdash; not Ethereum, Base, Arbitrum, Optimism or Polygon. Pasting this address today turns the field red with <code>invalidMidenAccountId</code> and kills Confirm. <b>Network is drawn as a property of the recipient, not a step.</b> An <code>0x&hellip;</code> string is valid on every EVM chain at once, so it carries no signal and the wallet must ask &mdash; but asking on a dedicated screen separates the network from the address, and those are the two things that have to be verified <em>together</em>. Surveyed wallets agree: Family, Phantom, Trust and Uniswap all derive the chain from the asset and <b>none of them puts a network picker in Send</b>. The three rows are the consequence panel: cost and arrival stated before commitment rather than on the receipt, and <b>the privacy cliff named out loud</b> &mdash; private on Miden, public on Base. That line is the whole product’s premise and it appears nowhere in the Figma.</div></div>
+      <div><div class="scrcap"><i></i>Send · network <span class="tag merge">proposed sheet</span></div>
+        <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
+          <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>
+          <div class="mpad" style="flex:1;display:flex;flex-direction:column">
+            <div class="mseg" data-seg>
+              <div class="seg"><span class="svgic" style="--ic:url(assets/icons/wallet.svg);" aria-hidden="true"></span><span class="lbl">Overview</span></div>
+              <div class="seg on" data-act="send"><span class="svgic" style="--ic:url(assets/icons/send-new.svg);" aria-hidden="true"></span><span class="lbl">Send</span></div>
+              <div class="seg" data-act="receive"><span class="svgic" style="--ic:url(assets/icons/receive-new.svg);" aria-hidden="true"></span><span class="lbl">Receive</span></div>
+              <div class="seg" data-act="swap"><span class="svgic" style="--ic:url(assets/icons/convert.svg);" aria-hidden="true"></span><span class="lbl">Swap</span></div>
+            </div>
+            <div style="font-family:var(--display);font-weight:800;font-size:var(--t-title);line-height:1.1;opacity:.4">Choose recipient</div>
+            <div class="heroin" style="font-size:var(--t-heading);opacity:.4">0x71C7656EC7ab88b098defB751B7401B5f6d8976F</div>
+          </div>
+          <div class="shscrim"></div>
+          <div class="msheet" style="height:55%">
+            <div class="mshandle"></div>
+            <div class="mshead">Network</div>
+            <div class="mlist" style="flex:1">
+              <div class="mrow"><div class="ic" style="background:#627EEA"></div><div><div class="nm">Ethereum</div><div class="ad">~12 min &middot; higher fee</div></div></div>
+              <div class="mrow"><div class="ic" style="background:#0052FF"></div><div><div class="nm">Base</div><div class="ad">~1 hour &middot; free route</div></div><span class="rtick"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M1.6 6.3l2.7 2.7L10.4 3" fill="none" stroke="var(--on-accent-sm)" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/></svg></span></div>
+              <div class="mrow"><div class="ic" style="background:#28A0F0"></div><div><div class="nm">Arbitrum</div><div class="ad">~1 hour &middot; free route</div></div></div>
+              <div class="mrow"><div class="ic" style="background:#FF0420"></div><div><div class="nm">Optimism</div><div class="ad">~1 hour &middot; free route</div></div></div>
+            </div>
+          </div>
+        </div></div></div>
+        <div class="scrnote"><b>Proposed.</b> A sheet, not a step &mdash; it is reached from the network chip on the recipient screen, so the choice returns you to where the address is. Each row states what the choice <em>costs</em>, because the network is a time-and-fee decision, not a logo pick. Names and logos are placeholders: the chain palette is invented here and would need real assets plus <b>five new i18n keys that do not exist</b>. Deliberately <b>no default is preselected for a new address</b>: an <code>0x&hellip;</code> is valid on every chain, and a wrong guess on an exchange deposit address is the single most common way funds are lost irrecoverably. Ask once, then remember it on the contact.</div></div>
       <div><div class="scrcap"><i></i>Send · amount</div>
         <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
           <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>
