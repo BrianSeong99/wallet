@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { IconName } from 'app/icons/v2';
 import { Button, ButtonVariant } from 'components/Button';
 import { Message } from 'components/Message';
-import { NavigationHeader } from 'components/NavigationHeader';
+import { ScreenHeader } from 'components/ScreenHeader';
 
 interface ForgotPasswordInfoScreenProps {
   onClose: () => void;
@@ -26,7 +26,14 @@ const ForgotPasswordInfoScreen: FC<ForgotPasswordInfoScreenProps> = ({ onClose, 
         'overflow-hidden relative'
       )}
     >
-      <NavigationHeader mode="close" title={t('forgotPassword')} onClose={onClose} />
+      <ScreenHeader
+        align="center"
+        showBorder={false}
+        className="px-4 bg-app-bg"
+        title={t('forgotPassword')}
+        closeLabel={t('close')}
+        onClose={onClose}
+      />
       <div className="flex flex-col flex-1 p-4 justify-between md:w-[460px] md:mx-auto">
         <div className="flex flex-col grow items-center justify-center">
           <Message

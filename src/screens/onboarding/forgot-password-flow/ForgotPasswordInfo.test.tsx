@@ -19,12 +19,12 @@ jest.mock('app/icons/v2', () => ({
   IconName: { Lock: 'Lock' }
 }));
 
-// `NavigationHeader` — surface the title, mode and the close handler so the
-// header wiring is assertable without dragging in `CircleButton` / the real
-// icon set.
-jest.mock('components/NavigationHeader', () => ({
-  NavigationHeader: ({ title, mode, onClose }: { title: string; mode?: string; onClose?: () => void }) => (
-    <div data-testid="nav-header" data-mode={mode}>
+// `ScreenHeader` — surface the title, the affordance the header was given
+// (`close` vs `back`) and the close handler so the header wiring is assertable
+// without dragging in `CircleButton` / the real icon set.
+jest.mock('components/ScreenHeader', () => ({
+  ScreenHeader: ({ title, onBack, onClose }: { title: string; onBack?: () => void; onClose?: () => void }) => (
+    <div data-testid="nav-header" data-mode={onClose ? 'close' : onBack ? 'back' : undefined}>
       <span data-testid="nav-header-title">{title}</span>
       <button data-testid="nav-header-close" onClick={onClose}>
         close

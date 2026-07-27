@@ -11,7 +11,7 @@ import { Icon, IconName } from 'app/icons/v2';
 import { ReactComponent as ReceiveIcon } from 'app/icons/v2/receive-new.svg';
 import { ReactComponent as SendIcon } from 'app/icons/v2/send-new.svg';
 import History from 'app/templates/history/History';
-import { NavigationHeader } from 'components/NavigationHeader';
+import { ScreenHeader } from 'components/ScreenHeader';
 import { TokenLogo } from 'components/TokenLogo';
 import { useAccount, useAllBalances, useAllTokensBaseMetadata, useNetwork } from 'lib/miden/front';
 import { hapticSelection } from 'lib/mobile/haptics';
@@ -66,7 +66,14 @@ const TokenDetail: FC<TokenDetailProps> = ({ tokenId }) => {
 
   return (
     <div className={classNames(containerClass, 'mx-auto overflow-hidden flex flex-col bg-app-bg')}>
-      <NavigationHeader title={symbol} onBack={handleBack} />
+      <ScreenHeader
+        align="center"
+        showBorder={false}
+        className="px-4 bg-app-bg"
+        title={symbol}
+        backLabel={t('back')}
+        onBack={handleBack}
+      />
 
       <div className="flex-1 min-h-0 overflow-y-auto" ref={scrollParentRef}>
         <div className="flex flex-col px-4">

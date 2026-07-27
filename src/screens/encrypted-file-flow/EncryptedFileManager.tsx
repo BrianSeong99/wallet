@@ -4,8 +4,8 @@ import classNames from 'clsx';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
-import { NavigationHeader } from 'components/NavigationHeader';
 import { Navigator, NavigatorProvider, Route, useNavigator } from 'components/Navigator';
+import { ScreenHeader } from 'components/ScreenHeader';
 import { useMobileBackHandler } from 'lib/mobile/useMobileBackHandler';
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from 'lib/ui/drawer';
 import { navigate } from 'lib/woozie';
@@ -219,7 +219,13 @@ export const EncryptedFileManager: React.FC<{}> = () => {
 
       {!isWalletPasswordStep && (
         <>
-          <NavigationHeader showBorder title={t('encryptedWalletFile')} onBack={onClose} />
+          <ScreenHeader
+            align="center"
+            className="px-4 bg-app-bg"
+            title={t('encryptedWalletFile')}
+            backLabel={t('back')}
+            onBack={onClose}
+          />
           <form onSubmit={handleSubmit(onSubmit)} className="flex-1 flex flex-col min-h-0 bg-app-bg">
             <Navigator renderRoute={renderStep} />
           </form>
