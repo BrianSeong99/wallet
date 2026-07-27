@@ -4038,6 +4038,19 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
   <h2 class="h">Receive flow</h2>
     <p class="sub">Address, QR and share. Receive is address-only since claimable notes moved to their own screen.</p>
     <div class="scrgrid">
+      <div><div class="scrcap"><i></i>Pending notes &middot; loading <span class="tag merge">gap</span></div>
+        <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
+          <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>
+          <div class="mpad" style="flex:1;display:flex;flex-direction:column">
+            <div class="sh2"><span class="bk2">&lsaquo;</span><span class="t2">Pending notes</span></div>
+            <div class="dmeta" style="padding:0.875rem">
+              <div class="skel" style="width:45%"></div><div class="skel2" style="width:62%;margin-top:0.5rem"></div>
+            </div>
+            <div class="mrow"><div class="ic anon"></div><div style="flex:1"><div class="skel2" style="width:38%"></div><div class="skel2" style="width:24%;margin-top:0.375rem"></div></div></div>
+            <div class="mrow"><div class="ic anon"></div><div style="flex:1"><div class="skel2" style="width:44%"></div><div class="skel2" style="width:20%;margin-top:0.375rem"></div></div></div>
+          </div>
+        </div></div></div>
+        <div class="scrnote"><b>GAP &mdash; and the current behaviour actively lies.</b> <code>Pending.tsx</code> destructures only <code>{ data, mutate }</code> from <code>useClaimableNotes</code>, discarding the <code>isLoading</code> and <code>isValidating</code> it returns. So on a cold open <code>claimableNotes</code> is <code>undefined</code> &rarr; the list is <code>[]</code> &rarr; the screen renders <b>&ldquo;You don&rsquo;t currently have notes to claim.&rdquo;</b> for the whole fetch, then pops to a populated list. The empty state doubles as the loading state and tells the user something false about their money. The same path swallows errors: a WASM or RPC failure renders as that identical sentence, because <code>onError</code> only logs to the console.</div></div>
 <div><div class="scrcap"><i></i>Receive</div>
         <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
           <div class="stat"><span>9:41</span><span class="r">✦ ▪ ▪</span></div>
@@ -4055,6 +4068,82 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
     <h2 class="h">Swap flow</h2>
     <p class="sub">In-protocol DEX swap. <code>isSwapEnabled()</code> is <b>true</b>, so unlike Earn this ships today.</p>
     <div class="scrgrid">
+      <div><div class="scrcap"><i></i>Swap &middot; success</div>
+        <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
+          <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>
+          <div class="mpad" style="flex:1;display:flex;flex-direction:column">
+            <div class="rcpt"><div class="ok2">&#10003;</div>
+              <div style="font-family:var(--display);font-weight:900;font-size:var(--t-heading)">Swap Order Created!</div>
+              <div class="es" style="margin-top:0.5rem">We&rsquo;re sourcing liquidity for your swap. You can track its progress in Activities.</div>
+              <div class="sumpill"><span class="num">100.00 MIDEN</span><span style="color:var(--ink-2)">&rarr;</span><span class="num">1,030.00 USDC</span></div>
+            </div>
+            <div class="scrnote2" style="margin-top:1.125rem">Your 100.00 MIDEN stays reserved for this order until it&rsquo;s filled.</div>
+            <div class="zone"><button class="btn btn-primary" style="width:100%">Done</button><button class="btn btn-secondary" style="width:100%;margin-top:0.5rem">View in Activities</button></div>
+          </div>
+        </div></div></div>
+        <div class="scrnote">Shipped, and notably better than the send success screen: it says an <b>order was created</b>, not that a swap completed, and it explains that the funds stay reserved until filled. That is honest about an async solver model where the send flow would have claimed done. Appears after a deliberate 1.5s hold (<code>SUCCESS_RECEIPT_DELAY_MS</code>) so the completed step list is legible before the receipt replaces it.</div></div>
+      <div><div class="scrcap"><i></i>Swap &middot; review, submitting <span class="tag merge">gap</span></div>
+        <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
+          <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>
+          <div class="mpad" style="flex:1;display:flex;flex-direction:column">
+            <div class="sh2"><span class="bk2">&lsaquo;</span><span class="t2">Swap</span></div>
+            <div class="rcpt" style="padding-top:0.5rem">
+              <div style="font-size:var(--t-caption);color:var(--ink-2)">You Send</div>
+              <div style="font-family:var(--num);font-feature-settings:var(--num-feat);font-weight:800;font-size:var(--t-balance);margin-top:0.25rem">100.00 MIDEN</div>
+              <div style="font-size:var(--t-caption);color:var(--ink-2);margin-top:0.875rem">You Receive</div>
+              <div style="font-family:var(--num);font-feature-settings:var(--num-feat);font-weight:800;font-size:var(--t-balance);margin-top:0.25rem">1,030.00 USDC</div>
+            </div>
+            <div class="dmeta" style="margin-top:1.125rem">
+              <div class="drow"><span class="k">Rate</span><span class="v">1 MIDEN &asymp; 10.30 USDC</span></div>
+            </div>
+            <div class="scrnote2">Your receive amount already includes a 5% solver fee.</div>
+            <div class="zone"><button class="btn btn-primary" style="width:100%" disabled>Swapping&hellip;</button></div>
+          </div>
+        </div></div></div>
+        <div class="scrnote"><b>GAP, and a real one.</b> <code>SwapManager</code> guards re-entry with <code>if (submitting || !publicKey) return;</code>, but <code>ReviewLayout</code> never passes <code>disabled</code> or <code>isLoading</code> to the button &mdash; even though <code>Button</code> supports <code>isLoading</code> and renders a spinner for it. So the user taps Swap, waits through a biometric prompt and an <code>initiateSwapTransaction</code>, and <b>nothing on screen changes at all</b>. Repeat taps are swallowed silently, which is the worst combination: no feedback and no error either.</div></div>
+      <div><div class="scrcap"><i></i>Swap &middot; review</div>
+        <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
+          <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>
+          <div class="mpad" style="flex:1;display:flex;flex-direction:column">
+            <div class="sh2"><span class="bk2">&lsaquo;</span><span class="t2">Swap</span></div>
+            <div class="rcpt" style="padding-top:0.5rem">
+              <div style="font-size:var(--t-caption);color:var(--ink-2)">You Send</div>
+              <div style="font-family:var(--num);font-feature-settings:var(--num-feat);font-weight:800;font-size:var(--t-balance);margin-top:0.25rem">100.00 MIDEN</div>
+              <div style="font-size:var(--t-caption);color:var(--ink-2);margin-top:0.875rem">You Receive</div>
+              <div style="font-family:var(--num);font-feature-settings:var(--num-feat);font-weight:800;font-size:var(--t-balance);margin-top:0.25rem">1,030.00 USDC</div>
+            </div>
+            <div class="dmeta" style="margin-top:1.125rem">
+              <div class="drow"><span class="k">Rate</span><span class="v">1 MIDEN &asymp; 10.30 USDC</span></div>
+            </div>
+            <div class="scrnote2">Your receive amount already includes a 5% solver fee.</div>
+            <div class="zone"><button class="btn btn-primary" style="width:100%">Swap</button></div>
+          </div>
+        </div></div></div>
+        <div class="scrnote">Shipped. Deliberately spare &mdash; <code>ReviewSwap.tsx:56&ndash;61</code> says no fabricated fill-time or network-fee rows are rendered, which is the right instinct. But three things are missing rather than declined: <b>the screen has no header at all</b> (the key <code>reviewSwapDetails</code> = &ldquo;Review Swap Details&rdquo; sits unused in <code>en.json</code>), there is no minimum-received, and <b>when the rate is unavailable the Rate row still renders</b> &mdash; label present, value <code>undefined</code> &mdash; and the fee note disappears with it, so the user gets an empty labelled row and no mention of the 5%.</div></div>
+      <div><div class="scrcap"><i></i>Swap &middot; insufficient balance</div>
+        <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
+          <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>
+          <div class="mpad" style="flex:1;display:flex;flex-direction:column">
+            <div class="sh2"><span class="bk2">&lsaquo;</span><span class="t2">Swap</span></div>
+            <div class="dmeta" style="padding:0.75rem"><div style="display:flex;align-items:center;gap:0.625rem"><img src="assets/icons/miden.svg" alt="" style="width:1.875rem;height:1.875rem"><div style="flex:1;min-width:0"><div style="font-size:var(--t-caption);color:var(--ink-2)">You Pay</div><div style="font-family:var(--num);font-feature-settings:var(--num-feat);font-weight:800;font-size:1.25rem;color:var(--neg)">5,000.00</div></div><span class="maxb">MIDEN</span></div></div>
+            <div style="text-align:center;margin:-0.375rem 0"><span style="display:inline-flex;width:1.875rem;height:1.875rem;border-radius:50%;background:var(--surface);box-shadow:var(--shadow-1);align-items:center;justify-content:center">&#8645;</span></div>
+            <div class="dmeta" style="padding:0.75rem"><div style="display:flex;align-items:center;gap:0.625rem"><img src="assets/icons/usdc.svg" alt="" style="width:1.875rem;height:1.875rem"><div style="flex:1;min-width:0"><div style="font-size:var(--t-caption);color:var(--ink-2)">You Receive</div><div style="font-family:var(--num);font-feature-settings:var(--num-feat);font-weight:800;font-size:1.25rem;color:var(--ink)">51,500.00</div></div><span class="maxb">USDC</span></div></div><div style="font-size:var(--t-label);margin-top:0.625rem;color:var(--neg)">Amount must be less than balance</div>
+            <div class="zone"><button class="btn btn-primary" style="width:100%" disabled>Review swap</button></div>
+          </div>
+        </div></div></div>
+        <div class="scrnote">Shipped. The digits turn red and an inline row states the rule &mdash; correct, and better than the send flow manages. <b>Two gaps:</b> there is no Max or Half shortcut anywhere in swap, so the only way to swap everything is to type it; and the message is not associated with the input (<code>AmountInput</code> has no <code>aria-invalid</code> and no <code>aria-describedby</code>), so a screen reader never connects the error to the field.</div></div>
+      <div><div class="scrcap"><i></i>Swap &middot; fetching price</div>
+        <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
+          <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>
+          <div class="mpad" style="flex:1;display:flex;flex-direction:column">
+            <div class="sh2"><span class="bk2">&lsaquo;</span><span class="t2">Swap</span></div>
+            <div class="dmeta" style="padding:0.75rem"><div style="display:flex;align-items:center;gap:0.625rem"><img src="assets/icons/miden.svg" alt="" style="width:1.875rem;height:1.875rem"><div style="flex:1;min-width:0"><div style="font-size:var(--t-caption);color:var(--ink-2)">You Pay</div><div style="font-family:var(--num);font-feature-settings:var(--num-feat);font-weight:800;font-size:1.25rem;color:var(--ink)">100.00</div></div><span class="maxb">MIDEN</span></div></div>
+            <div style="text-align:center;margin:-0.375rem 0"><span style="display:inline-flex;width:1.875rem;height:1.875rem;border-radius:50%;background:var(--surface);box-shadow:var(--shadow-1);align-items:center;justify-content:center">&#8645;</span></div>
+            <div class="dmeta" style="padding:0.75rem"><div style="display:flex;align-items:center;gap:0.625rem"><img src="assets/icons/usdc.svg" alt="" style="width:1.875rem;height:1.875rem"><div style="flex:1;min-width:0"><div style="font-size:var(--t-caption);color:var(--ink-2)">You Receive</div><div style="font-family:var(--num);font-feature-settings:var(--num-feat);font-weight:800;font-size:1.25rem;color:var(--ink-3)">0.00</div></div><span class="maxb">USDC</span></div></div><div style="font-size:var(--t-label);margin-top:0.625rem;color:var(--ink-2)">Fetching price&hellip;</div>
+            <div class="zone"><button class="btn btn-primary" style="width:100%" disabled>Review swap</button></div>
+          </div>
+        </div></div></div>
+        <div class="scrnote">Shipped, and the only quote feedback that exists. The receive side is derived from two USD prices &mdash; <code>((offered &times; offerP) / requestP) &times; (1 &minus; 0.05)</code> &mdash; not from a routed quote, so there is no route, no minimum received and no price impact to show. <b>The prices come from a hardcoded devnet host</b> (<code>PRICE_FEED_BASE_URL</code>, marked TODO in <code>tokens.ts</code>), so on any other network every quote fails and the user sits in a permanent &ldquo;Price unavailable&rdquo; with no explanation that swap simply does not work here.</div></div>
 <div><div class="scrcap"><i></i>Swap</div>
         <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
           <div class="stat"><span>9:41</span><span class="r">✦ ▪ ▪</span></div>
