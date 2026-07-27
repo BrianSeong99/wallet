@@ -73,7 +73,7 @@ export const VerifySeedPhraseScreen: React.FC<VerifySeedPhraseScreenProps> = ({
     >
       {showIntro && (
         <div className="flex flex-col items-center gap-2 text-heading-gray">
-          <header className="text-[28px] font-medium ">{t('verifySeedPhrase')}</header>
+          <header className="text-title-lg font-medium ">{t('verifySeedPhrase')}</header>
           <div className="text-[10px] font-normal text-center">
             <p>{t('verifyMessagePrefix')}</p>
             <p>

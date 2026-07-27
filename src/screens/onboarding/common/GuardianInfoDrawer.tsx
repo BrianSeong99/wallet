@@ -47,7 +47,7 @@ export const GuardianInfoDrawer: React.FC<GuardianInfoDrawerProps> = ({ open, on
         overlayClassName="bg-transparent backdrop-blur-0 dark:bg-transparent"
       >
         <div className="flex flex-col overflow-y-auto px-5 pb-[calc(1rem+env(safe-area-inset-bottom))] pt-4">
-          <DrawerTitle className="text-center font-heading text-[28px] font-semibold leading-[1.1] text-heading-gray">
+          <DrawerTitle className="text-center font-heading text-title-lg font-semibold leading-[1.1] text-heading-gray">
             {t('whatIsAGuardian')}
           </DrawerTitle>
 

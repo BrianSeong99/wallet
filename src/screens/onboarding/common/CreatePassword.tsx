@@ -157,7 +157,7 @@ export const CreatePasswordScreen: React.FC<CreatePasswordScreenProps> = ({ clas
       {...props}
     >
       <div className="flex flex-col items-center text-heading-gray gap-1">
-        <header className="font-heading text-[2rem] leading-none font-bold">{t('createPassword')}</header>
+        <header className="font-heading text-numeric-hero leading-none font-bold">{t('createPassword')}</header>
         <p className="text-base leading-none text-center font-normal">{t('createPasswordDescription')}</p>
       </div>
 

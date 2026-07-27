@@ -348,7 +348,7 @@ export const GeneratingTransaction: React.FC<GeneratingTransactionProps> = ({
         <section className="flex w-full flex-1 flex-col items-center pt-5">
           <TransactionHeroIcon state={heroState} />
 
-          <h2 className="mt-6 w-full px-1 text-center font-heading text-[2rem] font-bold leading-none text-heading-gray dark:text-pure-white">
+          <h2 className="mt-6 w-full px-1 text-center font-heading text-numeric-hero font-bold leading-none text-heading-gray dark:text-pure-white">
             {visibleTitle}
           </h2>
 

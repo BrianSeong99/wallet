@@ -250,8 +250,10 @@ export default {
         'lg-token': 'var(--radius-lg-token)',
         'full-token': 'var(--radius-full)'
       },
-      // Crust type ramp — nine steps, the only sizes screens may use. P1
-      // rewrites the 96 one-off text-[…] utilities onto these.
+      // Crust type ramp. Extended past the design system's nine steps to cover
+      // sizes the app genuinely uses — see the note in main.css. `xs`/`sm`/`lg`
+      // are intentionally omitted here because Tailwind already defines them at
+      // exactly 12/14/18; redeclaring would be duplication, not clarity.
       fontSize: {
         caption: 'var(--t-caption)',
         label: 'var(--t-label)',
@@ -260,6 +262,7 @@ export default {
         cta: 'var(--t-cta)',
         heading: 'var(--t-heading)',
         title: 'var(--t-title)',
+        'title-lg': 'var(--t-title-lg)',
         // Named `numeric-hero`, not `balance`, even though the CSS var is
         // --t-balance. `text-balance` is a three-way collision: Tailwind v4
         // ships it as a built-in text-wrap utility, and the `balance` COLOUR

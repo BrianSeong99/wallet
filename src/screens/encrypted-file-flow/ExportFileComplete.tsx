@@ -119,7 +119,7 @@ const ExportFileComplete: React.FC<ExportFileCompleteProps> = ({ filePassword, f
           <Icon name={IconName.Success} size="4xl" />
         </div>
         <div className="flex flex-col items-center max-w-sm text-center text-heading-gray">
-          <h1 className="text-[32px] leading-[120%] tracking-[-0.04em]">
+          <h1 className="text-numeric-hero leading-[120%] tracking-[-0.04em]">
             <span className="font-semibold">{t('encryptedWalletFileExportedTitle1')}</span>
             <br />
             <span className="font-medium">{t('encryptedWalletFileExportedTitle2')}</span>

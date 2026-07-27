@@ -48,7 +48,7 @@ export const BackUpSeedPhraseScreen: React.FC<BackUpSeedPhraseScreenProps> = ({
   return (
     <div className={classNames('flex flex-col flex-1', 'bg-app-bg gap-6 px-4 pt-4', className)} {...props}>
       <div className="flex flex-col items-center text-heading-gray gap-2">
-        <header className="text-[28px] font-medium">{t('backUpYourWallet')}</header>
+        <header className="text-title-lg font-medium">{t('backUpYourWallet')}</header>
         <div className="text-[10px] text-center font-regular">
           <p>{t('backUpWalletInstructions')}</p>
           <p>{t('doNotShareWithAnywone')}</p>

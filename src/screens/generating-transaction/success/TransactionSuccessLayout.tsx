@@ -196,7 +196,9 @@ export const TransactionSuccessLayout: FC<TransactionSuccessLayoutProps> = ({
         <section className="flex flex-1 flex-col items-center px-3 pt-6">
           <SuccessHero />
 
-          <h2 className="mt-6 w-full text-center text-[2rem] font-heading font-bold text-heading-gray">{title}</h2>
+          <h2 className="mt-6 w-full text-center text-numeric-hero font-heading font-bold text-heading-gray">
+            {title}
+          </h2>
 
           {children}
         </section>

@@ -110,7 +110,7 @@ export const ChooseGuardianScreen: React.FC<ChooseGuardianScreenProps> = ({
       <div className="min-h-full flex flex-col px-6 pb-6">
         {!hideHeader && (
           <div className="pt-8 shrink-0">
-            <h1 className="text-[2rem] font-semibold font-heading text-heading-gray leading-[105%] tracking-tight">
+            <h1 className="text-numeric-hero font-semibold font-heading text-heading-gray leading-[105%] tracking-tight">
               {title ?? t('chooseYourGuardian')}
             </h1>
             <p className="text-lg font-medium text-heading-gray mt-2 leading-[130%]">

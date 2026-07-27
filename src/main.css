@@ -503,19 +503,36 @@ body[data-hide-navbar] [data-tabbar-footer='true'] {
     --num: var(--display);
     --num-feat: 'tnum' 1, 'lnum' 1;
 
-    /* Type ramp — nine steps: 11/13/15/16/19/20/26/32/72.
+    /* Type ramp. The design system specifies nine steps
+     * (11/13/15/16/19/20/26/32/72), but that ramp does not fit the app it was
+     * drawn for: `text-xs`/`text-sm`/`text-lg` (12/14/18) are used 137 times
+     * between them, and there are further off-scale one-offs at 28 and 32.
+     * Snapping all of those would reflow text on most screens, so the ramp is
+     * extended to cover real usage rather than the app being bent to fit it.
+     * 12/14/18 deliberately match Tailwind's own xs/sm/lg, so `text-xs` and
+     * friends stay valid and are part of the system rather than drift.
+     *
+     * Note the design system contradicts itself here: its :root declares both
+     * --t-caption 11px and --text-caption 12px. 11 is taken as the caption
+     * floor (the value its own comment argues for and its harness enforces),
+     * and 12 becomes --t-xs.
+     *
      * --t-cta is an accessibility constraint, not styling: white on the brand
      * orange is exactly 3.00:1, which conforms only as large text
      * (>= 18.66px bold), so the CTA label may never be set smaller. */
-    --t-caption: 0.6875rem;
-    --t-label: 0.8125rem;
-    --t-body: 0.9375rem;
-    --t-subhead: 1rem;
-    --t-cta: 1.1875rem;
-    --t-heading: 1.25rem;
-    --t-title: 1.625rem;
-    --t-balance: 2rem;
-    --t-display: 4.5rem;
+    --t-caption: 0.6875rem; /* 11 — Apple's floor, enforced by the harness */
+    --t-xs: 0.75rem; /* 12 */
+    --t-label: 0.8125rem; /* 13 */
+    --t-sm: 0.875rem; /* 14 */
+    --t-body: 0.9375rem; /* 15 */
+    --t-subhead: 1rem; /* 16 */
+    --t-lg: 1.125rem; /* 18 */
+    --t-cta: 1.1875rem; /* 19 — see above, accessibility-critical */
+    --t-heading: 1.25rem; /* 20 */
+    --t-title: 1.625rem; /* 26 */
+    --t-title-lg: 1.75rem; /* 28 — onboarding step headline */
+    --t-balance: 2rem; /* 32 */
+    --t-display: 4.5rem; /* 72 */
 
     /* Radius. sm/md/lg already ship as --radius-sm (8px) and the
      * --radius-{md,lg}-token pair (12/16) — i.e. the Crust scale under older
