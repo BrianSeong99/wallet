@@ -1,13 +1,12 @@
 import React from 'react';
 
-import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
 
 import { ReactComponent as BreadLogo } from 'app/icons/brand/new-bread.svg';
 import { Icon, IconName } from 'app/icons/v2';
 import { Button } from 'components/Button';
+import { ActionZone, GhostAction } from 'components/ui/ActionZone';
 import { hapticLight } from 'lib/mobile/haptics';
-import { isMobile } from 'lib/platform';
 
 export interface WelcomeScreenProps extends Omit<React.ButtonHTMLAttributes<HTMLDivElement>, 'onSubmit'> {
   onSubmit?: (action: Actions) => void;
@@ -32,21 +31,18 @@ export const WelcomeScreen = ({ onSubmit }: WelcomeScreenProps) => {
             {t('breadWalletDescription')}
           </p>
         </div>
-        <div className={clsx('w-full flex flex-col items-center gap-3 pb-6 shrink-0', isMobile() ? 'pt-8' : 'pt-6')}>
+        <ActionZone>
           <Button tabIndex={0} title={t('getStarted')} onClick={() => onSubmit?.('select-wallet-type')} />
-          <button
+          <GhostAction
             id="import-link"
-            type="button"
-            className="flex items-center justify-center gap-1 py-3 text-sm font-medium text-text-tertiary-token"
+            title={t('recoverYourAccount')}
+            iconRight={<Icon name={IconName.ChevronRight} size="xs" className="p-0.5" />}
             onClick={() => {
               hapticLight();
               onSubmit?.('select-import-type');
             }}
-          >
-            {t('recoverYourAccount')}
-            <Icon name={IconName.ChevronRight} size="xs" className="p-0.5" />
-          </button>
-        </div>
+          />
+        </ActionZone>
       </div>
     </div>
   );

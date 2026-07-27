@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 
 import { ReactComponent as ProtectedIllustration } from 'app/icons/onboarding/protected-illustration.svg';
 import { Button, ButtonVariant } from 'components/Button';
+import { ActionZone } from 'components/ui/ActionZone';
 
 export interface ChooseProtectionScreenProps {
   onSelectBiometric?: () => void;
@@ -25,10 +26,10 @@ export const ChooseProtectionScreen: React.FC<ChooseProtectionScreenProps> = ({
           </h1>
         </div>
 
-        <div className="w-full flex flex-col items-center gap-3 pb-6 shrink-0">
+        <ActionZone>
           <Button title={t('useFaceIdOrBiometric')} onClick={onSelectBiometric} />
           <Button title={t('setUpYourPasscode')} variant={ButtonVariant.Secondary} onClick={onSelectPasscode} />
-        </div>
+        </ActionZone>
       </div>
     </div>
   );

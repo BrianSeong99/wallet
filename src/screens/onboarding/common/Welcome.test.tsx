@@ -143,21 +143,33 @@ describe('WelcomeScreen', () => {
     expect(hapticLight).not.toHaveBeenCalled();
   });
 
-  it('applies the mobile top-padding (pt-8) on the button column when on mobile', () => {
+  // The action zone used to pad itself differently per platform (pt-8 on mobile,
+  // pt-6 elsewhere). The design system gives the zone ONE geometry so the primary
+  // action sits at the same Y on every screen and every target — a platform
+  // conditional here is the drift, not a feature. These two tests now assert that
+  // invariant instead of the old split.
+  it('gives the action zone the same padding on mobile and desktop', () => {
     mockPlatform.isMobile = true;
-    renderComponent();
+    const { unmount } = renderComponent();
+    const mobileColumn = screen.getByTestId('btn-getStarted').parentElement;
+    const mobileClasses = mobileColumn?.className;
+    unmount();
 
-    const column = screen.getByTestId('btn-getStarted').parentElement;
-    expect(column).toHaveClass('pt-8');
-    expect(column).not.toHaveClass('pt-6');
-  });
-
-  it('applies the desktop top-padding (pt-6) on the button column when not on mobile', () => {
     mockPlatform.isMobile = false;
     renderComponent();
+    const desktopColumn = screen.getByTestId('btn-getStarted').parentElement;
 
-    const column = screen.getByTestId('btn-getStarted').parentElement;
-    expect(column).toHaveClass('pt-6');
-    expect(column).not.toHaveClass('pt-8');
+    expect(desktopColumn?.className).toBe(mobileClasses);
+    expect(desktopColumn).toHaveClass('pt-4', 'pb-4');
+    expect(desktopColumn).not.toHaveClass('pt-8');
+    expect(desktopColumn).not.toHaveClass('pt-6');
+  });
+
+  it('pins the action zone to the bottom of the column', () => {
+    renderComponent();
+
+    // mt-auto is what holds the CTA at a fixed distance from the bottom
+    // regardless of how tall the content above it is.
+    expect(screen.getByTestId('btn-getStarted').parentElement).toHaveClass('mt-auto');
   });
 });
