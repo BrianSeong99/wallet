@@ -1426,6 +1426,10 @@ ul.tick li:before{content:"→";position:absolute;left:0.125rem;color:var(--acce
   justify-content:center;cursor:pointer}
 .scanbtn .svgic{width:1.25rem;height:1.25rem}
 .searchf{background:var(--surface-2);border-radius:var(--radius-full);padding:0.75rem 1.125rem;display:flex;gap:0.5625rem;align-items:center;color:var(--ink-3);font-size:var(--t-body);width:270px}
+/* The typed value needs its own box to truncate on. A bare text node inside a
+   flex container is an anonymous flex item, and text-overflow silently does
+   nothing to those -- a 44-character Solana address ran 43px past the field. */
+.searchf>.val{min-width:0;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .amtent{text-align:center;padding:0.625rem 0;width:270px}
 .amtent .big{font-family:var(--num);font-feature-settings:var(--num-feat);font-weight:800;font-size:2.375rem;letter-spacing:-.02em;color:var(--ink)}
 .amtent .big .cur{color:var(--ink-3)}
@@ -1549,11 +1553,8 @@ ul.tick li:before{content:"→";position:absolute;left:0.125rem;color:var(--acce
    detecting (--ink-3, still counting characters), valid (--pos), rejected (--neg).
    Once valid it is tappable, so the fastest path to send is the row you just
    created rather than a separate Confirm hunt. */
-.liverow{display:flex;align-items:center;gap:0.75rem;padding:0.625rem 0;
+.liverow{display:flex;align-items:center;gap:0.625rem;padding:0.75rem 0;
   border-bottom:1px solid var(--rule)}
-.liverow .lic{width:2.375rem;height:2.375rem;border-radius:50%;flex:none;display:flex;
-  align-items:center;justify-content:center;background:var(--surface-2)}
-.liverow .lic svg{width:1rem;height:1rem;display:block}
 .liverow .lv{min-width:0;flex:1;display:flex;flex-direction:column}
 .liverow .lv .la{font-family:var(--mono);font-size:var(--t-label);color:var(--ink);
   overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
@@ -3520,12 +3521,12 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
             <div class="pgtitle">Choose recipient</div>
             <div class="fld" style="width:auto"><label>To</label>
               <div class="fieldrow">
-                <div class="searchf" style="width:auto;flex:1;min-width:0;background:var(--surface);box-shadow:0 0 0 1.5px var(--rule-strong);color:var(--ink);font-family:var(--mono);font-size:var(--t-label)">mtst1zz9&hellip;41mn</div>
+                <div class="searchf" style="width:auto;flex:1;min-width:0;background:var(--surface);box-shadow:0 0 0 1.5px var(--rule-strong);color:var(--ink);font-family:var(--mono);font-size:var(--t-label)"><span class="val">mtst1zz9&hellip;41mn</span></div>
                 <button class="tokchip" style="align-self:auto">Paste</button>
                 <button class="scanbtn" aria-label="Scan a QR code"><span class="svgic" style="--ic:url(assets/icons/qr-scan.svg)" aria-hidden="true"></span></button>
               </div>
             </div>
-            <div class="liverow" data-state="ok"><span class="lic"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M1.6 6.3l2.7 2.7L10.4 3" fill="none" stroke="var(--ink-2)" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="lv"><span class="la">mtst1zz9&hellip;41mn</span><span class="ls">Not in your contacts</span></span><span class="fam">Miden</span><span class="go" aria-hidden="true">&rsaquo;</span></div>
+            <div class="liverow" data-state="ok"><span class="lv"><span class="la">mtst1zz9&hellip;41mn</span><span class="ls">Not in your contacts</span></span><span class="fam">Miden</span><span class="go" aria-hidden="true">&rsaquo;</span></div>
           </div>
           <div class="mnav"><button class="t on"><span class="svgic" style="--ic:url(assets/icons/home-new.svg)" aria-hidden="true"></span><span>Home</span></button><button class="t"><span class="svgic" style="--ic:url(assets/icons/explore.svg)" aria-hidden="true"></span><span>Explore</span></button><button class="t"><span class="svgic" style="--ic:url(assets/icons/activity.svg)" aria-hidden="true"></span><span>Activity</span></button></div>
         </div></div></div>
@@ -3543,12 +3544,12 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
             <div class="pgtitle">Choose recipient</div>
             <div class="fld" style="width:auto"><label>To</label>
               <div class="fieldrow">
-                <div class="searchf" style="width:auto;flex:1;min-width:0;background:var(--surface);box-shadow:0 0 0 1.5px var(--rule-strong);color:var(--ink);font-family:var(--mono);font-size:var(--t-label)">0x71C7656EC7ab88b0&hellip;8976F</div>
+                <div class="searchf" style="width:auto;flex:1;min-width:0;background:var(--surface);box-shadow:0 0 0 1.5px var(--rule-strong);color:var(--ink);font-family:var(--mono);font-size:var(--t-label)"><span class="val">0x71C7656EC7ab88b0&hellip;8976F</span></div>
                 <button class="tokchip" style="align-self:auto">Paste</button>
                 <button class="scanbtn" aria-label="Scan a QR code"><span class="svgic" style="--ic:url(assets/icons/qr-scan.svg)" aria-hidden="true"></span></button>
               </div>
             </div>
-            <div class="liverow" data-state="ask"><span class="lic"><span class="svgic" style="--ic:url(assets/icons/globe.svg);width:1rem;height:1rem;background-color:var(--ink-2)" aria-hidden="true"></span></span><span class="lv"><span class="la">0x71C7656EC7ab88b0&hellip;8976F</span><span class="ls">Ethereum-family address &mdash; choose a network</span></span><span class="fam">EVM</span><span class="go" aria-hidden="true">&rsaquo;</span></div>
+            <div class="liverow" data-state="ask"><span class="lv"><span class="la">0x71C7656EC7ab88b0&hellip;8976F</span><span class="ls">Ethereum-family address &mdash; choose a network</span></span><span class="fam">EVM</span><span class="go" aria-hidden="true">&rsaquo;</span></div>
           </div>
           <div class="mnav"><button class="t on"><span class="svgic" style="--ic:url(assets/icons/home-new.svg)" aria-hidden="true"></span><span>Home</span></button><button class="t"><span class="svgic" style="--ic:url(assets/icons/explore.svg)" aria-hidden="true"></span><span>Explore</span></button><button class="t"><span class="svgic" style="--ic:url(assets/icons/activity.svg)" aria-hidden="true"></span><span>Activity</span></button></div>
         </div></div></div>
@@ -3566,12 +3567,12 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
             <div class="pgtitle">Choose recipient</div>
             <div class="fld" style="width:auto"><label>To</label>
               <div class="fieldrow">
-                <div class="searchf" style="width:auto;flex:1;min-width:0;background:var(--surface);box-shadow:0 0 0 1.5px var(--rule-strong);color:var(--ink);font-family:var(--mono);font-size:var(--t-label)">7xKXtg2CW87d97TXJSDpbD5jBkheTqA&hellip;</div>
+                <div class="searchf" style="width:auto;flex:1;min-width:0;background:var(--surface);box-shadow:0 0 0 1.5px var(--rule-strong);color:var(--ink);font-family:var(--mono);font-size:var(--t-label)"><span class="val">7xKXtg2CW87d97TXJSDpbD5jBkheTqA&hellip;</span></div>
                 <button class="tokchip" style="align-self:auto">Paste</button>
                 <button class="scanbtn" aria-label="Scan a QR code"><span class="svgic" style="--ic:url(assets/icons/qr-scan.svg)" aria-hidden="true"></span></button>
               </div>
             </div>
-            <div class="liverow" data-state="blocked"><span class="lic"><span class="svgic" style="--ic:url(assets/icons/lock.svg);width:1rem;height:1rem;background-color:var(--ink-2)" aria-hidden="true"></span></span><span class="lv"><span class="la">7xKXtg2CW87d97TXJSDpbD5jBkheTqA&hellip;</span><span class="ls">Solana address &mdash; Miden cannot send here</span></span><span class="fam">Solana</span></div>
+            <div class="liverow" data-state="blocked"><span class="lv"><span class="la">7xKXtg2CW87d97TXJSDpbD5jBkheTqA&hellip;</span><span class="ls">Solana address &mdash; Miden cannot send here</span></span><span class="fam">Solana</span></div>
           </div>
           <div class="mnav"><button class="t on"><span class="svgic" style="--ic:url(assets/icons/home-new.svg)" aria-hidden="true"></span><span>Home</span></button><button class="t"><span class="svgic" style="--ic:url(assets/icons/explore.svg)" aria-hidden="true"></span><span>Explore</span></button><button class="t"><span class="svgic" style="--ic:url(assets/icons/activity.svg)" aria-hidden="true"></span><span>Activity</span></button></div>
         </div></div></div>
@@ -3594,7 +3595,7 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
                 <button class="scanbtn" aria-label="Scan a QR code"><span class="svgic" style="--ic:url(assets/icons/qr-scan.svg)" aria-hidden="true"></span></button>
               </div>
             </div>
-            <div class="liverow" data-state="detecting"><span class="lic"><svg viewBox="0 0 12 12" aria-hidden="true"><circle cx="2" cy="6" r="1.2" fill="var(--ink-3)"/><circle cx="6" cy="6" r="1.2" fill="var(--ink-3)"/><circle cx="10" cy="6" r="1.2" fill="var(--ink-3)"/></svg></span><span class="lv"><span class="la">mtst1ap8qz4v</span><span class="ls">Keep typing</span></span><span class="fam">Miden</span><span class="lcount">12 / 49</span></div>
+            <div class="liverow" data-state="detecting"><span class="lv"><span class="la">mtst1ap8qz4v</span><span class="ls">Keep typing</span></span><span class="fam">Miden</span><span class="lcount">12 / 49</span></div>
             <div class="shlab" style="margin-top:1.125rem">Matches</div>
             <div class="mrow tap"><div class="ic" style="background:var(--tx-sent)"></div><div><div class="nm">Wiktor</div><div class="ad addr"><mark>mtst1ap8qz4v</mark>&hellip;r4fp</div></div><span class="go" aria-hidden="true">&rsaquo;</span></div>
           </div>
@@ -3614,7 +3615,7 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
             <div class="pgtitle">Choose recipient</div>
             <div class="fld err" style="width:auto"><label>To</label>
               <div class="fieldrow">
-                <div class="searchf" style="width:auto;flex:1;min-width:0;box-shadow:0 0 0 1.5px var(--neg);background:var(--surface);color:var(--ink);font-family:var(--mono);font-size:var(--t-label)">0x71C7656EC7ab88b0&hellip;</div>
+                <div class="searchf" style="width:auto;flex:1;min-width:0;box-shadow:0 0 0 1.5px var(--neg);background:var(--surface);color:var(--ink);font-family:var(--mono);font-size:var(--t-label)"><span class="val">0x71C7656EC7ab88b0&hellip;</span></div>
                 <button class="tokchip" style="align-self:auto">Paste</button>
                 <button class="scanbtn" aria-label="Scan a QR code"><span class="svgic" style="--ic:url(assets/icons/qr-scan.svg)" aria-hidden="true"></span></button>
               </div>
