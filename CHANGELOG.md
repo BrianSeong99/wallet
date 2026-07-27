@@ -1,6 +1,12 @@
 # Changelog
 
-## 1.15.11 (TBD)
+## 1.15.12 (TBD)
+
+### Fixes
+
+* [FIX][all] **The home action bar (Overview/Send/Receive/Swap) now announces itself as navigation instead of a tab widget.** Its segments change the route rather than swapping a tabpanel, so `role="tablist"`/`role="tab"` were wrong on two counts: screen readers announced "tab, selected, 1 of 5" for what is page navigation, and `role="tab"` advertises an arrow-key traversal contract the component never implemented. The bar is now a labelled `<nav>` whose active segment carries `aria-current="page"` — the same semantics the bottom nav already used. No visual or animation change.
+
+## 1.15.11 (2026-07-26)
 
 ### Changes
 

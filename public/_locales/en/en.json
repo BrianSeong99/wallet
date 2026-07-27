@@ -412,6 +412,7 @@
   "reviewRotation": "Review rotation",
   "newLabel": "New",
   "walletKeyHot": "Wallet key (hot)",
+  "walletActions": "Wallet actions",
   "recoveryPhraseCold": "Recovery phrase (cold)",
   "oldGuardianCantBlockTitle": "Your old Guardian can't block this",
   "oldGuardianCantBlockBody": "Rotation is approved by your two on-device keys. The old Guardian is only notified.",

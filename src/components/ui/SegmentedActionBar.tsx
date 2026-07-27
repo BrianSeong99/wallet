@@ -2,6 +2,7 @@ import React, { FC, ReactNode } from 'react';
 
 import classNames from 'clsx';
 import { motion } from 'framer-motion';
+import { useTranslation } from 'react-i18next';
 
 import { easings } from 'lib/animation/easings';
 import { hapticSelection } from 'lib/mobile/haptics';
@@ -39,6 +40,8 @@ export const SegmentedActionBar: FC<SegmentedActionBarProps> = ({
   className,
   layoutId = 'segmented-action-pill'
 }) => {
+  const { t } = useTranslation();
+
   const handleSelect = (id: string) => {
     if (id === activeId) return;
     hapticSelection();
@@ -46,15 +49,21 @@ export const SegmentedActionBar: FC<SegmentedActionBarProps> = ({
   };
 
   return (
-    <div role="tablist" className={classNames('flex h-16 items-center gap-1 bg-gray-25 px-3', className)}>
+    // Navigation landmark, not a tablist: every segment changes the route
+    // (TabLayout maps ids through ACTION_ROUTES) rather than swapping a
+    // tabpanel. `role="tab"` would also advertise arrow-key traversal we
+    // don't implement. Same semantics as BottomNav.
+    <nav
+      aria-label={t('walletActions')}
+      className={classNames('flex h-16 items-center gap-1 bg-gray-25 px-3', className)}
+    >
       {items.map(item => {
         const isActive = item.id === activeId;
         return (
           <button
             key={item.id}
             type="button"
-            role="tab"
-            aria-selected={isActive}
+            aria-current={isActive ? 'page' : undefined}
             aria-label={item.label}
             onClick={() => handleSelect(item.id)}
             className={classNames(
@@ -88,7 +97,7 @@ export const SegmentedActionBar: FC<SegmentedActionBarProps> = ({
           </button>
         );
       })}
-    </div>
+    </nav>
   );
 };
 
