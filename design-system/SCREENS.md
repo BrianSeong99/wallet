@@ -56,7 +56,7 @@ documents, and which screens document a given file.
 | 22 | 10e · Invalid seed word | bug / proposed — was missing | `ImportSeedPhrase.tsx:99` |
 | 23 | 11 · Import recovery method | bug / proposed — was missing | — |
 | 24 | 12 · Unlock | gap / sheet — app-only | — |
-| 25 | 12a · Forgot passcode | bug / proposed — redrawn | `RevealSecret.tsx:348–356` |
+| 25 | 12a · Forgot passcode | bug / proposed — redrawn | — |
 | 26 | E1 · Create password | shipped — 1/3 | — |
 | 27 | E2 · Choose your Guardian | shipped — 2/3 | — |
 | 28 | E3 · Wallet ready | shipped — 3/3 | — |
@@ -282,7 +282,6 @@ If one of these files changes, the screens beside it may no longer be true.
 | `TokenDetail.tsx` | Token detail · price unavailable · Token detail · loading · Token detail · zero balance · Token detail · unknown token · Activity · in progress |
 | `constants.ts` | Transaction detail · pending · Settings · connected dApps · Settings · networks · Settings · networks, switch failed |
 | `PageRouter.tsx` | Receive · loading · Token detail · unknown token · Settings · Keys · Update required |
-| `RevealSecret.tsx` | 12a · Forgot passcode · Recovery phrase · checking device · Recovery phrase · passcode · Private key · acknowledge |
 | `RevealSeedPhrase.tsx` | Recovery phrase · checking device · Recovery phrase · passcode · Recovery phrase · password · Reveal secret · expired |
 | `AdvancedSettings.tsx` | Settings · advanced, key loading · Settings · advanced, key unavailable · Settings · faucet ID |
 | `AllHistory.tsx` | Activity · empty · Activity · Sent, no matches · Activity · in progress |
@@ -293,6 +292,7 @@ If one of these files changes, the screens beside it may no longer be true.
 | `get.ts` | Activity · failed transactions · Activity · in progress · Activity · end of list |
 | `HistoryDetails.tsx` | Transaction detail · failed · Transaction detail · pending · Settings · currency |
 | `ready.tsx` | Receive · loading · Settings · networks, confirm switch · Settings · networks, switching |
+| `RevealSecret.tsx` | Recovery phrase · checking device · Recovery phrase · passcode · Private key · acknowledge |
 | `SendManager.tsx` | Send · recipient, typing · Send · recipient, invalid · Contacts · picker |
 | `back/actions.ts` | Account · rename · Account · delete |
 | `binance.ts` | Token detail · price unavailable · Token detail · unknown token |
