@@ -1239,6 +1239,14 @@ ul.tick li:before{content:"→";position:absolute;left:2px;color:var(--accent-in
   background:color-mix(in srgb,var(--neg) 10%,transparent);color:var(--neg);margin-top:10px}
 .zone{margin-top:auto;padding-top:16px;padding-bottom:max(16px,var(--safe-bottom,0px))}
 .zone .btn-primary{width:100%;padding:13px 10px;min-height:52px}
+/* Two peer actions, neither primary. This sheet's primary job is SELECTING an account, and
+   that happens by tapping a card -- so an orange CTA in the footer competed with the actual
+   task and implied "Add account" was the point of the screen. Both are filled-secondary at
+   equal width: same weight, same shape, no hierarchy invented between them.
+   Not outlined, per the no-bordered-controls rule -- filled-secondary is the peer treatment. */
+.zpair{display:flex;gap:10px}
+.zpair .btn{flex:1;min-height:52px;padding:13px 10px}
+
 .zone .gh{min-height:44px;display:flex;align-items:center;justify-content:center;font-size:12.5px;font-weight:700;color:var(--ink-2)}
 .critical{background:var(--accent-critical)}
 /* ---------- error / failure screens ---------- */
@@ -3128,7 +3136,7 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
               <div class="mbc sel" data-card="slate"><div class="top" data-surface="graphite" data-pattern=""><button class="aedit">Edit</button><div class="balrow"><div class="anm"><svg class="achk" viewBox="0 0 12 12" aria-hidden="true"><path d="M3 6.4 5 8.6 9 3.8"/></svg>Miden Account 3</div></div><div class="amt">$12,480.50 <small>USD</small></div></div></div>
             </div>
             
-            <div class="zone" style="padding-bottom:max(16px,var(--safe-bottom,0px))"><button class="btn btn-primary">Add account</button><div class="gh">Settings &rsaquo;</div></div>
+            <div class="zone" style="padding-bottom:max(16px,var(--safe-bottom,0px))"><div class="zpair"><button class="btn btn-secondary">Add account</button><button class="btn btn-secondary">Settings</button></div></div>
           </div>
         </div></div></div>
         <div class="scrnote"><b>Proposed &mdash; multi-account does not exist yet.</b> The shipped <code>AccountsDrawer</code> lists <em>no accounts at all</em>: it is a card-colour picker, a Settings link, and a <em>disabled</em> &ldquo;Add account (coming soon)&rdquo; button whose dashed outline also breaks the no-bordered-controls rule. <b>Vertical list, not an Apple-Wallet stack</b> &mdash; the stack was built first and failed on three counts: in <b>dark</b> every card is near-black so overlapping merged all three into one block (tinting each with its account hue at 12&percnt; measured <b>1.00&ndash;1.04:1</b> between adjacent cards, because hue separates almost nothing at near-black); the collapsed band forced a choice between the name and the balance, with one card&rsquo;s amount butting into the next card&rsquo;s name; and it grew 64px per account, stopping around six. Blocks here are the card&rsquo;s top half &mdash; name and balance, which is what you choose between &mdash; with no delta, since performance is not why this sheet is open. Selection is a filled check rather than a ring, because an outline round a card would read as a bordered control. <b>Renaming is deliberately not here:</b> the list answers &ldquo;which account&rdquo;, and a rename affordance would compete with the selection gesture.</div></div>
