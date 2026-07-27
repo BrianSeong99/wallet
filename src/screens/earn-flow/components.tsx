@@ -23,7 +23,7 @@ export const EarnFlowHeader: FC<{ vault: EarnVault }> = ({ vault }) => (
         size="md"
         aria-label="Back"
       />
-      <h1 className="min-w-0 truncate font-heading text-[26px] font-bold leading-none text-heading-gray">
+      <h1 className="min-w-0 truncate font-heading text-title font-bold leading-none text-heading-gray">
         {vault.protocol} &bull; {vault.asset}
       </h1>
       <span className="shrink-0 rounded-full bg-[#DDD4CE] px-3 py-1.5 text-xs font-medium leading-none text-heading-gray">

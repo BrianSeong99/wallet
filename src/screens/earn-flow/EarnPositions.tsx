@@ -25,7 +25,7 @@ const EarnPositions: FC = () => {
             size="md"
             aria-label="Back"
           />
-          <h1 className="font-heading text-[26px] font-bold leading-none text-heading-gray">My positions</h1>
+          <h1 className="font-heading text-title font-bold leading-none text-heading-gray">My positions</h1>
         </div>
       </header>
 

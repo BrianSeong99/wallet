@@ -24,7 +24,7 @@ const InfoRow: React.FC<InfoRowProps> = ({ badge, title, description, hasDivider
     <div className="mx-auto flex max-w-[32rem] flex-col items-center px-4 py-4 text-center">
       <div className="flex max-w-full items-center justify-center gap-3">
         {badge}
-        <h3 className="min-w-0 break-words text-left font-heading text-[18px] font-semibold leading-[1.2] text-ink">
+        <h3 className="min-w-0 break-words text-left font-heading text-lg font-semibold leading-[1.2] text-ink">
           {title}
         </h3>
       </div>
@@ -53,7 +53,7 @@ export const GuardianInfoDrawer: React.FC<GuardianInfoDrawerProps> = ({ open, on
 
           <WhatIsGuardianHero className="mx-auto mt-2 h-[111px] w-[125px] shrink-0" />
 
-          <p className="mx-auto mt-3 max-w-[34rem] text-center text-[18px] font-normal leading-[1.28] text-heading-gray">
+          <p className="mx-auto mt-3 max-w-[34rem] text-center text-lg font-normal leading-[1.28] text-heading-gray">
             <Trans i18nKey="guardianInfoDescription" components={{ b: <span className="font-semibold" /> }} />
           </p>
 
