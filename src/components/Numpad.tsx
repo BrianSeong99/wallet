@@ -1,5 +1,7 @@
 import React from 'react';
 
+import { useTranslation } from 'react-i18next';
+
 import { Icon, IconName } from 'app/icons/v2';
 import { hapticLight } from 'lib/mobile/haptics';
 import { cn } from 'lib/ui/util';
@@ -25,6 +27,7 @@ const keyClass =
   'motion-reduce:transition-none';
 
 export const Numpad: React.FC<NumpadProps> = ({ onDigit, onDelete, className }) => {
+  const { t } = useTranslation();
   const handleDigit = (digit: string) => {
     hapticLight();
     onDigit(digit);
@@ -57,7 +60,7 @@ export const Numpad: React.FC<NumpadProps> = ({ onDigit, onDelete, className }) 
       </button>
       <button
         type="button"
-        aria-label="Delete"
+        aria-label={t('delete')}
         // Same 44pt+ target and circular shape as the digits, but no fill —
         // delete is not a digit, and the mock leaves it unfilled.
         className="size-19 rounded-full text-ink flex items-center justify-center select-none active:scale-[0.94]"

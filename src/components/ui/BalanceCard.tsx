@@ -1,6 +1,7 @@
 import React, { FC, ReactNode, useLayoutEffect, useRef, useState } from 'react';
 
 import classNames from 'clsx';
+import { useTranslation } from 'react-i18next';
 
 import CopyButton from 'app/atoms/CopyButton';
 import { Icon, IconName } from 'app/icons/v2';
@@ -115,6 +116,7 @@ export const BalanceCard: FC<BalanceCardProps> = ({
   const isHidden = state === 'hidden';
   const isZero = state === 'zero';
   const cardColor = useCardColor();
+  const { t } = useTranslation();
   const { rowRef, textRef, fontSizeRem } = useFitFontSize(AMOUNT_MAX_REM, AMOUNT_MIN_REM, !isLoading);
 
   const handleMoreClick = () => {
@@ -142,12 +144,14 @@ export const BalanceCard: FC<BalanceCardProps> = ({
             strip beside the copy affordance: under half the 44pt floor, and two
             targets inside one thumb-width. */}
         <div className="flex items-center justify-between gap-2.5">
-          <div className="text-caption font-semibold text-surface-balance-fg-muted leading-none">Total Balance</div>
+          <div className="text-caption font-semibold text-surface-balance-fg-muted leading-none">
+            {t('totalBalance')}
+          </div>
           {onMore && (
             <button
               type="button"
               onClick={handleMoreClick}
-              aria-label="Account options"
+              aria-label={t('accountOptions')}
               className="-mr-2.5 -my-2.5 flex size-11 shrink-0 items-center justify-center rounded-full text-surface-balance-fg opacity-75"
             >
               <Icon name={IconName.More} className="w-4 h-4" fill="currentColor" />
@@ -167,6 +171,7 @@ export const BalanceCard: FC<BalanceCardProps> = ({
                 style={{ fontSize: `${fontSizeRem}rem` }}
                 className="font-heading font-tnum font-extrabold leading-none tracking-[-0.02em] whitespace-nowrap"
               >
+                {/* eslint-disable-next-line i18next/no-literal-string -- numerals and a mask glyph, not copy */}
                 {isHidden ? '••••••' : isZero ? '$0.00' : amount}
               </span>
               <span className="shrink-0 text-caption font-medium text-surface-balance-fg-muted">{currency}</span>
@@ -195,6 +200,7 @@ export const BalanceCard: FC<BalanceCardProps> = ({
               <path d="M4 0 8 7H0z" />
             </svg>
             <span>{delta.absolute}</span>
+            {/* eslint-disable-next-line i18next/no-literal-string -- parentheses around a formatted number */}
             <span className="font-inter font-semibold opacity-75">({delta.percentage})</span>
           </div>
         )}
@@ -218,7 +224,7 @@ export const BalanceCard: FC<BalanceCardProps> = ({
             'text-surface-balance-fg hover:bg-transparent active:opacity-80 transition-opacity'
           )}
         >
-          Account #: {accountNumber}
+          {t('accountNumberLabel')} {accountNumber}
         </CopyButton>
       </div>
     </div>

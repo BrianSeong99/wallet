@@ -65,6 +65,7 @@ const ForgotPasswordInfoScreen: FC<ForgotPasswordInfoScreenProps> = ({ onClose, 
           our browserslist floor (Safari 14; it needs 16.4), so --neg-wash is a
           real token that flips with the theme. */}
       <div className="mt-2.5 flex gap-2 rounded-md-token bg-neg-wash px-3 py-2.25 text-caption font-semibold leading-[1.4] text-neg">
+        {/* eslint-disable-next-line i18next/no-literal-string -- decorative glyph, aria-hidden */}
         <span aria-hidden>⚠</span>
         <span>{t('forgotPasswordSecondDescription')}</span>
       </div>
@@ -109,6 +110,7 @@ const ForgotPasswordInfoScreen: FC<ForgotPasswordInfoScreenProps> = ({ onClose, 
                   on ? 'scale-[1.06] bg-accent text-on-accent' : 'bg-surface-3'
                 )}
               >
+                {/* eslint-disable-next-line i18next/no-literal-string -- decorative glyph, aria-hidden */}
                 {on ? '✓' : ''}
               </span>
               <span className="flex min-w-0 flex-col">

@@ -1,7 +1,6 @@
 import React, { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import classNames from 'clsx';
-
 import { useTranslation } from 'react-i18next';
 
 import { openInFullPage, useAppEnv } from 'app/env';
@@ -23,6 +22,7 @@ import { OnboardingHeading } from '../../screens/onboarding/common/layout';
 const BrandIcon = () => (
   <div className="flex flex-col items-center gap-2">
     <BreadLogo style={{ width: 80, height: 'auto' }} />
+    {/* eslint-disable-next-line i18next/no-literal-string -- brand wordmark, never translated */}
     <span className="text-3xl font-semibold font-heading text-heading-gray">Bread</span>
   </div>
 );

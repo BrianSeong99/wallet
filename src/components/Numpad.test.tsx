@@ -106,7 +106,7 @@ describe('Numpad', () => {
   it('gives the delete button an accessible label', () => {
     renderNumpad();
 
-    expect(screen.getByRole('button', { name: 'Delete' })).toBe(screen.getByTestId('numpad-delete'));
+    expect(screen.getByRole('button', { name: 'delete' })).toBe(screen.getByTestId('numpad-delete'));
   });
 
   it('renders an aria-hidden spacer to keep the 0 key centered', () => {

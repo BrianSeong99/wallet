@@ -1,6 +1,7 @@
 import React, { FC } from 'react';
 
 import classNames from 'clsx';
+import { useTranslation } from 'react-i18next';
 
 import { Icon, IconName } from 'app/icons/v2';
 import { hapticLight } from 'lib/mobile/haptics';
@@ -25,15 +26,9 @@ export interface PromptCardProps {
   className?: string;
 }
 
-export const PromptCard: FC<PromptCardProps> = ({
-  title,
-  body,
-  onClick,
-  onDismiss,
-  ctaLabel,
-  onCta,
-  className
-}) => {
+export const PromptCard: FC<PromptCardProps> = ({ title, body, onClick, onDismiss, ctaLabel, onCta, className }) => {
+  const { t } = useTranslation();
+
   const handleClick = () => {
     if (!onClick) return;
     hapticLight();
@@ -58,7 +53,7 @@ export const PromptCard: FC<PromptCardProps> = ({
     <button
       type="button"
       onClick={handleDismiss}
-      aria-label="Dismiss"
+      aria-label={t('dismiss')}
       className="shrink-0 flex items-center justify-center w-6 h-6 -mr-1 text-text-tertiary-token"
     >
       <Icon name={IconName.Close} className="w-4 h-4" fill="currentColor" />

@@ -99,13 +99,13 @@ describe('PromptCard — Trail: dismiss vs chevron', () => {
     renderCard();
 
     expect(screen.getByTestId('icon').getAttribute('data-name')).toBe('ChevronRight');
-    expect(screen.queryByRole('button', { name: 'Dismiss' })).toBeNull();
+    expect(screen.queryByRole('button', { name: 'dismiss' })).toBeNull();
   });
 
   it('renders a Dismiss button with the Close icon when onDismiss is provided', () => {
     renderCard({ onDismiss: jest.fn() });
 
-    const dismiss = screen.getByRole('button', { name: 'Dismiss' });
+    const dismiss = screen.getByRole('button', { name: 'dismiss' });
     expect(dismiss.getAttribute('type')).toBe('button');
     expect(screen.getByTestId('icon').getAttribute('data-name')).toBe('Close');
   });
@@ -142,7 +142,7 @@ describe('PromptCard — onDismiss behaviour', () => {
     const onDismiss = jest.fn();
     renderCard({ onDismiss });
 
-    fireEvent.click(screen.getByRole('button', { name: 'Dismiss' }));
+    fireEvent.click(screen.getByRole('button', { name: 'dismiss' }));
 
     expect(mockHapticLight).toHaveBeenCalledTimes(1);
     expect(onDismiss).toHaveBeenCalledTimes(1);
@@ -153,7 +153,7 @@ describe('PromptCard — onDismiss behaviour', () => {
     const onDismiss = jest.fn();
     renderCard({ onClick, onDismiss });
 
-    fireEvent.click(screen.getByRole('button', { name: 'Dismiss' }));
+    fireEvent.click(screen.getByRole('button', { name: 'dismiss' }));
 
     // Only the dismiss path runs; the row's onClick is shielded by stopPropagation.
     expect(onDismiss).toHaveBeenCalledTimes(1);
