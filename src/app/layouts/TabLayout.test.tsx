@@ -54,11 +54,10 @@ jest.mock('app/hooks/useHasUnclaimedNotes', () => ({
 
 // `springs` is animation config only; the value is irrelevant to behaviour.
 jest.mock('lib/animation', () => ({
-  // The page transition is now the design system's iOS parallax push rather
-  // than a bare spring. The variants are exercised properly in
-  // lib/animation/transitions.test.ts; here they only need to exist.
-  iosPush: { duration: 0.54 },
-  pushVariants: () => ({ initialState: {}, animateState: {}, exitState: {} })
+  // The page transition is back on the original spring; `iosPush` is still used
+  // for the action bar's presence animation.
+  springs: { standard: { type: 'spring' } },
+  iosPush: { duration: 0.54 }
 }));
 
 // Icons are SVG re-exports; render nothing but expose the enum keys the layout
@@ -407,7 +406,7 @@ describe('TabLayout — slide-in animation (skipSlideIn)', () => {
   it('slides the incoming page in by default (first render, non-home target)', () => {
     mockLocation.pathname = '/history';
     renderLayout();
-    expect(initialOf()).toBe(JSON.stringify('initialState'));
+    expect(initialOf()).toBe(JSON.stringify({ x: '8%', opacity: 0.5 }));
   });
 
   it('skips the slide-in on the extension', () => {
@@ -430,7 +429,7 @@ describe('TabLayout — slide-in animation (skipSlideIn)', () => {
     mockReturning.value = false;
     mockLocation.pathname = '/history';
     renderLayout();
-    expect(initialOf()).toBe(JSON.stringify('initialState'));
+    expect(initialOf()).toBe(JSON.stringify({ x: '8%', opacity: 0.5 }));
   });
 
   it('skips the slide-in for intra-home-group navigations (prev + next both home-group)', () => {
@@ -448,7 +447,7 @@ describe('TabLayout — slide-in animation (skipSlideIn)', () => {
     const { rerender } = renderLayout();
     mockLocation.pathname = '/send';
     rerender(<TabLayout>{<div data-testid="child-content" />}</TabLayout>);
-    expect(initialOf()).toBe(JSON.stringify('initialState'));
+    expect(initialOf()).toBe(JSON.stringify({ x: '8%', opacity: 0.5 }));
   });
 
   it('slides in when navigating from a home-group route out to a non-home route', () => {
@@ -456,7 +455,7 @@ describe('TabLayout — slide-in animation (skipSlideIn)', () => {
     const { rerender } = renderLayout();
     mockLocation.pathname = '/history';
     rerender(<TabLayout>{<div data-testid="child-content" />}</TabLayout>);
-    expect(initialOf()).toBe(JSON.stringify('initialState'));
+    expect(initialOf()).toBe(JSON.stringify({ x: '8%', opacity: 0.5 }));
   });
 });
 
