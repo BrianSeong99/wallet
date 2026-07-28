@@ -10,6 +10,8 @@
 
 * [CHANGE][all] **Colours that were hardcoded in the onboarding, swap and transaction-progress screens now follow the theme.** A number of dividers, borders, helper texts and badges were written as fixed hex values, so they rendered the same in light and dark — several were effectively invisible in dark mode (a near-white divider on the dark drawer, dark-grey helper text on the dark background). They now resolve from the design-system tokens and flip with the theme. Third-party brand colours (USDC, Bitcoin) and the QR code's background are deliberately left fixed, since those are identity and scannability requirements rather than surfaces.
 
+* [CHANGE][all] **The Explore screen now shows only the two testnet faucets.** The curated Explore grid is trimmed to the existing Miden faucet plus a new "Forkchoice Faucet" tile (`faucets.forkchoice.xyz`), giving users two sources of testnet MIDEN; the other curated tiles (Zoro, Qash, Miden Name) are no longer shown in the grid.
+
 ### Fixes
 
 * [FIX][all] **A valid mainnet or devnet QR code is no longer rejected.** Two functions named `isValidMidenAddress` lived in two modules and disagreed on every network but testnet: the one the scanner runs tested `m1` for mainnet where the wallet-wide one declares `mm1`, and carried no devnet prefix at all — so a correct mainnet code was refused, and a `build:devnet` bundle refused every code it could be shown. Both now read one prefix list.
