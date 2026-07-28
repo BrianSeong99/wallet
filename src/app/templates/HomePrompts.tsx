@@ -7,6 +7,7 @@ import { ActivateHotKeyBanner } from 'app/templates/ActivateHotKeyBanner';
 import { GuardianNeedsUrlBanner } from 'app/templates/GuardianNeedsUrlBanner';
 import { useConnectivityIssue } from 'components/ConnectivityIssueBanner';
 import { PromptCard, PromptCarousel, PromptCardVariant } from 'components/ui';
+import { isExtension } from 'lib/platform';
 import { WalletAccount } from 'lib/shared/types';
 import { useWalletPromptStorage, WalletPromptType } from 'lib/wallet-prompts';
 import { navigate } from 'lib/woozie';
@@ -59,8 +60,14 @@ export const HomePrompts: FC<HomePromptsProps> = ({ account }) => {
           title={t(connectivityView.titleKey)}
           body={t(connectivityView.bodyKey)}
           variant="warning"
-          ctaLabel={connectivityView.ctaKey ? t(connectivityView.ctaKey) : undefined}
-          onCta={connectivityView.ctaKey ? onRetry : undefined}
+          // The retry CTA is drawn ONLY on the extension. `onRetry` returns
+          // early unless `isExtension()` — on mobile and desktop sync already
+          // runs in-process every ~3s via `useSyncTrigger`, so the button would
+          // be live, tappable, and do nothing. A control that lies is worse
+          // than no control; the fix belongs in the handler, and until it
+          // lands these platforms get the notice without the button.
+          ctaLabel={connectivityView.ctaKey && isExtension() ? t(connectivityView.ctaKey) : undefined}
+          onCta={connectivityView.ctaKey && isExtension() ? onRetry : undefined}
           onDismiss={onDismiss}
         />
       )}
