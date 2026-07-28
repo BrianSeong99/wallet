@@ -71,7 +71,7 @@ documents, and which screens document a given file.
 |--:|---|---|---|
 | 31 | Token detail · price unavailable | shipped | `binance.ts:128–129` `TokenDetail.tsx:137` `binance.ts:21` |
 | 32 | Token detail | shipped | — |
-| 33 | Home / Overview | shipped | — |
+| 33 | Home / Overview | shipped | `HomePrompts.tsx:47` `PromptCarousel.tsx:92–93` `BalanceCard.tsx:182–191` `Explore.tsx:192` |
 | 34 | Home · first run | gap / sheet — gap | — |
 | 35 | Home · loading | gap / sheet — gap | — |
 | 36 | Home · balance hidden | gap / sheet — gap | — |
@@ -79,7 +79,7 @@ documents, and which screens document a given file.
 | 38 | Home · offline | gap / sheet — banner | `Explore.tsx:141` |
 | 39 | Home · node unreachable | gap / sheet — banner | — |
 | 40 | Home · notes to claim | gap / sheet — gap | — |
-| 41 | Accounts · list | bug / proposed — proposed | — |
+| 41 | Accounts · list | bug / proposed — proposed | `BalanceCard.tsx:182` `Explore.tsx:192` |
 | 42 | Account sheet | bug / proposed — proposed | — |
 
 ## Send flow
@@ -278,6 +278,7 @@ If one of these files changes, the screens beside it may no longer be true.
 | `AddressBook.tsx` | Address book · Address book · duplicate · Address book · empty · Address book · no results · Address book · edit contact |
 | `AddressTab.tsx` | Receive · address copied · Receive · share failed · Receive · request an amount · Receive · loading · Receive |
 | `DappConfirmationModal.tsx` | dApp · connect request · dApp · transaction request · dApp · claim note request · dApp · private data request · dApp · switcher |
+| `Explore.tsx` | Home / Overview · Home · offline · Accounts · list · Settings · currency · Activity · offline |
 | `PendingTab.tsx` | Pending notes · empty · Pending notes · fetch failed · Pending notes · claiming · Pending notes · claim failed · Claim · partial failure |
 | `TokenDetail.tsx` | Token detail · price unavailable · Token detail · loading · Token detail · zero balance · Token detail · unknown token · Activity · in progress |
 | `constants.ts` | Transaction detail · pending · Settings · connected dApps · Settings · networks · Settings · networks, switch failed |
@@ -288,13 +289,13 @@ If one of these files changes, the screens beside it may no longer be true.
 | `cancel.ts` | Activity · failed transactions · Activity · in progress · Transaction detail · failed |
 | `dapp.ts` | dApp · claim note request · dApp · sign message · dApp · private data request |
 | `EditMidenFaucetId.tsx` | Settings · faucet ID · Settings · faucet ID, saved · Settings · faucet ID, rejected |
-| `Explore.tsx` | Home · offline · Settings · currency · Activity · offline |
 | `get.ts` | Activity · failed transactions · Activity · in progress · Activity · end of list |
 | `HistoryDetails.tsx` | Transaction detail · failed · Transaction detail · pending · Settings · currency |
 | `ready.tsx` | Receive · loading · Settings · networks, confirm switch · Settings · networks, switching |
 | `RevealSecret.tsx` | Recovery phrase · checking device · Recovery phrase · passcode · Private key · acknowledge |
 | `SendManager.tsx` | Send · recipient, typing · Send · recipient, invalid · Contacts · picker |
 | `back/actions.ts` | Account · rename · Account · delete |
+| `BalanceCard.tsx` | Home / Overview · Accounts · list |
 | `binance.ts` | Token detail · price unavailable · Token detail · unknown token |
 | `CapsuleBar.tsx` | dApp · active · dApp · load failed |
 | `DappActionsSheet.tsx` | dApp launcher · no recents · Toast · link copied |
@@ -303,6 +304,7 @@ If one of these files changes, the screens beside it may no longer be true.
 | `EncryptedWalletFileWalletPassword.tsx` | Recovery phrase · checking device · Encrypted file · unlock |
 | `front/client.ts` | Account · rename · Account · delete |
 | `GeneralSettings.tsx` | Settings · general · Settings · general, save failed |
+| `HomePrompts.tsx` | 08 · Back up your wallet · Home / Overview |
 | `KeysSettings.tsx` | Guardian keys · revealed · Settings · Keys |
 | `Networks.tsx` | Settings · networks, confirm switch · Settings · networks, switch failed |
 | `NoteToastProvider.tsx` | Toast · link copied · Notifications · rationale |
@@ -337,7 +339,6 @@ If one of these files changes, the screens beside it may no longer be true.
 | `GuardianSettings.tsx` | Guardian · rotate review |
 | `helpers.ts` | Settings · general, save failed |
 | `HistoryItem.tsx` | Activity · in progress |
-| `HomePrompts.tsx` | 08 · Back up your wallet |
 | `IHistoryEntry.ts` | Transaction detail · failed |
 | `ImportSeedPhrase.tsx` | 10e · Invalid seed word |
 | `KeysSettings.test.tsx` | Settings · Keys |
@@ -351,6 +352,7 @@ If one of these files changes, the screens beside it may no longer be true.
 | `native-notifications.ts` | Notifications · rationale |
 | `navigator.tsx` | 08 · Back up your wallet |
 | `ProgressBar.tsx` | dApp · active |
+| `PromptCarousel.tsx` | Home / Overview |
 | `qr/format.ts` | Receive · request an amount |
 | `QRCode.tsx` | Receive · loading |
 | `receipt.ts` | Send · success |

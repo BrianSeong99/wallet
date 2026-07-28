@@ -381,6 +381,21 @@ table.map td code{font-size:var(--t-label)}
 /* balance card */
 .mbc{border-radius:var(--radius-lg);overflow:hidden;box-shadow:var(--shadow-1)}
 .mbc .top{padding:0.625rem 1rem 0.6875rem}
+/* ONE CARD HEIGHT ON EVERY HOME STATE. Measured across the eight of them, the card came out
+   at FIVE different heights -- 138.6 / 141.6 / 150.0 / 155.7 / 178.7pt -- depending on whether
+   the state carried a delta, a skeleton, a footnote, a mask toggle, or none of them. So
+   everything under the card (the prompt, Assets, the whole asset list) moved as the wallet
+   loaded, lost the network, or masked itself. The banner is the most-looked-at object in the
+   app and it may not resize under its own states. Deleting .bnote and standardising the label
+   row on one trailing control closed most of the spread; the remaining 98.6 / 110 / 115.6pt in
+   the top block is the delta and the skeleton, and this floor closes that.
+   7.25rem = 116px is the tallest natural top -- label row 23 + amount + delta + the 10/11
+   padding, measured at 115.63 -- rounded up onto the 4px grid. It is a FLOOR, not a fixed
+   height: at 200% text the content outgrows it and the card grows with it.
+   The slack lands below the amount, where the delta would be, so the balance figure holds the
+   same Y in every state. That is the same argument the loading skeleton already makes by
+   occupying the number's exact geometry. */
+.mbc.hero .top{min-height:7.25rem}
 /* Label and delta share one row. Previously the delta sat on its own line below the
    amount, costing a full ~20px band on the screen the user called top-heavy; the delta
    is an attribute OF the balance, so it reads fine beside its label. */
@@ -664,19 +679,27 @@ table.map td code{font-size:var(--t-label)}
 .msheet > .mlist:last-child{padding-bottom:0}
 .mshandle{width:2.5rem;height:0.3125rem;border-radius:var(--radius-full);background:var(--rule-strong);
   margin:0 auto 0.875rem;flex:none}
+/* The trailing pull belongs to the HEADER, not to the button in it -- the same correction
+   .pghead needed. Left on the button, the -0.625rem hung 10pt past the header's own box and
+   the reflow sweep caught it on the Accounts sheet the moment one appeared here. */
 .mshead{font-family:var(--display);font-weight:800;font-size:var(--t-subhead);margin-bottom:0.75rem;
-  flex:none;display:flex;align-items:center;gap:0.25rem}
+  flex:none;display:flex;align-items:center;gap:0.25rem;margin-right:-0.625rem}
+.mshead .shgear,.mshead .shact{margin-right:0}
 /* Settings is a gear at the header's top-right, not a footer button. Two reasons, and the
    first is consistency rather than taste: the app ALREADY uses this exact placement --
    TabHeader puts a 36px gear top-right and navigates to /settings. Reusing it enforces an
    existing convention instead of inventing a placement. Second, Settings is a global
    destination, so the header (a utility position) says 'way out of here' where the footer
    (an action position) implied it was an action on this sheet.
-   That also leaves the footer with the one action it actually has. */
-.shgear{margin-left:auto;min-width:44px;min-height:44px;margin-top:-0.6875rem;
+   That also leaves the footer with the one action it actually has.
+   .shact is the same geometry under an honest name, for the other header utilities -- the
+   balance mask on the Accounts sheet is the first. One rule, two names, rather than a second
+   class that happens to be identical: a gear-named class doing eye work is how a style's reach
+   stops matching its name. */
+.shgear,.shact{margin-left:auto;min-width:44px;min-height:44px;margin-top:-0.6875rem;
   margin-bottom:-0.6875rem;margin-right:-0.625rem;border:0;background:none;padding:0;display:flex;
   align-items:center;justify-content:center;color:var(--ink-2);cursor:pointer}
-.shgear .svgic{width:1.1875rem;height:1.1875rem}
+.shgear .svgic,.shact .svgic{width:1.1875rem;height:1.1875rem}
 /* Page header (title + optional trailing gear). Was inline-styled on seven screens with
    padding-right:0, which left .shgear's -0.625rem pull nothing to cancel and overflowed the
    header by exactly 10pt on every one. The pull belongs to the header, not the button: it is
@@ -880,6 +903,10 @@ table.map td code{font-size:var(--t-label)}
   border-radius:var(--radius-md);padding:0.5rem 0.25rem 0.5rem 0.8125rem}
 .mprompt[data-status="neg"]{background:var(--st-wash)}
 .mprompt[data-status="warn"]{background:var(--st-wash)}
+/* The 4px right padding is sized for a .pcta or .pdis to overhang it. A prompt with neither --
+   the unpriced-asset notice states a fact and has no action to offer -- had its body running to
+   4px off the edge. Mirror the left padding instead. */
+.mprompt:not(:has(.pcta,.pdis)){padding-right:0.8125rem}
 /* Trailing action inside a prompt. Same negative-margin trick as .pdis so the 44pt target
    overhangs the card padding instead of the padding collapsing to accommodate it. When a
    dismiss sits beside it the pair is held 8px apart -- one thumb-width must not contain two
@@ -888,24 +915,39 @@ table.map td code{font-size:var(--t-label)}
   background:var(--surface-3);color:var(--ink);border-radius:var(--radius-full);flex:none;
   font-family:var(--ui);font-weight:800;font-size:var(--t-caption);cursor:pointer}
 .mprompt[data-status] .pcta{background:var(--paper)}
-/* Footnote under a balance. Exists because a total computed from incomplete price data is a
-   different number from a total, and the card is the only place that difference can be said. */
-.mbc .bnote{font-size:var(--t-caption);font-weight:600;color:var(--balance-fg-muted,var(--ink-2));
-  margin-top:0.375rem;display:flex;align-items:center;gap:0.3125rem}
-.mbc .bnote::before{content:'';width:0.375rem;height:0.375rem;border-radius:50%;
-  background:var(--warn);flex:none}
+/* .bnote is GONE -- the footnote under the balance, used by the unpriced-asset and
+   unclaimed-note screens. It was a second notification channel: a card that grows a line of
+   warn-dotted text is a banner wearing the balance's clothes, and it made the card a
+   different height on the two screens that used it. Both facts it carried are now prompts in
+   the carousel, which is the one notification component Home has. See the .mbc.hero .top
+   floor above for the height half of the same argument. */
 /* Balance masked. Bullets are a text run, not a graphic, so they inherit the balance ramp and
    stay legible at 200%; a fixed-height grey plate would not. */
 .mbc .amt .msk{font-family:var(--ui);letter-spacing:.06em}
-/* Mask toggle. Its own class rather than a restyled .pdis: .pdis's 44pt floor is scoped to
-   .mprompt, so reusing the name inside .balrow inherited the colour and none of the geometry
-   and shipped a 33x23 target. Negative margin cancels .top's padding exactly, per the rule
-   above -- it does not outrun it. */
-.mbc .balrow.withhide{margin-right:-1rem}
-.mbc .balhide{min-width:44px;min-height:44px;margin:-0.75rem 0 -0.75rem 0;border:0;
+/* Trailing control on the balance card, and now the ONLY one on any Home state.
+   Not invented: shipped BalanceCard already renders this button, wired to the AccountsDrawer
+   (BalanceCard.tsx:182-191 -> Explore.tsx:192, and AccountsDrawer's own docstring names it
+   "the BalanceCard 'more' (3-dots) button"). Two defects in the shipped placement, both fixed
+   by moving it here: it is w-5 h-5 = 20pt, under half the 44pt floor, and it sits in the
+   bottom strip beside the copy affordance -- two targets in one thumb-width, the crowding the
+   .pdis note below exists to prevent. The mask toggle that used to occupy this slot on the
+   hidden-balance screen (.balhide) is gone with it, into the sheet this button opens.
+   Own class rather than a restyled .pdis: .pdis's 44pt floor is scoped to .mprompt, so
+   reusing that name inside .balrow inherits the colour and none of the geometry -- which is
+   exactly how .balhide shipped as a 33x23 target the first time.
+   The button carries the vertical pull and the ROW carries the horizontal one, because the
+   padding being cancelled belongs to .top: -0.625rem / -0.6875rem cancel .top's 10px and 11px
+   exactly, and -1rem on the row cancels its 16px. Cancel the parent's padding, never outrun
+   it. The glyph then lands 22px from the card's right edge -- the same optical column as
+   .acopy2 in the row below. */
+.mbc .balrow.withmore{margin-right:-1rem}
+.mbc .bmore{min-width:44px;min-height:44px;margin:-0.625rem 0 -0.6875rem;border:0;
   background:none;padding:0;flex:none;display:flex;align-items:center;justify-content:center;
   color:inherit;opacity:.75;cursor:pointer}
-.mbc .balhide .svgic{width:1.0625rem;height:1.0625rem}
+/* The shipped more.svg drawn inline -- dots at 5/12/19, r 2, in a 24 box -- rather than loaded
+   through the .svgic mask. That file is fill="none" with no stroke, so a mask paints nothing:
+   the invisible-icon class the harness's icon lint exists to catch. */
+.mbc .bmore .dots{width:1.0625rem;height:1.0625rem;fill:currentColor}
 /* Empty-list block. Centred, no illustration -- the app ships no empty-state art and inventing
    some here would be a spec the implementation cannot honour. */
 .emptyb{display:flex;flex-direction:column;align-items:center;text-align:center;
@@ -922,9 +964,14 @@ table.map td code{font-size:var(--t-label)}
    mid-sentence is worse than wrapping. Paraphrasing it shorter is not an option either:
    it is a real i18n string -- so the clamp is 3 lines, which is what the 76-character
    shipped string actually needs in a ~200pt column at 11.5px. The clamp stays as a guard
-   against longer localisations rather than as the normal state. */
+   against longer localisations rather than as the normal state.
+   The rule said 2 while this comment said 3, and the CODE was the wrong one. At 2 the guardian
+   prompt lost "Enter its URL to reconnect" and connectivityNodeBody stopped at "Your balance
+   may be" -- two verbatim i18n strings truncated mid-sentence, on the component that is now
+   the only notification surface Home has. Measured across every prompt in the system: those
+   two bodies are the only ones that need the third line. */
 .mprompt .pb{font-size:var(--t-caption);color:var(--ink-2);margin-top:0.0625rem;line-height:1.3;
-  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+  display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
 /* 44pt hit area WITHOUT forcing asymmetric card padding: negative margin lets the target
    overhang the 12px padding instead of the padding shrinking to 4px to accommodate it.
    The chevron that used to sit here is gone -- a 5px glyph 11px from a 44px dismiss target
@@ -3061,7 +3108,7 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
             </div>
             <div class="mbc">
               <div class="top" data-surface="graphite" data-pattern="seigaiha">
-                <div class="balrow"><div class="tl">Total Balance</div><div class="delta" data-status="pos">+0.00%</div></div>
+                <div class="balrow withmore"><div class="tl">Total Balance</div><div class="delta" data-status="pos">+0.00%</div><button class="bmore" aria-label="Account options"><svg class="dots" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 10C3.9 10 3 10.9 3 12C3 13.1 3.9 14 5 14C6.1 14 7 13.1 7 12C7 10.9 6.1 10 5 10ZM19 10C17.9 10 17 10.9 17 12C17 13.1 17.9 14 19 14C20.1 14 21 13.1 21 12C21 10.9 20.1 10 19 10ZM12 10C10.9 10 10 10.9 10 12C10 13.1 10.9 14 12 14C13.1 14 14 13.1 14 12C14 10.9 13.1 10 12 10Z"/></svg></button></div>
                 <div class="amt">$0.00 <small>USD</small></div></div>
               <div class="bot" data-surface="graphite-deep"><span class="acc">mtst1ap8…r4fp</span><button class="acopy2" aria-label="Copy address"><span class="svgic" style="--ic:url(assets/icons/copy.svg)" aria-hidden="true"></span></button></div>
             </div>
@@ -3690,7 +3737,7 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
             </div>
             <div class="mbc hero" data-card="slate">
               <div class="top" data-surface="graphite" data-pattern="">
-                <div class="balrow"><div class="tl">Total Balance</div></div>
+                <div class="balrow withmore"><div class="tl">Total Balance</div><button class="bmore" aria-label="Account options"><svg class="dots" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 10C3.9 10 3 10.9 3 12C3 13.1 3.9 14 5 14C6.1 14 7 13.1 7 12C7 10.9 6.1 10 5 10ZM19 10C17.9 10 17 10.9 17 12C17 13.1 17.9 14 19 14C20.1 14 21 13.1 21 12C21 10.9 20.1 10 19 10ZM12 10C10.9 10 10 10.9 10 12C10 13.1 10.9 14 12 14C13.1 14 14 13.1 14 12C14 10.9 13.1 10 12 10Z"/></svg></button></div>
                 <div class="amt">$12,480.50 <small>USD</small></div>
                 <div class="delta"><svg class="tri" viewBox="0 0 8 7" aria-hidden="true"><path d="M4 0 8 7 0 7Z"/></svg>+$40.00 (0.32%)<span class="per">today</span></div>
               </div>
@@ -3703,7 +3750,7 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
           </div>
           <div class="mnav"><button class="t on"><span class="svgic" style="--ic:url(assets/icons/home-new.svg)" aria-hidden="true"></span><span>Home</span></button><button class="t"><span class="svgic" style="--ic:url(assets/icons/explore.svg)" aria-hidden="true"></span><span>Explore</span></button><button class="t"><span class="svgic" style="--ic:url(assets/icons/activity.svg)" aria-hidden="true"></span><span>Activity</span></button></div>
         </div></div></div>
-        <div class="scrnote">Funded state. Balance and amounts in Nunito tabular; addresses in Geist Mono.</div></div>
+        <div class="scrnote"><b>One notification component, not four.</b> Home had four ways to tell you something: this carousel, a banner above the card, a footnote inside the card (<code>.bnote</code>), and a control bolted to the card&rsquo;s label row. Four placements, four sets of geometry, four things to learn, and two of them changed the height of the balance card to say their piece. There is now one, and it is the one the app already ships: <code>HomePrompts.tsx:47</code> wraps every notice in <code>PromptCarousel</code>, which renders nothing at zero prompts and a bare slide at one (<code>PromptCarousel.tsx:92&ndash;93</code>) &mdash; so a screen with a single notice shows a single card and no dots, exactly as the four screens below do. Every notice on Home is now a <code>.mprompt</code> in this slot: unpriced asset, unclaimed notes, offline, node unreachable. <b>The card is 162pt on every Home state.</b> Measured across the eight, it was drawing at <b>five different heights</b> &mdash; 138.6 / 141.6 / 150.0 / 155.7 / 178.7 &mdash; depending on whether the state carried a delta, a skeleton, a footnote, a mask toggle or none of them, so the balance figure and everything under it moved as the wallet loaded, lost the network, or masked itself. <code>.mbc.hero .top{min-height:7.25rem}</code> floors it at the tallest natural state and lets the slack fall where the delta would be, so the number holds its Y. <b>The &ctdot; is not an invention.</b> <code>BalanceCard.tsx:182&ndash;191</code> already renders it and <code>Explore.tsx:192</code> already wires it to the <code>AccountsDrawer</code> &mdash; as a <code>w-5 h-5</code> 20pt circle in the bottom strip, beside the copy affordance, which is both under half the 44pt floor and two targets in one thumb-width. Moved to the label row at 44pt it is the card&rsquo;s only trailing control, and it is what makes <code>Accounts &middot; list</code> reachable at all. Balance and amounts in Nunito tabular; addresses in Geist Mono.</div></div>
 <div><div class="scrcap"><i></i>Home &middot; first run <span class="tag merge">gap</span></div>
         <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
           <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>
@@ -3716,7 +3763,7 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
             </div>
             <div class="mbc hero" data-card="slate">
               <div class="top" data-surface="graphite" data-pattern="">
-                <div class="balrow"><div class="tl">Total Balance</div></div>
+                <div class="balrow withmore"><div class="tl">Total Balance</div><button class="bmore" aria-label="Account options"><svg class="dots" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 10C3.9 10 3 10.9 3 12C3 13.1 3.9 14 5 14C6.1 14 7 13.1 7 12C7 10.9 6.1 10 5 10ZM19 10C17.9 10 17 10.9 17 12C17 13.1 17.9 14 19 14C20.1 14 21 13.1 21 12C21 10.9 20.1 10 19 10ZM12 10C10.9 10 10 10.9 10 12C10 13.1 10.9 14 12 14C13.1 14 14 13.1 14 12C14 10.9 13.1 10 12 10Z"/></svg></button></div>
                 <div class="amt">$0.00 <small>USD</small></div>
               </div>
               <div class="bot" data-surface="graphite-deep"><span class="acc">mtst1ap8&hellip;r4fp</span><button class="acopy2" aria-label="Copy address"><span class="svgic" style="--ic:url(assets/icons/copy.svg)" aria-hidden="true"></span></button></div>
@@ -3730,7 +3777,7 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
           </div>
           <div class="mnav"><button class="t on"><span class="svgic" style="--ic:url(assets/icons/home-new.svg)" aria-hidden="true"></span><span>Home</span></button><button class="t"><span class="svgic" style="--ic:url(assets/icons/explore.svg)" aria-hidden="true"></span><span>Explore</span></button><button class="t"><span class="svgic" style="--ic:url(assets/icons/activity.svg)" aria-hidden="true"></span><span>Activity</span></button></div>
         </div></div></div>
-        <div class="scrnote"><b>GAP.</b> <code>BalanceCard</code> implements a <code>zero</code> variant and <b>nothing ever passes it</b> &mdash; a fresh wallet renders the funded card with <code>$0.00</code> in it, plus the hard-coded <code>+0.00 (0.00%)</code> delta described below, plus an empty assets region with no copy. The two things removed here are the <b>delta</b> and the <b>sparkline</b>: a 0.00&percnt; change and a flat line are not information about a wallet that has never held anything, and the flat line is indistinguishable from the flat line a <em>priced-but-unchanged</em> wallet draws. The empty block carries the one action that resolves the state. It is <code>btn-secondary</code>, not primary: the user has not failed at anything, and an orange CTA on first run reads as a demand.</div></div>
+        <div class="scrnote"><b>GAP.</b> <code>BalanceCard</code> implements a <code>zero</code> variant and <b>nothing ever passes it</b> &mdash; a fresh wallet renders the funded card with <code>$0.00</code> in it, plus the hard-coded <code>+0.00 (0.00%)</code> delta described below, plus an empty assets region with no copy. The two things removed here are the <b>delta</b> and the <b>sparkline</b>: a 0.00&percnt; change and a flat line are not information about a wallet that has never held anything, and the flat line is indistinguishable from the flat line a <em>priced-but-unchanged</em> wallet draws. The empty block carries the one action that resolves the state. It is <code>btn-secondary</code>, not primary: the user has not failed at anything, and an orange CTA on first run reads as a demand. <b>Removing the delta no longer shortens the card.</b> It used to take 17pt of card with it, so a first-run wallet drew a different-sized banner from a funded one; the <code>7.25rem</code> floor holds that space empty instead and the balance sits at the same Y on all eight Home states.</div></div>
 <div><div class="scrcap"><i></i>Home &middot; loading <span class="tag merge">gap</span></div>
         <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
           <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>
@@ -3743,7 +3790,7 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
             </div>
             <div class="mbc hero" data-card="slate">
               <div class="top" data-surface="graphite" data-pattern="">
-                <div class="balrow"><div class="tl">Total Balance</div></div>
+                <div class="balrow withmore"><div class="tl">Total Balance</div><button class="bmore" aria-label="Account options"><svg class="dots" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 10C3.9 10 3 10.9 3 12C3 13.1 3.9 14 5 14C6.1 14 7 13.1 7 12C7 10.9 6.1 10 5 10ZM19 10C17.9 10 17 10.9 17 12C17 13.1 17.9 14 19 14C20.1 14 21 13.1 21 12C21 10.9 20.1 10 19 10ZM12 10C10.9 10 10 10.9 10 12C10 13.1 10.9 14 12 14C13.1 14 14 13.1 14 12C14 10.9 13.1 10 12 10Z"/></svg></button></div>
                 <div class="skel" style="width:58%;height:2rem;margin:0.4375rem 0 0.125rem"></div>
                 <div class="skel2" style="width:34%"></div>
               </div>
@@ -3755,7 +3802,7 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
           </div>
           <div class="mnav"><button class="t on"><span class="svgic" style="--ic:url(assets/icons/home-new.svg)" aria-hidden="true"></span><span>Home</span></button><button class="t"><span class="svgic" style="--ic:url(assets/icons/explore.svg)" aria-hidden="true"></span><span>Explore</span></button><button class="t"><span class="svgic" style="--ic:url(assets/icons/activity.svg)" aria-hidden="true"></span><span>Activity</span></button></div>
         </div></div></div>
-        <div class="scrnote"><b>GAP, and it collides with the screen above.</b> <code>BalanceCard</code> also implements a <code>loading</code> variant that is never passed, so during the first balance read the card renders <code>$0.00</code> &mdash; <b>pixel-identical to a genuinely empty wallet</b>. A returning user with a funded account sees zero and cannot tell whether the wallet is still reading or their money is gone. That is the worst possible ambiguity to leave to a shimmer-free card. The skeleton occupies the exact geometry the real number will, so the card does not resize when the value lands (CLS).</div></div>
+        <div class="scrnote"><b>GAP, and it collides with the screen above.</b> <code>BalanceCard</code> also implements a <code>loading</code> variant that is never passed, so during the first balance read the card renders <code>$0.00</code> &mdash; <b>pixel-identical to a genuinely empty wallet</b>. A returning user with a funded account sees zero and cannot tell whether the wallet is still reading or their money is gone. That is the worst possible ambiguity to leave to a shimmer-free card. The skeleton occupies the exact geometry the real number will, so the card does not resize when the value lands (CLS). The <code>7.25rem</code> floor extends that guarantee to the whole card: at 162pt here and 162pt on every other Home state, the shimmer resolving into a balance moves nothing below it either.</div></div>
 <div><div class="scrcap"><i></i>Home &middot; balance hidden <span class="tag merge">gap</span></div>
         <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
           <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>
@@ -3768,7 +3815,7 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
             </div>
             <div class="mbc hero" data-card="slate">
               <div class="top" data-surface="graphite" data-pattern="">
-                <div class="balrow withhide"><div class="tl">Total Balance</div><button class="balhide" aria-label="Show balance"><span class="svgic" style="--ic:url(assets/icons/eye-off.svg)" aria-hidden="true"></span></button></div>
+                <div class="balrow withmore"><div class="tl">Total Balance</div><button class="bmore" aria-label="Account options"><svg class="dots" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 10C3.9 10 3 10.9 3 12C3 13.1 3.9 14 5 14C6.1 14 7 13.1 7 12C7 10.9 6.1 10 5 10ZM19 10C17.9 10 17 10.9 17 12C17 13.1 17.9 14 19 14C20.1 14 21 13.1 21 12C21 10.9 20.1 10 19 10ZM12 10C10.9 10 10 10.9 10 12C10 13.1 10.9 14 12 14C13.1 14 14 13.1 14 12C14 10.9 13.1 10 12 10Z"/></svg></button></div>
                 <div class="amt"><span class="msk">&bull;&bull;&bull;&bull;&bull;&bull;&bull;</span> <small>USD</small></div>
               </div>
               <div class="bot" data-surface="graphite-deep"><span class="acc">mtst1ap8&hellip;r4fp</span><button class="acopy2" aria-label="Copy address"><span class="svgic" style="--ic:url(assets/icons/copy.svg)" aria-hidden="true"></span></button></div>
@@ -3779,7 +3826,7 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
           </div>
           <div class="mnav"><button class="t on"><span class="svgic" style="--ic:url(assets/icons/home-new.svg)" aria-hidden="true"></span><span>Home</span></button><button class="t"><span class="svgic" style="--ic:url(assets/icons/explore.svg)" aria-hidden="true"></span><span>Explore</span></button><button class="t"><span class="svgic" style="--ic:url(assets/icons/activity.svg)" aria-hidden="true"></span><span>Activity</span></button></div>
         </div></div></div>
-        <div class="scrnote"><b>GAP &mdash; a third unpassed <code>BalanceCard</code> variant, and the only one that also needs a control invented.</b> <code>hidden</code> exists in the component and there is <b>no toggle anywhere in the app</b> to reach it, so the feature is unshippable as built. The eye lives in the card&rsquo;s label row rather than the header, because what it hides is <em>this card</em>, not the screen. Two rules the mask obeys: it masks <b>every</b> number, not just the total &mdash; leaving per-asset amounts visible while blanking the sum defeats the entire point of shoulder-privacy &mdash; and the delta and sparkline go with them, because a visible <code>+0.32&percnt;</code> beside a masked total leaks the direction and rough size of the move. Bullets are a text run in the balance ramp, so they reflow at 200&percnt; instead of a fixed grey plate that would not.</div></div>
+        <div class="scrnote"><b>GAP &mdash; a third unpassed <code>BalanceCard</code> variant, and the only one that also needs a control invented.</b> <code>hidden</code> exists in the component and there is <b>no toggle anywhere in the app</b> to reach it, so the feature is unshippable as built. <b>The toggle is in the sheet the &ctdot; opens, not on the card.</b> An earlier version of this screen put an eye in the label row&rsquo;s top-right &mdash; the slot the &ctdot; now occupies on every state &mdash; which put two 44pt targets inside one thumb-width and made this the one Home state whose card carried a control the others did not. So the mask went where the rest of the account&rsquo;s controls already live: <code>Accounts &middot; list</code>, header right. Two rules the mask obeys: it masks <b>every</b> number, not just the total &mdash; leaving per-asset amounts visible while blanking the sum defeats the entire point of shoulder-privacy &mdash; and the delta and sparkline go with them, because a visible <code>+0.32&percnt;</code> beside a masked total leaks the direction and rough size of the move. Bullets are a text run in the balance ramp, so they reflow at 200&percnt; instead of a fixed grey plate that would not.</div></div>
 <div><div class="scrcap"><i></i>Home &middot; unpriced asset <span class="tag retire">bug</span></div>
         <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
           <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>
@@ -3792,20 +3839,20 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
             </div>
             <div class="mbc hero" data-card="slate">
               <div class="top" data-surface="graphite" data-pattern="">
-                <div class="balrow"><div class="tl">Total Balance</div></div>
+                <div class="balrow withmore"><div class="tl">Total Balance</div><button class="bmore" aria-label="Account options"><svg class="dots" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 10C3.9 10 3 10.9 3 12C3 13.1 3.9 14 5 14C6.1 14 7 13.1 7 12C7 10.9 6.1 10 5 10ZM19 10C17.9 10 17 10.9 17 12C17 13.1 17.9 14 19 14C20.1 14 21 13.1 21 12C21 10.9 20.1 10 19 10ZM12 10C10.9 10 10 10.9 10 12C10 13.1 10.9 14 12 14C13.1 14 14 13.1 14 12C14 10.9 13.1 10 12 10Z"/></svg></button></div>
                 <div class="amt">$12,480.50 <small>USD</small></div>
                 <div class="delta"><svg class="tri" viewBox="0 0 8 7" aria-hidden="true"><path d="M4 0 8 7 0 7Z"/></svg>+$40.00 (0.32%)<span class="per">today</span></div>
-                <div class="bnote">1 asset has no price and is not counted</div>
               </div>
               <div class="bot" data-surface="graphite-deep"><span class="acc">mtst1ap8&hellip;r4fp</span><button class="acopy2" aria-label="Copy address"><span class="svgic" style="--ic:url(assets/icons/copy.svg)" aria-hidden="true"></span></button></div>
             </div>
+            <div class="mprompt" data-status="warn"><div class="ptx"><div class="pt">1 asset has no price</div><div class="pb">TESTA has no price feed, so it is not counted in Total Balance.</div></div></div>
             <div class="masset-h">Assets</div>
             <div class="mrow"><div class="ic"><img src="assets/icons/miden.svg" alt=""></div><div><div class="nm">Miden</div><div class="ad">1,204.50 MIDEN</div></div><div class="rt"><div class="f">$12,480.50</div><div class="b" style="color:var(--pos)">+0.32%</div></div></div>
             <div class="mrow"><div class="ic"><img src="assets/icons/usdc.svg" alt=""></div><div><div class="nm">TESTA</div><div class="ad">840.00 TESTA</div></div><div class="rt"><div class="f">&mdash;</div><div class="b">No price</div></div></div>
           </div>
           <div class="mnav"><button class="t on"><span class="svgic" style="--ic:url(assets/icons/home-new.svg)" aria-hidden="true"></span><span>Home</span></button><button class="t"><span class="svgic" style="--ic:url(assets/icons/explore.svg)" aria-hidden="true"></span><span>Explore</span></button><button class="t"><span class="svgic" style="--ic:url(assets/icons/activity.svg)" aria-hidden="true"></span><span>Activity</span></button></div>
         </div></div></div>
-        <div class="scrnote"><b>This is a shipped money bug, not a missing state.</b> <code>src/lib/prices/binance.ts:21</code> declares <code>DEFAULT_PRICE = { price: 1, change24h: 0, percentageChange24h: 0 }</code> and <code>:85</code> returns it for any symbol Binance does not list: <code>return prices[symbol] ?? DEFAULT_PRICE</code>. So <b>an unpriced token is valued at exactly $1.00 per unit</b> &mdash; a balance of 840 TESTA reports <b>$840.00</b> &mdash; and that fiction is summed into Total Balance. On testnet, where almost nothing is listed, the headline number on the wallet&rsquo;s most-viewed screen is <em>arithmetic performed on invented data</em>, and the only visible tell is a <code>0.00&percnt;</code> delta. The fix is a design decision as much as a code one: an unknown price is <b>not</b> a price of one, so the row says <b>No price</b>, the fiat column is an em dash, and the total states what it excluded rather than silently absorbing it. Falling back to <code>1</code> is defensible for a <em>stablecoin</em> and indefensible as a global default; if the fallback must stay, it belongs behind a per-asset flag, not in the shared getter.</div></div>
+        <div class="scrnote"><b>This is a shipped money bug, not a missing state.</b> <code>src/lib/prices/binance.ts:21</code> declares <code>DEFAULT_PRICE = { price: 1, change24h: 0, percentageChange24h: 0 }</code> and <code>:85</code> returns it for any symbol Binance does not list: <code>return prices[symbol] ?? DEFAULT_PRICE</code>. So <b>an unpriced token is valued at exactly $1.00 per unit</b> &mdash; a balance of 840 TESTA reports <b>$840.00</b> &mdash; and that fiction is summed into Total Balance. On testnet, where almost nothing is listed, the headline number on the wallet&rsquo;s most-viewed screen is <em>arithmetic performed on invented data</em>, and the only visible tell is a <code>0.00&percnt;</code> delta. The fix is a design decision as much as a code one: an unknown price is <b>not</b> a price of one, so the row says <b>No price</b>, the fiat column is an em dash, and a prompt states what the total excluded rather than the total silently absorbing it. <b>That sentence used to be a footnote inside the balance card</b> (<code>.bnote</code>, now deleted from the system). It was a notification drawn on the money, which cost two things: the card grew a line and stopped matching every other Home state at 162pt, and Home gained a second place to look for a notice. A prompt with no CTA and no dismiss is the right shape for it &mdash; there is nothing to do about a missing price feed, and it is not advisory noise you should be able to wave away, because it qualifies the number above it. Falling back to <code>1</code> is defensible for a <em>stablecoin</em> and indefensible as a global default; if the fallback must stay, it belongs behind a per-asset flag, not in the shared getter.</div></div>
 <div><div class="scrcap"><i></i>Home &middot; offline <span class="tag merge">banner</span></div>
         <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
           <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>
@@ -3816,20 +3863,20 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
               <div class="seg" data-act="receive"><span class="svgic" style="--ic:url(assets/icons/receive-new.svg);" aria-hidden="true"></span><span class="lbl">Receive</span></div>
               <div class="seg" data-act="swap"><span class="svgic" style="--ic:url(assets/icons/convert.svg);" aria-hidden="true"></span><span class="lbl">Swap</span></div>
             </div>
-            <div class="mprompt" data-status="warn"><div class="ptx"><div class="pt">You appear to be offline</div><div class="pb">Check your internet connection and try again.</div></div><button class="pcta">Try again</button><button class="pdis" aria-label="Dismiss">&#10005;</button></div>
-            <div class="mbc hero" data-card="slate" style="margin-top:0.75rem">
+            <div class="mbc hero" data-card="slate">
               <div class="top" data-surface="graphite" data-pattern="">
-                <div class="balrow"><div class="tl">Total Balance &middot; updated 14 min ago</div></div>
+                <div class="balrow withmore"><div class="tl">Total Balance &middot; updated 14 min ago</div><button class="bmore" aria-label="Account options"><svg class="dots" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 10C3.9 10 3 10.9 3 12C3 13.1 3.9 14 5 14C6.1 14 7 13.1 7 12C7 10.9 6.1 10 5 10ZM19 10C17.9 10 17 10.9 17 12C17 13.1 17.9 14 19 14C20.1 14 21 13.1 21 12C21 10.9 20.1 10 19 10ZM12 10C10.9 10 10 10.9 10 12C10 13.1 10.9 14 12 14C13.1 14 14 13.1 14 12C14 10.9 13.1 10 12 10Z"/></svg></button></div>
                 <div class="amt">$12,480.50 <small>USD</small></div>
               </div>
               <div class="bot" data-surface="graphite-deep"><span class="acc">mtst1ap8&hellip;r4fp</span><button class="acopy2" aria-label="Copy address"><span class="svgic" style="--ic:url(assets/icons/copy.svg)" aria-hidden="true"></span></button></div>
             </div>
+            <div class="mprompt" data-status="warn"><div class="ptx"><div class="pt">You appear to be offline</div><div class="pb">Check your internet connection and try again.</div></div><button class="pcta">Try again</button><button class="pdis" aria-label="Dismiss">&#10005;</button></div>
             <div class="masset-h">Assets</div>
             <div class="mrow"><div class="ic"><img src="assets/icons/miden.svg" alt=""></div><div><div class="nm">Miden</div><div class="ad">1,204.50 MIDEN</div></div><div class="rt"><div class="f">$12,480.50</div><div class="b">&mdash;</div></div></div>
           </div>
           <div class="mnav"><button class="t on"><span class="svgic" style="--ic:url(assets/icons/home-new.svg)" aria-hidden="true"></span><span>Home</span></button><button class="t"><span class="svgic" style="--ic:url(assets/icons/explore.svg)" aria-hidden="true"></span><span>Explore</span></button><button class="t"><span class="svgic" style="--ic:url(assets/icons/activity.svg)" aria-hidden="true"></span><span>Activity</span></button></div>
         </div></div></div>
-        <div class="scrnote">Copy is verbatim from <code>ConnectivityIssueBanner</code>. Two design consequences the shipped banner does not draw. <b>The delta and sparkline are removed while offline</b> &mdash; both describe a <em>24-hour price move</em>, and prices come from the same network that is down, so leaving them up presents a stale move as a live one. <b>The label row states its own age</b> (&ldquo;updated 14 min ago&rdquo;); a balance shown during a known outage is a cached balance, and a number that cannot say when it was true is worse than no number. <b>Also a real defect:</b> the banner is mounted at <code>Explore.tsx:141</code> and <b>nowhere else</b> &mdash; go offline on Activity, Browser, Settings or mid-send and there is no indication at all. And on mobile and desktop the &ldquo;Try again&rdquo; you see here is <em>inert</em>: <code>onRetry</code> returns early unless <code>isExtension()</code>, so the button is live, tappable, and does nothing.</div></div>
+        <div class="scrnote">Copy is verbatim from <code>ConnectivityIssueBanner</code>. <b>It is a prompt in the carousel now, not a banner above the card.</b> A banner above the balance is a fifth component doing what <code>.mprompt</code> already does, and it pushed the balance down the screen at the exact moment the balance is the thing the user opened the app to check &mdash; so the card kept its position and the notice took the one slot Home has for notices. Nothing was lost in the move: the shipped banner is title, body, retry and dismiss, and <code>.mprompt</code> carries all four. Two design consequences the shipped banner does not draw. <b>The delta and sparkline are removed while offline</b> &mdash; both describe a <em>24-hour price move</em>, and prices come from the same network that is down, so leaving them up presents a stale move as a live one. <b>The label row states its own age</b> (&ldquo;updated 14 min ago&rdquo;); a balance shown during a known outage is a cached balance, and a number that cannot say when it was true is worse than no number. <b>Also a real defect:</b> the banner is mounted at <code>Explore.tsx:141</code> and <b>nowhere else</b> &mdash; go offline on Activity, Browser, Settings or mid-send and there is no indication at all. And on mobile and desktop the &ldquo;Try again&rdquo; you see here is <em>inert</em>: <code>onRetry</code> returns early unless <code>isExtension()</code>, so the button is live, tappable, and does nothing.</div></div>
 <div><div class="scrcap"><i></i>Home &middot; node unreachable <span class="tag merge">banner</span></div>
         <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
           <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>
@@ -3840,21 +3887,21 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
               <div class="seg" data-act="receive"><span class="svgic" style="--ic:url(assets/icons/receive-new.svg);" aria-hidden="true"></span><span class="lbl">Receive</span></div>
               <div class="seg" data-act="swap"><span class="svgic" style="--ic:url(assets/icons/convert.svg);" aria-hidden="true"></span><span class="lbl">Swap</span></div>
             </div>
-            <div class="mprompt" data-status="warn"><div class="ptx"><div class="pt">Cannot reach the Miden node</div><div class="pb">The node may be down or under heavy load. Your balance may be out of date.</div></div><button class="pcta">Retry sync</button><button class="pdis" aria-label="Dismiss">&#10005;</button></div>
-            <div class="mbc hero" data-card="slate" style="margin-top:0.75rem">
+            <div class="mbc hero" data-card="slate">
               <div class="top" data-surface="graphite" data-pattern="">
-                <div class="balrow"><div class="tl">Total Balance &middot; updated 14 min ago</div></div>
+                <div class="balrow withmore"><div class="tl">Total Balance &middot; updated 14 min ago</div><button class="bmore" aria-label="Account options"><svg class="dots" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 10C3.9 10 3 10.9 3 12C3 13.1 3.9 14 5 14C6.1 14 7 13.1 7 12C7 10.9 6.1 10 5 10ZM19 10C17.9 10 17 10.9 17 12C17 13.1 17.9 14 19 14C20.1 14 21 13.1 21 12C21 10.9 20.1 10 19 10ZM12 10C10.9 10 10 10.9 10 12C10 13.1 10.9 14 12 14C13.1 14 14 13.1 14 12C14 10.9 13.1 10 12 10Z"/></svg></button></div>
                 <div class="amt">$12,480.50 <small>USD</small></div>
               </div>
               <div class="bot" data-surface="graphite-deep"><span class="acc">mtst1ap8&hellip;r4fp</span><button class="acopy2" aria-label="Copy address"><span class="svgic" style="--ic:url(assets/icons/copy.svg)" aria-hidden="true"></span></button></div>
             </div>
+            <div class="mprompt" data-status="warn"><div class="ptx"><div class="pt">Cannot reach the Miden node</div><div class="pb">The node may be down or under heavy load. Your balance may be out of date.</div></div><button class="pcta">Retry sync</button><button class="pdis" aria-label="Dismiss">&#10005;</button></div>
             <div class="masset-h">Assets</div>
             <div class="mrow"><div class="ic"><img src="assets/icons/miden.svg" alt=""></div><div><div class="nm">Miden</div><div class="ad">1,204.50 MIDEN</div></div><div class="rt"><div class="f">$12,480.50</div><div class="b">&mdash;</div></div></div>
             <div class="notice" style="background:var(--surface-2);color:var(--ink-2)"><span>&#9432;</span><span>Sending is unavailable until the node responds.</span></div>
           </div>
           <div class="mnav"><button class="t on"><span class="svgic" style="--ic:url(assets/icons/home-new.svg)" aria-hidden="true"></span><span>Home</span></button><button class="t"><span class="svgic" style="--ic:url(assets/icons/explore.svg)" aria-hidden="true"></span><span>Explore</span></button><button class="t"><span class="svgic" style="--ic:url(assets/icons/activity.svg)" aria-hidden="true"></span><span>Activity</span></button></div>
         </div></div></div>
-        <div class="scrnote">Second of four connectivity categories (<code>network &gt; node &gt; prover &gt; resolving</code>, resolved by priority in <code>connectivity-state.ts</code>). It is drawn separately from <b>offline</b> because the user&rsquo;s <em>next move</em> differs: offline is theirs to fix, an unreachable node is not, so the CTA is <b>Retry sync</b> and the screen adds the consequence the shipped copy omits &mdash; <b>you cannot send</b>. The other two categories need no mock: <code>prover</code> is informational (&ldquo;Transactions will use local proving&rdquo;) and <code>resolving</code> is transient, and both reuse this exact frame with no CTA.</div></div>
+        <div class="scrnote">Second of four connectivity categories (<code>network &gt; node &gt; prover &gt; resolving</code>, resolved by priority in <code>connectivity-state.ts</code>). It is drawn separately from <b>offline</b> because the user&rsquo;s <em>next move</em> differs: offline is theirs to fix, an unreachable node is not, so the CTA is <b>Retry sync</b> and the screen adds the consequence the shipped copy omits &mdash; <b>you cannot send</b>. Same move as offline: the banner is a <code>.mprompt</code> in the carousel below the card, because Home has one notification component and this is a notification. <b>It also found a truncation.</b> <code>connectivityNodeBody</code> is the longest prompt string in the system and <code>.pb</code> clamped at two lines, so it read &ldquo;Your balance may be&rdquo; and stopped &mdash; a verbatim i18n string cut mid-sentence. The clamp is 3, which is what that string and the guardian prompt need and what the rule&rsquo;s own comment had claimed all along. The other two categories need no mock: <code>prover</code> is informational (&ldquo;Transactions will use local proving&rdquo;) and <code>resolving</code> is transient, and both reuse this exact frame with no CTA.</div></div>
 <div><div class="scrcap"><i></i>Home &middot; notes to claim <span class="tag merge">gap</span></div>
         <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
           <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>
@@ -3865,22 +3912,21 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
               <div class="seg" data-act="receive"><span class="svgic" style="--ic:url(assets/icons/receive-new.svg);" aria-hidden="true"></span><span class="lbl">Receive</span></div>
               <div class="seg" data-act="swap"><span class="svgic" style="--ic:url(assets/icons/convert.svg);" aria-hidden="true"></span><span class="lbl">Swap</span></div>
             </div>
-            <div class="mprompt"><div class="ptx"><div class="pt">2 notes waiting to be claimed</div><div class="pb">52.50 MIDEN was sent to you. It is not spendable until you claim it.</div></div><button class="pcta">Claim</button></div>
-            <div class="mbc hero" data-card="slate" style="margin-top:0.75rem">
+            <div class="mbc hero" data-card="slate">
               <div class="top" data-surface="graphite" data-pattern="">
-                <div class="balrow"><div class="tl">Total Balance</div></div>
+                <div class="balrow withmore"><div class="tl">Total Balance</div><button class="bmore" aria-label="Account options"><svg class="dots" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 10C3.9 10 3 10.9 3 12C3 13.1 3.9 14 5 14C6.1 14 7 13.1 7 12C7 10.9 6.1 10 5 10ZM19 10C17.9 10 17 10.9 17 12C17 13.1 17.9 14 19 14C20.1 14 21 13.1 21 12C21 10.9 20.1 10 19 10ZM12 10C10.9 10 10 10.9 10 12C10 13.1 10.9 14 12 14C13.1 14 14 13.1 14 12C14 10.9 13.1 10 12 10Z"/></svg></button></div>
                 <div class="amt">$12,480.50 <small>USD</small></div>
                 <div class="delta"><svg class="tri" viewBox="0 0 8 7" aria-hidden="true"><path d="M4 0 8 7 0 7Z"/></svg>+$40.00 (0.32%)<span class="per">today</span></div>
-                <div class="bnote">52.50 MIDEN unclaimed, not counted</div>
               </div>
               <div class="bot" data-surface="graphite-deep"><span class="acc">mtst1ap8&hellip;r4fp</span><button class="acopy2" aria-label="Copy address"><span class="svgic" style="--ic:url(assets/icons/copy.svg)" aria-hidden="true"></span></button></div>
             </div>
+            <div class="mprompt"><div class="ptx"><div class="pt">2 notes waiting to be claimed</div><div class="pb">52.50 MIDEN was sent to you. Not counted, not spendable until you claim it.</div></div><button class="pcta">Claim</button></div>
             <div class="masset-h">Assets</div>
             <div class="mrow"><div class="ic"><img src="assets/icons/miden.svg" alt=""></div><div><div class="nm">Miden</div><div class="ad">1,204.50 MIDEN</div></div><div class="rt"><div class="f">$12,480.50</div><div class="b" style="color:var(--pos)">+0.32%</div></div></div>
           </div>
           <div class="mnav"><button class="t on"><span class="svgic" style="--ic:url(assets/icons/home-new.svg)" aria-hidden="true"></span><span>Home</span></button><button class="t"><span class="svgic" style="--ic:url(assets/icons/explore.svg)" aria-hidden="true"></span><span>Explore</span></button><button class="t"><span class="svgic" style="--ic:url(assets/icons/activity.svg)" aria-hidden="true"></span><span>Activity</span></button></div>
         </div></div></div>
-        <div class="scrnote"><b>GAP &mdash; money arrives and the wallet says nothing.</b> An unclaimed note is not in the balance and is not spendable, and <b>Home has no affordance for it whatsoever</b>. The one piece of machinery built for this, <code>useHistoryBadge()</code>, has <b>zero callers</b> &mdash; its own docstring says it is &ldquo;shared with TabLayout&rdquo; and <code>TabLayout</code> never imports it, so no badge renders anywhere. Its logic is also inverted: it returns <code>false</code> unless <code>isAutoConsumeEnabled()</code>, so it would light up precisely when the notes claim <em>themselves</em> and stay dark when the user actually has to act. The prompt states the amount, because &ldquo;you have notes&rdquo; is not a reason to tap anything, and the card footnote closes the loop the total would otherwise leave open &mdash; the balance is <em>correct</em> and <em>lower than what you own</em>, which is exactly the case a bare number cannot explain. This is the only prompt with no dismiss: the other three are advisory, this one is unclaimed money.</div></div>
+        <div class="scrnote"><b>GAP &mdash; money arrives and the wallet says nothing.</b> An unclaimed note is not in the balance and is not spendable, and <b>Home has no affordance for it whatsoever</b>. The one piece of machinery built for this, <code>useHistoryBadge()</code>, has <b>zero callers</b> &mdash; its own docstring says it is &ldquo;shared with TabLayout&rdquo; and <code>TabLayout</code> never imports it, so no badge renders anywhere. Its logic is also inverted: it returns <code>false</code> unless <code>isAutoConsumeEnabled()</code>, so it would light up precisely when the notes claim <em>themselves</em> and stay dark when the user actually has to act. The prompt states the amount, because &ldquo;you have notes&rdquo; is not a reason to tap anything. <b>&ldquo;Not counted&rdquo; is the prompt&rsquo;s second sentence, not a footnote on the card.</b> It was a <code>.bnote</code> reading &ldquo;52.50 MIDEN unclaimed, not counted&rdquo; sitting under the balance &mdash; the same 52.50 MIDEN the prompt directly above it was already about, said twice, in two components, one of which made the card taller than every other Home state. Merged into the prompt it is one notice: the balance is <em>correct</em> and <em>lower than what you own</em>, which is exactly the case a bare number cannot explain. This is the only prompt with no dismiss: the other three are advisory, this one is unclaimed money.</div></div>
 <div><div class="scrcap"><i></i>Accounts &middot; list <span class="tag retire">proposed</span></div>
         <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
           <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>
@@ -3888,7 +3934,7 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
           <div class="shscrim"></div>
           <div class="msheet">
             <div class="mshandle"></div>
-            <div class="mshead">Accounts</div>
+            <div class="mshead">Accounts<button class="shact" aria-label="Hide balances"><span class="svgic" style="--ic:url(assets/icons/eye-off.svg)" aria-hidden="true"></span></button></div>
             <div class="mlist">
               <div class="mbc" data-card="blue"><div class="top" data-surface="graphite" data-pattern=""><button class="aedit">Edit</button><div class="balrow"><div class="anm"><svg class="achk" viewBox="0 0 12 12" aria-hidden="true"><path d="M3 6.4 5 8.6 9 3.8"/></svg>Miden Account 1</div></div><div class="amt">$1,204.00 <small>USD</small></div></div></div>
               <div class="mbc" data-card="green"><div class="top" data-surface="graphite" data-pattern=""><button class="aedit">Edit</button><div class="balrow"><div class="anm"><svg class="achk" viewBox="0 0 12 12" aria-hidden="true"><path d="M3 6.4 5 8.6 9 3.8"/></svg>Miden Account 2</div></div><div class="amt">$318.90 <small>USD</small></div></div></div>
@@ -3898,7 +3944,7 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
             <div class="zone"><button class="btn btn-secondary withic"><span class="svgic" style="--ic:url(assets/icons/add.svg)" aria-hidden="true"></span>Add account</button></div>
           </div>
         </div></div></div>
-        <div class="scrnote"><b>Proposed &mdash; multi-account does not exist yet.</b> The shipped <code>AccountsDrawer</code> lists <em>no accounts at all</em>: it is a card-colour picker, a Settings link, and a <em>disabled</em> &ldquo;Add account (coming soon)&rdquo; button whose dashed outline also breaks the no-bordered-controls rule. <b>Vertical list, not an Apple-Wallet stack</b> &mdash; the stack was built first and failed on three counts: in <b>dark</b> every card was then near-black, so overlapping merged all three into one block (tinting each with its account hue at 12&percnt; measured <b>1.00&ndash;1.04:1</b> between adjacent cards, because hue separates almost nothing at near-black). <i>That premise is now retired:</i> dark cards keep their hue instead of collapsing to near-black, so adjacent cards are separable &mdash; but the other two objections below still stand, which is why this is a list and not a stack; the collapsed band forced a choice between the name and the balance, with one card&rsquo;s amount butting into the next card&rsquo;s name; and it grew 64px per account, stopping around six. Blocks here are the card&rsquo;s top half &mdash; name and balance, which is what you choose between &mdash; with no delta, since performance is not why this sheet is open. Selection is <b>a ring in the card&rsquo;s own colour, held off the card by a gap</b> of the surround. The filled check stays as the redundant carrier: with ring and fill sharing a hue, the gap is the only thing making them two objects, so on a low-DPR screen or a clipped container the check is what still reads. The ring is <code>--accent-ink</code> rather than <code>--accent</code> wherever a card has no colour of its own &mdash; bare <code>--accent</code> measures <b>2.90:1</b> on <code>--paper</code>, so the orange ring this replaced was itself failing SC 1.4.11. <b>Renaming is deliberately not here:</b> the list answers &ldquo;which account&rdquo;, and a rename affordance would compete with the selection gesture.</div></div>
+        <div class="scrnote"><b>This sheet is what the balance card&rsquo;s &ctdot; opens</b>, which until now nothing on Home did &mdash; it and <code>Account sheet</code> were drawn and unreachable. The route is already built in the app: <code>BalanceCard.tsx:182</code> &rarr; <code>Explore.tsx:192</code> &rarr; <code>AccountsDrawer</code>, whose own docstring calls it &ldquo;the bottom sheet opened from the BalanceCard &lsquo;more&rsquo; (3-dots) button&rdquo;. <b>The balance mask lives in this header</b> (top right), not on the card. <code>BalanceCard</code>&rsquo;s <code>hidden</code> state has zero call sites, so the toggle had to go somewhere; the card&rsquo;s label row already spends its one trailing slot on the &ctdot;, and a second 44pt target beside it is the thumb-width crowding this system keeps having to correct. Header-right is where this sheet family already puts utilities &mdash; the same slot as the Settings gear. <b>Proposed &mdash; multi-account does not exist yet.</b> The shipped <code>AccountsDrawer</code> lists <em>no accounts at all</em>: it is a card-colour picker, a Settings link, and a <em>disabled</em> &ldquo;Add account (coming soon)&rdquo; button whose dashed outline also breaks the no-bordered-controls rule. <b>Vertical list, not an Apple-Wallet stack</b> &mdash; the stack was built first and failed on three counts: in <b>dark</b> every card was then near-black, so overlapping merged all three into one block (tinting each with its account hue at 12&percnt; measured <b>1.00&ndash;1.04:1</b> between adjacent cards, because hue separates almost nothing at near-black). <i>That premise is now retired:</i> dark cards keep their hue instead of collapsing to near-black, so adjacent cards are separable &mdash; but the other two objections below still stand, which is why this is a list and not a stack; the collapsed band forced a choice between the name and the balance, with one card&rsquo;s amount butting into the next card&rsquo;s name; and it grew 64px per account, stopping around six. Blocks here are the card&rsquo;s top half &mdash; name and balance, which is what you choose between &mdash; with no delta, since performance is not why this sheet is open. Selection is <b>a ring in the card&rsquo;s own colour, held off the card by a gap</b> of the surround. The filled check stays as the redundant carrier: with ring and fill sharing a hue, the gap is the only thing making them two objects, so on a low-DPR screen or a clipped container the check is what still reads. The ring is <code>--accent-ink</code> rather than <code>--accent</code> wherever a card has no colour of its own &mdash; bare <code>--accent</code> measures <b>2.90:1</b> on <code>--paper</code>, so the orange ring this replaced was itself failing SC 1.4.11. <b>Renaming is deliberately not here:</b> the list answers &ldquo;which account&rdquo;, and a rename affordance would compete with the selection gesture.</div></div>
 <div><div class="scrcap"><i></i>Account sheet <span class="tag retire">proposed</span></div>
         <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
           <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>
