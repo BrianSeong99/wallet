@@ -1584,6 +1584,11 @@ ul.tick li:before{content:"→";position:absolute;left:0.125rem;color:var(--acce
    our ramp, so this ENFORCES --t-balance rather than adding a tenth step for a
    single screen. Mono because the system reserves Geist Mono for addresses and
    hashes; shipped uses the display face here and we diverge deliberately. */
+/* Placeholder recedes; content does not. With the visible label removed, the placeholder at
+   32px/800 sat under a 26px/800 heading and the two read as two titles -- the emptiest element
+   on the screen being the loudest, which is the defect this field was redrawn to fix. Empty and
+   filled now differ by weight and ink as well as by wording. */
+.heroin.ph{font-weight:500;color:var(--ink-3)}
 .heroin{font-family:var(--mono);font-size:var(--t-balance);font-weight:700;line-height:1.15;
   letter-spacing:-.02em;color:var(--ink-3);word-break:normal;overflow-wrap:anywhere;margin:0.375rem 0 1.125rem}
 /* Inert primary drops the accent fill rather than dimming it, so the control
@@ -3994,34 +3999,6 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
     <div class="scrgrid">
       <div><div class="scrcap"><i></i>Send · recipient</div>
         <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
-          <div class="stat"><span>9:41</span><span class="r">✦ ▪ ▪</span></div>
-          <div class="mpad" style="flex:1;display:flex;flex-direction:column">
-            <div class="mseg" data-seg>
-              <div class="seg"><span class="svgic" style="--ic:url(assets/icons/wallet.svg);" aria-hidden="true"></span><span class="lbl">Overview</span></div>
-              <div class="seg on" data-act="send"><span class="svgic" style="--ic:url(assets/icons/send-new.svg);" aria-hidden="true"></span><span class="lbl">Send</span></div>
-              <div class="seg" data-act="receive"><span class="svgic" style="--ic:url(assets/icons/receive-new.svg);" aria-hidden="true"></span><span class="lbl">Receive</span></div>
-              <div class="seg" data-act="swap"><span class="svgic" style="--ic:url(assets/icons/convert.svg);" aria-hidden="true"></span><span class="lbl">Swap</span></div>
-            </div>
-            <div class="pgtitle">Choose recipient</div>
-            <div class="fld" style="width:auto"><label>To</label>
-              <div class="fieldrow">
-                <div class="searchf" style="width:auto;flex:1;min-width:0">Address or name</div>
-                <button class="tokchip" style="align-self:auto">Paste</button>
-                <button class="scanbtn" aria-label="Scan a QR code"><span class="svgic" style="--ic:url(assets/icons/qr-scan.svg)" aria-hidden="true"></span></button>
-              </div>
-            </div>
-            <div class="shlab" style="margin-top:1.125rem">Recent</div>
-            <div class="mrow tap"><div class="ic" style="background:var(--tx-sent)"><span class="ini">W</span></div><div><div class="nm">Wiktor</div><div class="ad addr">mtst1ap8&hellip;r4fp</div></div><span class="fam"><span class="nlg" style="background:var(--paper)"><img src="assets/icons/miden.svg" alt=""></span>Miden</span><span class="go" aria-hidden="true">&rsaquo;</span></div>
-            <div class="mrow tap"><div class="ic" style="background:var(--tx-swap)"><span class="ini">D</span></div><div><div class="nm">Dominik</div><div class="ad addr">0x4E1a2b&hellip;7c90</div></div><span class="fam"><span class="nlg" style="background:#0052FF"></span>Base</span><span class="go" aria-hidden="true">&rsaquo;</span></div>
-            <div class="mrow tap"><div class="ic anon"></div><div><div class="nm addr">mtst1zz9&hellip;41mn</div><div class="ad">Sent 2 days ago</div></div><span class="fam"><span class="nlg" style="background:var(--paper)"><img src="assets/icons/miden.svg" alt=""></span>Miden</span><span class="go" aria-hidden="true">&rsaquo;</span></div>
-            <div class="mrow tap"><div class="ic" style="background:var(--surface-3)"><span class="svgic" style="--ic:url(assets/icons/contacts-book.svg);width:1.0625rem;height:1.0625rem;background-color:var(--ink-2)" aria-hidden="true"></span></div><div><div class="nm">Address Book</div><div class="ad">All saved contacts</div></div><span class="go" aria-hidden="true">&rsaquo;</span></div>
-          </div>
-        
-          <div class="mnav"><button class="t on"><span class="svgic" style="--ic:url(assets/icons/home-new.svg)" aria-hidden="true"></span><span>Home</span></button><button class="t"><span class="svgic" style="--ic:url(assets/icons/explore.svg)" aria-hidden="true"></span><span>Explore</span></button><button class="t"><span class="svgic" style="--ic:url(assets/icons/activity.svg)" aria-hidden="true"></span><span>Activity</span></button></div>
-        </div></div></div>
-        <div class="scrnote"><b>Redrawn — the previous version broke three form rules at once.</b> The address input was a borderless <b>40px</b> placeholder in the display face with <em>no label</em>, so it read as a heading rather than a field: placeholder-as-only-label and an input that looks like plain text are both named anti-patterns. Worse, the placeholder was <b>half again the size of the page heading</b> (40px against 26px, <code>SelectRecipient.tsx</code>), so the emptiest element on the screen was the loudest thing on it. And 311pt — <b>37% of the screen</b> — was dead, while offering exactly one way to enter a 49-character bech32 string. Now: a labelled field, <b>Paste and Scan beside it</b> because pasting is how addresses are actually entered, and the recovered space holds recents. Named contacts above raw addresses — recognition over recall. Dead space is down to 12%. <b>Proposed, not shipped:</b> there is no recents feature in the code, and <code>qr-scan.svg</code> sits in <code>assets/icons/</code> referenced by nothing. Shipped <code>SelectRecipient.tsx</code> renders the borderless textarea, the Address Book pill, and nothing else.</div></div>
-<div><div class="scrcap"><i></i>Send &middot; recipient, option A <span class="tag merge">variant</span></div>
-        <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
           <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>
           <div class="mpad" style="flex:1;display:flex;flex-direction:column">
             <div class="mseg" data-seg>
@@ -4030,13 +4007,12 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
               <div class="seg" data-act="receive"><span class="svgic" style="--ic:url(assets/icons/receive-new.svg);" aria-hidden="true"></span><span class="lbl">Receive</span></div>
               <div class="seg" data-act="swap"><span class="svgic" style="--ic:url(assets/icons/convert.svg);" aria-hidden="true"></span><span class="lbl">Swap</span></div>
             </div>
-            <div class="pgtitle">Choose recipient</div>
-            <div class="fld" style="width:auto"><label for="a-to">To</label>
-              <div class="heroin" id="a-to" style="font-family:var(--display);font-weight:800;letter-spacing:-.01em">Enter Miden Address</div>
+            <div class="pgtitle" id="r-h">Send To</div>
+            <div class="fld" style="width:auto"><div class="heroin ph" role="textbox" aria-labelledby="r-h" style="font-family:var(--display);letter-spacing:-.01em">Enter Address</div>
               <div class="fieldrow" style="flex-wrap:wrap">
-                <button class="tokchip"><span class="svgic" style="--ic:url(assets/icons/copy.svg);width:1.0625rem;height:1.0625rem" aria-hidden="true"></span>Paste</button>
-                <button class="tokchip"><span class="svgic" style="--ic:url(assets/icons/qr-scan.svg);width:1.0625rem;height:1.0625rem" aria-hidden="true"></span>Scan</button>
-                <button class="tokchip"><span class="svgic" style="--ic:url(assets/icons/contacts-book.svg);width:1.0625rem;height:1.0625rem" aria-hidden="true"></span>Address Book</button>
+                <button class="tokchip" aria-label="Paste address"><span class="svgic" style="--ic:url(assets/icons/copy.svg);width:1.0625rem;height:1.0625rem" aria-hidden="true"></span></button>
+              <button class="tokchip" aria-label="Scan a QR code"><span class="svgic" style="--ic:url(assets/icons/qr-scan.svg);width:1.0625rem;height:1.0625rem" aria-hidden="true"></span></button>
+              <button class="tokchip"><span class="svgic" style="--ic:url(assets/icons/contacts-book.svg);width:1.0625rem;height:1.0625rem" aria-hidden="true"></span>Address Book</button>
               </div>
             </div>
             <div class="shlab" style="margin-top:1.125rem">Recent</div>
@@ -4046,8 +4022,11 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
           </div>
           <div class="mnav"><button class="t on"><span class="svgic" style="--ic:url(assets/icons/home-new.svg)" aria-hidden="true"></span><span>Home</span></button><button class="t"><span class="svgic" style="--ic:url(assets/icons/explore.svg)" aria-hidden="true"></span><span>Explore</span></button><button class="t"><span class="svgic" style="--ic:url(assets/icons/activity.svg)" aria-hidden="true"></span><span>Activity</span></button></div>
         </div></div></div>
-        <div class="scrnote"><b>Closest to the extension Brian compared against, with the one thing it is missing bolted back on.</b> Shipped draws the address as a borderless <code>rows={1}</code> textarea at <code>text-[40px] font-bold</code> (<code>SelectRecipient.tsx:58&ndash;74</code>) that auto-grows on every keystroke (<code>:45&ndash;50</code>), above a page heading set at <code>text-2xl</code> = 24px (<code>:55</code>). The field is <b>1.67&times; the heading</b> and carries <b>no label at all</b>, so the loudest element on an empty screen is a placeholder &mdash; placeholder-as-only-label, SC 3.3.2. This keeps the size and drops a real <code>&lt;label&gt;</code> above it: 13px, <code>--ink-2</code>, permanently visible, and it survives the field being filled, which a placeholder does not.<br><br><b>40px is not on the ramp</b> &mdash; the nine steps are 11 / 13 / 15 / 16 / 19 / 20 / 26 / 32 / 72 &mdash; so this uses <code>.heroin</code>, which already pins exactly this case to <code>--t-balance</code> 32px rather than minting a tenth step for one screen. At 32px Geist Mono the 48-character testnet address in <code>lib/qr/format.test.ts:4</code> still wraps to three lines inside a 402pt frame, which is the property Brian is asking for; 40px buys a fourth line, not more legibility.<br><br><b>The placeholder is set in Nunito, the value in Geist Mono</b> &mdash; the same split all three variants use. Rule 9 reserves the mono face for addresses and hashes, and &ldquo;Enter Miden Address&rdquo; is a sentence, not an address; set in mono at 32px it also wrapped to two lines, so an empty field looked like a full one. In the display face it fits on one line and the empty and filled states differ by <em>face</em>, not only by ink &mdash; which is the non-colour distinction SC 1.4.1 wants anyway.<br><br><b>Paste, Scan and Address Book are one row under the field</b>, not crowding it. Only <b>Address Book</b> exists today &mdash; a single secondary pill, the sole action on the shipped screen (<code>:79&ndash;87</code>, opening the contacts drawer via <code>SendManager.tsx:428</code>). <code>scanQRCode()</code> is written and has <b>zero callers</b> (<code>lib/qr/scanner.ts</code>), and <b>there is no <code>paste</code> key in <code>en.json</code></b> &mdash; the label is proposed. The row is <code>flex-wrap</code>: at 402 and 375pt it is one line, at 360 and below it becomes two rather than overflowing the gutter. <b>Cost:</b> the stack is title + label + three-line field + chip row + Recent, and on the 360&times;600 extension popup that leaves room for roughly one Recent row before the fold &mdash; A is the variant that pays most for the big field. <b>No Confirm</b>, per Brian: the shipped one (<code>:90&ndash;99</code>) is gone and you commit by tapping the resolved row. <b>Proposed:</b> Recent has no producer in the code.</div></div>
-      <div><div class="scrcap"><i></i>Send &middot; recipient, option B <span class="tag merge">variant</span></div>
+        <div class="scrnote"><b>Option A, chosen 2026-07-27, with four changes on top of it.</b> <b>The heading is the label now.</b> It reads <i>Send To</i> and the separate <code>To</code> beneath it is gone &mdash; two words for one thing, eighteen points apart, is not a label and a heading, it is the same label twice. The field carries <code>aria-labelledby</code> pointing at the heading, so dropping the visible <code>&lt;label&gt;</code> costs nothing under SC 3.3.2: the name is still programmatic, it is just not printed twice. <b>That change had a cost the mock exposed immediately</b> &mdash; with the label gone, the placeholder at 32px/800 sat directly under a 26px/800 heading and the two read as stacked titles, the emptiest element on the screen being the loudest. Exactly the defect this screen was redrawn to fix. The placeholder now recedes to <code>--ink-3</code> at weight 500 while the <em>filled</em> field keeps 800 and <code>--ink</code>: same box, and empty versus filled differs by weight and ink, not only by wording. <b>The placeholder dropped &ldquo;Miden&rdquo;</b> &mdash; the field takes Miden, EVM and Solana addresses and detects which as you type, so naming one network told the user the opposite of what the field does. <b>Paste and Scan are icon&#8209;only; Address Book keeps its word.</b> The two icons are <em>mechanisms</em> &mdash; they put an address in the field and nothing else happens. Address Book opens a list you have to read and choose from, so it says so. Both icon buttons carry an <code>aria-label</code>: an icon-only control without one is the anti-pattern, not the icon itself.</div></div>
+
+      
+      
+      <div><div class="scrcap"><i></i>Send · recipient, filled</div>
         <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
           <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>
           <div class="mpad" style="flex:1;display:flex;flex-direction:column">
@@ -4057,67 +4036,12 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
               <div class="seg" data-act="receive"><span class="svgic" style="--ic:url(assets/icons/receive-new.svg);" aria-hidden="true"></span><span class="lbl">Receive</span></div>
               <div class="seg" data-act="swap"><span class="svgic" style="--ic:url(assets/icons/convert.svg);" aria-hidden="true"></span><span class="lbl">Swap</span></div>
             </div>
-            <label class="pgtitle" for="b-to" style="font-size:var(--t-heading);color:var(--ink-2)">Choose recipient</label>
-            <div class="fld" style="width:auto">
-              <div class="heroin" id="b-to" style="font-family:var(--display);font-weight:800;letter-spacing:-.01em;min-height:6.875rem;margin:0.375rem 0 0.75rem">Enter Miden Address</div>
-              <div class="hint">Miden addresses start <span class="mono" style="color:var(--ink-2)">mtst1</span>. EVM addresses start <span class="mono" style="color:var(--ink-2)">0x</span>.</div>
-              <div class="fieldrow" style="flex-wrap:wrap;margin-top:1rem">
-                <button class="tokchip"><span class="svgic" style="--ic:url(assets/icons/copy.svg);width:1.0625rem;height:1.0625rem" aria-hidden="true"></span>Paste</button>
-                <button class="tokchip"><span class="svgic" style="--ic:url(assets/icons/qr-scan.svg);width:1.0625rem;height:1.0625rem" aria-hidden="true"></span>Scan</button>
-                <button class="tokchip"><span class="svgic" style="--ic:url(assets/icons/contacts-book.svg);width:1.0625rem;height:1.0625rem" aria-hidden="true"></span>Address Book</button>
-              </div>
-            </div>
-            <button class="btn btn-ghost" style="margin:0.25rem 0 0;padding-left:0;padding-right:0;width:100%;color:var(--ink);display:flex;align-items:center;gap:0.5rem;text-align:left">
-              <span class="svgic" style="--ic:url(assets/icons/activity.svg);width:1.0625rem;height:1.0625rem" aria-hidden="true"></span>Recent<span class="go" style="margin-left:auto;color:var(--ink-2)" aria-hidden="true">&rsaquo;</span>
-            </button>
-          </div>
-          <div class="mnav"><button class="t on"><span class="svgic" style="--ic:url(assets/icons/home-new.svg)" aria-hidden="true"></span><span>Home</span></button><button class="t"><span class="svgic" style="--ic:url(assets/icons/explore.svg)" aria-hidden="true"></span><span>Explore</span></button><button class="t"><span class="svgic" style="--ic:url(assets/icons/activity.svg)" aria-hidden="true"></span><span>Activity</span></button></div>
-        </div></div></div>
-        <div class="scrnote"><b>The label and the page heading are the same element.</b> A separate 26px title above a 13px &ldquo;To&rdquo; above a 32px field is three levels of heading for one input, and the middle one exists only to satisfy SC 3.3.2. Here the heading <em>is</em> the <code>&lt;label&gt;</code> &mdash; <code>chooseRecipient</code> verbatim, <code>&lt;label for&gt;</code> bound to the field &mdash; so the requirement is met by the element that was already on the screen and the field gets the whole upper third to itself. That is the closest any of the three gets to how the extension actually feels. The label drops to <code>--t-heading</code> 20px and <code>--ink-2</code>: at 26px in the same face it and the 32px placeholder read as two competing headings, which is the exact fault the shipped 24px&#8239;/&#8239;40px pair has. A label is smaller and quieter than the value it names.<br><br><b>The empty area is reserved at three lines, not grown into.</b> Shipped grows the textarea from one row (<code>SelectRecipient.tsx:45&ndash;50</code>), so pasting a 48-character address shoves Address Book 74pt down the page mid-interaction. Reserving the height means paste changes the ink and nothing else moves.<br><br><b>Recent collapses to one ghost row that opens a sheet.</b> It stays grouped with the field rather than pinned above the nav: pinned, it left a 500pt hole in the middle of the screen that reads as a layout bug, not as composition. <b>Cost, and it is the real one:</b> the bottom half of the frame is now empty &mdash; ~130pt of reserved field plus ~330pt below the ghost row &mdash; which is the same dead space the shipped screen was marked down for (311pt, 37&percnt; of the frame). B moves that emptiness rather than removing it. And it puts <b>Recent behind a tap</b>, which is the fastest path on a repeat send and the one thing a wallet does more than anything else. <b>Proposed copy:</b> the hint line has no key in <code>en.json</code>, and today an <code>0x</code> string is rejected outright as <code>invalidMidenAccountId</code> (<code>SendManager.tsx:372&ndash;374</code>), so the hint would be lying until bridging ships.</div></div>
-      <div><div class="scrcap"><i></i>Send &middot; recipient, option C <span class="tag merge">variant</span></div>
-        <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
-          <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>
-          <div class="mpad" style="flex:1;display:flex;flex-direction:column">
-            <div class="mseg" data-seg>
-              <div class="seg"><span class="svgic" style="--ic:url(assets/icons/wallet.svg);" aria-hidden="true"></span><span class="lbl">Overview</span></div>
-              <div class="seg on" data-act="send"><span class="svgic" style="--ic:url(assets/icons/send-new.svg);" aria-hidden="true"></span><span class="lbl">Send</span></div>
-              <div class="seg" data-act="receive"><span class="svgic" style="--ic:url(assets/icons/receive-new.svg);" aria-hidden="true"></span><span class="lbl">Receive</span></div>
-              <div class="seg" data-act="swap"><span class="svgic" style="--ic:url(assets/icons/convert.svg);" aria-hidden="true"></span><span class="lbl">Swap</span></div>
-            </div>
-            <div class="pgtitle">Choose recipient</div>
-            <div class="fld" style="width:auto"><label for="c-to">To</label>
-              <div class="heroin" id="c-to" style="font-family:var(--display);font-weight:800;font-size:var(--t-heading);margin:0.25rem 0 0.875rem">Enter Miden Address</div>
-              <div class="tkacts" style="margin-top:0">
-                <button class="tkact" style="background:var(--surface-2);color:var(--ink);flex-direction:column;gap:0.375rem;min-height:76px"><span class="svgic" style="--ic:url(assets/icons/copy.svg);width:1.375rem;height:1.375rem;background-color:var(--ink-2)" aria-hidden="true"></span>Paste</button>
-                <button class="tkact" style="background:var(--surface-2);color:var(--ink);flex-direction:column;gap:0.375rem;min-height:76px"><span class="svgic" style="--ic:url(assets/icons/qr-scan.svg);width:1.375rem;height:1.375rem;background-color:var(--ink-2)" aria-hidden="true"></span>Scan</button>
-                <button class="tkact" style="background:var(--surface-2);color:var(--ink);flex-direction:column;gap:0.375rem;min-height:76px"><span class="svgic" style="--ic:url(assets/icons/contacts-book.svg);width:1.375rem;height:1.375rem;background-color:var(--ink-2)" aria-hidden="true"></span>Contacts</button>
-              </div>
-            </div>
-            <div class="shlab" style="margin-top:1.125rem">Recent</div>
-            <div class="mrow tap"><div class="ic" style="background:var(--tx-sent)"><span class="ini">W</span></div><div><div class="nm">Wiktor</div><div class="ad addr">mtst1ap8&hellip;r4fp</div></div><span class="fam"><span class="nlg" style="background:var(--paper)"><img src="assets/icons/miden.svg" alt=""></span>Miden</span><span class="go" aria-hidden="true">&rsaquo;</span></div>
-            <div class="mrow tap"><div class="ic" style="background:var(--tx-swap)"><span class="ini">D</span></div><div><div class="nm">Dominik</div><div class="ad addr">0x4E1a2b&hellip;7c90</div></div><span class="fam"><span class="nlg" style="background:#0052FF"></span>Base</span><span class="go" aria-hidden="true">&rsaquo;</span></div>
-            <div class="mrow tap"><div class="ic anon"></div><div><div class="nm addr">mtst1zz9&hellip;41mn</div><div class="ad">Sent 2 days ago</div></div><span class="fam"><span class="nlg" style="background:var(--paper)"><img src="assets/icons/miden.svg" alt=""></span>Miden</span><span class="go" aria-hidden="true">&rsaquo;</span></div>
-          </div>
-          <div class="mnav"><button class="t on"><span class="svgic" style="--ic:url(assets/icons/home-new.svg)" aria-hidden="true"></span><span>Home</span></button><button class="t"><span class="svgic" style="--ic:url(assets/icons/explore.svg)" aria-hidden="true"></span><span>Explore</span></button><button class="t"><span class="svgic" style="--ic:url(assets/icons/activity.svg)" aria-hidden="true"></span><span>Activity</span></button></div>
-        </div></div></div>
-        <div class="scrnote"><b>Nobody types a bech32 address.</b> They paste it, scan it, or pick it &mdash; so on an empty screen the field is the affordance least likely to be used, and shipped makes it the largest thing on the page anyway (<code>SelectRecipient.tsx:58&ndash;74</code>). C keeps the settled layout &mdash; label, field, actions beneath &mdash; and moves the <em>weight</em>: the three actions are 76pt filled tiles, the heaviest objects on the screen, while the empty field sits at <code>--t-heading</code> 20px. Primacy by mass, not by order.<br><br><b>The field grows into prominence when it has content:</b> 20px placeholder &rarr; <code>--t-balance</code> 32px <code>--ink</code> the moment a character lands, wrapping to three lines exactly as in option A. Two ramp steps, no invented size. The tiles demote to the option-A chip row at the same instant, because once there is an address the question is no longer &ldquo;how do I enter one&rdquo;.<br><br><b>Cost, two of them.</b> A control that changes type size with its own state is a thing this system otherwise refuses &mdash; the same field is two different objects depending on whether it is empty, and there is no other component in Crust that does that. And the tiles outweigh <b>Recent</b> directly beneath them, when tapping a name you already sent to is the fastest path in the whole flow; C optimises the first send and taxes the hundredth. <b>Label is &ldquo;Contacts&rdquo;</b> (<code>contacts</code>, the shipped drawer title) not &ldquo;Address Book&rdquo;: at 320pt each tile is 82pt wide and &ldquo;Address Book&rdquo; wraps to two lines, and a button label never wraps.</div></div>
-      <div><div class="scrcap"><i></i>Send &middot; recipient, option A filled <span class="tag survive">recommended</span></div>
-        <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
-          <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>
-          <div class="mpad" style="flex:1;display:flex;flex-direction:column">
-            <div class="mseg" data-seg>
-              <div class="seg"><span class="svgic" style="--ic:url(assets/icons/wallet.svg);" aria-hidden="true"></span><span class="lbl">Overview</span></div>
-              <div class="seg on" data-act="send"><span class="svgic" style="--ic:url(assets/icons/send-new.svg);" aria-hidden="true"></span><span class="lbl">Send</span></div>
-              <div class="seg" data-act="receive"><span class="svgic" style="--ic:url(assets/icons/receive-new.svg);" aria-hidden="true"></span><span class="lbl">Receive</span></div>
-              <div class="seg" data-act="swap"><span class="svgic" style="--ic:url(assets/icons/convert.svg);" aria-hidden="true"></span><span class="lbl">Swap</span></div>
-            </div>
-            <div class="pgtitle">Choose recipient</div>
-            <div class="fld" style="width:auto"><label for="af-to">To</label>
-              <div class="heroin" id="af-to" style="color:var(--ink)">mtst1aplqzwh6s4gvcyzsvx726y6xvsgt5qv5qruqqypuyph</div>
+            <div class="pgtitle" id="rf-h">Send To</div>
+            <div class="fld" style="width:auto"><div class="heroin" role="textbox" aria-labelledby="rf-h" style="color:var(--ink)">mtst1aplqzwh6s4gvcyzsvx726y6xvsgt5qv5qruqqypuyph</div>
               <div class="fieldrow" style="flex-wrap:wrap">
-                <button class="tokchip"><span class="svgic" style="--ic:url(assets/icons/copy.svg);width:1.0625rem;height:1.0625rem" aria-hidden="true"></span>Replace</button>
-                <button class="tokchip"><span class="svgic" style="--ic:url(assets/icons/qr-scan.svg);width:1.0625rem;height:1.0625rem" aria-hidden="true"></span>Scan</button>
-                <button class="tokchip"><span class="svgic" style="--ic:url(assets/icons/contacts-book.svg);width:1.0625rem;height:1.0625rem" aria-hidden="true"></span>Address Book</button>
+                <button class="tokchip" aria-label="Paste address"><span class="svgic" style="--ic:url(assets/icons/copy.svg);width:1.0625rem;height:1.0625rem" aria-hidden="true"></span></button>
+              <button class="tokchip" aria-label="Scan a QR code"><span class="svgic" style="--ic:url(assets/icons/qr-scan.svg);width:1.0625rem;height:1.0625rem" aria-hidden="true"></span></button>
+              <button class="tokchip"><span class="svgic" style="--ic:url(assets/icons/contacts-book.svg);width:1.0625rem;height:1.0625rem" aria-hidden="true"></span>Address Book</button>
               </div>
             </div>
             <div class="shlab" style="margin-top:1.125rem">Send to</div>
