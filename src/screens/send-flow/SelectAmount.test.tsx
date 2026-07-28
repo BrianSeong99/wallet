@@ -60,6 +60,7 @@ jest.mock('components/AmountInput', () => ({
     helper,
     tokenSelector,
     onValueChange,
+    autoFocus,
     'data-testid': dataTestId
   }: {
     label?: React.ReactNode;
@@ -68,9 +69,10 @@ jest.mock('components/AmountInput', () => ({
     helper?: React.ReactNode;
     tokenSelector?: React.ReactNode;
     onValueChange?: OnValueChange;
+    autoFocus?: boolean;
     'data-testid'?: string;
   }) => (
-    <div data-testid="amount-input" data-forwarded-testid={dataTestId}>
+    <div data-testid="amount-input" data-forwarded-testid={dataTestId} data-auto-focus={String(!!autoFocus)}>
       <div data-testid="ai-label">{label}</div>
       {error !== undefined && <div data-testid="ai-error">{error}</div>}
       {helper !== undefined && <div data-testid="ai-helper">{helper}</div>}
@@ -230,6 +232,19 @@ describe('SelectAmount', () => {
 
       fireEvent.click(screen.getByTestId('send-amount-max'));
       expect(onAmountChange).toHaveBeenCalledWith('1204.5678912');
+    });
+
+    it('does NOT focus the field unless the step is the visible page', () => {
+      // HomeSwipeContainer mounts all five home-group pages at once. Focusing a
+      // descendant makes the browser scroll the nearest scrollable ancestor to
+      // reveal it — and it does that even when the ancestor is
+      // `overflow: hidden`. An unconditional autoFocus here scrolled the
+      // carousel off its rail and stranded the home group between pages.
+      renderComponent({});
+      expect(screen.getByTestId('amount-input')).not.toHaveAttribute('data-auto-focus', 'true');
+
+      renderComponent({ autoFocus: true });
+      expect(screen.getAllByTestId('amount-input').at(-1)).toHaveAttribute('data-auto-focus', 'true');
     });
 
     it('says Max is engaged in words, not only in colour', () => {

@@ -41,6 +41,17 @@ export interface SelectAmountProps {
   recipientAddress?: string;
   /** Back out to the recipient step. Page variant only. */
   onBack?: () => void;
+  /**
+   * Focus the field on mount so the platform decimal pad comes up.
+   *
+   * MUST be false unless this step is the visible page. HomeSwipeContainer
+   * mounts all five home-group pages at once, and focusing a descendant makes
+   * the browser scroll the nearest scrollable ancestor to reveal it — which it
+   * does even when that ancestor is `overflow: hidden`. Focusing the amount
+   * field while the send page sat off-screen therefore scrolled the carousel
+   * container off its rail and stranded the whole home group between pages.
+   */
+  autoFocus?: boolean;
 }
 
 /**
@@ -76,7 +87,8 @@ export const SelectAmount: React.FC<SelectAmountProps> = ({
   embedded = false,
   logoSymbol,
   recipientAddress,
-  onBack
+  onBack,
+  autoFocus = false
 }) => {
   const { t } = useTranslation();
   const [isMaxed, setIsMaxed] = useState(false);
@@ -132,10 +144,11 @@ export const SelectAmount: React.FC<SelectAmountProps> = ({
       // itself and must not also hand it to the field, or there are two.
       tokenSelector={embedded ? tokenSelector : undefined}
       // The step opens on an empty amount, so the field IS the screen: without
-      // this the platform decimal pad never comes up and the user lands on a
-      // dead figure with nothing focused. AmountInput already emits
-      // inputMode="decimal"; it was simply never told to take focus.
-      autoFocus
+      // focus the platform decimal pad never comes up and the user lands on a
+      // dead figure. AmountInput already emits inputMode="decimal"; it was
+      // simply never told to take focus. Gated on the step being VISIBLE — see
+      // the prop doc; taking focus off-screen moves the carousel.
+      autoFocus={autoFocus}
       data-testid="send-amount-input"
       onValueChange={(value, _name, values) => onAmountChange(values?.formatted || value || '')}
     />

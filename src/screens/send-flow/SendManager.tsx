@@ -439,6 +439,11 @@ export const SendManager: React.FC<SendManagerProps> = ({ preselectedTokenId, dr
               onAmountChange={onAmountChange}
               recipientAddress={recipientAddress}
               onBack={goBack}
+              // Only when /send is the page actually on screen. This component
+              // stays mounted inside HomeSwipeContainer on every home route,
+              // and focusing the field off-screen scrolls the carousel
+              // container off its rail.
+              autoFocus={pathname === '/send'}
               onSelectToken={() => setShowTokenDrawer(true)}
               onConfirm={onConfirmAmount}
             />
@@ -452,6 +457,8 @@ export const SendManager: React.FC<SendManagerProps> = ({ preselectedTokenId, dr
       recipientAddress,
       // The amount step's back control routes through the Navigator now.
       goBack,
+      // Gates the amount field's autoFocus on /send being the visible page.
+      pathname,
       errors.recipientAddress,
       errors.amount,
       onAddressChange,
