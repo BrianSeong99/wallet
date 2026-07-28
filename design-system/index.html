@@ -4751,6 +4751,15 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
           </div>
         </div></div></div>
         <div class="scrnote"><b>&ldquo;Payment Sent!&rdquo; is false for a bridge, and it is what ships.</b> <code>BridgeSuccess.tsx:59</code> passes <code>t(&lsquo;paymentSent&rsquo;)</code> &mdash; the same headline the same-chain receipt uses &mdash; under the same green tick. On a Miden send that is true: the note exists, the recipient can consume it, the transaction is over. On a bridged send the money has left Miden and <b>has not arrived</b>; on the Agglayer route that is an hour in which the recipient has nothing and the sender has been told it is done. Same-chain, sent is the end state. Cross-chain, sent is the middle. The headline names the state that is actually true and the destination that makes it legible, and the glyph goes from a completion tick to an in-flight arrow in <code>--pend</code> &mdash; never colour alone, the words carry it. <b>The component&rsquo;s own docstring already specifies this screen and its render does not produce it.</b> <code>BridgeSuccess.tsx:25&ndash;30</code> promises &ldquo;an &lsquo;Arriving on Ethereum&rsquo; sub-line (with a FAST/SLOW speed badge) under the amount&rdquo;. The render is <code>SuccessSummaryPill</code>, <code>SuccessDivider</code>, <code>ReceiptRows</code> (<code>:68&ndash;70</code>) &mdash; <b>no sub-line and no badge anywhere</b>. The speed survives only as a <code>Route</code> row value inside <code>buildReceiptRows</code> (<code>receipt.ts:43&ndash;48</code>), which is the one place it cannot do its job. So this draws the docstring: destination and arrival estimate in the hero, badge beside them, provider named. <b>Arrival is not a receipt row.</b> A receipt is a record of what happened; the arrival estimate is a claim about what has <em>not</em> happened yet, and it is the only fact on the screen the user needs before they close it. Row five of five is where you put the block explorer link, not the answer to &ldquo;when does my friend get paid?&rdquo;. Promoting it also deletes the duplicate: the shipped screen prints the recipient twice, once in the pill and once as the <code>To</code> row, and the hero now earns its second line instead. <b>The remaining rows are <code>buildReceiptRows</code> verbatim minus <code>Route</code></b> &mdash; To &rarr; Total Paid &rarr; Source TX (<code>receipt.ts:30&ndash;66</code>) &mdash; and two of those three labels are <b>absent from <code>en.json</code></b>: <code>totalPaid</code> and <code>sourceTx</code> survive on <code>defaultValue</code> fallbacks in code, so every non-English locale shows the raw key. <code>paymentSent</code> ships (<code>en.json:474</code>) and is now wrong for this caller, which is the harder bug of the two. <b><code>Total Paid</code> is 100.00 and the pill says 99.85, and that is deliberate.</b> The sender parted with the full amount; the recipient gets the amount minus the provider&rsquo;s cut. A receipt that reports one number for both hides the fee a second time, after review already had to invent it. <b>The return condition is restored.</b> <code>Send &middot; review, other chain</code> states that a failed delivery returns the funds, and success drops it entirely &mdash; so the one moment the user is left waiting with no recourse is the one where the app stops explaining. It is also the sentence that makes the hour tolerable. It deliberately does not end &ldquo;No funds are lost&rdquo;, which is true of a recallable Miden note and not of a solver-filled bridge transfer. <b>The actions are reordered, and the primary is renamed because the shipped string does not fit the slot.</b> Shipped is Done primary / View in Activities secondary (<code>:60&ndash;65</code>), which is correct for an end state. This is not one: the transfer is trackable, the only place to track it is the activity list, so that job takes the primary and Done stays as the dismissal. <code>viewInActivities</code> cannot ride there &mdash; <code>.btn-primary</code> sets <code>--t-cta</code> 19px, and at 200&percnt; text &ldquo;View in Activities&rdquo; measures 342pt against a 318pt button and wraps to two lines, which is both the no-wrapping-label rule and a 2.8&times; inflation the review harness fails. It stays correct as the secondary, where the body ramp fits it. The primary takes <code>trackTransfer</code> instead, which is the better label regardless: &ldquo;View in Activities&rdquo; names a destination, and what the user wants named on a screen about something still in flight is the job. <b>Nothing here is reachable.</b> <code>SendTransaction.extraInputs</code> is <code>&lbrace; recallBlocks?: number &rbrace;</code> (<code>types.ts:187</code>), so the discriminator <code>TransactionSuccess.tsx:12&ndash;20</code> narrows on can never be stored, and <code>BridgeSuccess</code> renders only in its own test. <b>Copy verbatim from <code>en.json</code>:</b> <code>bridgeSpeedSlow</code> &ldquo;Slow&rdquo;, <code>bridgeRouteViaAgglayer</code> &ldquo;Via Agglayer&rdquo;, <code>to</code> &ldquo;To&rdquo;, <code>done</code> &ldquo;Done&rdquo;, <code>viewInActivities</code> &ldquo;View in Activities&rdquo;, <code>viewOnMidenscan</code> &ldquo;View on Midenscan&rdquo;. <b>New keys:</b> <code>bridgeInFlightTitle</code> &ldquo;On its way to $network$&rdquo;, <code>bridgeArrivesIn</code> &ldquo;Arrives in ~$duration$&rdquo;, <code>bridgeUndeliveredNote</code> &ldquo;If it is not delivered the $amount$ returns to this account, though not immediately.&rdquo;, <code>trackTransfer</code> &ldquo;Track transfer&rdquo;. <b>Owed:</b> <code>totalPaid</code> &ldquo;Total Paid&rdquo; and <code>sourceTx</code> &ldquo;Source TX&rdquo; need adding to <code>en.json</code> regardless of this screen.</div></div>
+      
+      
+      
+      
+      
+    </div>
+    <h2 class="h">Contacts</h2>
+    <p class="sub">One address book, reached from two places and doing a different job in each: the send flow opens it <b>read&#8209;only</b> to pick a recipient, Settings opens it to manage the list. That split is why the picker has no add, no delete and no search while the settings drawer has all three. <b>Nothing in either list deletes</b> &mdash; a row taps to use or to edit, and Remove lives on the edit screen behind that step; the shipped screen binds delete to the whole row with nothing on it saying so (<code>AddressBook.tsx:78</code>). <b>Rows carry the network, not the custody label</b>, because the chain is what decides whether a send arrives &mdash; which needs the optional <code>network</code> field added to <code>WalletContact</code>, since a bare <code>0x&hellip;</code> is valid on every EVM chain at once and the choice has to be stored rather than re-derived. <b>Editing does not exist in the app at all:</b> <code>address-book.ts</code> exports only <code>addContact</code>, <code>removeContact</code> and <code>getContact</code>, so fixing a typo today means delete and retype.</p>
+    <div class="scrgrid">
       <div><div class="scrcap"><i></i>Contacts &middot; picker <span class="tag merge">sheet</span></div>
         <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
           <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>
@@ -4858,6 +4867,47 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
           </div>
         </div></div></div>
         <div class="scrnote"><b>Empty and no-search-results are the same string.</b> <code>AddressBook.tsx:68</code> renders <code>noContactsFound</code> = &ldquo;No contacts found&rdquo; for both, so a brand-new user with zero contacts gets a <i>search-failure</i> message under a search box they never typed into. Note the inconsistency across surfaces: the send-flow sheet gets a real icon-and-description empty state, this one gets a bare line of grey text. The unused key <code>addressBookDescription</code> = &ldquo;Manage your contacts here&rdquo; already sits in <code>en.json</code>, rendered by nothing.</div></div>
+      <div><div class="scrcap"><i></i>Address book &middot; no results <span class="tag retire">bug</span></div>
+        <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
+          <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>
+          <div class="mpad" style="flex:1;display:flex;flex-direction:column">
+            <div class="sh2"><span class="bk2">&lsaquo;</span><span class="t2">Preferences</span></div>
+          </div>
+          <div class="shscrim"></div>
+          <div class="msheet" style="max-height:72%">
+            <div class="mshandle"></div>
+            <div class="mshead">Address Book</div>
+            <div class="mlist" style="flex:1">
+              <div class="shlab">Current Contacts</div>
+              <div class="fld"><label>Search contacts</label><input class="inp" value="dominik"></div>
+              <div class="shempty" style="padding:1.25rem 0.875rem 1.5rem">
+                <div class="eic" style="background:var(--surface-2);color:var(--ink-2)"><span class="svgic" style="--ic:url(assets/icons/search.svg)" aria-hidden="true"></span></div>
+                <div class="et" style="font-family:var(--display);font-weight:800;font-size:var(--t-body)">No match for &ldquo;dominik&rdquo;</div>
+                <div class="es" style="font-size:var(--t-caption);color:var(--ink-2);margin-top:0.25rem;line-height:1.4">You have 4 contacts. Check the spelling, or search by address.</div>
+                <button class="btn btn-secondary" style="margin-top:0.875rem;min-height:44px;padding:0.625rem 1.125rem;width:auto">Clear search</button>
+              </div>
+            </div>
+          </div>
+        </div></div></div>
+        <div class="scrnote"><b>Distinct from <code>Address book &middot; empty</code>, which the shipped code cannot be.</b> <code>AddressBook.tsx:68&ndash;69</code> renders one string, <code>noContactsFound</code> = &ldquo;No contacts found&rdquo;, for both <code>allContacts.length === 0</code> and <code>filteredContacts.length === 0</code> &mdash; so a user with four saved contacts who mistypes a name is told they have <i>none</i>, which is a claim about their data rather than about their query. This state echoes the query, states the true count, and offers the only useful action. Second defect drawn here: the search input at <code>:53&ndash;64</code> has a <code>placeholder</code> and <b>no <code>&lt;label&gt;</code> and no <code>aria-label</code></b> &mdash; the placeholder disappears on first keystroke, so from that point the field has no accessible name at all and a screen reader announces an unlabelled text box. A persistent visible label fixes both. The field also searches name <i>and</i> address (<code>:42</code>), which the shipped placeholder &ldquo;Search&rdquo; never says.</div></div>
+      <div><div class="scrcap"><i></i>Address book &middot; edit contact <span class="tag merge">gap</span></div>
+        <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
+          <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>
+          <div class="mpad" style="flex:1;display:flex;flex-direction:column">
+            <div class="sh2"><span class="bk2">&lsaquo;</span><span class="t2">Preferences</span></div>
+          </div>
+          <div class="shscrim"></div>
+          <div class="msheet" style="max-height:76%">
+            <div class="mshandle"></div>
+            <div class="mshead">Edit Contact</div>
+            <div class="fld"><label>Name</label><input class="inp" value="Wiktor"></div>
+            <div class="fld" style="margin-top:0.75rem"><label>Address</label><input class="inp" value="mtst1ap8qz&hellip;r4fp" disabled><div class="hint">The address identifies this contact and cannot be changed. Delete and re-add to move it.</div></div>
+            <div class="shdiv"></div>
+            <div class="mrow"><div class="ic" style="background:var(--tx-sent)"><span class="ini">W</span></div><div style="flex:1;min-width:0"><div class="nm">Wiktor</div><div class="ad addr">mtst1ap8&hellip;r4fp</div></div><span class="fam"><span class="nlg" style="background:var(--paper)"><img src="assets/icons/miden.svg" alt=""></span>Miden</span></div>
+            <div class="zone"><button class="btn btn-primary" style="width:100%">Save changes</button><button class="btn btn-danger" style="width:100%;margin-top:0.625rem">Remove contact</button><div class="gh">Delete contact</div></div>
+          </div>
+        </div></div></div>
+        <div class="scrnote"><b>GAP &mdash; no edit mutation exists.</b> <code>address-book.ts</code> exports <code>addContact</code> (<code>:13</code>) and <code>removeContact</code> (<code>:25</code>) and nothing else, so correcting one letter of a name today means deleting the contact and retyping a 49-character bech32 address from memory. The address is the primary key that <code>removeContact</code> filters on, so it is shown read-only and the row says why, rather than being silently absent. This screen also gives the delete a <b>named, deliberate affordance</b>, which the shipped list does not have: <code>AddressBook.tsx:78</code> binds <code>onClick</code> of the whole <code>CardItem</code> to <code>handleRemoveContactClick</code>, so the entire row <i>is</i> the delete button &mdash; no trash icon, no swipe, no menu, and no hint that tapping a contact destroys it. Note the shipped list also has no way to <i>use</i> a contact: tapping cannot start a send. The live preview row is here because both the send-flow picker and the settings list render name-over-address, and a rename changes what the user will see there.</div></div>
     </div>
   <h2 class="h">Receive flow</h2>
     <p class="sub">Address, QR and share. Receive is address-only since claimable notes moved to their own screen.</p>
@@ -5758,47 +5808,8 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
           </div>
         </div></div></div>
         <div class="scrnote"><b>GAP &mdash; the entire data layer ships and nothing renders it.</b> <code>fiat-curency/consts.ts:6&ndash;145</code> defines 23 currencies with symbols, <code>core.tsx:79&ndash;101</code> exposes <code>useFiatCurrency</code> with a <code>setSelectedFiatCurrency</code> that writes both Zustand and persistent storage, <code>store/index.ts:600</code> holds the reducer, and <code>FiatCurrencyProvider</code> is mounted in <code>front/provider.tsx:7</code>. <b>No component outside <code>lib/</code> imports any of it.</b> Every fiat figure in the product is a hard-coded dollar template: <code>AssetRow.tsx:46</code>, <code>Explore.tsx:188</code>, <code>Receive/PendingTab.tsx:51</code>, <code>SelectAmount.tsx:103</code>, <code>ReviewAmount.tsx:39</code>, and <code>HistoryDetails.tsx:72</code> which appends the literal string &ldquo;USD&rdquo;. The code is <b>three-letter</b> and in mono, leading, because that is what a user scans for and what disambiguates the five currencies in this list that all use the <code>&#36;</code> sign. Search is not optional at 23 rows. <b>Ship-order caveat:</b> <code>fetchFiatCurrencies</code> (<code>core.tsx:103&ndash;110</code>) returns <code>&#123;usd:1&#125;</code> from a TODO, so <code>useAssetFiatCurrencyPrice</code> returns <code>null</code> for every other code (<code>:26&ndash;28</code>). This picker must not ship before real rates, or it will let a user select EUR and keep showing dollars. There is no <code>currency</code> key in <code>en.json</code> either &mdash; all copy here is new.</div></div>
-<div><div class="scrcap"><i></i>Address book &middot; no results <span class="tag retire">bug</span></div>
-        <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
-          <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>
-          <div class="mpad" style="flex:1;display:flex;flex-direction:column">
-            <div class="sh2"><span class="bk2">&lsaquo;</span><span class="t2">Preferences</span></div>
-          </div>
-          <div class="shscrim"></div>
-          <div class="msheet" style="max-height:72%">
-            <div class="mshandle"></div>
-            <div class="mshead">Address Book</div>
-            <div class="mlist" style="flex:1">
-              <div class="shlab">Current Contacts</div>
-              <div class="fld"><label>Search contacts</label><input class="inp" value="dominik"></div>
-              <div class="shempty" style="padding:1.25rem 0.875rem 1.5rem">
-                <div class="eic" style="background:var(--surface-2);color:var(--ink-2)"><span class="svgic" style="--ic:url(assets/icons/search.svg)" aria-hidden="true"></span></div>
-                <div class="et" style="font-family:var(--display);font-weight:800;font-size:var(--t-body)">No match for &ldquo;dominik&rdquo;</div>
-                <div class="es" style="font-size:var(--t-caption);color:var(--ink-2);margin-top:0.25rem;line-height:1.4">You have 4 contacts. Check the spelling, or search by address.</div>
-                <button class="btn btn-secondary" style="margin-top:0.875rem;min-height:44px;padding:0.625rem 1.125rem;width:auto">Clear search</button>
-              </div>
-            </div>
-          </div>
-        </div></div></div>
-        <div class="scrnote"><b>Distinct from <code>Address book &middot; empty</code>, which the shipped code cannot be.</b> <code>AddressBook.tsx:68&ndash;69</code> renders one string, <code>noContactsFound</code> = &ldquo;No contacts found&rdquo;, for both <code>allContacts.length === 0</code> and <code>filteredContacts.length === 0</code> &mdash; so a user with four saved contacts who mistypes a name is told they have <i>none</i>, which is a claim about their data rather than about their query. This state echoes the query, states the true count, and offers the only useful action. Second defect drawn here: the search input at <code>:53&ndash;64</code> has a <code>placeholder</code> and <b>no <code>&lt;label&gt;</code> and no <code>aria-label</code></b> &mdash; the placeholder disappears on first keystroke, so from that point the field has no accessible name at all and a screen reader announces an unlabelled text box. A persistent visible label fixes both. The field also searches name <i>and</i> address (<code>:42</code>), which the shipped placeholder &ldquo;Search&rdquo; never says.</div></div>
-<div><div class="scrcap"><i></i>Address book &middot; edit contact <span class="tag merge">gap</span></div>
-        <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
-          <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>
-          <div class="mpad" style="flex:1;display:flex;flex-direction:column">
-            <div class="sh2"><span class="bk2">&lsaquo;</span><span class="t2">Preferences</span></div>
-          </div>
-          <div class="shscrim"></div>
-          <div class="msheet" style="max-height:76%">
-            <div class="mshandle"></div>
-            <div class="mshead">Edit Contact</div>
-            <div class="fld"><label>Name</label><input class="inp" value="Wiktor"></div>
-            <div class="fld" style="margin-top:0.75rem"><label>Address</label><input class="inp" value="mtst1ap8qz&hellip;r4fp" disabled><div class="hint">The address identifies this contact and cannot be changed. Delete and re-add to move it.</div></div>
-            <div class="shdiv"></div>
-            <div class="mrow"><div class="ic" style="background:var(--tx-sent)"><span class="ini">W</span></div><div style="flex:1;min-width:0"><div class="nm">Wiktor</div><div class="ad addr">mtst1ap8&hellip;r4fp</div></div><span class="fam"><span class="nlg" style="background:var(--paper)"><img src="assets/icons/miden.svg" alt=""></span>Miden</span></div>
-            <div class="zone"><button class="btn btn-primary" style="width:100%">Save changes</button><button class="btn btn-danger" style="width:100%;margin-top:0.625rem">Remove contact</button><div class="gh">Delete contact</div></div>
-          </div>
-        </div></div></div>
-        <div class="scrnote"><b>GAP &mdash; no edit mutation exists.</b> <code>address-book.ts</code> exports <code>addContact</code> (<code>:13</code>) and <code>removeContact</code> (<code>:25</code>) and nothing else, so correcting one letter of a name today means deleting the contact and retyping a 49-character bech32 address from memory. The address is the primary key that <code>removeContact</code> filters on, so it is shown read-only and the row says why, rather than being silently absent. This screen also gives the delete a <b>named, deliberate affordance</b>, which the shipped list does not have: <code>AddressBook.tsx:78</code> binds <code>onClick</code> of the whole <code>CardItem</code> to <code>handleRemoveContactClick</code>, so the entire row <i>is</i> the delete button &mdash; no trash icon, no swipe, no menu, and no hint that tapping a contact destroys it. Note the shipped list also has no way to <i>use</i> a contact: tapping cannot start a send. The live preview row is here because both the send-flow picker and the settings list render name-over-address, and a rename changes what the user will see there.</div></div>
+
+
     </div>
     <h2 class="h">Security &amp; recovery</h2>
     <p class="sub">Everything gated behind an authentication step. <b>Three of these screens open as a blank frame today</b> &mdash; <code>RevealSeedPhrase.tsx:111&ndash;113</code>, <code>RevealSecret.tsx:332&ndash;334</code> and <code>EncryptedWalletFileWalletPassword.tsx:136&ndash;138</code> each <code>return null</code> while the hardware-protector probe runs, with no header and no spinner.</p>
