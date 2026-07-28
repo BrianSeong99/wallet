@@ -7,7 +7,7 @@ import Balance from 'app/templates/Balance';
 import HomePrompts from 'app/templates/HomePrompts';
 import { AssetRow } from 'components/AssetRow';
 import { ConnectivityIssueBanner } from 'components/ConnectivityIssueBanner';
-import { AccountsDrawer, BalanceCard, SearchInput } from 'components/ui';
+import { AccountsDrawer, BalanceCard } from 'components/ui';
 import { toLocalFormat } from 'lib/i18n/numbers';
 import {
   initiateConsumeTransaction,
@@ -47,8 +47,6 @@ const Explore: FC = () => {
   const shouldAutoConsume = isAutoConsumeEnabled();
 
   const address = account.publicKey;
-
-  const [search, setSearch] = useState('');
 
   const midenNotes = useMemo(() => {
     if (!shouldAutoConsume || !claimableNotes) {
@@ -122,14 +120,12 @@ const Explore: FC = () => {
     //fetchFaucetState();
   }, [fetchFaucetState]);
 
-  const filteredTokens = useMemo(() => {
-    const sorted = [...allTokenBalances].sort(a => (a.tokenId === midenFaucetId ? -1 : 1));
-    if (!search.trim()) return sorted;
-    const query = search.toLowerCase();
-    return sorted.filter(
-      asset => asset.metadata.symbol.toLowerCase().includes(query) || asset.metadata.name?.toLowerCase().includes(query)
-    );
-  }, [allTokenBalances, midenFaucetId, search]);
+  // Home lists every asset. The design system's Home has no search affordance,
+  // so there is nothing to filter by here; the sort (native token first) stays.
+  const sortedTokens = useMemo(
+    () => [...allTokenBalances].sort(a => (a.tokenId === midenFaucetId ? -1 : 1)),
+    [allTokenBalances, midenFaucetId]
+  );
 
   if (isHexAddress(address)) {
     return null;
@@ -143,14 +139,7 @@ const Explore: FC = () => {
 
       <div className="flex-1 min-h-0 overflow-y-auto">
         <div className="flex flex-col gap-3 px-4 pt-3 pb-32">
-          <HomeOverview
-            address={address}
-            tokenPrices={tokenPrices}
-            filteredTokens={filteredTokens}
-            search={search}
-            onSearchChange={setSearch}
-            account={account}
-          />
+          <HomeOverview address={address} tokenPrices={tokenPrices} tokens={sortedTokens} account={account} />
         </div>
       </div>
     </div>
@@ -162,20 +151,11 @@ export default Explore;
 interface HomeOverviewProps {
   address: string;
   tokenPrices: TokenPrices;
-  filteredTokens: TokenBalanceData[];
-  search: string;
-  onSearchChange: (v: string) => void;
+  tokens: TokenBalanceData[];
   account: WalletAccount;
 }
 
-const HomeOverview: FC<HomeOverviewProps> = ({
-  address,
-  tokenPrices,
-  filteredTokens,
-  search,
-  onSearchChange,
-  account
-}) => {
+const HomeOverview: FC<HomeOverviewProps> = ({ address, tokenPrices, tokens, account }) => {
   const [accountsOpen, setAccountsOpen] = useState(false);
   const { t } = useTranslation();
   return (
@@ -197,14 +177,13 @@ const HomeOverview: FC<HomeOverviewProps> = ({
 
       <HomePrompts account={account} />
 
+      {/* `.masset-h` — display face at --t-heading, not text-2xl. */}
       <div className="flex items-center justify-between pt-2">
-        <span className="text-2xl font-bold text-text-primary-token">{t('assets')}</span>
+        <span className="font-heading text-heading font-extrabold text-ink">{t('assets')}</span>
       </div>
 
-      <SearchInput value={search} onChange={onSearchChange} placeholder="Search for tokens" />
-
-      <div className="flex flex-col divide-y divide-rule-default">
-        {filteredTokens.map(asset => (
+      <div className="flex flex-col">
+        {tokens.map(asset => (
           <AssetRow
             key={asset.tokenId}
             asset={asset}

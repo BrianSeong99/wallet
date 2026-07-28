@@ -283,46 +283,10 @@ describe('Explore', () => {
     });
   });
 
-  describe('token search filtering', () => {
-    beforeEach(() => {
-      mockAllBalances = [
-        makeToken('faucet-native', 'MIDEN', 'Miden'),
-        makeToken('t-btc', 'BTC', 'Bitcoin'),
-        makeToken('t-eth', 'ETH') // name is undefined -> optional chaining short-circuits
-      ];
-    });
-
-    it('shows all tokens (sorted) when the search box is empty', async () => {
-      await renderExplore();
-      expect(screen.getAllByTestId('asset-row')).toHaveLength(3);
-    });
-
-    it('filters by symbol (left match) and name (right match), excluding undefined-name tokens', async () => {
-      await renderExplore();
-
-      // query "i": MIDEN symbol matches (left true); BTC symbol misses but
-      // "Bitcoin" name matches (right true); ETH symbol misses and name is
-      // undefined (right short-circuits to falsy) -> excluded.
-      await act(async () => {
-        fireEvent.change(screen.getByTestId('search-input'), { target: { value: 'i' } });
-      });
-
-      const rows = screen.getAllByTestId('asset-row');
-      const tokens = rows.map(r => r.getAttribute('data-token'));
-      expect(tokens).toEqual(['faucet-native', 't-btc']);
-      expect(tokens).not.toContain('t-eth');
-    });
-
-    it('treats a whitespace-only query as empty (trim branch)', async () => {
-      await renderExplore();
-
-      await act(async () => {
-        fireEvent.change(screen.getByTestId('search-input'), { target: { value: '   ' } });
-      });
-
-      expect(screen.getAllByTestId('asset-row')).toHaveLength(3);
-    });
-  });
+  // The 'token search filtering' block was removed with the search bar: the
+  // design system's Home has no search affordance, so Home lists every asset
+  // and there is nothing to filter. The sort (native token first) is still
+  // covered by the ordering assertions above.
 
   describe('HomeOverview interactions', () => {
     beforeEach(() => {
