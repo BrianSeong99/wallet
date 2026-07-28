@@ -183,7 +183,7 @@ documents, and which screens document a given file.
 | 88 | Receive · share failed | bug / proposed — bug | `AddressTab.tsx:54–64` `AddressTab.tsx:78–81` |
 | 89 | Receive · request an amount | gap / sheet — proposed | `AddressTab.tsx:113–120` `qr/format.ts:10–20` `qr/format.ts:26–41` |
 | 90 | Receive · loading | gap / sheet — gap | `PageRouter.tsx:150–157` `ready.tsx:88–101` `QRCode.tsx:3` `AddressTab.tsx:46–51` |
-| 91 | Receive | shipped | `AddressTab.tsx:113–120` |
+| 91 | Receive | shipped | `TabLayout.tsx:42` `AddressTab.tsx:113–120` |
 | 92 | Pending notes · loading | gap / sheet — gap | — |
 | 93 | Pending notes · empty | gap / sheet — gap | `PendingTab.tsx:189–199` `en.json:641` `en.json:694` `Pending.tsx:264` |
 | 94 | Pending notes · fetch failed | bug / proposed — bug | `Pending.tsx:38` `claimable-notes.ts:323–330` `PendingTab.tsx:189` |
@@ -385,6 +385,7 @@ If one of these files changes, the screens beside it may no longer be true.
 | `receipt.ts` | Send · success · Send · success, other chain |
 | `scanner.ts` | Send · scan, no code found · Send · scan, unsupported network |
 | `store/index.ts` | Settings · currency · Account · rename |
+| `TabLayout.tsx` | Send · amount · Receive |
 | `ToggleSwitch.tsx` | Settings · general · Settings · general, save failed |
 | `TransactionSuccess.tsx` | Send · review, other chain · Send · success, other chain |
 | `use-secret-state.hook.ts` | Recovery phrase · password · Private key · revealed |
@@ -444,7 +445,6 @@ If one of these files changes, the screens beside it may no longer be true.
 | `src/lib/prices/binance.ts` | Home · unpriced asset |
 | `success/receipt.ts` | Send · route |
 | `SwapManager.tsx` | Settings · app lock |
-| `TabLayout.tsx` | Send · amount |
 | `templates/AdvancedSettings.tsx` | Settings · networks |
 | `TokenLogo.tsx` | Token detail · unknown token |
 | `TransactionProgressModal.tsx` | Claim · in progress |

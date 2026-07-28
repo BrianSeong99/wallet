@@ -5108,26 +5108,38 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
         <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
           <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>
           <div class="mpad" style="flex:1;display:flex;flex-direction:column">
-            <div class="sh2"><span class="bk2">&lsaquo;</span><span class="t2">Receive</span></div>
+            <div class="mseg" data-seg>
+              <div class="seg"><span class="svgic" style="--ic:url(assets/icons/wallet.svg);" aria-hidden="true"></span><span class="lbl">Overview</span></div>
+              <div class="seg" data-act="send"><span class="svgic" style="--ic:url(assets/icons/send-new.svg);" aria-hidden="true"></span><span class="lbl">Send</span></div>
+              <div class="seg on" data-act="receive"><span class="svgic" style="--ic:url(assets/icons/receive-new.svg);" aria-hidden="true"></span><span class="lbl">Receive</span></div>
+              <div class="seg" data-act="swap"><span class="svgic" style="--ic:url(assets/icons/convert.svg);" aria-hidden="true"></span><span class="lbl">Swap</span></div>
+            </div>
             <div style="text-align:center;margin-top:6%"><div class="qrbox"><div class="qrpat"></div></div></div>
             <div style="text-align:center;font-size:var(--t-label);color:var(--ink-2);margin-top:1rem">Your Miden address</div>
             <div class="addrbox" style="width:auto;margin-top:0.5rem"><span class="a">mtst1ap8&hellip;r4fp</span><span style="font-size:var(--t-caption);font-weight:800;color:var(--pos);flex:none">&#10003; Copied</span></div>
             <div class="toastzone show" style="position:relative;height:auto;background:none;overflow:visible;margin-top:auto"><div class="toast" style="position:static">Address copied to clipboard</div></div>
             <div class="zone" style="margin-top:0"><button class="btn btn-primary">Share address</button><div class="gh">Set an amount</div></div>
           </div>
+          <div class="mnav"><button class="t on"><span class="svgic" style="--ic:url(assets/icons/home-new.svg)" aria-hidden="true"></span><span>Home</span></button><button class="t"><span class="svgic" style="--ic:url(assets/icons/explore.svg)" aria-hidden="true"></span><span>Explore</span></button><button class="t"><span class="svgic" style="--ic:url(assets/icons/activity.svg)" aria-hidden="true"></span><span>Activity</span></button></div>
         </div></div></div>
         <div class="scrnote"><b>On a phone this state does not exist.</b> The address is a <code>CopyButton</code> (<code>AddressTab.tsx:99&ndash;106</code>) and <code>CopyButton</code>&rsquo;s only confirmation is a Tippy tooltip built with <code>trigger: &lsquo;mouseenter&rsquo;</code> (<code>CopyButton.tsx:36&ndash;49</code>). Touch never fires <code>mouseenter</code>, so on iOS, Android and every tap on the extension the user taps their own address and gets a haptic tick and nothing else &mdash; no word, no state change, no way to know the copy landed. The tooltip that desktop hover does get is wrong anyway: it reads <code>copiedHash</code> = &ldquo;Copied.&rdquo; / <code>copyHashToClipboard</code> = &ldquo;Copy to clipboard&rdquo; (<code>en.json:13&ndash;14</code>) &mdash; hash strings, on an address. Confirmation has to be in the layout, not in a hover layer: the row itself flips to a ticked <b>Copied</b> label (the <code>.copybtn.done</code> treatment the system already defines) and a toast names <em>what</em> was copied. Both carry a word, so neither depends on the green. The 2-second reset already exists in <code>useCopyToClipboard</code> and is what the row state should ride.</div></div>
         <div><div class="scrcap"><i></i>Receive &middot; share failed <span class="tag retire">bug</span></div>
         <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
           <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>
           <div class="mpad" style="flex:1;display:flex;flex-direction:column">
-            <div class="sh2"><span class="bk2">&lsaquo;</span><span class="t2">Receive</span></div>
+            <div class="mseg" data-seg>
+              <div class="seg"><span class="svgic" style="--ic:url(assets/icons/wallet.svg);" aria-hidden="true"></span><span class="lbl">Overview</span></div>
+              <div class="seg" data-act="send"><span class="svgic" style="--ic:url(assets/icons/send-new.svg);" aria-hidden="true"></span><span class="lbl">Send</span></div>
+              <div class="seg on" data-act="receive"><span class="svgic" style="--ic:url(assets/icons/receive-new.svg);" aria-hidden="true"></span><span class="lbl">Receive</span></div>
+              <div class="seg" data-act="swap"><span class="svgic" style="--ic:url(assets/icons/convert.svg);" aria-hidden="true"></span><span class="lbl">Swap</span></div>
+            </div>
             <div style="text-align:center;margin-top:6%"><div class="qrbox"><div class="qrpat"></div></div></div>
             <div style="text-align:center;font-size:var(--t-label);color:var(--ink-2);margin-top:1rem">Your Miden address</div>
             <div class="addrbox" style="width:auto;margin-top:0.5rem"><span class="a">mtst1ap8&hellip;r4fp</span><span class="svgic" style="--ic:url(assets/icons/copy.svg);width:1rem;height:1rem" aria-hidden="true"></span></div>
             <div class="notice"><span>&#9888;</span><span>Sharing didn&rsquo;t open. Your address is on the clipboard instead &mdash; paste it wherever you need it.</span></div>
             <div class="zone"><button class="btn btn-primary">Try again</button><div class="gh">Set an amount</div></div>
           </div>
+          <div class="mnav"><button class="t on"><span class="svgic" style="--ic:url(assets/icons/home-new.svg)" aria-hidden="true"></span><span>Home</span></button><button class="t"><span class="svgic" style="--ic:url(assets/icons/explore.svg)" aria-hidden="true"></span><span>Explore</span></button><button class="t"><span class="svgic" style="--ic:url(assets/icons/activity.svg)" aria-hidden="true"></span><span>Activity</span></button></div>
         </div></div></div>
         <div class="scrnote"><b>Refutes the standing WebView assumption, and finds a worse bug underneath.</b> Receive does <em>not</em> use <code>&lt;a download&gt;</code>: <code>handleShare</code> writes the QR PNG with <code>Filesystem.writeFile</code> and hands it to <code>Share.share</code> on mobile (<code>AddressTab.tsx:54&ndash;64</code>), falling back to <code>navigator.share</code> elsewhere (<code>:67&ndash;77</code>). That path is correct. The defect is the handler: <b>one <code>catch</code> at <code>AddressTab.tsx:78&ndash;81</code> swallows every outcome and silently calls <code>copy()</code></b> &mdash; and that <code>copy()</code> came from <code>useCopyToClipboard</code> destructured at <code>:40</code> <em>without</em> <code>copied</code>, so it paints nothing at all. Three different events therefore look identical and look like nothing: the share sheet failing to open, the platform having no share target, and the user simply cancelling the sheet. Cancelling is not a failure and must stay silent; failing is, and must say so and say what happened instead. The clipboard write is a real side effect on a user&rsquo;s address and cannot be performed invisibly.</div></div>
         <div><div class="scrcap"><i></i>Receive &middot; request an amount <span class="tag merge">proposed</span></div>
@@ -5150,28 +5162,40 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
         <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
           <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>
           <div class="mpad" style="flex:1;display:flex;flex-direction:column">
-            <div class="sh2"><span class="bk2">&lsaquo;</span><span class="t2">Receive</span></div>
+            <div class="mseg" data-seg>
+              <div class="seg"><span class="svgic" style="--ic:url(assets/icons/wallet.svg);" aria-hidden="true"></span><span class="lbl">Overview</span></div>
+              <div class="seg" data-act="send"><span class="svgic" style="--ic:url(assets/icons/send-new.svg);" aria-hidden="true"></span><span class="lbl">Send</span></div>
+              <div class="seg on" data-act="receive"><span class="svgic" style="--ic:url(assets/icons/receive-new.svg);" aria-hidden="true"></span><span class="lbl">Receive</span></div>
+              <div class="seg" data-act="swap"><span class="svgic" style="--ic:url(assets/icons/convert.svg);" aria-hidden="true"></span><span class="lbl">Swap</span></div>
+            </div>
             <div style="text-align:center;margin-top:6%"><div class="qrbox"><div class="skel2" style="width:100%;height:100%;margin:0;border-radius:var(--radius-sm)"></div></div></div>
             <div style="text-align:center;font-size:var(--t-label);color:var(--ink-2);margin-top:1rem">Building your QR code</div>
             <div class="addrbox" style="width:auto;margin-top:0.5rem"><span class="a">mtst1ap8&hellip;r4fp</span><span class="svgic" style="--ic:url(assets/icons/copy.svg);width:1rem;height:1rem" aria-hidden="true"></span></div>
             <div class="notice" style="background:var(--surface-2);color:var(--ink-2)"><span>&#9432;</span><span>The address below is already live &mdash; copy it now if you don&rsquo;t need the code.</span></div>
             <div class="zone"><button class="btn btn-primary" disabled>Share address</button></div>
           </div>
+          <div class="mnav"><button class="t on"><span class="svgic" style="--ic:url(assets/icons/home-new.svg)" aria-hidden="true"></span><span>Home</span></button><button class="t"><span class="svgic" style="--ic:url(assets/icons/explore.svg)" aria-hidden="true"></span><span>Explore</span></button><button class="t"><span class="svgic" style="--ic:url(assets/icons/activity.svg)" aria-hidden="true"></span><span>Activity</span></button></div>
         </div></div></div>
         <div class="scrnote"><b>Refuted, then narrowed.</b> There is no address-resolution wait to draw: <code>/receive</code> is wrapped in <code>onlyReady</code> (<code>PageRouter.tsx:150&ndash;157</code>, <code>:316&ndash;318</code>), which <code>SKIP</code>s the route until the wallet is ready, and <code>useAccount</code> throws rather than returning a blank (<code>ready.tsx:88&ndash;101</code>). The address is a synchronous store read and paints on frame one. The real gap is the code. <code>qr-code-styling</code> is a static import (<code>QRCode.tsx:3</code>), the QR is only injected inside a <code>useEffect</code> (<code>:62&ndash;70</code>), and the centred brand logo is a separate image load &mdash; so the first paint is a <b>300&times;300 empty white square</b> with no label, no skeleton and a live Share button whose <code>getImageBlob()</code> resolves to <code>null</code> if pressed then (<code>AddressTab.tsx:46&ndash;51</code>, sharing text with no image). The fix is small and entirely honest: shimmer the well, name the state, keep the address copyable throughout because it is genuinely ready, and hold Share until there is something to share.</div></div>
         <div><div class="scrcap"><i></i>Receive</div>
         <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
           <div class="stat"><span>9:41</span><span class="r">✦ ▪ ▪</span></div>
           <div class="mpad" style="flex:1;display:flex;flex-direction:column">
-            <div class="sh2"><span class="bk2">‹</span><span class="t2">Receive</span></div>
+            <div class="mseg" data-seg>
+              <div class="seg"><span class="svgic" style="--ic:url(assets/icons/wallet.svg);" aria-hidden="true"></span><span class="lbl">Overview</span></div>
+              <div class="seg" data-act="send"><span class="svgic" style="--ic:url(assets/icons/send-new.svg);" aria-hidden="true"></span><span class="lbl">Send</span></div>
+              <div class="seg on" data-act="receive"><span class="svgic" style="--ic:url(assets/icons/receive-new.svg);" aria-hidden="true"></span><span class="lbl">Receive</span></div>
+              <div class="seg" data-act="swap"><span class="svgic" style="--ic:url(assets/icons/convert.svg);" aria-hidden="true"></span><span class="lbl">Swap</span></div>
+            </div>
             <div style="text-align:center;margin-top:6%"><div class="qrbox"><div class="qrpat"></div></div></div>
             <div style="text-align:center;font-size:var(--t-label);color:var(--ink-2);margin-top:1rem">Your Miden address</div>
             <div class="addrbox" style="width:auto;margin-top:0.5rem"><span class="a">mtst1ap8…r4fp</span><span class="svgic" style="--ic:url(assets/icons/copy.svg);width:1rem;height:1rem" aria-hidden="true"></span></div>
             <div class="notice" style="background:var(--surface-2);color:var(--ink-2)"><span>ⓘ</span><span>Only send Miden-network assets to this address.</span></div>
             <div class="zone"><button class="btn btn-primary" style="width:100%">Share address</button></div>
           </div>
+          <div class="mnav"><button class="t on"><span class="svgic" style="--ic:url(assets/icons/home-new.svg)" aria-hidden="true"></span><span>Home</span></button><button class="t"><span class="svgic" style="--ic:url(assets/icons/explore.svg)" aria-hidden="true"></span><span>Explore</span></button><button class="t"><span class="svgic" style="--ic:url(assets/icons/activity.svg)" aria-hidden="true"></span><span>Activity</span></button></div>
         </div></div></div>
-        <div class="scrnote">Wrong-network deposits are unrecoverable, so the constraint is stated inline &mdash; not hidden in help. <b>The &ldquo;Set an amount&rdquo; ghost has been removed from this screen.</b> No amount-request flow exists: the only Request affordance ever written is commented out at <code>AddressTab.tsx:113&ndash;120</code>, there is no route and no <code>en.json</code> string. It survives on <b>Receive &middot; request an amount</b>, which is explicitly proposed and states the parser change it depends on. A shipped-state mock may not carry an entry point to something unbuilt.</div></div>
+        <div class="scrnote">Wrong-network deposits are unrecoverable, so the constraint is stated inline &mdash; not hidden in help. <b>The action bar and the bottom nav stay.</b> <code>/receive</code> is in <code>HOME_GROUP_ROUTES</code> (<code>TabLayout.tsx:42</code>) and <code>showActionBar</code> is <code>HOME_GROUP_ROUTES.has(pathname)</code> (<code>:142</code>), so receive is a <em>pane of home</em>, not a page pushed on top of it &mdash; the same relationship the send step has. These screens carried a back header instead, which said the opposite: that you had left home and had somewhere to come back from. Swiping between overview, send, receive and swap is the actual navigation, and the header hid it. <b>Pending notes and token detail keep their back header</b>, correctly: neither route is in that set, so both really are pushed pages. <b>The &ldquo;Set an amount&rdquo; ghost has been removed from this screen.</b> No amount-request flow exists: the only Request affordance ever written is commented out at <code>AddressTab.tsx:113&ndash;120</code>, there is no route and no <code>en.json</code> string. It survives on <b>Receive &middot; request an amount</b>, which is explicitly proposed and states the parser change it depends on. A shipped-state mock may not carry an entry point to something unbuilt.</div></div>
       </div>
     </details>
     <details class="grp"><summary><span class="gt">Pending notes</span><span class="gn">5</span></summary>
