@@ -461,6 +461,38 @@ const run = async () => {
 
   await page.evaluate(cleanup);
 
+  // Structural check. Every other check in here measures paint, and the page's shape can be wrong
+  // while every pixel of it is right: a caption outside all its groups, a group still advertising
+  // a count for screens that moved away, an empty group promising five screens the reader cannot
+  // find. None of that fails a contrast or overflow probe, because each one still renders a
+  // perfectly good screen. It has cost real time — an unclosed `.scrgrid` once swallowed 102
+  // screens into a single group and the harness stayed green straight through it. Assert the
+  // navigation, not just the frames.
+  const structure = await page.evaluate(() => {
+    const txt = el => (el?.textContent ?? '').trim();
+    const out = { stale: [], empty: [], orphan: [] };
+    for (const g of document.querySelectorAll('details.grp, details.flow')) {
+      const isFlow = g.classList.contains('flow');
+      // A flow's own captions are the ones in its groups; counting descendants covers both.
+      const n = g.querySelectorAll('.scrcap, .caphead').length;
+      const says = Number(txt(g.querySelector(isFlow ? '.fn' : '.gn')));
+      const name = txt(g.querySelector(isFlow ? '.h' : '.gt')) || '(unnamed)';
+      const where = isFlow ? name : `${txt(g.closest('details.flow')?.querySelector('.h'))} / ${name}`;
+      if (!n) out.empty.push(where);
+      else if (Number.isFinite(says) && n !== says) out.stale.push(`${where}: says ${says}, has ${n}`);
+    }
+    for (const c of document.querySelectorAll('.scrcap'))
+      if (!c.closest('details.grp')) out.orphan.push(txt(c).slice(0, 44));
+    return out;
+  });
+  const structural = structure.stale.length + structure.empty.length + structure.orphan.length;
+  if (structural) {
+    console.log(`\n  ✗ STRUCTURE (the index disagrees with the page):`);
+    structure.stale.forEach(t => console.log(`      stale count : ${t}`));
+    structure.empty.forEach(t => console.log(`      empty group : ${t} — promises screens it does not hold`));
+    structure.orphan.forEach(t => console.log(`      orphan      : ${t} — outside every sub-group`));
+  }
+
   const unpaintable = lintIcons('design-system/assets/icons');
   if (unpaintable.length) {
     console.log(`\n  \u2717 UNPAINTABLE ICONS (fill="none", no stroke -> invisible under a mask):`);
@@ -514,6 +546,7 @@ const run = async () => {
   console.log(`  inflated @200%  : ${tallyGrown}   (grew >2.5× — an absolute floor authored in rem)`);
   console.log(`  reflow breaks   : ${broke.size}   (screens overflowing at ${WIDTHS.join('/')}${reflows ? '' : ' — CHECK INERT'})`);
   console.log(`  unpaintable svg : ${unpaintable.length}   (invisible under a CSS mask)`);
+  console.log(`  structure       : ${structural}   (stale/empty group counts, orphan screens)`);
   if (errors.length) console.log(`  console errors  : ${errors.length} → ${errors[0]}`);
   console.log(`${'─'.repeat(64)}`);
 
@@ -533,7 +566,7 @@ const run = async () => {
   }
 
   await browser.close();
-  process.exit(total || unpaintable.length || scaled.length || broke.size || !reflows ? 1 : 0);
+  process.exit(total || unpaintable.length || scaled.length || broke.size || structural || !reflows ? 1 : 0);
 };
 
 run().catch(e => { console.error(e); process.exit(2); });
