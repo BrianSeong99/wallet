@@ -189,3 +189,26 @@ the 44pt floor (32 instances) — the latter because my hand-written check only 
 - No production component, route, data-flow, or tested behavior changed.
 - Nothing committed or pushed without explicit approval.
 - No AI attribution in any artifact.
+
+---
+
+## A button label never wraps
+
+**One line. Always.** A label on two lines is a label that is too long, never a button that is
+too narrow — the fix is always the words.
+
+Three reasons it is a rule and not a preference:
+
+1. **It changes the button's height**, so the same CTA is a different size on different screens
+   for no reason a user can see. The action zone has a fixed geometry; a wrapping label breaks it.
+2. **It reads as a sentence, not a command.** "Continue backup" over two lines stops looking like
+   something you press.
+3. **It is a symptom.** A label that needs two lines is usually describing the flow rather than
+   naming the action. `Continue backup` → **`Back up`**. The shorter one is also the better one.
+
+Enforced by `review.mjs` (`wrapped labels`), which counts **text nodes only** over `.btn`,
+`.pcta`, `.tokchip`, `.fc` and `.gh` — a segmented chip stacks an icon above its label and a
+token chip sits an image beside one, and a naive line count reads those as wraps.
+
+**Baseline size only.** At 200% text a long label *should* wrap rather than clip; that is the
+accessible behaviour and the `inflated @200%` check tracks it separately.

@@ -125,7 +125,7 @@ const probe = () => {
       ? parseFloat(getComputedStyle(mockEl).getPropertyValue('--safe-bottom')) || 0
       : 0;
     const minBottom = Math.max(16, safeBottom);
-    const f = { screen: cap, inSafeArea: [], clipped: [], overflow: false, contrast: [], icons: [], fills: [], rings: [], targets: [], tiny: [] };
+    const f = { screen: cap, inSafeArea: [], clipped: [], overflow: false, contrast: [], icons: [], fills: [], rings: [], targets: [], tiny: [], wrapped: [] };
 
     const body = scr.querySelector('.mock,.mwel');
     if (body && body.scrollHeight > scr.clientHeight + 2) f.overflow = true;
@@ -136,6 +136,21 @@ const probe = () => {
       const cs = getComputedStyle(el);
       if (cs.display === 'none' || cs.visibility === 'hidden') return;
       const label = (el.textContent || '').trim().slice(0, 16) || el.className?.toString().slice(0, 16) || el.tagName;
+      // A BUTTON LABEL MAY NOT WRAP. A label on two lines is a label that is too long, never a
+      // button that is too narrow -- the fix is always the words. It also breaks the action
+      // zone's fixed height, so the CTA changes size between screens for no reason a user can see.
+      // Counted over TEXT NODES ONLY: a segmented chip stacks an icon above its label and a token
+      // chip sits an image beside one, and a naive range over the element counts those as lines.
+      // Baseline size only -- at 200% text a long label SHOULD wrap rather than clip.
+      if (el.matches('.btn,.pcta,.tokchip,.fc,.gh')) {
+        const tops = new Set();
+        for (const n of el.childNodes) {
+          if (n.nodeType !== 3 || !n.textContent.trim()) continue;
+          const rg = document.createRange(); rg.selectNodeContents(n);
+          for (const b of rg.getClientRects()) if (b.height > 1) tops.add(Math.round(b.top / 2));
+        }
+        if (tops.size > 1) f.wrapped.push({ el: (el.textContent || '').trim().slice(0, 26), lines: tops.size });
+      }
       const bottomPt = pt(sr.bottom - r.bottom);
       const topPt = pt(r.top - sr.top);
       // full-bleed art and scrims are meant to reach the frame edge
@@ -230,7 +245,7 @@ const probe = () => {
   // so this measures only the declared graphics: .nti fills/borders and .svgic icons.
   const spec = { screen: '· component specimens (outside phone frames)',
                  inSafeArea: [], clipped: [], overflow: false,
-                 contrast: [], icons: [], fills: [], rings: [], targets: [], tiny: [] };
+                 contrast: [], icons: [], fills: [], rings: [], targets: [], tiny: [], wrapped: [] };
   document.querySelectorAll('.nti,.svgic').forEach(el => {
     if (el.closest('.phone')) return;
     const r = el.getBoundingClientRect();
@@ -247,7 +262,7 @@ const probe = () => {
   });
   out.push(spec);
   if (hidden.length) out.push({ screen: `!! ${hidden.length} HIDDEN frame(s) not audited: ${hidden.join(', ')}`,
-    inSafeArea: [], clipped: [], overflow: true, contrast: [], icons: [], fills: [], rings: [], targets: [], tiny: [] });
+    inSafeArea: [], clipped: [], overflow: true, contrast: [], icons: [], fills: [], rings: [], targets: [], tiny: [], wrapped: [] });
   return out;
 };
 
@@ -443,7 +458,7 @@ const run = async () => {
   }
 
   let total = 0;
-  const tally = { inSafeArea: 0, clipped: 0, overflow: 0, contrast: 0, icons: 0, fills: 0, rings: 0, targets: 0, tiny: 0 };
+  const tally = { inSafeArea: 0, clipped: 0, overflow: 0, contrast: 0, icons: 0, fills: 0, rings: 0, targets: 0, tiny: 0, wrapped: 0 };
   for (const [theme, screens] of Object.entries(results)) {
     for (const s of screens) {
       const hits = Object.entries(tally).filter(([k]) => k === 'overflow' ? s.overflow : s[k]?.length);
@@ -484,6 +499,7 @@ const run = async () => {
   console.log(`  ring contrast   : ${tally.rings}   (.sel outline vs its gap, 3:1)`);
   console.log(`  targets < 44pt  : ${tally.targets}`);
   console.log(`  text < 11pt     : ${tally.tiny}`);
+  console.log(`  wrapped labels  : ${tally.wrapped}   (a button label on two lines)`);
   console.log(`  targets @200%   : ${tallyUnder}   (< 44×44 with the root at 32px)`);
   console.log(`  inflated @200%  : ${tallyGrown}   (grew >2.5× — an absolute floor authored in rem)`);
   console.log(`  reflow breaks   : ${broke.size}   (screens overflowing at ${WIDTHS.join('/')}${reflows ? '' : ' — CHECK INERT'})`);
