@@ -356,35 +356,54 @@ export const OnboardingFlow: FC<OnboardingFlowProps> = ({
             />
           )}
         </AnimatePresence>
-        <AnimatePresence mode={'wait'} initial={false}>
-          <motion.div
-            className="flex flex-col flex-1 min-h-0"
-            key={step}
-            initial="initialState"
-            animate="animateState"
-            exit="exitState"
-            // Apple's iOS parallax push, per the design system, which chose it
-            // over the four competing "push from right" specs the audit found.
-            //
-            // What was here travelled `1vw` — about 4px on a 402pt screen —
-            // over 200ms, with both layers moving the same distance. At that
-            // amplitude the transition is essentially invisible, which is why
-            // it read as "no animation at all"; and with equal travel there is
-            // no parallax, so the screens slid together like a carousel rather
-            // than one arriving over the other.
-            //
-            // It was also `duration: 0` off-mobile, i.e. switched off entirely
-            // in the extension and desktop. The design system specifies one
-            // page transition for every target, so that condition is gone.
-            transition={iosPush}
-            variants={pushVariants({ direction: navigationDirection, reduceMotion })}
-          >
-            {/* Back now lives in `.obtop` as the design system draws it, so the
-                bottom secondary "Back" button that used to stack a second
-                ActionZone underneath the step's own one is gone. */}
-            {renderStep()}
-          </motion.div>
-        </AnimatePresence>
+        {/* A parallax push is two layers moving at once — that difference in
+            travel IS the effect — so the two screens must be on screen
+            together, and both must be full size while they are.
+
+            Hence: default (sync) mode, NOT `wait` and NOT `popLayout`.
+              - `wait` runs the exit to completion before the enter starts, so
+                the layers never coexist and there is nothing to be parallax
+                between; it also doubles the duration to 2 x 540ms.
+              - `popLayout` does overlap them, but it takes the exiting screen
+                out of flow with `position:absolute`, which stops `flex-1` from
+                applying to it — so the outgoing layer COLLAPSES as it leaves
+                instead of sliding out at full size.
+            Sizing both layers `absolute inset-0` inside a `relative` box sizes
+            them from the box rather than from flex, so neither depends on being
+            in flow and both stay full-bleed for the whole transition.
+
+            The onboarding root already clips with `overflow-hidden`, so the
+            off-screen layer cannot produce a horizontal scrollbar mid-flight. */}
+        <div className="relative flex-1 min-h-0">
+          <AnimatePresence initial={false}>
+            <motion.div
+              className="absolute inset-0 flex flex-col"
+              key={step}
+              initial="initialState"
+              animate="animateState"
+              exit="exitState"
+              // Apple's iOS parallax push, per the design system, which chose
+              // it over the four competing "push from right" specs its audit
+              // found.
+              //
+              // What was here travelled `1vw` — about 4px on a 402pt screen —
+              // over 200ms, with both layers moving the same distance: at that
+              // amplitude the transition is invisible, and with equal travel
+              // there is no parallax at all.
+              //
+              // It was also `duration: 0` off-mobile, i.e. switched off
+              // entirely in the extension and desktop. The design system
+              // specifies one page transition for every target.
+              transition={iosPush}
+              variants={pushVariants({ direction: navigationDirection, reduceMotion })}
+            >
+              {/* Back now lives in `.obtop` as the design system draws it, so
+                  the bottom secondary "Back" button that used to stack a second
+                  ActionZone underneath the step's own one is gone. */}
+              {renderStep()}
+            </motion.div>
+          </AnimatePresence>
+        </div>
       </div>
     </div>
   );

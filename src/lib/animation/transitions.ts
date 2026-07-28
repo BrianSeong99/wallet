@@ -1,4 +1,4 @@
-import type { Transition, Variants } from 'framer-motion';
+import type { TargetAndTransition, Transition } from 'framer-motion';
 
 /**
  * Page transitions — Apple's iOS parallax push.
@@ -35,13 +35,22 @@ interface PushVariantOptions {
 }
 
 /**
- * Build the three variants for one push. Returned as a `Variants` map to be
- * passed to `variants` — NOT to `transition`, which is where they were before
- * and is why nothing animated: framer-motion resolves `initial="initialState"`
- * against `variants`, so with the map in the wrong prop the names matched
- * nothing and every screen rendered at rest.
+ * The three named states of one push, typed concretely rather than as
+ * framer's `Variants`. `Variants` widens each entry to `Variant`, which is a
+ * union with `TargetResolver` (a function), so callers and tests cannot read
+ * `.x` off it without a cast. This is still assignable to `variants`.
  */
-export const pushVariants = ({ direction, reduceMotion, isRTL = false }: PushVariantOptions): Variants => {
+export type PushVariants = Record<'initialState' | 'animateState' | 'exitState', TargetAndTransition>;
+
+/**
+ * Build the three variants for one push. Pass the result to `variants` — and
+ * note the companion requirement: `AnimatePresence` must NOT be `mode="wait"`.
+ * A parallax is two layers moving at once, and `wait` runs the exit to
+ * completion before the enter starts, so the layers never coexist and there is
+ * nothing to be parallax between. Use `mode="popLayout"` with a `relative`
+ * wrapper so the two screens occupy the same box.
+ */
+export const pushVariants = ({ direction, reduceMotion, isRTL = false }: PushVariantOptions): PushVariants => {
   // Reduced motion keeps the state change legible without moving anything:
   // a cross-fade still tells you the screen changed.
   if (reduceMotion) {
