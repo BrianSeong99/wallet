@@ -6,7 +6,7 @@ import useMidenFaucetId from 'app/hooks/useMidenFaucetId';
 import Balance from 'app/templates/Balance';
 import HomePrompts from 'app/templates/HomePrompts';
 import { AssetRow } from 'components/AssetRow';
-import { ConnectivityIssueBanner } from 'components/ConnectivityIssueBanner';
+import { useConnectivityIssue } from 'components/ConnectivityIssueBanner';
 import { AccountsDrawer, BalanceCard } from 'components/ui';
 import { toLocalFormat } from 'lib/i18n/numbers';
 import {
@@ -133,10 +133,6 @@ const Explore: FC = () => {
 
   return (
     <div className="flex flex-col h-full overflow-hidden bg-app-bg font-inter" data-testid="explore-page">
-      <div className="shrink-0">
-        <ConnectivityIssueBanner />
-      </div>
-
       <div className="flex-1 min-h-0 overflow-y-auto">
         <div className="flex flex-col gap-3 px-4 pt-3 pb-32">
           <HomeOverview address={address} tokenPrices={tokenPrices} tokens={sortedTokens} account={account} />
@@ -158,6 +154,12 @@ interface HomeOverviewProps {
 const HomeOverview: FC<HomeOverviewProps> = ({ address, tokenPrices, tokens, account }) => {
   const [accountsOpen, setAccountsOpen] = useState(false);
   const { t } = useTranslation();
+  // While the network or the node is down, the 24h delta describes a price
+  // move fetched over the very connection that just went away. Showing a
+  // stale reading beside a balance we have already told the user we cannot
+  // verify is worse than showing no reading at all — so the delta comes off
+  // and the connectivity prompt below the card carries the explanation.
+  const { isBalanceStale } = useConnectivityIssue();
   return (
     <>
       <Balance>
@@ -167,7 +169,7 @@ const HomeOverview: FC<HomeOverviewProps> = ({ address, tokenPrices, tokens, acc
             accountId={address}
             amount={`$${toLocalFormat(balance, { decimalPlaces: 2 })}`}
             currency="USD"
-            delta={{ absolute: '+0.00', percentage: '0.00%', direction: 'positive' }}
+            delta={isBalanceStale ? undefined : { absolute: '+0.00', percentage: '0.00%', direction: 'positive' }}
             onMore={() => setAccountsOpen(true)}
           />
         )}

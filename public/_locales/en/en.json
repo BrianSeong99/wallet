@@ -276,6 +276,8 @@
   "private": "Private",
   "external": "External",
   "claim": "Claim",
+  "unclaimedNotesTitle": "$notes$ notes waiting to be claimed",
+  "unclaimedNotesBody": "Sent to you, but not counted in your balance and not spendable until you claim it.",
   "availableToClaim": "Available to claim",
   "privateTransactionsAnytimeAnywhere": "Private transactions anytime, anywhere.",
   "midenWallet": "Bread!",

@@ -74,8 +74,17 @@ jest.mock('components/AssetRow', () => ({
   )
 }));
 
+// Home reads connectivity as DATA now (to decide whether the 24h delta is
+// still trustworthy) and renders the notice as a prompt in the carousel —
+// the banner strip above the balance card is gone.
 jest.mock('components/ConnectivityIssueBanner', () => ({
-  ConnectivityIssueBanner: () => <div data-testid="connectivity-banner" />
+  ConnectivityIssueBanner: () => <div data-testid="connectivity-banner" />,
+  useConnectivityIssue: () => ({
+    view: null,
+    onRetry: jest.fn(),
+    onDismiss: jest.fn(),
+    isBalanceStale: false
+  })
 }));
 
 jest.mock('components/ui', () => ({
@@ -224,7 +233,7 @@ describe('Explore', () => {
   });
 
   describe('base rendering', () => {
-    it('renders the page shell, banner, balance card, prompts and asset rows', async () => {
+    it('renders the page shell, balance card, prompts and asset rows', async () => {
       mockAllBalances = [
         // faucet-native token sorts to the front (ternary -> -1)
         makeToken('faucet-native', 'MIDEN', 'Miden'),
@@ -236,7 +245,11 @@ describe('Explore', () => {
       await renderExplore();
 
       expect(screen.getByTestId('explore-page')).toBeInTheDocument();
-      expect(screen.getByTestId('connectivity-banner')).toBeInTheDocument();
+      // The connectivity strip above the balance is deliberately NOT here any
+      // more: it is a prompt in the carousel, so it can no longer push the
+      // balance down the screen at the moment the user opened the app to read
+      // it. See HomePrompts.
+      expect(screen.queryByTestId('connectivity-banner')).not.toBeInTheDocument();
       expect(screen.getByTestId('balance-card')).toBeInTheDocument();
       // amount is `$${toLocalFormat(balance)}` and account fields flow through.
       expect(screen.getByTestId('balance-amount')).toHaveTextContent('$0');

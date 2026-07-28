@@ -74,7 +74,11 @@ describe('PromptCard — body rendering', () => {
 
     const body = screen.getByText('Write down your recovery phrase');
     expect(body).toBeTruthy();
-    expect(body.className).toContain('text-xs');
+    // Crust type ramp: `text-caption` (11px) is the floor, and `line-clamp-3`
+    // is load-bearing — `connectivityNodeBody` is the longest string in the
+    // system and a 2-line clamp cut it mid-sentence.
+    expect(body.className).toContain('text-caption');
+    expect(body.className).toContain('line-clamp-3');
   });
 
   it('omits the body element entirely when no body is passed', () => {
