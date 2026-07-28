@@ -26,9 +26,9 @@ describe('binance', () => {
 
       const result = await fetchTokenPrices();
       expect(result).toEqual({
-        ETH: { price: 3000.5, change24h: 10.5, percentageChange24h: 0.35 },
-        BTC: { price: 65000, change24h: -250, percentageChange24h: -0.38 },
-        USDC: { price: 1.0001, change24h: 0.0001, percentageChange24h: 0.01 }
+        ETH: { price: 3000.5, change24h: 10.5, percentageChange24h: 0.35 , isKnown: true},
+        BTC: { price: 65000, change24h: -250, percentageChange24h: -0.38 , isKnown: true},
+        USDC: { price: 1.0001, change24h: 0.0001, percentageChange24h: 0.01 , isKnown: true}
       });
       expect(mockedAxios.get).toHaveBeenCalledWith(
         expect.stringContaining('/api/v3/ticker/24hr'),
@@ -48,7 +48,7 @@ describe('binance', () => {
 
       const result = await fetchTokenPrices();
       expect(result).toEqual({
-        BTC: { price: 50000, change24h: 0, percentageChange24h: 0 }
+        BTC: { price: 50000, change24h: 0, percentageChange24h: 0 , isKnown: true}
       });
     });
 
@@ -61,7 +61,7 @@ describe('binance', () => {
       } as any);
       const result = await fetchTokenPrices();
       expect(result).toEqual({
-        ETH: { price: 3000, change24h: 0, percentageChange24h: 0 }
+        ETH: { price: 3000, change24h: 0, percentageChange24h: 0 , isKnown: true}
       });
     });
 
@@ -88,10 +88,10 @@ describe('binance', () => {
 
   describe('getTokenPrice', () => {
     it('returns the stored price info for a known symbol', () => {
-      expect(getTokenPrice({ ETH: { price: 3000, change24h: 10, percentageChange24h: 0.1 } }, 'ETH')).toEqual({
+      expect(getTokenPrice({ ETH: { price: 3000, change24h: 10, percentageChange24h: 0.1 , isKnown: true} }, 'ETH')).toEqual({
         price: 3000,
         change24h: 10,
-        percentageChange24h: 0.1
+        percentageChange24h: 0.1, isKnown: true
       });
     });
 

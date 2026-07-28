@@ -43,8 +43,12 @@ export const AssetRow: FC<AssetRowProps> = ({ asset, tokenPrices, onClick, 'data
       name={metadata.name || metadata.symbol}
       amount={`${balance.toFixed(2)} ${metadata.symbol}`}
       chart={hasRealPoints ? <Sparkline points={points} color={sparkColor} width={120} height={32} /> : undefined}
-      price={`$${(balance * priceInfo.price).toFixed(2)}`}
-      delta={{ value: deltaValue, direction }}
+      // No fiat and no delta without a real quote. `balance * 0` would render
+      // "$0.00", which reads as "this is worthless" rather than "we do not
+      // know what this is worth" — and `balance * 1` (the old default) read as
+      // a real valuation. Both are assertions the app cannot make.
+      price={priceInfo.isKnown ? `$${(balance * priceInfo.price).toFixed(2)}` : undefined}
+      delta={priceInfo.isKnown ? { value: deltaValue, direction } : undefined}
       onClick={onClick}
       data-testid={dataTestId}
     />
