@@ -143,6 +143,12 @@
      no label to fall back on, so SC 1.4.11's 3:1 genuinely applies. Dark keeps the
      pastels as shipped. Hue is preserved in both; only lightness moves. */
   --act-send:#748A9A; --act-receive:#7C8B78; --act-swap:#8F829F; --act-earn:#777487;
+  /* Deep variants, for when the colour is a FILL under white content rather than a glyph on a
+     light surface. White on the base --act-send is 3.59:1 — fine for the icon (SC 1.4.11 wants
+     3:1) and a fail for the label beside it (4.5:1). One chip cannot have a white icon and a
+     near-black label, so the fill darkens instead: 4.69:1 and 4.56:1. Same values in both themes
+     — the dark-theme --act-* are lighter still, and white on those is worse. */
+  --act-send-deep:#5F7787; --act-receive-deep:#6B7A66;
   --tx-received:#A8BBA3; --tx-sent:#A3BCCF; --tx-swap:#C9BAD9; --tx-earn:#BDB9CC; --tx-faucet:#CDB0DE;
   --tx-glyph:#3F3F3F;
   /* 8 / 12 / 16. --stack-loose was 24 and read as a shout above the Assets header --
@@ -185,6 +191,7 @@
   --on-neg:#1C1A18;           /* dark --neg is a light coral; white on it fails, near-black is 6.23:1 */
   --warn-wash:#33290F; --neg-wash:#3A1F1C;
   --act-send:#91ACC1; --act-receive:#99AC94; --act-swap:#BEACD2; --act-earn:#777487;
+  --act-send-deep:#5F7787; --act-receive-deep:#6B7A66;
   --tx-received:#A8BBA3; --tx-sent:#A3BCCF; --tx-swap:#C9BAD9; --tx-earn:#BDB9CC; --tx-faucet:#CDB0DE;
   --tx-glyph:#1C1A18;
   /* Balance card goes near-black in dark mode (colors are light-mode only). */
@@ -1705,19 +1712,25 @@ ul.tick li:before{content:"→";position:absolute;left:0.125rem;color:var(--acce
    on the screen being the loudest, which is the defect this field was redrawn to fix. Empty and
    filled now differ by weight and ink as well as by wording. */
 .heroin.ph{font-weight:500;color:var(--ink-3)}
-/* Fixed at three lines; the type fits it. Pasting a 48-character address used to push the action
-   row, the resolution row and the network list down together -- the controls relocating under the
-   thumb at the moment the user commits money. The box no longer moves: --fit-2 for a short value
-   on one line, --fit-4 for a full address on three, and the height is three --fit-4 lines either
-   way. See SPEC.md, "when the content varies, the type fits the box". */
+/* FIXED height, not min-height. min-height was wrong and the mocks proved it: two lines at 56px
+   is 128.8pt against three at 32px = 110.4, so the box grew on exactly the screens the rule was
+   written to hold still. A floor is not a fixed size.
+   Height is three --fit-4 lines. Each tier then gets however many lines fit in THAT box, which is
+   what sets the boundaries -- measured at 350pt, Geist Mono 700:
+     --fit-1 72px  8 ch/line  x1 line  =  8   --fit-3 44px 13 ch/line x2 lines = 26
+     --fit-2 56px 10 ch/line  x1 line  = 10   --fit-4 32px 18 ch/line x3 lines = 54
+   A 48-character Miden address, a 44-character Solana one and a 42-character EVM one all land in
+   --fit-4; the tiers above it carry names, partial entry and the placeholder. Assign by character
+   count, longest tier that fits. */
 .heroin{font-family:var(--mono);font-size:var(--fit-4);font-weight:700;line-height:1.15;
   letter-spacing:-.02em;color:var(--ink-3);word-break:normal;overflow-wrap:anywhere;
-  margin:0.375rem 0 1.125rem;min-height:calc(3 * 1.15 * var(--fit-4));display:flex;
-  flex-direction:column;justify-content:center}
+  margin:0.375rem 0 1.125rem;height:calc(3 * 1.15 * var(--fit-4) + 2px);display:flex;
+  flex-direction:column;justify-content:center;overflow:hidden}
+.heroin.fit-1{font-size:var(--fit-1)}
 .heroin.fit-2{font-size:var(--fit-2)}
 .heroin.fit-3{font-size:var(--fit-3)}
-/* The placeholder is short, so it always sits in the largest tier. */
-.heroin.ph{font-weight:500;color:var(--ink-3);font-size:var(--fit-2)}
+/* Placeholder recedes in weight and ink; its SIZE comes from the tier like any other value. */
+.heroin.ph{font-weight:500;color:var(--ink-3)}
 /* Inert primary drops the accent fill rather than dimming it, so the control
    reads as unavailable instead of as a washed-out orange button. */
 /* Must not read like .btn-secondary, which is also surface-2 at the same size.
@@ -1937,8 +1950,8 @@ ul.tick li:before{content:"→";position:absolute;left:0.125rem;color:var(--acce
 .tkacts{display:flex;gap:0.625rem;margin-top:0.75rem}
 .tkact{flex:1;min-height:44px;border:0;border-radius:var(--radius-md);display:flex;
   align-items:center;justify-content:center;gap:0.5rem;font-family:var(--ui);
-  font-size:var(--t-label);font-weight:700;color:var(--on-accent-sm);cursor:pointer}
-.tkact .svgic{width:1rem;height:1rem;background-color:var(--on-accent-sm)}
+  font-size:var(--t-label);font-weight:700;color:#fff;cursor:pointer}
+.tkact .svgic{width:1rem;height:1rem;background-color:#fff}
 .tftabs{display:flex;gap:0.25rem;margin-top:0.625rem}
 /* 44pt, not the 32 a timeframe strip is usually drawn at. Five targets in a row
    across 350pt gives each ~66pt of width but height is the binding dimension,
@@ -3840,8 +3853,8 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
               <span class="tkbal">200.00</span><span class="tkfiat">$200.00</span>
             </div>
             <div class="tkacts">
-              <button class="tkact" style="background:var(--act-send)"><span class="svgic" style="--ic:url(assets/icons/send-new.svg)" aria-hidden="true"></span>Send</button>
-              <button class="tkact" style="background:var(--act-receive)"><span class="svgic" style="--ic:url(assets/icons/receive-new.svg)" aria-hidden="true"></span>Receive</button>
+              <button class="tkact" style="background:var(--act-send-deep)"><span class="svgic" style="--ic:url(assets/icons/send-new.svg)" aria-hidden="true"></span>Send</button>
+              <button class="tkact" style="background:var(--act-receive-deep)"><span class="svgic" style="--ic:url(assets/icons/receive-new.svg)" aria-hidden="true"></span>Receive</button>
             </div>
             <span class="seclab">Price</span>
             <div style="height:5.5rem;display:flex;align-items:center;justify-content:center;background:var(--surface-2);border-radius:var(--radius-md)">
@@ -3866,8 +3879,8 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
               <span class="tkbal">1,204.50</span><span class="tkfiat">$12,480.50</span>
             </div>
             <div class="tkacts">
-              <button class="tkact" style="background:var(--act-send)"><span class="svgic" style="--ic:url(assets/icons/send-new.svg)" aria-hidden="true"></span>Send</button>
-              <button class="tkact" style="background:var(--act-receive)"><span class="svgic" style="--ic:url(assets/icons/receive-new.svg)" aria-hidden="true"></span>Receive</button>
+              <button class="tkact" style="background:var(--act-send-deep)"><span class="svgic" style="--ic:url(assets/icons/send-new.svg)" aria-hidden="true"></span>Send</button>
+              <button class="tkact" style="background:var(--act-receive-deep)"><span class="svgic" style="--ic:url(assets/icons/receive-new.svg)" aria-hidden="true"></span>Receive</button>
             </div>
             <span class="seclab">Price</span><svg viewBox="0 0 300 88" preserveAspectRatio="none" style="width:100%;height:5.5rem;display:block" aria-hidden="true"><path d="M0 66 L30 60 L60 68 L90 44 L120 50 L150 30 L180 38 L210 22 L240 28 L270 14 L300 18" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
             <div class="tftabs"><button class="tftab">1H</button><button class="tftab on">1D</button><button class="tftab">1W</button><button class="tftab">1M</button><button class="tftab">YTD</button></div>
@@ -4139,7 +4152,7 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
               <div class="seg" data-act="swap"><span class="svgic" style="--ic:url(assets/icons/convert.svg);" aria-hidden="true"></span><span class="lbl">Swap</span></div>
             </div>
             <div class="pgtitle" id="r-h">Send To</div>
-            <div class="fld" style="width:auto"><div class="heroin ph" role="textbox" aria-labelledby="r-h">Enter Address</div>
+            <div class="fld" style="width:auto"><div class="heroin ph fit-3" role="textbox" aria-labelledby="r-h">Enter Address</div>
               <div class="fieldrow" style="flex-wrap:wrap">
                 <button class="tokchip" aria-label="Paste address"><span class="svgic" style="--ic:url(assets/icons/copy.svg);width:1.0625rem;height:1.0625rem" aria-hidden="true"></span></button>
               <button class="tokchip" aria-label="Scan a QR code"><span class="svgic" style="--ic:url(assets/icons/qr-scan.svg);width:1.0625rem;height:1.0625rem" aria-hidden="true"></span></button>
@@ -4584,7 +4597,7 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
           <div class="mpad" style="flex:1;display:flex;flex-direction:column">
             <div class="sh2"><span class="bk2">&lsaquo;</span><span class="t2">Send</span></div>
             <div class="pgtitle" style="margin-top:0;opacity:.4">Send To</div>
-            <div class="heroin ph" style="opacity:.4">Enter Address</div>
+            <div class="heroin ph fit-3" style="opacity:.4">Enter Address</div>
           </div>
           <div class="shscrim"></div>
           <div class="msheet" style="height:55%">
@@ -4605,7 +4618,7 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
           <div class="mpad" style="flex:1;display:flex;flex-direction:column">
             <div class="sh2"><span class="bk2">&lsaquo;</span><span class="t2">Send</span></div>
             <div class="pgtitle" style="margin-top:0;opacity:.4">Send To</div>
-            <div class="heroin ph" style="opacity:.4">Enter Address</div>
+            <div class="heroin ph fit-3" style="opacity:.4">Enter Address</div>
           </div>
           <div class="shscrim"></div>
           <div class="msheet" style="height:55%">
@@ -4821,7 +4834,7 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
             </div>
             <div class="tkacts">
               <button class="tkact" style="background:var(--surface-2);color:var(--ink-3)" disabled>Send</button>
-              <button class="tkact" style="background:var(--act-receive)"><span class="svgic" style="--ic:url(assets/icons/receive-new.svg)" aria-hidden="true"></span>Receive</button>
+              <button class="tkact" style="background:var(--act-receive-deep)"><span class="svgic" style="--ic:url(assets/icons/receive-new.svg)" aria-hidden="true"></span>Receive</button>
             </div>
             <span class="seclab">Price</span>
             <div style="height:5.5rem;display:flex;align-items:center;justify-content:center;background:var(--surface-2);border-radius:var(--radius-md)">
@@ -4845,7 +4858,7 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
               <span class="tkbal">0.00</span><span class="tkfiat">You don&rsquo;t hold any USDC</span>
             </div>
             <div class="tkacts">
-              <button class="tkact" style="background:var(--act-receive)"><span class="svgic" style="--ic:url(assets/icons/receive-new.svg)" aria-hidden="true"></span>Receive USDC</button>
+              <button class="tkact" style="background:var(--act-receive-deep)"><span class="svgic" style="--ic:url(assets/icons/receive-new.svg)" aria-hidden="true"></span>Receive USDC</button>
             </div>
             <span class="seclab">Price</span><svg viewBox="0 0 300 88" preserveAspectRatio="none" style="width:100%;height:5.5rem;display:block" aria-hidden="true"><path d="M0 48 L30 44 L60 50 L90 41 L120 46 L150 38 L180 43 L210 35 L240 39 L270 31 L300 34" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
             <div class="tftabs"><button class="tftab">1H</button><button class="tftab on">1D</button><button class="tftab">1W</button><button class="tftab">1M</button><button class="tftab">YTD</button></div>
