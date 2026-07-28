@@ -258,3 +258,38 @@ somewhere.
 
 Content that is *itself* the variable thing — a scrolling list's rows, a wrapping address — sizes
 naturally **inside** a fixed container. The rule is about the container.
+
+### Corollary — when the content varies, the type fits the box
+
+The rule above says a container holds its size. The address field is the case where that is hard,
+because what goes in it genuinely varies: a 48-character Miden address, a 42-character EVM one, a
+44-character Solana one, a contact name, or a placeholder.
+
+**So the box is fixed at its tallest configuration and the type steps down to fit it.** Never the
+reverse. Concretely:
+
+| Content length | Lines | Size |
+|---|--:|---|
+| short — placeholder, a name | 1 | largest step |
+| medium | 2 | one step down |
+| long — a full address | 3 | two steps down |
+
+**Three lines is the maximum**, and the container is always that tall. A short value does not make
+the box shrink; it makes the type bigger inside a box that has not moved.
+
+Two things this buys, and the second is the reason for it:
+
+1. The value is as large as it can be at every length, rather than sized for the worst case.
+2. **Nothing below the field ever moves.** Today pasting a 48-character address pushes the action
+   row, the resolution row and the network list down together — the controls relocate under the
+   thumb at the exact moment the user is about to commit money.
+
+**Assign the tiers by measurement, not arithmetic.** Advance width in Geist Mono varies with the
+step, and the field is 350pt at the authored frame but narrower at 375 and 360 — a tier boundary
+that holds at 402 and breaks at 360 is worse than no tiering, because it reintroduces the shift on
+exactly the devices with least room. Measure every supported address length at every shipping
+width.
+
+**The floor is legibility, not the type floor.** An address is checked character by character; if
+the smallest tier is too small to do that, the answer is fewer characters on screen (truncation
+with a route to the whole value), not smaller type.
