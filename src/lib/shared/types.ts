@@ -603,6 +603,21 @@ export interface WalletSettings {
   contacts?: WalletContact[];
 }
 
+/**
+ * Which network a contact's address is on.
+ *
+ * A Miden or Solana address identifies its own network from its format, so those carry no extra
+ * data. A bare EVM address does not: `0x…` is valid on Ethereum, Base, Arbitrum, Optimism and
+ * every other EVM chain at once, so the chain is a *choice the user made* and has to be stored
+ * rather than re-derived. Without it, a saved EVM contact loses the chain the user picked and the
+ * wallet has to ask again on every send — or guess, which on a wrong-chain transfer is
+ * unrecoverable.
+ */
+export type ContactNetwork =
+  | { family: 'miden' }
+  | { family: 'solana' }
+  | { family: 'evm'; chainId: number };
+
 export interface WalletContact {
   address: string;
   name: string;
@@ -610,6 +625,12 @@ export interface WalletContact {
   accountInWallet?: boolean;
   isPublic?: boolean;
   sharedSecret?: string;
+  /**
+   * Optional on purpose, and it must stay optional: every contact saved before this field existed
+   * has none, and there is no migration that can invent one for an EVM address. Treat `undefined`
+   * as "not yet known" and ask, not as a default chain.
+   */
+  network?: ContactNetwork;
 }
 
 export interface UpdateSettingsResponse extends WalletMessageBase {

@@ -475,3 +475,118 @@ disappear the moment typing starts and fail SC 3.3.2. Cost of enforcing it: `en.
 keys, only the placeholder strings `enterUsername` / `enterAddress`, so **two new i18n keys are
 required** to ship this. Flagged rather than quietly invented.
 
+
+---
+
+## Coverage pass — 164 screens
+
+The design system had 60 captioned screens against ~270 distinct states enumerated from the
+shipped code. This pass closed the gap for Home, Activity, Receive/claim, Settings and the
+dApp browser. Seven components fell out of it, two were deleted again, and one law.
+
+### The negative-margin law
+
+**A negative margin may cancel a parent's padding. It may never outrun it.**
+
+This was caught four separate times in one pass, in code that had shipped and passed review:
+
+| Element | Pull | Parent padding | Overflow |
+|---|---|---|---|
+| `.mbc .bot .acopy2` | `-0.625rem` | `0.375rem` | 4pt |
+| `.mprompt .pdis` | `-0.375rem` | `0.25rem` | 2pt |
+| `.shgear` on `.pghead` | `-0.625rem` | `0` | 10pt |
+| `.balhide` in `.balrow` *(historical — component deleted)* | `-1rem` | `0` (row has none) | 16pt |
+
+Every one is invisible: an ancestor's `overflow:hidden` clips it. What it costs is real — the
+right edge of a 44pt touch target sits outside the box it appears to belong to. When the pull
+belongs to a *layout* rather than a button, put it on the layout: `.pghead` carries the pull and
+`.pghead .shgear` zeroes it.
+
+**The label-row case, resolved.** `.balhide` is gone and `.bmore` holds that slot, with the pull
+split by whose padding it cancels. The button carries the vertical — `-0.625rem` / `-0.6875rem`,
+cancelling `.top`'s 10px and 11px **exactly** — and `.balrow.withmore` carries the horizontal,
+`-1rem` against `.top`'s 16px. Nothing outruns anything, and the glyph lands 22px from the card's
+right edge, the same optical column as `.acopy2` in the row below. `.mshead` took the same
+correction: the trailing pull sits on the header and `.mshead .shgear,.mshead .shact` zero it,
+after the reflow sweep caught the button's own `-0.625rem` hanging 10pt past the Accounts sheet
+header the moment one appeared there.
+
+### New components
+
+- **`.pghead`** — page header, title plus optional trailing gear. Was an inline style repeated on
+  seven screens with `padding-right:0`, which is what left `.shgear` nothing to cancel.
+- **`.emptyb`** — empty-list block: `.et` title, `.eb` body, one `btn-secondary`. No illustration;
+  the app ships no empty-state art and inventing some would be a spec the implementation cannot
+  honour. Secondary, not primary — an empty state is usually the normal resting state, not a
+  failure to correct.
+- **`.mprompt .pcta`** — trailing action inside a prompt, for the connectivity banners and the
+  claim prompt. When a dismiss sits beside it the pair is held 8pt apart.
+- **`.amt .msk`** — the balance mask. Covers **every** number including the delta and sparkline: a
+  visible `+0.32%` beside a masked total leaks the direction and rough size of the move, which
+  defeats the point. Its toggle is no longer on the card — see `.shact` below.
+- **`.mbc .bmore`** — 44pt trailing control in the balance card's label row, and the card's only
+  trailing control on every Home state. Opens the Accounts list, which nothing else on Home
+  reaches. Not invented: shipped `BalanceCard.tsx:182-191` already renders it, wired to the
+  `AccountsDrawer` at `Explore.tsx:192` — but at `w-5 h-5` = 20pt, under half the 44pt floor, and
+  in the bottom strip beside the copy affordance, two targets in one thumb-width. Moving it to the
+  label row at 44pt fixes both. It gets its own class rather than a restyled `.pdis`, because
+  `.pdis`'s 44pt floor is scoped to `.mprompt`: reusing that name inside `.balrow` inherits the
+  colour and none of the geometry, which is exactly how the old `.balhide` shipped as a 33×23
+  target.
+- **`.shact`** — same geometry as `.shgear`, under an honest name, for sheet-header utilities that
+  are not settings. First use: the balance mask on the Accounts sheet. One rule, two names, rather
+  than a second class that happens to be identical — a gear-named class doing eye work is how a
+  style's reach stops matching its name.
+- **`.mbc .bnote` — deleted.** The warn-dotted footnote under the balance is gone from the system,
+  CSS and both usages. Both facts it carried are now `.mprompt` cards in the carousel. On the
+  unclaimed-note screen it also stopped saying the same 52.50 MIDEN twice in two components.
+- **`.mbc .balhide` — deleted.** The eye toggle in the label row is gone; the mask toggle lives in
+  the Accounts sheet header as a `.shact`, inside the sheet `.bmore` opens.
+- **`.addr2`** — now has a base rule. It was authored only as `.drow .v.addr2`, so every bare
+  `<span class="addr2">` outside a detail row silently rendered in the UI face at body size.
+
+### Home has one notification component, not four
+
+Home had four ways to tell you something: the prompt carousel, a banner above the balance card, a
+footnote inside it (`.bnote`), and a control bolted to the card's label row. Four placements, four
+sets of geometry, and **two of them changed the height of the card to say their piece** — the
+banner drew at five different heights across its eight states (138.6 / 141.6 / 150.0 / 155.7 /
+178.7pt), so the balance figure and everything below it moved as the wallet loaded, lost the
+network, or masked itself. The most-looked-at object in the app may not resize under its own
+states.
+
+There is now one, and it is the one the app already ships: `HomePrompts.tsx:47` wraps every notice
+in `PromptCarousel`, which renders nothing at zero prompts and a bare slide at one
+(`PromptCarousel.tsx:92-93`) — so a single notice is a single card with no dots. Every Home notice
+is a `.mprompt` in that slot: unpriced asset, unclaimed notes, offline, node unreachable.
+Connectivity copy stays verbatim from `ConnectivityIssueBanner`.
+
+The height half of the fix is `.mbc.hero .top{min-height:7.25rem}` — 116px, the tallest natural top
+(label row 23 + amount + delta + the 10/11 padding, measured at 115.63) rounded onto the 4px grid.
+A **floor, not a fixed height**: at 200% text the content outgrows it and the card grows. The slack
+lands where the delta would be, below the amount, so the number holds the same Y in all eight
+states, which now measure 162pt each.
+
+This raises the stakes on `.mprompt .pb`'s 3-line clamp (above): at 2 lines the guardian prompt
+lost "Enter its URL to reconnect" and `connectivityNodeBody` stopped at "Your balance may be" —
+verbatim i18n strings truncated mid-sentence on what is now Home's *only* notification surface.
+
+### Two priority rules written into CSS
+
+`.mbc .balmain .bl` is `flex:0 0 auto`. A bare flex row shrinks both children proportionally,
+which at 320 gave the balance 144pt for 191pt of unbreakable digits — **"$12,480.50" clipped
+mid-number by `overflow:hidden`, a wrong number rendered as a plausible one.** The balance is why
+the card exists; the sparkline is a garnish on it. The number holds, the chart yields.
+
+A container query would be the better tool for dropping the chart entirely, and it is *not* used:
+these are `zoom`-scaled mocks, so a length-based container query does not resolve against the pt
+geometry being specified. A rule that reads as spec and behaves as something else is worse than
+the residual it would fix.
+
+### Harness change
+
+The reflow sweep no longer flags elements authored to truncate (`overflow:hidden` +
+`white-space:nowrap` + `text-overflow:ellipsis`). Those have `scrollWidth > clientWidth` **by
+definition** on any string long enough to need the ellipsis — the check was crying wolf on the
+exact mechanism that prevents reflow breaks. All three properties must be set, so a container
+that merely clips its children is still caught.

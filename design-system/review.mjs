@@ -13,7 +13,7 @@
 //   2. CONTRAST  — text vs composited background (4.5:1, or 3:1 for large text),
 //                  currentColor icons (3:1), .nti non-text indicators (3:1), and the
 //                  .sel selection ring vs the colour showing through its offset gap (3:1)
-//   3. TARGETS   — every interactive element >= 44pt
+//   3. TARGETS   — every interactive element >= 44x44pt, BOTH dimensions
 //   4. TYPE      — nothing below the 11pt Apple floor
 //   5. SCALING   — targets survive 200% text (root 16px -> 32px): still 44x44, and nothing
 //                  inflating >2.5x, which is what an absolute floor authored in rem does
@@ -68,6 +68,11 @@ const prep = () => {
     document.head.appendChild(st);
   }
   document.querySelectorAll('.section').forEach(s => s.classList.add('active'));
+  // Flows are collapsible <details>. A closed one renders its screens at 0x0, which the hidden-frame
+  // check would report as missing screens -- and worse, every other check inside them would
+  // vacuously pass. Force them all open for the audit; cleanup does not close them again, because
+  // the authored state is open.
+  document.querySelectorAll('details').forEach(d => { d.open = true; });
   // Audit with the Earn flag ON. The site mirrors isEarnEnabled()=false, which display:none's
   // the three earn screens -- and a hidden .phone measures 0x0, so every check inside it
   // silently passes while the summary still counts it as a screen. Auditing the flag-on state
@@ -125,7 +130,7 @@ const probe = () => {
       ? parseFloat(getComputedStyle(mockEl).getPropertyValue('--safe-bottom')) || 0
       : 0;
     const minBottom = Math.max(16, safeBottom);
-    const f = { screen: cap, inSafeArea: [], clipped: [], overflow: false, contrast: [], icons: [], fills: [], rings: [], targets: [], tiny: [] };
+    const f = { screen: cap, inSafeArea: [], clipped: [], overflow: false, contrast: [], icons: [], fills: [], rings: [], targets: [], tiny: [], wrapped: [] };
 
     const body = scr.querySelector('.mock,.mwel');
     if (body && body.scrollHeight > scr.clientHeight + 2) f.overflow = true;
@@ -136,6 +141,21 @@ const probe = () => {
       const cs = getComputedStyle(el);
       if (cs.display === 'none' || cs.visibility === 'hidden') return;
       const label = (el.textContent || '').trim().slice(0, 16) || el.className?.toString().slice(0, 16) || el.tagName;
+      // A BUTTON LABEL MAY NOT WRAP. A label on two lines is a label that is too long, never a
+      // button that is too narrow -- the fix is always the words. It also breaks the action
+      // zone's fixed height, so the CTA changes size between screens for no reason a user can see.
+      // Counted over TEXT NODES ONLY: a segmented chip stacks an icon above its label and a token
+      // chip sits an image beside one, and a naive range over the element counts those as lines.
+      // Baseline size only -- at 200% text a long label SHOULD wrap rather than clip.
+      if (el.matches('.btn,.pcta,.tokchip,.fc,.gh')) {
+        const tops = new Set();
+        for (const n of el.childNodes) {
+          if (n.nodeType !== 3 || !n.textContent.trim()) continue;
+          const rg = document.createRange(); rg.selectNodeContents(n);
+          for (const b of rg.getClientRects()) if (b.height > 1) tops.add(Math.round(b.top / 2));
+        }
+        if (tops.size > 1) f.wrapped.push({ el: (el.textContent || '').trim().slice(0, 26), lines: tops.size });
+      }
       const bottomPt = pt(sr.bottom - r.bottom);
       const topPt = pt(r.top - sr.top);
       // full-bleed art and scrims are meant to reach the frame edge
@@ -150,8 +170,13 @@ const probe = () => {
         if (topPt < 0 || bottomPt < 0) f.clipped.push({ el: label, topPt: Math.round(topPt), bottomPt: Math.round(bottomPt) });
       }
 
-      // 3. targets
-      if (interactive && Math.round(pt(r.height)) < 44) f.targets.push({ el: label, hPt: Math.round(pt(r.height)) });
+      // 3. targets. BOTH dimensions: SC 2.5.5 is 44x44, not 44 tall. This measured height only,
+      // and an icon-only .tokchip shipped at 43 wide -- 17pt glyph inside 2 x 13pt padding -- with
+      // nothing to catch it, because every target that had ever been too small had been too short.
+      if (interactive) {
+        const wPt = Math.round(pt(r.width)), hPt = Math.round(pt(r.height));
+        if (wPt < 44 || hPt < 44) f.targets.push({ el: label, wPt, hPt });
+      }
 
       // 2 + 4. text
       const own = [...el.childNodes].filter(n => n.nodeType === 3 && n.textContent.trim()).map(n => n.textContent.trim()).join(' ');
@@ -230,7 +255,7 @@ const probe = () => {
   // so this measures only the declared graphics: .nti fills/borders and .svgic icons.
   const spec = { screen: '· component specimens (outside phone frames)',
                  inSafeArea: [], clipped: [], overflow: false,
-                 contrast: [], icons: [], fills: [], rings: [], targets: [], tiny: [] };
+                 contrast: [], icons: [], fills: [], rings: [], targets: [], tiny: [], wrapped: [] };
   document.querySelectorAll('.nti,.svgic').forEach(el => {
     if (el.closest('.phone')) return;
     const r = el.getBoundingClientRect();
@@ -247,7 +272,7 @@ const probe = () => {
   });
   out.push(spec);
   if (hidden.length) out.push({ screen: `!! ${hidden.length} HIDDEN frame(s) not audited: ${hidden.join(', ')}`,
-    inSafeArea: [], clipped: [], overflow: true, contrast: [], icons: [], fills: [], rings: [], targets: [], tiny: [] });
+    inSafeArea: [], clipped: [], overflow: true, contrast: [], icons: [], fills: [], rings: [], targets: [], tiny: [], wrapped: [] });
   return out;
 };
 
@@ -334,6 +359,14 @@ const probeReflow = () => {
       // A deliberate horizontal scroller (.mcar) is content wider than its box BY DESIGN, so
       // it trips the same test. It is still reported — a carousel can break too — but labelled
       // 'scrollable' rather than suppressed, so nobody has to guess which kind of hit it is.
+      // An element authored to truncate -- overflow:hidden + white-space:nowrap +
+      // text-overflow:ellipsis -- has scrollWidth > clientWidth BY DEFINITION, on every string
+      // long enough to need the ellipsis. Flagging it reported a working truncation as a reflow
+      // break, which is the check crying wolf on exactly the mechanism that prevents reflow
+      // breaks. The exemption is narrow on purpose: all three properties must be set, so an
+      // overflow:hidden container that merely clips its children is still caught.
+      const truncates = cs.textOverflow === 'ellipsis' && cs.whiteSpace === 'nowrap' && /hidden|clip/.test(cs.overflowX);
+      if (truncates) return;
       if (el.clientWidth > 0 && el.scrollWidth > el.clientWidth + 1) bad.push({ el: label, why: /auto|scroll/.test(cs.overflowX) ? 'scrollable' : 'content', sw: el.scrollWidth, cw: el.clientWidth });
       else if (pt(r.right - sr.right) > 1) bad.push({ el: label, why: 'past-edge', byPt: Math.round(pt(r.right - sr.right)) });
     });
@@ -428,6 +461,38 @@ const run = async () => {
 
   await page.evaluate(cleanup);
 
+  // Structural check. Every other check in here measures paint, and the page's shape can be wrong
+  // while every pixel of it is right: a caption outside all its groups, a group still advertising
+  // a count for screens that moved away, an empty group promising five screens the reader cannot
+  // find. None of that fails a contrast or overflow probe, because each one still renders a
+  // perfectly good screen. It has cost real time — an unclosed `.scrgrid` once swallowed 102
+  // screens into a single group and the harness stayed green straight through it. Assert the
+  // navigation, not just the frames.
+  const structure = await page.evaluate(() => {
+    const txt = el => (el?.textContent ?? '').trim();
+    const out = { stale: [], empty: [], orphan: [] };
+    for (const g of document.querySelectorAll('details.grp, details.flow')) {
+      const isFlow = g.classList.contains('flow');
+      // A flow's own captions are the ones in its groups; counting descendants covers both.
+      const n = g.querySelectorAll('.scrcap, .caphead').length;
+      const says = Number(txt(g.querySelector(isFlow ? '.fn' : '.gn')));
+      const name = txt(g.querySelector(isFlow ? '.h' : '.gt')) || '(unnamed)';
+      const where = isFlow ? name : `${txt(g.closest('details.flow')?.querySelector('.h'))} / ${name}`;
+      if (!n) out.empty.push(where);
+      else if (Number.isFinite(says) && n !== says) out.stale.push(`${where}: says ${says}, has ${n}`);
+    }
+    for (const c of document.querySelectorAll('.scrcap'))
+      if (!c.closest('details.grp')) out.orphan.push(txt(c).slice(0, 44));
+    return out;
+  });
+  const structural = structure.stale.length + structure.empty.length + structure.orphan.length;
+  if (structural) {
+    console.log(`\n  ✗ STRUCTURE (the index disagrees with the page):`);
+    structure.stale.forEach(t => console.log(`      stale count : ${t}`));
+    structure.empty.forEach(t => console.log(`      empty group : ${t} — promises screens it does not hold`));
+    structure.orphan.forEach(t => console.log(`      orphan      : ${t} — outside every sub-group`));
+  }
+
   const unpaintable = lintIcons('design-system/assets/icons');
   if (unpaintable.length) {
     console.log(`\n  \u2717 UNPAINTABLE ICONS (fill="none", no stroke -> invisible under a mask):`);
@@ -435,7 +500,7 @@ const run = async () => {
   }
 
   let total = 0;
-  const tally = { inSafeArea: 0, clipped: 0, overflow: 0, contrast: 0, icons: 0, fills: 0, rings: 0, targets: 0, tiny: 0 };
+  const tally = { inSafeArea: 0, clipped: 0, overflow: 0, contrast: 0, icons: 0, fills: 0, rings: 0, targets: 0, tiny: 0, wrapped: 0 };
   for (const [theme, screens] of Object.entries(results)) {
     for (const s of screens) {
       const hits = Object.entries(tally).filter(([k]) => k === 'overflow' ? s.overflow : s[k]?.length);
@@ -476,10 +541,12 @@ const run = async () => {
   console.log(`  ring contrast   : ${tally.rings}   (.sel outline vs its gap, 3:1)`);
   console.log(`  targets < 44pt  : ${tally.targets}`);
   console.log(`  text < 11pt     : ${tally.tiny}`);
+  console.log(`  wrapped labels  : ${tally.wrapped}   (a button label on two lines)`);
   console.log(`  targets @200%   : ${tallyUnder}   (< 44×44 with the root at 32px)`);
   console.log(`  inflated @200%  : ${tallyGrown}   (grew >2.5× — an absolute floor authored in rem)`);
   console.log(`  reflow breaks   : ${broke.size}   (screens overflowing at ${WIDTHS.join('/')}${reflows ? '' : ' — CHECK INERT'})`);
   console.log(`  unpaintable svg : ${unpaintable.length}   (invisible under a CSS mask)`);
+  console.log(`  structure       : ${structural}   (stale/empty group counts, orphan screens)`);
   if (errors.length) console.log(`  console errors  : ${errors.length} → ${errors[0]}`);
   console.log(`${'─'.repeat(64)}`);
 
@@ -499,7 +566,7 @@ const run = async () => {
   }
 
   await browser.close();
-  process.exit(total || unpaintable.length || scaled.length || broke.size || !reflows ? 1 : 0);
+  process.exit(total || unpaintable.length || scaled.length || broke.size || structural || !reflows ? 1 : 0);
 };
 
 run().catch(e => { console.error(e); process.exit(2); });

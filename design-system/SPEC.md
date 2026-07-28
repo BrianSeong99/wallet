@@ -189,3 +189,107 @@ the 44pt floor (32 instances) — the latter because my hand-written check only 
 - No production component, route, data-flow, or tested behavior changed.
 - Nothing committed or pushed without explicit approval.
 - No AI attribution in any artifact.
+
+---
+
+## A button label never wraps
+
+**One line. Always.** A label on two lines is a label that is too long, never a button that is
+too narrow — the fix is always the words.
+
+Three reasons it is a rule and not a preference:
+
+1. **It changes the button's height**, so the same CTA is a different size on different screens
+   for no reason a user can see. The action zone has a fixed geometry; a wrapping label breaks it.
+2. **It reads as a sentence, not a command.** "Continue backup" over two lines stops looking like
+   something you press.
+3. **It is a symptom.** A label that needs two lines is usually describing the flow rather than
+   naming the action. `Continue backup` → **`Back up`**. The shorter one is also the better one.
+
+Enforced by `review.mjs` (`wrapped labels`), which counts **text nodes only** over `.btn`,
+`.pcta`, `.tokchip`, `.fc` and `.gh` — a segmented chip stacks an icon above its label and a
+token chip sits an image beside one, and a naive line count reads those as wraps.
+
+**Baseline size only.** At 200% text a long label *should* wrap rather than clip; that is the
+accessible behaviour and the `inflated @200%` check tracks it separately.
+
+---
+
+## A container's size belongs to the container, not to its contents
+
+**Fixed surfaces stay fixed.** A card, a sheet or a notification does not grow because today's copy
+runs three lines instead of two, or because this account holds nine tokens instead of two.
+
+This came up three separate times before it was written down — the Home balance card, the
+notification prompt, the token picker — which is what makes it a rule rather than three fixes.
+
+**Why it is not merely tidy.** A surface that resizes moves everything below it. On Home that meant
+the assets list sat at a different Y depending on whether the wallet was loading, offline, or had
+an unpriced token — five distinct card heights across eight states, so the list moved as conditions
+the user did not cause came and went. On a picker it is worse: the sheet is where your thumb
+already is, and a list that is short today and tall next month relocates the controls between one
+use and the next. **The user pays for the flexibility by re-finding things.**
+
+We were already half-following it, which is the usual tell. `Contacts · picker` is fixed-height
+*"so a short list does not make the sheet jump"* — while the token picker, the same component doing
+the same job one step earlier in the same flow, sized to its contents.
+
+### How to hold it
+
+| Surface | Rule |
+|---|---|
+| Cards (`.mbc.hero`) | A `min-height` floor derived from the tallest natural state, with the slack falling where a variable element would sit — so the fixed elements hold their Y. |
+| Sheets and pickers | A fixed fraction of the frame, the list scrolling inside. Never fit-to-content. |
+| Notifications (`.mprompt`) | One height, body clamped to the line count that fits. |
+
+### When the content genuinely does not fit
+
+**Truncate and provide a route to the whole thing** — never grow the box, and never leave a
+sentence cut off with nowhere to go. A clamped body earns a chevron and opens a detail view; the
+chevron appears *only* when there is more to read, so it stays an honest signal rather than
+decoration.
+
+This is the resolution to a tension worth recording: `.pb`'s clamp was widened from 2 lines to 3
+precisely because `connectivityNodeBody` truncated mid-sentence at *"Your balance may be"*. A fixed
+height forces the clamp back to 2 — which is only acceptable because the truncation now leads
+somewhere.
+
+### The exception
+
+Content that is *itself* the variable thing — a scrolling list's rows, a wrapping address — sizes
+naturally **inside** a fixed container. The rule is about the container.
+
+### Corollary — when the content varies, the type fits the box
+
+The rule above says a container holds its size. The address field is the case where that is hard,
+because what goes in it genuinely varies: a 48-character Miden address, a 42-character EVM one, a
+44-character Solana one, a contact name, or a placeholder.
+
+**So the box is fixed at its tallest configuration and the type steps down to fit it.** Never the
+reverse. Concretely:
+
+| Content length | Lines | Size |
+|---|--:|---|
+| short — placeholder, a name | 1 | largest step |
+| medium | 2 | one step down |
+| long — a full address | 3 | two steps down |
+
+**Three lines is the maximum**, and the container is always that tall. A short value does not make
+the box shrink; it makes the type bigger inside a box that has not moved.
+
+Two things this buys, and the second is the reason for it:
+
+1. The value is as large as it can be at every length, rather than sized for the worst case.
+2. **Nothing below the field ever moves.** Today pasting a 48-character address pushes the action
+   row, the resolution row and the network list down together — the controls relocate under the
+   thumb at the exact moment the user is about to commit money.
+
+**Assign the tiers by measurement, not arithmetic.** Advance width in Geist Mono varies with the
+step, and the field is 350pt at the authored frame but narrower at 375 and 360 — a tier boundary
+that holds at 402 and breaks at 360 is worse than no tiering, because it reintroduces the shift on
+exactly the devices with least room. Measure every supported address length at every shipping
+width.
+
+**The floor is legibility, not the type floor.** An address is checked character by character; if
+the smallest tier is too small to do that, the answer is fewer characters on screen (truncation
+with a route to the whole value), not smaller type.

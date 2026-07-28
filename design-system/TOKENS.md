@@ -63,10 +63,55 @@ the surface is dark enough. Below ~`#5C5C5C`, secondary text must come from **si
 | `primary-orange-lighter`, `orange.50`, `#FFF3EC`, `#FFF3EB` | `--accent-wash` |
 | `primary-orange-light`, `primary-orange-disabled`, `orange.200/300` | *(drop — derive from accent + opacity)* |
 | `text-on-accent`, `pure-white` on buttons | `--on-accent` `#FFFFFF` |
+| *(new — no current equivalent)* | `--accent-edge` `#DB6F34` light / `var(--accent)` dark — the brand orange for **non-text graphics** (selection rings, edges). See below. |
 | **`blue.400`/`blue.700`** (resolve to orange!), `logoOrange.*`, `stroke.orange #ED8936` | **delete — naming rot** |
 
 Devnet: the whole accent group swaps to slate — `--accent` `#7286A0`, driven by
 `MIDEN_NETWORK=devnet` exactly as today. Keep this mechanism.
+
+### Three accents, three contrast bars — and why they are not interchangeable
+
+The brand orange has to satisfy a different threshold depending on what it is
+doing, and conflating those is how selection rings ended up rust-coloured.
+
+| Token | Value (light) | Bar it must clear | Measured |
+|---|---|---|---|
+| `--accent` | `#E77537` | none (it is a **fill**) | white label on it = **3.00:1** |
+| `--accent-edge` | `#DB6F34` | **3:1** — SC 1.4.11, non-text graphic | **3.20:1** paper / **3.02:1** surface-2 |
+| `--accent-ink` | `#A84A1A` | **4.5:1** — SC 1.4.3, small text | **5.55:1** |
+
+`--accent-edge` exists because bare `--accent` measures 2.90:1 on paper and
+2.74:1 on surface-2 — *just* under the 3:1 a meaning-bearing graphic needs. The
+first fix reached for `--accent-ink`, which clears it easily but is **28% darker**
+and reads as rust rather than the brand. Computing the minimum instead: the brand
+orange needs only **5% darkening** to clear 3:1 — R231→219, G117→111, B55→52,
+deltas of 12/6/3 that are imperceptible side by side.
+
+**The rule:** when a colour just misses a threshold, calculate the minimum move.
+Reaching for the nearest token that clears it overshot by 85% and cost the brand.
+
+In dark, `--accent-edge` aliases straight to `--accent`: the brand hue is already
+5.86:1 against a dark ground, so no adjustment is needed and none is applied.
+
+### Accent-label polarity: the split is deliberate — decided 2026-07-27
+
+White on the brand orange is **exactly 3.00:1**, which conforms under SC 1.4.3
+*only as large text* (≥18.66px bold). So the polarity is size-dependent:
+
+- **CTAs** (`--t-cta` 19px/700) — white, `--on-accent`. Conforms as large text.
+- **Badges and chips** (11–13px) — near-black, `--on-accent-sm`, **5.78:1**.
+  White here would be 3.00:1 against a 4.5:1 bar. It is not an option.
+
+This means one screen can carry a white "Continue" and a near-black "DEFAULT"
+chip on the same orange — `06 · Choose your Guardian` does. A craft review
+flagged that as an inconsistency, and it is one: the underlying logic is
+size-driven and therefore invisible to anyone looking at the screen.
+
+The alternative was unifying to near-black on every accent fill — one polarity,
+visually consistent, but it turns every primary button in the product into orange
+with a near-black label. **Brian chose to keep the split**, so the size rule
+stands. Do not "fix" this in a future consistency pass; it has been considered
+and decided.
 
 ## Color — neutrals (five stray greys → one warm ramp)
 

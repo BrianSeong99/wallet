@@ -843,3 +843,248 @@ on navigation is now an empty AI-chat shell, and there is no Newsroom or Meta de
 Bar height is unpublished (icon ≈22pt and ≈79pt item pitch are measurements off a real iPhone
 screenshot). Exact dark hex is compression-contaminated. Hide-on-scroll is unestablished.
 Sources conflict on whether Liquid Glass has rolled out globally or is still in test.
+
+---
+
+# 9. Cross-chain / bridged send — surveyed 2026-07-26
+
+Ten wallets and nine bridge/intent products, plus the Ethereum address standards.
+Primary sources preferred: official docs, help centres, and where help centres were
+thin, the products' own shipped i18n files, which are the actual UI strings.
+
+Three sources blocked automated fetching and their claims are weaker throughout:
+`help.coinbase.com` (403), `help.li.fi` (403), `web.archive.org` (blocked).
+
+## 9.1 The headline findings `[EVIDENCE]`
+
+**No production wallet ships a unified "paste any address, we infer the chain" send
+field.** Not one of the ten. The entire standards stack — ERC-3770, ERC-7828,
+ERC-7930, CAIP-2, CAIP-10 — exists to prevent it. ERC-7828's motivation names the
+failure directly: "funds being sent to an unreachable address on the wrong chain."
+
+**But Bread's case is materially safer than the standards assume**, and this is the
+most important nuance for us. Miden `mtst1…` bech32 versus EVM `0x…` is a
+*structural* format difference. The standards address a different problem: `0x…`
+being ambiguous *across EVM chains*. Bread inherits the second problem only.
+
+**Nobody asks "which network?" first, and nobody infers it either.** They sidestep
+by deriving the chain from the **asset**. Family, Phantom, Trust and Uniswap all
+do this. Rabby and Zerion are explicitly chain-first. Base App removes the address
+field entirely — the recipient is a person.
+
+**Mobile inverts desktop, consistently.** Phantom and Uniswap both put the address
+first on mobile and the token first on extension. Two independent teams converged;
+treat as a real pattern.
+
+**Cross-chain send to a THIRD PARTY does not exist** in Phantom, Trust Wallet or
+Uniswap. All three model cross-chain as a self-directed swap with no recipient
+field. MetaMask is the exception — its bridge quote card has an editable recipient.
+
+## 9.2 The severity asymmetry — the single most important fact `[SPEC]`
+
+MetaMask documents it precisely: for a plain EOA on the wrong EVM chain, "the tokens
+are not lost" — the recipient switches network. But "If you sent tokens to an
+address on a non-EVM network, it's likely your tokens are gone forever."
+
+Unrecoverable losses cluster into three buckets: smart-contract / counterfactual
+addresses, exchange deposit addresses, and format/namespace mismatch.
+
+**Miden accounts are contract-like, which puts Bread in bucket one.** A unified field
+that silently infers cannot distinguish an EOA (recoverable) from a smart account
+(catastrophic).
+
+The canonical incident is Optimism / Wintermute, 20M OP. Wintermute's own post:
+they had "a Gnosis safe deployed on mainnet for a while and due to an internal
+mistake, we've communicated the very same wallet as the receiving address." Root
+cause was a pre-EIP-155 (no chainId) ProxyFactory deployment replayed onto Optimism,
+then ~10,044 proxies brute-forced until the nonce reproduced the address.
+Optimism refused a fork: "Optimism is a permissionless network and behaved as
+intended."
+
+`[UNVERIFIED]` No Optimism-authored postmortem located; the Wintermute forum post is
+the authoritative primary source.
+
+## 9.3 Rabby is the only product doing wrong-chain detection properly `[EVIDENCE]`
+
+Its shipped strings are a ready-made spec:
+
+- `noSupportTokenForChain` — "Recipient address is a contract address on a different
+  chain. Check before proceeding to avoid loss"
+- `noSupprotTokenForSafe` — "The Safe address you're sending tokens to isn't deployed
+  on this chain. Check before proceeding to avoid loss."
+
+Rabby also **grades friction by severity**: "Gnosis Address on Another Chain" at
+*Forbidden* (password + double-confirm checkbox) versus "Address Doesn't Exist on
+Current Chain" at *Danger* (password). Everyone else warns uniformly or not at all.
+
+Phantom has the closest thing to a format check: "The address format doesn't match
+the selected network." MetaMask ships lookalike and first-time-recipient detection,
+framed deliberately as a "speed bump" and user-overridable.
+
+`[UNVERIFIED]` **No wallet ships the affirmative "we detected which chain this is"
+inference.** The shipped pattern is universally chain-chosen-then-validate.
+
+## 9.4 Address poisoning — why a paste-first field raises risk `[EVIDENCE]`
+
+Chainalysis: one 2024 campaign generated 82,031 seeded addresses; "only 0.03% of the
+fake addresses received more than $100" — yet cleared ~$3M. Victims skew
+*sophisticated*, average balances "exceeded $338,900".
+
+MetaMask on the mechanism: users recognise addresses by start and finish, and "This
+is the tendency that address poisoning preys on." Their guidance is to check the
+**middle** characters. Blockaid flagged 65.4 million address-poisoning transactions
+Jan 2025 – Feb 2026.
+
+**Consequence for us:** every mitigation MetaMask and Rabby ship depends on knowing
+the intended chain *before* validating the address.
+
+## 9.5 Fast/Slow is well-precedented; the default is not what we assumed `[SPEC]`
+
+Circle CCTP is nearly identical to a Fast/Slow framing: Standard Transfers "are
+free" at 15–19 minutes; Fast Transfer at "0-13 basis points… ~8-20 seconds". A paid
+fast lane and a free slow lane with an order-of-magnitude time gap.
+
+**But the prevailing default is COST, not speed.** LI.FI defaults to `CHEAPEST`
+(renamed "Best Return"); Zerion to `Max Received`; MetaMask sorts by estimated total
+cost. Only Rabby blends: "determined by a combination of estimated total cost
+(including gas fees) and delivery speed."
+
+`[CONTESTED]` Stargate's own docs disagree with themselves — the v2 gitbook says
+"Select the transfer mode between Fast and Economy" while the current docs site
+documents Recommended / Fastest / Cheapest. Do not cite either without checking the app.
+
+## 9.6 Fee disclosure — the research cuts one way `[CONSENSUS]`
+
+Definitions: partitioned pricing splits a price into components; drip pricing reveals
+a base price first with charges revealed later.
+
+**Consumers systematically underestimate partitioned totals.** Chetty, Looney & Kroft
+(2009) and Feldman & Ruffle (2015) both found consumers spend more when prices are
+tax-exclusive. Mechanism is anchoring on the base price.
+
+**Itemisation is fine; late disclosure is not.** Showing a total only on the success
+screen is textbook drip pricing.
+
+Published rates, for reference: Rabby 0.25% and the only product stating its rate
+in-product; LI.FI 0.25%; Zerion 0.67%; Ready 0.49% "shown on the transaction preview
+screen"; Phantom 0.85% but **bundled inside a line labelled "Network Fee"**, an
+anti-pattern; Squid and Socket none; **Uniswap 0%** as of 2025-12-27.
+
+`[UNVERIFIED]` The FTC "Rule on Unfair or Deceptive Fees" and its May 2025 date appear
+only in secondary legal commentary; ftc.gov returned 403.
+
+## 9.7 Pending / stuck / failed — where three of four wallets fail `[EVIDENCE]`
+
+**Every serious product models "partially succeeded" as a success, not a failure.**
+If a send has only success/failure it is missing the most confusing real outcome.
+
+State vocabularies worth copying rather than inventing: Relay (`waiting`,
+`depositing`, `pending`, `submitted`, `success`, **`delayed`**, `refund`, `failure`);
+LI.FI (with substatus `PARTIAL`, `REFUNDED`); Squid (`PARTIAL_SUCCESS`, `NEEDS_GAS`).
+
+**Relay's `delayed` — "Destination fill delayed, still processing" — is the single
+most valuable state in the set.** It expresses "slower than promised, not broken",
+which is exactly what a spinner cannot say and exactly what generates support tickets.
+
+**deBridge's 7→4 collapse is the presentation pattern**: users never see `SentUnlock`;
+that is solver accounting, not their transfer.
+
+Auto-refund is the norm. Squid: "automatically refunded on the source chain within
+approximately 15 minutes." Relay: "almost instantly." **Across is the cautionary
+one**: automatic but slow, with the explicit integrator instruction **"Do not tell
+users to expect immediate refunds."**
+
+Rabby's failure copy is the thing to steal — typed outcomes, each with distinct
+wording and an inline remedy: `beReturnFailed` = "Bridge failed. Your assets have
+been returned."; `receivedDifferentTokenNeedSwap` = "You received a different token.
+You can swap it to the token you selected." **with a Swap button rendered inline.**
+
+`[UNVERIFIED]` **No product documents a push notification specifically on bridge
+completion.** A low bar for Bread to clear and a genuine differentiator.
+
+## 9.8 Expiry / reclaim — Bread would be first, and the rule explaining why `[EVIDENCE]`
+
+**No mainstream wallet shows an expiration on a normal outbound transfer.**
+
+It exists where the destination must CLAIM: Zelle (14 days, automatic return),
+PayPal (30 days, "pending or unclaimed"), Coinbase Wallet claim links (2 weeks).
+And on resting orders: **Jupiter and CoW both default to 7 days** — two independent
+teams landing on the same number, which makes our 7 days well-calibrated *if* the
+transfer is understood as resting.
+
+**Where expiry exists but is deliberately HIDDEN** is the more instructive half.
+Across has exactly our mechanism (`fillDeadline` → `expired` → automatic refund) and
+does not surface it. Relay frames hiding it as the feature: "the user doesn't need to
+wait for any expiry window." deBridge removed it entirely — "No, limit orders do not
+expire" — and surfaces a **Cancel button** instead. Squid: "no route expiry".
+
+**The rule that explains all of it: expiry is surfaced when the money is waiting for
+the RECIPIENT to act, and hidden when it is waiting for the SYSTEM to act.**
+
+Every intent bridge chose to hide it. They surface a cancel action, or nothing.
+
+Two risks in an unconditional "no funds are lost" promise: the reclaim race (the
+documented HTLC "free option" problem — Lightning's answer is a mandatory timelock
+delta), and **where the refund lands is a UI obligation** — Across instructs
+integrators to "surface the destination in your UI"; deBridge refunds often arrive in
+a reserve asset rather than the original token.
+
+## 9.9 Named progress steps are supported; per-step timings are not `[CONSENSUS]`
+
+NN/g: use a looped indicator for 2–9s and a percent-done indicator for 10s+; when
+precise estimates aren't possible show "a list of completed and remaining steps".
+Magnitude: users who saw a progress bar "were willing to wait on average **3 times
+longer**".
+
+Buell & Norton's **labor illusion** supports narrating work. The caveat matters
+though: transparency backfires when it exposes a deficient process, or "creates the
+feeling of being watched".
+
+**Nobody shows per-step timings.** Every product surveyed shows exactly one
+route-level ETA. The absence across ten products is the evidence.
+
+NN/g also directly supports backgrounding: "Allow lengthy processes to run in the
+background", and on return "provide details that summarize what happened while users
+were away."
+
+## 9.10 Naming `[SPEC]`
+
+**"Network" wins decisively** for the user-facing noun — Rainbow, MetaMask,
+Coinbase/Base, Phantom, Trust, Uniswap, Kraken, Stargate, Ready. "Chain" appears
+where the user actually picks one (Family: "Choose the chain you'd like to bridge
+to"). Rainbow states it outright: "At Rainbow we call these extra layers 'Networks'".
+
+**"Base on Ethereum" — do not use.** No instance found in any product, and Base's own
+editorial style guide forbids variations: "Always refer to Base as 'Base'". The L1
+relationship belongs in descriptive prose.
+
+The registry convention settles it: `ethereum-lists/chains` keeps the display name
+flat (`"name": "Arbitrum One"`) and puts the L1 relationship in structured metadata
+(`"parent": {"type":"L2","chain":"eip155-1"}`). Flat names in the selector; the
+anchor as a sub-label or grouping header, never inside the name.
+
+## 9.11 Do not cite `[UNVERIFIED]`
+
+- "Bungee Auction" / "Bungee Exclusive" — no current documentation; docs now redirect
+  to Socket.
+- Squid `enableExpress` / `receiveGasOnDestination` — only in deprecated v2 docs.
+- LI.FI `routePriority` with four values — stale; the shipped widget has two.
+- Across median fill-time stats and the "recommended 6-hour fillDeadline" — from
+  snippets on retired pages.
+- Bridge failure rates of "5–15%" — a Medium post with no methodology.
+- ZERϴ Network gas sponsorship — **shut down 31 July 2026**.
+- Uniswap's interface fee is **0%**, not 0.15/0.25%. Trust Wallet publishes **no**
+  swap fee. Both correct common assumptions.
+
+## 9.12 What this means for Bread — the three defensible calls
+
+1. **Keep the unified address field.** Format inference between `mtst1…` and `0x…` is
+   safe and is something incumbents structurally cannot do. Inferring *which EVM
+   chain* is not safe, and must remain a question.
+2. **Move total cost forward; move expiry back.** Cost on review, not the receipt.
+   Expiry out of the confirmation flow and into the pending object as a **Cancel**
+   affordance — which is what deBridge does and why it shows a button, not a countdown.
+3. **Invest in the pending object, not the progress screen.** A durable,
+   destination-polled, backgroundable, push-notified transfer with typed failure copy
+   is where three of four wallets fail, and no product documents a bridge-completion
+   push. Named steps with one ETA are enough.
