@@ -837,6 +837,27 @@ body[data-hide-navbar] [data-tabbar-footer='true'] {
   }
 
   /* ==================================================================
+   * Surface scopes.
+   *
+   * A component never decides its own text colour: the SURFACE it sits on
+   * redefines the ink tokens, so anything dropped inside reads correctly on any
+   * ground. This is the mechanism that makes `color: var(--ink-2)` correct on
+   * white AND on the graphite balance card, with no per-component override and
+   * no specificity fight.
+   *
+   * The direction colours are scoped rather than global because the page-level
+   * --pos/--neg are tuned for the page and measure 1.07-2.62:1 on this card.
+   * These clear 3:1 as graphics on every card colour (3.32:1 worst case up,
+   * 3.06:1 down); `down` is lightened from --neg's #F5736B to clear the darkest
+   * card. This scope was missing from the P0 token port.
+   * ================================================================== */
+  [data-surface='graphite'] {
+    --st-up: #90ba89;
+    --st-down: #ff847b;
+    --st-glyph: var(--st-up);
+  }
+
+  /* ==================================================================
    * Devnet accent — the environment tell.
    *
    * On devnet the whole accent group swaps from Bread orange to slate, so it

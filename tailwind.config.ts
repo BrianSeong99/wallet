@@ -181,6 +181,9 @@ export default {
         'accent-wash': 'var(--accent-wash)',
         'accent-critical': 'var(--accent-critical)',
         'accent-edge': 'var(--accent-edge)',
+        // Balance-card direction colours, scoped to [data-surface=graphite].
+        'st-up': 'var(--st-up)',
+        'st-down': 'var(--st-down)',
         'on-accent': 'var(--on-accent)',
         'on-accent-sm': 'var(--on-accent-sm)',
         pos: 'var(--pos)',

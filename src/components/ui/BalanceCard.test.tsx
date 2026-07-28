@@ -126,7 +126,12 @@ describe('BalanceCard states, delta, and interactions', () => {
     expect(screen.getByText('$0.00')).toBeTruthy();
   });
 
-  it('renders a positive delta pill with the neutral background', () => {
+  // The delta is a triangle plus text now, not a filled pill: a pill reads as a
+  // badge — a thing with its own state — where this is a reading OF the number
+  // above it. The direction is carried by the triangle's fill and rotation, on
+  // the graphite-scoped --st-up/--st-down, which are tuned for this card (the
+  // page-level --pos/--neg measure 1.07-2.62:1 on it).
+  it('renders a positive delta as an up triangle in the up colour', () => {
     const { container } = render(
       <BalanceCard
         accountNumber="mtst1aqg...940z"
@@ -135,13 +140,14 @@ describe('BalanceCard states, delta, and interactions', () => {
       />
     );
 
-    const pill = container.querySelector('.rounded-full');
-    expect(pill).not.toBeNull();
-    expect(pill?.textContent).toBe('+$12.34 (+2.5%)');
-    expect(pill?.className).toContain('bg-[#A8BBA3]');
+    const delta = container.querySelector('[data-dir]');
+    expect(delta).not.toBeNull();
+    expect(delta?.getAttribute('data-dir')).toBe('up');
+    expect(delta?.textContent).toBe('+$12.34(+2.5%)');
+    expect(delta?.querySelector('svg')?.getAttribute('class')).toContain('fill-st-up');
   });
 
-  it('renders a negative delta pill with the negative background', () => {
+  it('renders a negative delta as a rotated triangle in the down colour', () => {
     const { container } = render(
       <BalanceCard
         accountNumber="mtst1aqg...940z"
@@ -150,7 +156,11 @@ describe('BalanceCard states, delta, and interactions', () => {
       />
     );
 
-    expect(container.querySelector('.rounded-full')?.className).toContain('bg-status-negative');
+    const delta = container.querySelector('[data-dir]');
+    expect(delta?.getAttribute('data-dir')).toBe('down');
+    const svgClass = delta?.querySelector('svg')?.getAttribute('class') ?? '';
+    expect(svgClass).toContain('fill-st-down');
+    expect(svgClass).toContain('rotate-180');
   });
 
   it('hides the delta pill while loading', () => {
