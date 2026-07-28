@@ -26,7 +26,7 @@ const ents = s => s
 
 // Walk the document once, carrying the current section and h2 as state. Order matters: a screen
 // belongs to the last heading above it, which is exactly how a reader scanning the page sees it.
-const TOKEN = /<section[^>]*id="([^"]+)"|<h2 class="h">([\s\S]*?)<\/h2>|<div class="(?:scrcap|caphead)"><i><\/i>([\s\S]*?)<\/div>|<div class="scrnote">([\s\S]*?)<\/div><\/div>/g;
+const TOKEN = /<section[^>]*id="([^"]+)"|<h2 class="h">([\s\S]*?)<\/h2>|<div class="(?:scrcap|caphead)">(?:<i><\/i>)?([\s\S]*?)<\/div>|<div class="scrnote">([\s\S]*?)<\/div><\/div>/g;
 
 let section = '(top)', heading = '(ungrouped)', pending = null;
 const flows = new Map();
