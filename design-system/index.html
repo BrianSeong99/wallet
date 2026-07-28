@@ -1743,10 +1743,6 @@ ul.tick li:before{content:"→";position:absolute;left:0.125rem;color:var(--acce
 /* Resolved recipient: the pasted address collapses into a chip that names the
    network it resolved to. Network is a PROPERTY of the recipient, shown next to
    the address so the two can be verified together -- not a separate step. */
-.rchip .cdot{width:0.625rem;height:0.625rem;border-radius:50%;flex:none}
-.rchip .cnet{font-size:var(--t-label);font-weight:800;color:var(--ink)}
-.rchip .cadr{font-family:var(--mono);font-size:var(--t-caption);color:var(--ink-2);
-  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1;min-width:0}
 /* The privacy cliff is a sentence, not a key/value row. Inside .dmeta it competed
    with "~1 hour" on equal terms and lost: it measured 5.40:1 against 9.60:1 for the
    neutral rows beside it, so the most consequential fact in the product was the
@@ -1950,8 +1946,13 @@ ul.tick li:before{content:"→";position:absolute;left:0.125rem;color:var(--acce
 .tftab{flex:1;min-height:2.75rem;border:0;border-radius:var(--radius-sm);background:none;
   font-family:var(--ui);font-size:var(--t-caption);font-weight:700;color:var(--ink-2);cursor:pointer}
 .tftab.on{background:var(--surface-2);color:var(--ink)}
-.seclab{font-size:var(--t-caption);font-weight:800;color:var(--ink-3);letter-spacing:.06em;
-  text-transform:uppercase;text-align:center;display:block;margin:1.125rem 0 0.625rem}
+/* Was centred uppercase with letter-spacing -- a treatment used nowhere else in the product,
+   while every other section head is left-aligned sentence case. Surveyed wallets settle it: charts
+   are unlabelled in 14 of 14 surfaces, and the only true uppercase system found (Ledger Live
+   legacy) has its own successor screen deleting every one of them. Now the same object as
+   .masset-h, one step down. */
+.seclab{font-family:var(--display);font-weight:800;font-size:var(--t-label);color:var(--ink-2);
+  display:block;margin:1.125rem 0 0.5rem}
 .tsteps{display:flex;flex-direction:column;gap:0.125rem;margin-top:1.125rem}
 .tstep{display:flex;align-items:center;gap:0.625rem;padding:0.5625rem 0.125rem;font-size:var(--t-label)}
 .tstep .tsi{width:1.125rem;height:1.125rem;flex:none;border-radius:50%;display:flex;align-items:center;
@@ -3519,7 +3520,7 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
           </div>
         </div></div></div>
         <div class="scrnote"><b>Rebuilt on the shared Sheet.</b> It now uses the primitive&rsquo;s own anatomy &mdash; <b>scrim</b>, <b>grab handle</b>, hairline divider, and a <b>secondary</b> dismiss (closing an explainer isn&rsquo;t a primary action competing with &ldquo;Continue&rdquo;). Fit-to-content, so the Guardian cards stay readable behind it: the justification is <b>context preservation</b>, not reachability &mdash; NN/g explicitly refutes the reach argument for bottom sheets. <b>The spec deliberately differs from the shipped component here:</b> <code>GuardianInfoDrawer</code> kills the scrim (<code>bg-transparent backdrop-blur-0</code>), adds a 6px orange top border, and stacks a second orange rule under the intro. Those three fight the primitive and read as a warning banner on dark &mdash; see <b>Components &rarr; Sheet</b> for the Do/Don&rsquo;t.</div></div>
-      <div><div class="scrcap"><i></i>06b &middot; Create password <span class="tag retire">was missing</span></div>
+      <div><div class="scrcap"><i></i>06b &middot; Create password <span class="tag survive">shipped</span></div>
         <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
           <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>
           <div class="mpad" style="flex:1;display:flex;flex-direction:column">
@@ -3539,7 +3540,7 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
           </div>
         </div></div></div>
         <div class="scrnote"><b>Was missing entirely.</b> The biometric branch reaches this only when <code>checkHardwareSecurityAvailable()</code> is false &mdash; otherwise the key lives in the Secure Enclave (<code>__HARDWARE_ONLY__</code>) and this screen is skipped. Without it the spec implied biometric users had no fallback.</div></div>
-      <div><div class="scrcap"><i></i>06b&prime; &middot; Password strength &mdash; low <span class="tag retire">was missing</span></div>
+      <div><div class="scrcap"><i></i>06b&prime; &middot; Password strength &mdash; low <span class="tag survive">shipped</span></div>
         <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
           <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>
           <div class="mpad" style="flex:1;display:flex;flex-direction:column">
@@ -3558,7 +3559,7 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
           </div>
         </div></div></div>
         <div class="scrnote"><b>The meter has four tiers; only one was drawn.</b> Shipped code sets <code>veryStrong</code>/<code>medium</code>/<code>low</code> plus an unfilled default hint &mdash; so a one-tier mock wasn&rsquo;t a spec. Now one component, <code>data-tier</code> on the wrapper, driving <em>both</em> segment count and label colour: satisfying <b>SC 1.4.1</b> because the word (&ldquo;Low&rdquo;) carries the tier without colour. <b>Deliberately no red ring on the field</b> &mdash; a password mid-typing is incomplete, not invalid, and premature error styling is its own defect. The ring is reserved for real validation failures (mismatch, bad seed word). <b>Open weakness worth fixing in product:</b> the hint is static, so it never says <em>which</em> rule you failed.</div></div>
-      <div><div class="scrcap"><i></i>06c &middot; Set up account recovery <span class="tag retire">was missing</span></div>
+      <div><div class="scrcap"><i></i>06c &middot; Set up account recovery <span class="tag survive">shipped</span></div>
         <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
           <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>
           <div class="mpad" style="flex:1;display:flex;flex-direction:column">
@@ -3599,7 +3600,7 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
           </div>
         </div></div></div>
         <div class="scrnote">Now correctly <b>4 of 4</b> &mdash; it previously showed no progress at all. A rare earned moment, where the delight budget is spent.</div></div>
-      <div><div class="scrcap"><i></i>07c &middot; Biometric failed <span class="tag retire">was missing</span></div>
+      <div><div class="scrcap"><i></i>07c &middot; Biometric failed <span class="tag survive">shipped</span></div>
         <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
           <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>
           <div class="mpad" style="flex:1;display:flex;flex-direction:column">
@@ -3670,7 +3671,7 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
           </div>
         </div></div></div>
         <div class="scrnote"><b>Was missing &mdash; the important one.</b> Without it, &ldquo;I&rsquo;ve written it down&rdquo; is self-attested, and that is the button users tap while lying. The app ships <code>VerifySeedPhrase.tsx</code> and asks for the <b>first</b> and <b>last</b> words.</div></div>
-      <div><div class="scrcap"><i></i>10 &middot; Import with seed phrase <span class="tag retire">path was missing</span></div>
+      <div><div class="scrcap"><i></i>10 &middot; Import with seed phrase <span class="tag survive">shipped</span></div>
         <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
           <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>
           <div class="mpad" style="flex:1;display:flex;flex-direction:column">
@@ -3683,7 +3684,7 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
           </div>
         </div></div></div>
         <div class="scrnote"><b>The entire import path was undesigned</b> &mdash; &ldquo;Recover your account&rdquo; on Welcome led nowhere. Import is step 1 of its own flow. Pasting fills all 12 fields at once (<code>seedPhraseTip</code>).</div></div>
-      <div><div class="scrcap"><i></i>10e &middot; Invalid seed word <span class="tag retire">was missing</span></div>
+      <div><div class="scrcap"><i></i>10e &middot; Invalid seed word <span class="tag survive">shipped</span></div>
         <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
           <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>
           <div class="mpad" style="flex:1;display:flex;flex-direction:column">
@@ -3696,7 +3697,7 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
           </div>
         </div></div></div>
         <div class="scrnote"><b>Two shipped bugs, not just a missing mock.</b> (1) <code>ImportSeedPhrase.tsx:99</code> renders <code>t('importSeedPhraseError')</code> &mdash; and <b>that key does not exist in <code>en.json</code></b>, so the error paragraph resolves to the raw key or to nothing. (2) <code>errorsMap</code> at <code>:33</code> already computes <em>per-word</em> validity against the BIP-39 list, but it is only reduced to a single boolean; the individual fields are never marked. So today a mistyped word gives you a <b>dead Continue button and no explanation</b>. The fix costs almost nothing because the data already exists: ring the offending word, and name it in the message. Ring colour is <code>--neg</code>, and the index digit turns with it so the marker is not colour-only.</div></div>
-      <div><div class="scrcap"><i></i>11 &middot; Import recovery method <span class="tag retire">was missing</span></div>
+      <div><div class="scrcap"><i></i>11 &middot; Import recovery method <span class="tag survive">shipped</span></div>
         <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
           <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>
           <div class="mpad" style="flex:1;display:flex;flex-direction:column">
@@ -3728,7 +3729,7 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
     <h3 class="sh">Chrome / Firefox extension &mdash; password-only <span class="small">360&times;600</span></h3>
     <p class="sub">On the extension there is no biometric hardware and no passcode, so the app sets <code>protectionChoiceSkipped = Create &amp;&amp; !isMobile()</code> &rarr; <b>3 steps</b>, and <code>CreatePassword</code> takes the passcode position (so it reads <b>1 of 3</b>, not 3). Frame is the popup&rsquo;s real <b>360&times;600</b> &mdash; the shortest viewport we support, with no notch and no home indicator.</p>
     <div class="scrgrid">
-      <div><div class="scrcap"><i></i>12a &middot; Forgot passcode <span class="tag retire">redrawn</span></div>
+      <div><div class="scrcap"><i></i>12a &middot; Forgot passcode <span class="tag survive">shipped</span></div>
         <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
           <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>
           <div class="mpad" style="flex:1;display:flex;flex-direction:column">
@@ -3842,11 +3843,11 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
               <button class="tkact" style="background:var(--act-send)"><span class="svgic" style="--ic:url(assets/icons/send-new.svg)" aria-hidden="true"></span>Send</button>
               <button class="tkact" style="background:var(--act-receive)"><span class="svgic" style="--ic:url(assets/icons/receive-new.svg)" aria-hidden="true"></span>Receive</button>
             </div>
-            <span class="seclab">Token Price</span>
+            <span class="seclab">Price</span>
             <div style="height:5.5rem;display:flex;align-items:center;justify-content:center;background:var(--surface-2);border-radius:var(--radius-md)">
               <span style="font-size:var(--t-label);color:var(--ink-2)">Price data unavailable</span>
             </div>
-            <span class="seclab">Token Info</span>
+            <span class="seclab">Token info</span>
             <div class="dmeta">
               <div class="drow"><span class="k">Contract</span><span class="v addr2">mtst1zz4&hellip;90ab</span></div>
               <div class="drow"><span class="k">Type</span><span class="v">Fungible</span></div>
@@ -3868,9 +3869,9 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
               <button class="tkact" style="background:var(--act-send)"><span class="svgic" style="--ic:url(assets/icons/send-new.svg)" aria-hidden="true"></span>Send</button>
               <button class="tkact" style="background:var(--act-receive)"><span class="svgic" style="--ic:url(assets/icons/receive-new.svg)" aria-hidden="true"></span>Receive</button>
             </div>
-            <span class="seclab">Token Price</span><svg viewBox="0 0 300 88" preserveAspectRatio="none" style="width:100%;height:5.5rem;display:block" aria-hidden="true"><path d="M0 66 L30 60 L60 68 L90 44 L120 50 L150 30 L180 38 L210 22 L240 28 L270 14 L300 18" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <span class="seclab">Price</span><svg viewBox="0 0 300 88" preserveAspectRatio="none" style="width:100%;height:5.5rem;display:block" aria-hidden="true"><path d="M0 66 L30 60 L60 68 L90 44 L120 50 L150 30 L180 38 L210 22 L240 28 L270 14 L300 18" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
             <div class="tftabs"><button class="tftab">1H</button><button class="tftab on">1D</button><button class="tftab">1W</button><button class="tftab">1M</button><button class="tftab">YTD</button></div>
-            <span class="seclab">Token Info</span>
+            <span class="seclab">Token info</span>
             <div class="dmeta">
               <div class="drow"><span class="k">Contract</span><span class="v addr2">mtst1qq9&hellip;4f2p</span></div>
               <div class="drow"><span class="k">Type</span><span class="v">Fungible</span></div>
@@ -4125,7 +4126,7 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
         <div class="scrnote"><b>The missing link.</b> I specified &ldquo;tap the card to switch, <code>&ctdot;</code> for options&rdquo; and then wired <em>neither</em>, so the Accounts list had no entry point at all &mdash; a real gap. The chain is now: balance-card <code>&ctdot;</code> &rarr; <b>Accounts list</b> (choose) &rarr; per-row <code>&ctdot;</code> &rarr; <b>this sheet</b> (manage one account). Renaming lives here rather than in the list, per the rule that the list answers &ldquo;which account&rdquo; and a rename affordance would fight the selection gesture. The card colour also belongs here, not in the list, because colour is <em>per-account identity</em> &mdash; today it is a single global <code>localStorage</code> value, which is exactly why it currently reads as decoration. The card preview carries no pattern, so the swatch row is the only thing asserting identity while you are choosing it.</div></div>
     </div>
     <h2 class="h">Send flow</h2>
-    <p class="sub">Recipient &rarr; amount &rarr; review &rarr; result. <b>Contact management and creation are undrawn</b> &mdash; the app has an <code>AccountsListDrawer</code> for picking a contact and an <code>AddressBook</code> in Settings, and neither has a mock yet. The review step is also missing a <code>From</code> row, which becomes a hazard once multi-account ships.</p>
+    <p class="sub">Recipient &rarr; amount &rarr; review &rarr; result, with the picker sheets and the bridged variants hanging off each step. <b>The recipient field is the spine of this flow</b> &mdash; fixed at three lines with the type fitting the box, so pasting a 48-character address no longer pushes the actions, the resolution row and the network list down together. <b>Two steps were removed rather than restyled:</b> a second &ldquo;Confirm recipient&rdquo; screen that confirmed the address twice, and a <code>Confirm</code> button on the recipient step that a resolved row already stands in for. <b>Cross-chain is drawn and 0&percnt; built</b> &mdash; <code>grep -rnwE "evm|EVM" src/</code> returns nothing, <code>en.json</code> holds no chain name, and <code>SendTransaction.extraInputs</code> is hard-narrowed to <code>{ recallBlocks?: number }</code>, so every bridged screen here is a proposal.</p>
     <div class="scrgrid">
       <div><div class="scrcap"><i></i>Send · recipient</div>
         <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
@@ -4378,7 +4379,7 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
         </div></div></div>
         <div class="scrnote"><b><code>noQrCodeFound</code> = &ldquo;No QR code found&rdquo; is shipped copy that renders nowhere.</b> It is returned twice &mdash; once when the platform is not mobile (<code>scanner.ts:46&ndash;48</code>), once when the plugin hands back an empty barcode (<code>:64&ndash;66</code>) &mdash; and <code>scanQRCode</code> has no callers, so neither ever reaches a user. The first of those is not this screen and should not exist: <code>isScanAvailable()</code> is <code>isMobile()</code> (<code>:36&ndash;38</code>), so on the extension the Scan button must not render at all. Telling a desktop user that no QR code was found reports the wrong fact about the wrong thing.<br><br><b>It is a timeout, not a result.</b> Nothing failed; the camera simply has not seen a code yet. So the panel appears after a few seconds without a lock rather than the instant the sheet opens, stays while the camera runs, and is written as help rather than as an error. It carries the one hint that changes the outcome &mdash; get the whole code inside the frame &mdash; instead of &ldquo;try again&rdquo;, which is what the user is already doing. <code>tryAgain</code> and <code>retry</code> both ship in <code>en.json</code>; neither belongs here.<br><br><b>Paste appears in this state and no other.</b> It is the only failure with a genuine alternative: <code>unreadable</code> and <code>unsupported network</code> are fixed by moving the phone, this one is fixed by not using the camera. It is deliberately the same word and the same affordance as the Paste beside the address field on <code>recipient</code>, so it does not read as a new idea, and it needs no keyboard.<br><br><b>Camera permission is a different screen and must not be folded in.</b> <code>Camera &middot; permission denied</code> in Global states owns that fork, and it earns a settings deep link because a hard denial cannot be recovered by re-aiming; this state can. The app cannot distinguish them in advance either &mdash; <code>checkCameraPermission</code> (<code>scanner.ts:99&ndash;102</code>) returns <code>isMobile()</code> without checking any permission &mdash; so the denial is only knowable after a scan has already failed, which is exactly why the two states are drawn apart rather than merged into one &ldquo;scan failed&rdquo;.<br><br><b>New strings:</b> <code>scanNoCodeHint</code> = &ldquo;Hold steady and fit the whole code inside the frame.&rdquo; and <code>paste</code> = &ldquo;Paste&rdquo;. <code>noQrCodeFound</code> and <code>cancel</code> are shipped and used verbatim.</div></div>
       
-      <div><div class="scrcap"><i></i>Send &middot; network <span class="tag survive">kept</span></div>
+      <div><div class="scrcap"><i></i>Send &middot; network <span class="tag retire">proposed</span></div>
         <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
           <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>
           <div class="mpad" style="flex:1;display:flex;flex-direction:column;opacity:.32">
@@ -4401,7 +4402,7 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
           </div>
         </div></div></div>
         <div class="scrnote"><b>Kept, with a different job and a different caller.</b> Its previous note said it was &ldquo;reached from the network chip on the recipient screen&rdquo; &mdash; that chip does not exist, on that screen or anywhere else, so the sheet had no entry point. It is reached from <b>Change on the review screen&rsquo;s route band</b>, which is why the page behind it is now the review rather than a faded &ldquo;Choose recipient&rdquo;. <b>It is not a duplicate of the inline list on the recipient screen.</b> That list answers &ldquo;which network is this address on?&rdquo; before an amount exists, so it can only offer names. This one answers &ldquo;is this the network I want to pay?&rdquo; after the amount is known, so every row states what lands and what it costs &mdash; the two numbers that make a network a decision rather than a logo pick. <b>&ldquo;Higher fee&rdquo; and &ldquo;free route&rdquo; are gone.</b> An unpriced comparative is the partitioned-pricing failure: consumers systematically underestimate a total split into components they are never shown, and &ldquo;free route&rdquo; asserts a zero this wallet cannot compute. Rows now lead with the received amount, matching the prevailing default across LI.FI (&ldquo;Best Return&rdquo;), Zerion (&ldquo;Max Received&rdquo;) and MetaMask &mdash; cost, not speed. <b>The tick is correct here and was not before.</b> The old note claimed no default is preselected while the mock ticked Base; both can be true only if the sheet is a picker for a new address, which it no longer is. Arriving from review, a network is always already chosen, and the tick says which. The no-default rule still holds &mdash; it belongs to the inline list, which ships none. <b>The closing line is the one warning that belongs on this sheet:</b> the address does not change when the network does, and an address that is a live contract on one chain can be an unreachable one on the next &mdash; the Wintermute&nbsp;/&nbsp;Optimism loss in exactly that shape was 20M OP, and Optimism declined to fork. <b>Chain marks are slots.</b> Ethereum, Arbitrum and Optimism have real SVGs in <code>assets/icons/</code>; <code>base.svg</code> is a plain blue square, not the Base mark, so Base stays a brand-colour disc exactly as it does in the inline list rather than shipping a wrong logo. <b>Proposed:</b> no chain metadata exists. <code>IBridgedSendExtraInputs.destinationNetwork</code> is a bare chain-id <code>number</code> (<code>lib/miden/db/types.ts:33</code>) with no map to a name, no logo registry and no quote source. <b>New keys:</b> <code>sendAmountTo</code> &ldquo;Send $amount$ to&rdquo;, <code>arrivesIn</code> &ldquo;Arrives in ~$duration$&rdquo;, <code>feeAmount</code> &ldquo;$amount$ fee&rdquo;, <code>networkChangeAddressNote</code> &ldquo;Changing the network does not change the address. Check that this recipient exists on the network you pick.&rdquo;, plus the per-chain display names.</div></div>
-      <div><div class="scrcap"><i></i>Send &middot; amount <span class="tag retire">redrawn</span></div>
+      <div><div class="scrcap"><i></i>Send &middot; amount <span class="tag survive">shipped</span></div>
         <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
           <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>
           <div class="mpad amtscr" style="flex:1;display:flex;flex-direction:column;gap:0.5rem">
@@ -4494,7 +4495,7 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
           </div>
         </div></div></div>
         <div class="scrnote">The shipped picker is a vaul sheet (<code>SelectTokenDrawer</code>), reusing the same overlay primitive as every other picker. <b>Two gaps in the code this cannot show:</b> <code>SelectToken.tsx:63-79</code> maps the filtered list with <em>no empty branch and no loading branch</em>, so a search matching nothing &mdash; or balances still loading &mdash; renders an empty box. The contacts drawer beside it <em>does</em> have an empty state, which makes the omission look accidental.</div></div>
-      <div><div class="scrcap"><i></i>Send · review <span class="tag retire">From row added</span></div>
+      <div><div class="scrcap"><i></i>Send · review <span class="tag survive">shipped</span></div>
         <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
           <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>
           <div class="mpad" style="flex:1;display:flex;flex-direction:column">
@@ -4822,11 +4823,11 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
               <button class="tkact" style="background:var(--surface-2);color:var(--ink-3)" disabled>Send</button>
               <button class="tkact" style="background:var(--act-receive)"><span class="svgic" style="--ic:url(assets/icons/receive-new.svg)" aria-hidden="true"></span>Receive</button>
             </div>
-            <span class="seclab">Token Price</span>
+            <span class="seclab">Price</span>
             <div style="height:5.5rem;display:flex;align-items:center;justify-content:center;background:var(--surface-2);border-radius:var(--radius-md)">
               <span style="font-size:var(--t-label);color:var(--ink-2)">Loading price&hellip;</span>
             </div>
-            <span class="seclab">Token Info</span>
+            <span class="seclab">Token info</span>
             <div class="dmeta">
               <div class="drow"><span class="k">Contract</span><span class="v mono">mtst1qq9&hellip;4f2p</span></div>
               <div class="drow"><span class="k">Network</span><span class="v">Miden Testnet</span></div>
@@ -4846,9 +4847,9 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
             <div class="tkacts">
               <button class="tkact" style="background:var(--act-receive)"><span class="svgic" style="--ic:url(assets/icons/receive-new.svg)" aria-hidden="true"></span>Receive USDC</button>
             </div>
-            <span class="seclab">Token Price</span><svg viewBox="0 0 300 88" preserveAspectRatio="none" style="width:100%;height:5.5rem;display:block" aria-hidden="true"><path d="M0 48 L30 44 L60 50 L90 41 L120 46 L150 38 L180 43 L210 35 L240 39 L270 31 L300 34" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <span class="seclab">Price</span><svg viewBox="0 0 300 88" preserveAspectRatio="none" style="width:100%;height:5.5rem;display:block" aria-hidden="true"><path d="M0 48 L30 44 L60 50 L90 41 L120 46 L150 38 L180 43 L210 35 L240 39 L270 31 L300 34" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
             <div class="tftabs"><button class="tftab">1H</button><button class="tftab on">1D</button><button class="tftab">1W</button><button class="tftab">1M</button><button class="tftab">YTD</button></div>
-            <span class="seclab">Token Info</span>
+            <span class="seclab">Token info</span>
             <div class="dmeta">
               <div class="drow"><span class="k">Contract</span><span class="v mono">mtst1zz4&hellip;90ab</span></div>
               <div class="drow"><span class="k">Network</span><span class="v">Miden Testnet</span></div>

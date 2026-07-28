@@ -74,20 +74,20 @@ documents, and which screens document a given file.
 | 16 | 04a → 04b · Transition | shipped — live | — |
 | 17 | 06 · Choose your Guardian | shipped — 3/4 | — |
 | 18 | 06a · What is a Guardian? | gap / sheet — info sheet | — |
-| 19 | 06b · Create password | bug / proposed — was missing | — |
-| 20 | 06b′ · Password strength — low | bug / proposed — was missing | — |
-| 21 | 06c · Set up account recovery | bug / proposed — was missing | — |
+| 19 | 06b · Create password | shipped — shipped | — |
+| 20 | 06b′ · Password strength — low | shipped — shipped | — |
+| 21 | 06c · Set up account recovery | shipped — shipped | — |
 | 22 | 07a · Creating wallet | bug / proposed — loading | — |
 | 23 | 07b · Wallet ready | shipped — 4/4 | — |
-| 24 | 07c · Biometric failed | bug / proposed — was missing | — |
+| 24 | 07c · Biometric failed | shipped — shipped | — |
 | 25 | 08 · Back up your wallet | gap / sheet — deferrable | `HomePrompts.tsx:24` `Welcome.tsx:465–537` `navigator.tsx:165–183` |
 | 26 | 08a · Back up later? | gap / sheet — deferral | — |
 | 27 | 09 · Verify seed phrase | gap / sheet — deferrable | — |
-| 28 | 10 · Import with seed phrase | bug / proposed — path was missing | — |
-| 29 | 10e · Invalid seed word | bug / proposed — was missing | `ImportSeedPhrase.tsx:99` |
-| 30 | 11 · Import recovery method | bug / proposed — was missing | — |
+| 28 | 10 · Import with seed phrase | shipped — shipped | — |
+| 29 | 10e · Invalid seed word | shipped — shipped | `ImportSeedPhrase.tsx:99` |
+| 30 | 11 · Import recovery method | shipped — shipped | — |
 | 31 | 12 · Unlock | gap / sheet — app-only | — |
-| 32 | 12a · Forgot passcode | bug / proposed — redrawn | — |
+| 32 | 12a · Forgot passcode | shipped — shipped | — |
 | 33 | E1 · Create password | shipped — 1/3 | — |
 | 34 | E2 · Choose your Guardian | shipped — 2/3 | — |
 | 35 | E3 · Wallet ready | shipped — 3/3 | — |
@@ -131,13 +131,13 @@ documents, and which screens document a given file.
 | 59 | Send · scan, unreadable | gap / sheet — gap | `lib/qr/index.ts:2` `utils/miden.ts:5` `lib/qr/format.ts:58` `format.ts:57–62` `utils/miden.ts:7` |
 | 60 | Send · scan, unsupported network | gap / sheet — gap | `utils/miden.ts:14–16` `lib/qr/format.ts:49–67` `scanner.ts:72–74` |
 | 61 | Send · scan, no code found | gap / sheet — gap | `scanner.ts:46–48` `scanner.ts:99–102` |
-| 62 | Send · network | shipped — kept | `lib/miden/db/types.ts:33` |
-| 63 | Send · amount | bug / proposed — redrawn | `SelectAmount.tsx:124–150` `SendManager.tsx:116` `TabLayout.tsx:42` `SendManager.tsx:84–85` `SelectAmount.tsx:136–148` `AmountInput.tsx:70–88` `SelectAmount.tsx:108–118` `AmountInput.tsx:81` `AmountInput.tsx:101` `AmountInput.tsx:84` `AmountInput.tsx:13–19` `binance.ts:21` |
+| 62 | Send · network | bug / proposed — proposed | `lib/miden/db/types.ts:33` |
+| 63 | Send · amount | shipped — shipped | `SelectAmount.tsx:124–150` `SendManager.tsx:116` `TabLayout.tsx:42` `SendManager.tsx:84–85` `SelectAmount.tsx:136–148` `AmountInput.tsx:70–88` `SelectAmount.tsx:108–118` `AmountInput.tsx:81` `AmountInput.tsx:101` `AmountInput.tsx:84` `AmountInput.tsx:13–19` `binance.ts:21` |
 | 64 | Send · amount, zero | gap / sheet — gap | `SelectAmount.tsx:70` `SendManager.tsx:46` `AmountInput.tsx:48` `AmountInput.tsx:75` `SelectAmount.tsx:84–88` |
 | 65 | Send · amount, insufficient | gap / sheet — gap | `SendManager.tsx:317` `SelectAmount.tsx:144` |
 | 66 | Send · amount, max | gap / sheet — proposed | `AssetField.tsx:27` `SelectAmount.tsx:46–48` |
 | 67 | Send · token picker | gap / sheet — sheet | `SelectToken.tsx:63-79` |
-| 68 | Send · review | bug / proposed — From row added | — |
+| 68 | Send · review | shipped — shipped | — |
 | 69 | Send · review, other chain | gap / sheet — proposed | `lib/miden/db/types.ts:29–36` `types.ts:187` `TransactionSuccess.tsx:12–20` `TransactionSuccess.test.tsx:149` |
 | 70 | Send · in progress | shipped | — |
 | 71 | Send · success | shipped | `receipt.ts:30–65` |
