@@ -436,8 +436,9 @@ export const SendManager: React.FC<SendManagerProps> = ({ preselectedTokenId, dr
               amount={amount || ''}
               isValidAmount={!errors.amount && validations.amount.isValidSync(amount)}
               error={errors.amount?.message?.toString()}
-              footerClassName="pt-4 pb-6"
               onAmountChange={onAmountChange}
+              recipientAddress={recipientAddress}
+              onBack={goBack}
               onSelectToken={() => setShowTokenDrawer(true)}
               onConfirm={onConfirmAmount}
             />
@@ -449,6 +450,8 @@ export const SendManager: React.FC<SendManagerProps> = ({ preselectedTokenId, dr
     [
       token,
       recipientAddress,
+      // The amount step's back control routes through the Navigator now.
+      goBack,
       errors.recipientAddress,
       errors.amount,
       onAddressChange,
