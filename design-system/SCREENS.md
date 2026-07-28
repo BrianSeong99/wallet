@@ -6,7 +6,7 @@ Every screen in `index.html`, grouped by the flow it belongs to, in page order.
 change to `index.html`. Serve the site with `python3 -m http.server 4599 --directory design-system`
 and find a screen by searching its caption.
 
-Total: **178 screens** across **16 flows**. The *Specifies* column lists the
+Total: **181 screens** across **16 flows**. The *Specifies* column lists the
 shipped source each screen's rationale cites, so this reads in both directions: what a screen
 documents, and which screens document a given file.
 
@@ -19,7 +19,7 @@ documents, and which screens document a given file.
 | Home & overview | 14 |
 | Send flow | 17 |
 | Cross-chain send | 8 |
-| Contacts | 7 |
+| Contacts | 10 |
 | Receive flow | 13 |
 | Swap flow | 6 |
 | Activity flow | 13 |
@@ -158,17 +158,20 @@ documents, and which screens document a given file.
 
 ## Contacts
 
-<sub>section `#allscreens` · 7 screens</sub>
+<sub>section `#allscreens` · 10 screens</sub>
 
 | # | Screen | Status | Specifies |
 |--:|---|---|---|
 | 77 | Contacts · pick | gap / sheet — sheet | `SendManager.tsx:488` `SendManager.tsx:87–108` |
 | 78 | Contacts · pick, empty | gap / sheet — sheet | `AccountsList.tsx:46–47` |
-| 79 | Contacts · manage | gap / sheet — sheet | `Settings.tsx:420–431` `Settings.tsx:303` `AddressBook.tsx:77–78` `AddressBook.tsx:23–37` `AddressBook.tsx:78` |
-| 80 | Contacts · manage, duplicate | gap / sheet — sheet | `AddressBook.tsx:128` |
-| 81 | Contacts · manage, empty | gap / sheet — sheet | `AddressBook.tsx:68` |
-| 82 | Contacts · manage, no results | bug / proposed — bug | `AddressBook.tsx:68–69` |
-| 83 | Contacts · edit | gap / sheet — gap | `AddressBook.tsx:78` |
+| 79 | Contacts · manage | gap / sheet — sheet | `AddressBook.tsx:97–176` |
+| 80 | Contacts · new | gap / sheet — gap | `AddressBook.tsx:97–176` |
+| 81 | Contacts · row actions | gap / sheet — gap | `AddressBook.tsx:78` |
+| 82 | Contacts · delete confirm | gap / sheet — gap | `AddressBook.tsx:23–37` `address-book.ts:15` |
+| 83 | Contacts · new, duplicate | gap / sheet — sheet | `AddressBook.tsx:128` |
+| 84 | Contacts · manage, empty | gap / sheet — sheet | `AddressBook.tsx:68` |
+| 85 | Contacts · manage, no results | bug / proposed — bug | `AddressBook.tsx:68–69` |
+| 86 | Contacts · edit | gap / sheet — gap | `AddressBook.tsx:78` |
 
 ## Receive flow
 
@@ -176,19 +179,19 @@ documents, and which screens document a given file.
 
 | # | Screen | Status | Specifies |
 |--:|---|---|---|
-| 84 | Receive · address copied | bug / proposed — bug | `AddressTab.tsx:99–106` `CopyButton.tsx:36–49` `en.json:13–14` |
-| 85 | Receive · share failed | bug / proposed — bug | `AddressTab.tsx:54–64` `AddressTab.tsx:78–81` |
-| 86 | Receive · request an amount | gap / sheet — proposed | `AddressTab.tsx:113–120` `qr/format.ts:10–20` `qr/format.ts:26–41` |
-| 87 | Receive · loading | gap / sheet — gap | `PageRouter.tsx:150–157` `ready.tsx:88–101` `QRCode.tsx:3` `AddressTab.tsx:46–51` |
-| 88 | Receive | shipped | `AddressTab.tsx:113–120` |
-| 89 | Pending notes · loading | gap / sheet — gap | — |
-| 90 | Pending notes · empty | gap / sheet — gap | `PendingTab.tsx:189–199` `en.json:641` `en.json:694` `Pending.tsx:264` |
-| 91 | Pending notes · fetch failed | bug / proposed — bug | `Pending.tsx:38` `claimable-notes.ts:323–330` `PendingTab.tsx:189` |
-| 92 | Pending notes · claiming | bug / proposed — bug | `PendingTab.tsx:235–245` `PendingTab.tsx:514–524` `en.json:93` `Pending.tsx:233–236` `Pending.tsx:228–230` |
-| 93 | Pending notes · claim failed | bug / proposed — bug | `PendingTab.tsx:469` `en.json:663` `Pending.tsx:196` `PendingTab.tsx:146–153` `Pending.tsx:186` `en.json:566` |
-| 94 | Token detail · loading | bug / proposed — bug | `TokenDetail.tsx:48` `balance.ts:173–179` `balance.ts:31–44` `TokenDetail.tsx:51–53` `en.json:519` |
-| 95 | Token detail · zero balance | gap / sheet — gap | `TokenDetail.tsx:86–101` |
-| 96 | Token detail · unknown token | gap / sheet — gap | `PageRouter.tsx:178–185` `TokenDetail.tsx:51–53` `TokenLogo.tsx:50–57` `binance.ts:21` `TokenDetail.tsx:137` |
+| 87 | Receive · address copied | bug / proposed — bug | `AddressTab.tsx:99–106` `CopyButton.tsx:36–49` `en.json:13–14` |
+| 88 | Receive · share failed | bug / proposed — bug | `AddressTab.tsx:54–64` `AddressTab.tsx:78–81` |
+| 89 | Receive · request an amount | gap / sheet — proposed | `AddressTab.tsx:113–120` `qr/format.ts:10–20` `qr/format.ts:26–41` |
+| 90 | Receive · loading | gap / sheet — gap | `PageRouter.tsx:150–157` `ready.tsx:88–101` `QRCode.tsx:3` `AddressTab.tsx:46–51` |
+| 91 | Receive | shipped | `AddressTab.tsx:113–120` |
+| 92 | Pending notes · loading | gap / sheet — gap | — |
+| 93 | Pending notes · empty | gap / sheet — gap | `PendingTab.tsx:189–199` `en.json:641` `en.json:694` `Pending.tsx:264` |
+| 94 | Pending notes · fetch failed | bug / proposed — bug | `Pending.tsx:38` `claimable-notes.ts:323–330` `PendingTab.tsx:189` |
+| 95 | Pending notes · claiming | bug / proposed — bug | `PendingTab.tsx:235–245` `PendingTab.tsx:514–524` `en.json:93` `Pending.tsx:233–236` `Pending.tsx:228–230` |
+| 96 | Pending notes · claim failed | bug / proposed — bug | `PendingTab.tsx:469` `en.json:663` `Pending.tsx:196` `PendingTab.tsx:146–153` `Pending.tsx:186` `en.json:566` |
+| 97 | Token detail · loading | bug / proposed — bug | `TokenDetail.tsx:48` `balance.ts:173–179` `balance.ts:31–44` `TokenDetail.tsx:51–53` `en.json:519` |
+| 98 | Token detail · zero balance | gap / sheet — gap | `TokenDetail.tsx:86–101` |
+| 99 | Token detail · unknown token | gap / sheet — gap | `PageRouter.tsx:178–185` `TokenDetail.tsx:51–53` `TokenLogo.tsx:50–57` `binance.ts:21` `TokenDetail.tsx:137` |
 
 ## Swap flow
 
@@ -196,12 +199,12 @@ documents, and which screens document a given file.
 
 | # | Screen | Status | Specifies |
 |--:|---|---|---|
-| 97 | Swap · insufficient balance | shipped | — |
-| 98 | Swap · fetching price | shipped | — |
-| 99 | Swap | shipped | — |
-| 100 | Swap · success | shipped | — |
-| 101 | Swap · review, submitting | gap / sheet — gap | — |
-| 102 | Swap · review | shipped | `ReviewSwap.tsx:56–61` |
+| 100 | Swap · insufficient balance | shipped | — |
+| 101 | Swap · fetching price | shipped | — |
+| 102 | Swap | shipped | — |
+| 103 | Swap · success | shipped | — |
+| 104 | Swap · review, submitting | gap / sheet — gap | — |
+| 105 | Swap · review | shipped | `ReviewSwap.tsx:56–61` |
 
 ## Activity flow
 
@@ -209,19 +212,19 @@ documents, and which screens document a given file.
 
 | # | Screen | Status | Specifies |
 |--:|---|---|---|
-| 103 | Activity | shipped | — |
-| 104 | Activity · empty | gap / sheet — gap | `HistoryView.tsx:158–165` `AllHistory.tsx:66–90` |
-| 105 | Activity · loading | gap / sheet — gap | `HistoryView.tsx:157` `History.tsx:42` |
-| 106 | Activity · Sent, no matches | bug / proposed — bug | `History.tsx:104–111` `HistoryView.tsx:150` `AllHistory.tsx:29–35` `AllHistory.tsx:79` |
-| 107 | Activity · failed transactions | gap / sheet — gap | `History.tsx:140` `get.ts:54` `get.ts:57` `get.ts:14–17` `History.tsx:142–143` `HistoryView.tsx:58` `HistoryView.tsx:71–73` `cancel.ts:35` `cancel.ts:69` |
-| 108 | Activity · in progress | gap / sheet — gap | `History.tsx:59–63` `HistoryItem.tsx:87–96` `HistoryView.tsx:177` `AllHistory.tsx:97` `TokenDetail.tsx:117` `cancel.ts:13` `History.tsx:72` `get.ts:21` `History.tsx:215` |
-| 109 | Activity · end of list | bug / proposed — bug | `get.ts:68` `History.tsx:82–83` `defaults.tsx:5` `get.ts:62` `History.tsx:87` `HistoryView.tsx:227–233` |
-| 110 | Transaction detail | shipped | — |
-| 111 | Transaction detail · failed | gap / sheet — gap | `cancel.ts:35` `db/types.ts:102` `HistoryDetails.tsx:124–141` `HistoryDetails.tsx:298` `HistoryDetails.tsx:293–328` `IHistoryEntry.ts:25` `DetailCard.tsx:38` |
-| 112 | Transaction detail · pending | bug / proposed — bug | `HistoryView.tsx:214` `History.tsx:193` `HistoryDetails.tsx:127` `transactionUtils.ts:78–79` `HistoryDetails.tsx:295` `constants.ts:10–31` |
-| 113 | Claim · in progress | gap / sheet — gap | `Pending.tsx:211` `TransactionProgressModal.tsx:350` `Pending.tsx:207–209` `Pending.tsx:189–202` `Pending.tsx:213–226` |
-| 114 | Claim · partial failure | gap / sheet — gap | `en.json:545` `Pending.tsx:196` `Pending.tsx:229` `PendingTab.tsx:469` |
-| 115 | Pending notes | shipped | `en.json:694` `Pending.tsx:264` |
+| 106 | Activity | shipped | — |
+| 107 | Activity · empty | gap / sheet — gap | `HistoryView.tsx:158–165` `AllHistory.tsx:66–90` |
+| 108 | Activity · loading | gap / sheet — gap | `HistoryView.tsx:157` `History.tsx:42` |
+| 109 | Activity · Sent, no matches | bug / proposed — bug | `History.tsx:104–111` `HistoryView.tsx:150` `AllHistory.tsx:29–35` `AllHistory.tsx:79` |
+| 110 | Activity · failed transactions | gap / sheet — gap | `History.tsx:140` `get.ts:54` `get.ts:57` `get.ts:14–17` `History.tsx:142–143` `HistoryView.tsx:58` `HistoryView.tsx:71–73` `cancel.ts:35` `cancel.ts:69` |
+| 111 | Activity · in progress | gap / sheet — gap | `History.tsx:59–63` `HistoryItem.tsx:87–96` `HistoryView.tsx:177` `AllHistory.tsx:97` `TokenDetail.tsx:117` `cancel.ts:13` `History.tsx:72` `get.ts:21` `History.tsx:215` |
+| 112 | Activity · end of list | bug / proposed — bug | `get.ts:68` `History.tsx:82–83` `defaults.tsx:5` `get.ts:62` `History.tsx:87` `HistoryView.tsx:227–233` |
+| 113 | Transaction detail | shipped | — |
+| 114 | Transaction detail · failed | gap / sheet — gap | `cancel.ts:35` `db/types.ts:102` `HistoryDetails.tsx:124–141` `HistoryDetails.tsx:298` `HistoryDetails.tsx:293–328` `IHistoryEntry.ts:25` `DetailCard.tsx:38` |
+| 115 | Transaction detail · pending | bug / proposed — bug | `HistoryView.tsx:214` `History.tsx:193` `HistoryDetails.tsx:127` `transactionUtils.ts:78–79` `HistoryDetails.tsx:295` `constants.ts:10–31` |
+| 116 | Claim · in progress | gap / sheet — gap | `Pending.tsx:211` `TransactionProgressModal.tsx:350` `Pending.tsx:207–209` `Pending.tsx:189–202` `Pending.tsx:213–226` |
+| 117 | Claim · partial failure | gap / sheet — gap | `en.json:545` `Pending.tsx:196` `Pending.tsx:229` `PendingTab.tsx:469` |
+| 118 | Pending notes | shipped | `en.json:694` `Pending.tsx:264` |
 
 ## Earn flow gated off
 
@@ -229,9 +232,9 @@ documents, and which screens document a given file.
 
 | # | Screen | Status | Specifies |
 |--:|---|---|---|
-| 116 | Earn · vaults | gap / sheet — gated off | — |
-| 117 | Vault detail | gap / sheet — gated off | — |
-| 118 | Earn · deposit | gap / sheet — gated off | — |
+| 119 | Earn · vaults | gap / sheet — gated off | — |
+| 120 | Vault detail | gap / sheet — gated off | — |
+| 121 | Earn · deposit | gap / sheet — gated off | — |
 
 ## Settings & browser
 
@@ -239,23 +242,23 @@ documents, and which screens document a given file.
 
 | # | Screen | Status | Specifies |
 |--:|---|---|---|
-| 119 | Settings | shipped | — |
-| 120 | Settings · general | bug / proposed — bug | `ToggleSwitch.tsx:51` `SettingToggle.tsx:17` `GeneralSettings.tsx:79` |
-| 121 | Settings · general, save failed | gap / sheet — gap | `helpers.ts:15–19` `ToggleSwitch.tsx:32` `GeneralSettings.tsx:48–54` |
-| 122 | Settings · language | bug / proposed — bug | `LanguageSettings.tsx:9–23` `Settings.tsx:78–88` `Settings.tsx:92` |
-| 123 | Settings · currency | gap / sheet — gap | `fiat-curency/consts.ts:6–145` `core.tsx:79–101` `store/index.ts:600` `front/provider.tsx:7` `AssetRow.tsx:46` `Explore.tsx:188` `Receive/PendingTab.tsx:51` `SelectAmount.tsx:103` `ReviewAmount.tsx:39` `HistoryDetails.tsx:72` `core.tsx:103–110` |
-| 124 | Settings · advanced, key loading | gap / sheet — gap | `AdvancedSettings.tsx:50` |
-| 125 | Settings · advanced, key unavailable | gap / sheet — gap | `AdvancedSettings.tsx:25–27` |
-| 126 | Settings · faucet ID | shipped | `AdvancedSettings.tsx:73` `Settings.tsx:246–252` `EditMidenFaucetId.tsx:69` |
-| 127 | Settings · faucet ID, saved | shipped | `EditMidenFaucetId.tsx:95` |
-| 128 | Settings · faucet ID, rejected | bug / proposed — bug | `EditMidenFaucetId.tsx:52` |
-| 129 | Settings · authorized dApps | shipped | `DAppDrawerSettings.tsx:26–28` |
-| 130 | Settings · connected dApps | bug / proposed — bug | `DAppSettings.tsx:94–153` `constants.ts:66–69` |
-| 131 | Settings · connected dApps, none | gap / sheet — gap | `DAppSettings.tsx:53–59` `DAppDrawerSettings.tsx:61` `Settings.tsx:260–265` |
-| 132 | Settings · networks | gap / sheet — gap | `constants.ts:91–105` `Settings.tsx:253–259` `templates/AdvancedSettings.tsx:39–43` `Settings.tsx:49` `constants.ts:40` |
-| 133 | Settings · networks, confirm switch | gap / sheet — gap | `Networks.tsx:12–14` `ready.tsx:28–35` |
-| 134 | Settings · networks, switching | gap / sheet — gap | `ready.tsx:24–35` |
-| 135 | Settings · networks, switch failed | gap / sheet — gap | `Networks.tsx:12–14` `constants.ts:104` |
+| 122 | Settings | shipped | — |
+| 123 | Settings · general | bug / proposed — bug | `ToggleSwitch.tsx:51` `SettingToggle.tsx:17` `GeneralSettings.tsx:79` |
+| 124 | Settings · general, save failed | gap / sheet — gap | `helpers.ts:15–19` `ToggleSwitch.tsx:32` `GeneralSettings.tsx:48–54` |
+| 125 | Settings · language | bug / proposed — bug | `LanguageSettings.tsx:9–23` `Settings.tsx:78–88` `Settings.tsx:92` |
+| 126 | Settings · currency | gap / sheet — gap | `fiat-curency/consts.ts:6–145` `core.tsx:79–101` `store/index.ts:600` `front/provider.tsx:7` `AssetRow.tsx:46` `Explore.tsx:188` `Receive/PendingTab.tsx:51` `SelectAmount.tsx:103` `ReviewAmount.tsx:39` `HistoryDetails.tsx:72` `core.tsx:103–110` |
+| 127 | Settings · advanced, key loading | gap / sheet — gap | `AdvancedSettings.tsx:50` |
+| 128 | Settings · advanced, key unavailable | gap / sheet — gap | `AdvancedSettings.tsx:25–27` |
+| 129 | Settings · faucet ID | shipped | `AdvancedSettings.tsx:73` `Settings.tsx:246–252` `EditMidenFaucetId.tsx:69` |
+| 130 | Settings · faucet ID, saved | shipped | `EditMidenFaucetId.tsx:95` |
+| 131 | Settings · faucet ID, rejected | bug / proposed — bug | `EditMidenFaucetId.tsx:52` |
+| 132 | Settings · authorized dApps | shipped | `DAppDrawerSettings.tsx:26–28` |
+| 133 | Settings · connected dApps | bug / proposed — bug | `DAppSettings.tsx:94–153` `constants.ts:66–69` |
+| 134 | Settings · connected dApps, none | gap / sheet — gap | `DAppSettings.tsx:53–59` `DAppDrawerSettings.tsx:61` `Settings.tsx:260–265` |
+| 135 | Settings · networks | gap / sheet — gap | `constants.ts:91–105` `Settings.tsx:253–259` `templates/AdvancedSettings.tsx:39–43` `Settings.tsx:49` `constants.ts:40` |
+| 136 | Settings · networks, confirm switch | gap / sheet — gap | `Networks.tsx:12–14` `ready.tsx:28–35` |
+| 137 | Settings · networks, switching | gap / sheet — gap | `ready.tsx:24–35` |
+| 138 | Settings · networks, switch failed | gap / sheet — gap | `Networks.tsx:12–14` `constants.ts:104` |
 
 ## Security & recovery
 
@@ -263,28 +266,28 @@ documents, and which screens document a given file.
 
 | # | Screen | Status | Specifies |
 |--:|---|---|---|
-| 136 | Reveal recovery phrase | shipped | — |
-| 137 | Recovery phrase · checking device | bug / proposed — blank frame | `RevealSeedPhrase.tsx:111–113` `RevealSecret.tsx:332–334` `EncryptedWalletFileWalletPassword.tsx:136–138` |
-| 138 | Recovery phrase · passcode | shipped — sheet | `RevealSeedPhrase.tsx:185` `RevealSecret.tsx:66` |
-| 139 | Recovery phrase · password | shipped — extension | `RevealSeedPhrase.tsx:206–230` `use-secret-state.hook.ts:3` |
-| 140 | Private key · acknowledge | shipped | `RevealSecret.tsx:340–358` |
-| 141 | Private key · revealed | shipped | `use-secret-state.hook.ts:3` |
-| 142 | Reveal secret · expired | bug / proposed — bug | `RevealSeedPhrase.tsx:72–76` |
-| 143 | Guardian keys · revealed | shipped | `KeysSettings.tsx:21` |
-| 144 | Settings · Keys | gap / sheet — sheet | `KeysSettings.tsx:22` `PageRouter.tsx:280` `KeysSettings.test.tsx:184` |
-| 145 | Settings · change passcode | gap / sheet — gap | — |
-| 146 | Settings · app lock | gap / sheet — gap | `GeneralSettings.selectors.ts:10` `lib/biometric/index.ts:183–192` `ReviewTransaction.tsx:134` `SwapManager.tsx:206` |
-| 147 | Settings · auto-lock | gap / sheet — gap | `fixed-times.ts:7` `lock-up/run-checks.ts:9–10` |
-| 148 | Guardian · rotate review | bug / proposed — specced, never built | `en.json:412–418` `GuardianSettings.tsx:112` |
-| 149 | Guardian · remove | gap / sheet — gap | `GuardianInfoDrawer.tsx:79` `en.json:404` |
-| 150 | Settings · reset wallet | gap / sheet — gap | `Unlock.tsx:280` `Settings.tsx:415` `en.json:9` |
-| 151 | Reset wallet · confirm | gap / sheet — gap | `Unlock.tsx:280` `Settings.tsx:433–492` |
-| 152 | Encrypted file · unlock | gap / sheet — unrouted | `EncryptedWalletFileWalletPassword.tsx:144` |
-| 153 | Encrypted file · name and password | gap / sheet — unrouted | — |
-| 154 | Encrypted file · exported | bug / proposed — auto-downloads | `ExportFileComplete.tsx:128–130` |
-| 155 | Settings · About | gap / sheet — gap | `en.json:9` `Settings.tsx:415` `About.tsx:30–31` |
-| 156 | Account · rename | gap / sheet — gap | `store/index.ts:207` `back/actions.ts:269–279` `vault.ts:846` `front/client.ts:143` `en.json:68` `app/defaults.tsx:21` |
-| 157 | Account · delete | bug / proposed — no-op backend | `back/actions.ts:267` `front/client.ts:331` |
+| 139 | Reveal recovery phrase | shipped | — |
+| 140 | Recovery phrase · checking device | bug / proposed — blank frame | `RevealSeedPhrase.tsx:111–113` `RevealSecret.tsx:332–334` `EncryptedWalletFileWalletPassword.tsx:136–138` |
+| 141 | Recovery phrase · passcode | shipped — sheet | `RevealSeedPhrase.tsx:185` `RevealSecret.tsx:66` |
+| 142 | Recovery phrase · password | shipped — extension | `RevealSeedPhrase.tsx:206–230` `use-secret-state.hook.ts:3` |
+| 143 | Private key · acknowledge | shipped | `RevealSecret.tsx:340–358` |
+| 144 | Private key · revealed | shipped | `use-secret-state.hook.ts:3` |
+| 145 | Reveal secret · expired | bug / proposed — bug | `RevealSeedPhrase.tsx:72–76` |
+| 146 | Guardian keys · revealed | shipped | `KeysSettings.tsx:21` |
+| 147 | Settings · Keys | gap / sheet — sheet | `KeysSettings.tsx:22` `PageRouter.tsx:280` `KeysSettings.test.tsx:184` |
+| 148 | Settings · change passcode | gap / sheet — gap | — |
+| 149 | Settings · app lock | gap / sheet — gap | `GeneralSettings.selectors.ts:10` `lib/biometric/index.ts:183–192` `ReviewTransaction.tsx:134` `SwapManager.tsx:206` |
+| 150 | Settings · auto-lock | gap / sheet — gap | `fixed-times.ts:7` `lock-up/run-checks.ts:9–10` |
+| 151 | Guardian · rotate review | bug / proposed — specced, never built | `en.json:412–418` `GuardianSettings.tsx:112` |
+| 152 | Guardian · remove | gap / sheet — gap | `GuardianInfoDrawer.tsx:79` `en.json:404` |
+| 153 | Settings · reset wallet | gap / sheet — gap | `Unlock.tsx:280` `Settings.tsx:415` `en.json:9` |
+| 154 | Reset wallet · confirm | gap / sheet — gap | `Unlock.tsx:280` `Settings.tsx:433–492` |
+| 155 | Encrypted file · unlock | gap / sheet — unrouted | `EncryptedWalletFileWalletPassword.tsx:144` |
+| 156 | Encrypted file · name and password | gap / sheet — unrouted | — |
+| 157 | Encrypted file · exported | bug / proposed — auto-downloads | `ExportFileComplete.tsx:128–130` |
+| 158 | Settings · About | gap / sheet — gap | `en.json:9` `Settings.tsx:415` `About.tsx:30–31` |
+| 159 | Account · rename | gap / sheet — gap | `store/index.ts:207` `back/actions.ts:269–279` `vault.ts:846` `front/client.ts:143` `en.json:68` `app/defaults.tsx:21` |
+| 160 | Account · delete | bug / proposed — no-op backend | `back/actions.ts:267` `front/client.ts:331` |
 
 ## dApp browser
 
@@ -292,17 +295,17 @@ documents, and which screens document a given file.
 
 | # | Screen | Status | Specifies |
 |--:|---|---|---|
-| 158 | dApp browser | shipped | — |
-| 159 | dApp launcher · no recents | gap / sheet — gap | `RecentsRow.tsx:32` `DappActionsSheet.tsx:130–137` `DappLauncher/index.tsx:40` `featured-dapps.ts:152–153` |
-| 160 | dApp · active | bug / proposed — bug | `CapsuleBar.tsx:130` `main.css:442` `ProgressBar.tsx:32–38` |
-| 161 | dApp · load failed | shipped | `DappActive.tsx:234–248` `CapsuleBar.tsx:238` `DappActive.tsx:219–249` `CapsuleBar.tsx:18–24` |
-| 162 | dApp · switcher | bug / proposed — bug | `DappSwitcher.tsx:78–79` `DappConfirmationModal.tsx:61–125` |
-| 163 | dApp · peek tray | bug / proposed — bug | `DappPeekCard.tsx:43–44` `DappPeekTray.tsx:58` |
-| 164 | dApp · connect request | shipped | `DappConfirmationModal.tsx:199–211` |
-| 165 | dApp · transaction request | bug / proposed — bug | `DappConfirmationModal.tsx:186–197` |
-| 166 | dApp · claim note request | gap / sheet — gap | `DappConfirmationModal.tsx:46` `dapp.ts:1384` |
-| 167 | dApp · sign message | gap / sheet — gap | `dapp.ts:431` `dapp.ts:1529–1531` `dapp.ts:276` |
-| 168 | dApp · private data request | gap / sheet — gap | `dapp.ts:503–504` `dapp.ts:525` `dapp.ts:1529–1531` `dapp.ts:909` `DappConfirmationModal.tsx:138` |
+| 161 | dApp browser | shipped | — |
+| 162 | dApp launcher · no recents | gap / sheet — gap | `RecentsRow.tsx:32` `DappActionsSheet.tsx:130–137` `DappLauncher/index.tsx:40` `featured-dapps.ts:152–153` |
+| 163 | dApp · active | bug / proposed — bug | `CapsuleBar.tsx:130` `main.css:442` `ProgressBar.tsx:32–38` |
+| 164 | dApp · load failed | shipped | `DappActive.tsx:234–248` `CapsuleBar.tsx:238` `DappActive.tsx:219–249` `CapsuleBar.tsx:18–24` |
+| 165 | dApp · switcher | bug / proposed — bug | `DappSwitcher.tsx:78–79` `DappConfirmationModal.tsx:61–125` |
+| 166 | dApp · peek tray | bug / proposed — bug | `DappPeekCard.tsx:43–44` `DappPeekTray.tsx:58` |
+| 167 | dApp · connect request | shipped | `DappConfirmationModal.tsx:199–211` |
+| 168 | dApp · transaction request | bug / proposed — bug | `DappConfirmationModal.tsx:186–197` |
+| 169 | dApp · claim note request | gap / sheet — gap | `DappConfirmationModal.tsx:46` `dapp.ts:1384` |
+| 170 | dApp · sign message | gap / sheet — gap | `dapp.ts:431` `dapp.ts:1529–1531` `dapp.ts:276` |
+| 171 | dApp · private data request | gap / sheet — gap | `dapp.ts:503–504` `dapp.ts:525` `dapp.ts:1529–1531` `dapp.ts:909` `DappConfirmationModal.tsx:138` |
 
 ## Global states
 
@@ -310,16 +313,16 @@ documents, and which screens document a given file.
 
 | # | Screen | Status | Specifies |
 |--:|---|---|---|
-| 169 | Lock · probing hardware | gap / sheet — gap | `Unlock.tsx:253–258` |
-| 170 | Lock · passcode incorrect | bug / proposed — error | `Unlock.tsx:160` |
-| 171 | Lock · rate limited | bug / proposed — bug | `Unlock.tsx:352` |
-| 172 | Lock · resume re-auth | gap / sheet — gap | `lib/mobile/back-handler.ts:30` `Unlock.tsx:65–124` |
-| 173 | Activity · offline | gap / sheet — gap | `Explore.tsx:141` `App.tsx:17` `ConnectivityIssueBanner.tsx:152` |
-| 174 | Notifications · rationale | gap / sheet — gap | `native-notifications.ts:50–56` `NoteToastProvider.tsx:37–41` |
-| 175 | Camera · permission denied | gap / sheet — gap | `lib/qr/scanner.ts:85–87` `lib/qr/index.ts:2` |
-| 176 | Toast · link copied | gap / sheet — gap | `NoteToastProvider.tsx:60` `DappActionsSheet.tsx:80–88` |
-| 177 | Update required | gap / sheet — gap | `PageRouter.tsx:53` |
-| 178 | Reset required | bug / proposed — bug | — |
+| 172 | Lock · probing hardware | gap / sheet — gap | `Unlock.tsx:253–258` |
+| 173 | Lock · passcode incorrect | bug / proposed — error | `Unlock.tsx:160` |
+| 174 | Lock · rate limited | bug / proposed — bug | `Unlock.tsx:352` |
+| 175 | Lock · resume re-auth | gap / sheet — gap | `lib/mobile/back-handler.ts:30` `Unlock.tsx:65–124` |
+| 176 | Activity · offline | gap / sheet — gap | `Explore.tsx:141` `App.tsx:17` `ConnectivityIssueBanner.tsx:152` |
+| 177 | Notifications · rationale | gap / sheet — gap | `native-notifications.ts:50–56` `NoteToastProvider.tsx:37–41` |
+| 178 | Camera · permission denied | gap / sheet — gap | `lib/qr/scanner.ts:85–87` `lib/qr/index.ts:2` |
+| 179 | Toast · link copied | gap / sheet — gap | `NoteToastProvider.tsx:60` `DappActionsSheet.tsx:80–88` |
+| 180 | Update required | gap / sheet — gap | `PageRouter.tsx:53` |
+| 181 | Reset required | bug / proposed — bug | — |
 
 ---
 
@@ -330,14 +333,14 @@ If one of these files changes, the screens beside it may no longer be true.
 | Source | Screens that specify it |
 |---|---|
 | `en.json` | Send · success, other chain · Receive · address copied · Pending notes · empty · Pending notes · claiming · Pending notes · claim failed · Token detail · loading · Claim · partial failure · Pending notes · Guardian · rotate review · Guardian · remove · Settings · reset wallet · Settings · About · Account · rename |
-| `Settings.tsx` | Contacts · manage · Settings · language · Settings · faucet ID · Settings · connected dApps, none · Settings · networks · Settings · reset wallet · Reset wallet · confirm · Settings · About |
+| `AddressBook.tsx` | Contacts · manage · Contacts · new · Contacts · row actions · Contacts · delete confirm · Contacts · new, duplicate · Contacts · manage, empty · Contacts · manage, no results · Contacts · edit |
 | `HistoryView.tsx` | Activity · empty · Activity · loading · Activity · Sent, no matches · Activity · failed transactions · Activity · in progress · Activity · end of list · Transaction detail · pending |
 | `Pending.tsx` | Pending notes · empty · Pending notes · fetch failed · Pending notes · claiming · Pending notes · claim failed · Claim · in progress · Claim · partial failure · Pending notes |
+| `Settings.tsx` | Settings · language · Settings · faucet ID · Settings · connected dApps, none · Settings · networks · Settings · reset wallet · Reset wallet · confirm · Settings · About |
 | `Unlock.tsx` | E5 · Forgot password · Settings · reset wallet · Reset wallet · confirm · Lock · probing hardware · Lock · passcode incorrect · Lock · rate limited · Lock · resume re-auth |
 | `History.tsx` | Activity · loading · Activity · Sent, no matches · Activity · failed transactions · Activity · in progress · Activity · end of list · Transaction detail · pending |
 | `SendManager.tsx` | Send · recipient, typing · Send · recipient, invalid · Send · amount · Send · amount, zero · Send · amount, insufficient · Contacts · pick |
 | `TokenDetail.tsx` | Token detail · price unavailable · Token detail · unpriced · Token detail · loading · Token detail · zero balance · Token detail · unknown token · Activity · in progress |
-| `AddressBook.tsx` | Contacts · manage · Contacts · manage, duplicate · Contacts · manage, empty · Contacts · manage, no results · Contacts · edit |
 | `AddressTab.tsx` | Receive · address copied · Receive · share failed · Receive · request an amount · Receive · loading · Receive |
 | `DappConfirmationModal.tsx` | dApp · switcher · dApp · connect request · dApp · transaction request · dApp · claim note request · dApp · private data request |
 | `Explore.tsx` | Home / Overview · Home · offline · Accounts · list · Settings · currency · Activity · offline |
@@ -388,6 +391,7 @@ If one of these files changes, the screens beside it may no longer be true.
 | `utils/miden.ts` | Send · scan, unreadable · Send · scan, unsupported network |
 | `About.tsx` | Settings · About |
 | `AccountsList.tsx` | Contacts · pick, empty |
+| `address-book.ts` | Contacts · delete confirm |
 | `App.tsx` | Activity · offline |
 | `app/defaults.tsx` | Account · rename |
 | `AssetField.tsx` | Send · amount, max |

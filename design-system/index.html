@@ -1828,6 +1828,35 @@ details.grp>summary .gn{font-family:var(--num);font-feature-settings:var(--num-f
 .mrow.sel,.netrow.sel{background:var(--surface-2);border-radius:var(--radius-md);
   outline:2px solid var(--accent-edge);outline-offset:-2px;border-bottom-color:transparent}
 .mrow.cur{background:var(--surface-2);border-radius:var(--radius-md)}
+/* Swipe-revealed row actions. Destructive work moves off the row and behind a gesture: the list
+   taps to USE a contact, and edit and delete only exist once you have asked for them. This is the
+   answer to the shipped behaviour, where the whole row was the delete trigger with nothing on it
+   saying so (AddressBook.tsx:78) -- and to the trailing x that replaced it, which put an
+   irreversible action under a scanning thumb. */
+.swrow{position:relative;overflow:hidden;border-radius:var(--radius-md)}
+.swrow .swacts{position:absolute;top:0;bottom:0;right:0;display:flex}
+.swrow .swacts button{width:4.625rem;border:0;display:flex;flex-direction:column;align-items:center;
+  justify-content:center;gap:0.1875rem;font-family:var(--ui);font-size:var(--t-caption);
+  font-weight:700;cursor:pointer}
+.swrow .swacts .svgic{width:1.0625rem;height:1.0625rem}
+.swrow .swacts .ed{background:var(--surface-3);color:var(--ink)}
+.swrow .swacts .del{background:var(--neg);color:var(--on-neg)}
+.swrow>.mrow{position:relative;transform:translateX(-9.25rem);background:var(--surface);
+  border-radius:var(--radius-md)}
+/* Native alert. Deliberately NOT a bottom sheet: a sheet is a place you go, an alert is a question
+   you answer, and every other sheet in this system is dismissible by dragging -- which is the one
+   thing an irreversible confirmation must not be. The hairlines between actions are the platform
+   pattern and are dividers, not outlines, so the no-bordered-controls rule does not reach them. */
+.sysdlg{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:16.5rem;
+  background:var(--surface);border-radius:var(--radius-lg);box-shadow:var(--shadow-2);
+  overflow:hidden;text-align:center}
+.sysdlg .sdt{font-family:var(--display);font-weight:800;font-size:var(--t-body);padding:1.125rem 1.125rem 0.3125rem}
+.sysdlg .sdb{font-size:var(--t-label);color:var(--ink-2);padding:0 1.125rem 1rem;line-height:1.4}
+.sysdlg .sda{display:flex;border-top:1px solid var(--rule)}
+.sysdlg .sda button{flex:1;min-height:44px;border:0;background:none;font-family:var(--ui);
+  font-size:var(--t-label);cursor:pointer;color:var(--ink);font-weight:600}
+.sysdlg .sda button+button{border-left:1px solid var(--rule)}
+.sysdlg .sda .dg{color:var(--neg);font-weight:800}
 [data-theme="dark"] .mrow.cur{background:var(--surface-3)}
 [data-theme="dark"] .mrow.sel,[data-theme="dark"] .netrow.sel{background:var(--surface-3)}
 /* Section label inside a sheet, e.g. "Current Contacts". */
@@ -4886,7 +4915,7 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
               <div class="mrow"><div class="ic" style="background:var(--tx-swap)"></div><div><div class="nm">Savings</div><div class="ad addr">Private &middot; mtst1zz9&hellip;41mn</div></div></div>
               <div class="mrow"><div class="ic" style="background:var(--tx-earn)"></div><div><div class="nm">Guardian vault</div><div class="ad addr">Guardian &middot; public &middot; mtst1gv4&hellip;07qd</div></div></div>
               <div class="mrow tap cur" aria-current="true"><div class="ic" style="background:var(--tx-sent)"><span class="ini">W</span></div><div><div class="nm">Wiktor</div><div class="ad addr">mtst1ap8&hellip;r4fp</div></div></div>
-              <div class="mrow tap"><div class="ic" style="background:var(--tx-sent)"><span class="ini">D</span></div><div><div class="nm">Dominik</div><div class="ad addr">0x4E1a2b&hellip;7c90</div></div><span class="fam"><span class="nlg" style="background:#0052FF"></span>Base</span></div>
+              <div class="mrow tap"><div class="ic" style="background:var(--tx-sent)"><span class="ini">D</span></div><div><div class="nm">Dominik</div><div class="ad addr">0x4E1a2b&hellip;7c90</div></div>Base</span></div>
             </div>
           </div>
         </div></div></div>
@@ -4926,20 +4955,65 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
             <div class="mshandle"></div>
             <div class="mshead">Contacts</div>
             <div class="mlist" style="flex:1">
-              <div class="shlab hi">Add contact</div>
-              <div class="fld"><label>Name</label><input class="inp" value="" placeholder="Enter username"></div>
-              <div class="fld"><label>Address</label><input class="inp" value="" placeholder="Enter Address"></div>
-              <button class="btn btn-primary" style="width:100%;margin-top:0.25rem" disabled>Add Contact</button>
-              <div class="shdiv" style="margin:1rem 0 0.875rem"></div>
-              <div class="shlab">Current Contacts</div>
+                            <div class="shlab">Current Contacts</div>
               <div class="searchf" style="width:auto"><span class="svgic" style="--ic:url(assets/icons/search.svg)" aria-hidden="true"></span>Search</div>
               <div class="mrow tap"><div class="ic" style="background:var(--tx-sent)"><span class="ini">W</span></div><div><div class="nm">Wiktor</div><div class="ad addr">mtst1ap8&hellip;r4fp</div></div></div>
-              <div class="mrow tap"><div class="ic" style="background:var(--tx-sent)"><span class="ini">D</span></div><div><div class="nm">Dominik</div><div class="ad addr">0x4E1a2b&hellip;7c90</div></div><span class="fam"><span class="nlg" style="background:#0052FF"></span>Base</span></div>
+              <div class="mrow tap"><div class="ic" style="background:var(--tx-sent)"><span class="ini">D</span></div><div><div class="nm">Dominik</div><div class="ad addr">0x4E1a2b&hellip;7c90</div></div>Base</span></div>
             </div>
           </div>
         </div></div></div>
-        <div class="scrnote">The settings address book, mounted as a drawer rather than a page (<code>Settings.tsx:420&ndash;431</code>) &mdash; so <code>/settings/address-book</code> is routable but renders the plain settings menu, because <code>activeTab</code> filters drawer tabs out (<code>Settings.tsx:303</code>). The create form sits always-expanded above the list rather than behind an add button. Two defects the mock cannot show: <b>tapping a contact row deletes it</b> &mdash; the whole row is the delete trigger, with no trash icon, swipe or menu (<code>AddressBook.tsx:77&ndash;78</code>) &mdash; though a <code>confirm()</code> dialog does guard it (<code>AddressBook.tsx:23&ndash;37</code>), so the defect is the <em>affordance</em>, not a missing guard: nothing on the row says it is destructive until the dialog appears, and there is no way to <i>use</i> a contact from here at all; and <b>there is no edit</b>, since no <code>editContact</code> mutation exists, so fixing a typo means delete and retype. Submitting also leaves the sheet open with no toast: <code>onClose</code> is passed by Settings but <code>AddressBook</code> declares no props and silently drops it. <b>Two changes, 2026-07-27.</b> <b>Rows show the network, not the custody label.</b> &ldquo;External&rdquo; says where a contact came from; the network says whether the send will arrive, and it is the fact the send flow now detects per address and shows on every Recent row. Own-wallet rows keep <code>Public</code>&thinsp;/&thinsp;<code>Private</code>, which is a real Miden account type rather than a provenance label. <b>Nothing in the list deletes.</b> The row taps to <em>edit</em> and Remove lives on the edit screen behind that step. A trailing &times; put an irreversible action in a list people scan, one thumb-width from the row it belongs to; the shipped alternative is worse, binding delete to the entire row (<code>AddressBook.tsx:78</code>) with nothing on it saying so &mdash; the <code>confirm()</code> guards the data but not the surprise. <b>Blocked on a schema field:</b> <code>WalletContact</code> gained an optional <code>network</code> (<code>shared/types.ts</code>) because a bare <code>0x&hellip;</code> is valid on every EVM chain at once, so the chain is a choice that has to be stored rather than re-derived. Until the write path sets it, the chips on these rows are derived from the address format and an EVM contact cannot show which chain it is for.</div></div>
-          <div><div class="scrcap"><i></i>Contacts &middot; manage, duplicate <span class="tag merge">sheet</span></div>
+        <div class="scrnote"><b>A list, not a list with a form bolted above it.</b> The shipped drawer keeps an always-expanded <i>Add contact</i> form at the top (<code>AddressBook.tsx:97&ndash;176</code>), so two fields and a button hold the first third of the sheet on every visit and the list you came for starts below the fold. Adding moved to <b>Contacts &middot; new</b>, reached from the <b>add</b> control in the header &mdash; the same slot on both the pick and manage sheets, so one gesture means one thing wherever you are. <b>Editing and deleting moved behind a swipe</b> (<b>Contacts &middot; row actions</b>); the row itself taps to use the contact. That removes the last destructive control from a list people scan. <b>No network chip.</b> A contact is someone you have named, and the row already shows the address, which is what says where it lives &mdash; a second chip repeating it is the same fact twice. <b>Still blocked:</b> there is no edit mutation anywhere &mdash; <code>address-book.ts</code> exports only <code>addContact</code>, <code>removeContact</code> and <code>getContact</code> &mdash; and no swipe handler exists, so both gestures on these screens are proposals.</div></div>
+      <div><div class="scrcap"><i></i>Contacts &middot; new <span class="tag merge">gap</span></div>
+        <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
+            <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>
+            <div class="mpad" style="flex:1;opacity:.35"><div class="sh2"><span class="bk2">&lsaquo;</span><span class="t2">Contacts</span></div></div>
+            <div class="shscrim"></div>
+            <div class="msheet" style="max-height:76%">
+              <div class="mshandle"></div>
+              <div class="mshead">New contact</div>
+              <div class="fld"><label>Name</label><input class="inp" value="" placeholder="Enter a name"></div>
+              <div class="fld" style="margin-top:0.75rem"><label>Address</label><input class="inp" value="" placeholder="Enter Address"></div>
+              <div class="zone"><button class="btn btn-primary" disabled>Save contact</button></div>
+            </div>
+          </div></div></div>
+        <div class="scrnote"><b>The form is a screen, not a permanent header.</b> The shipped drawer keeps an always-expanded <i>Add contact</i> form above the list (<code>AddressBook.tsx:97&ndash;176</code>), so two fields and a button occupy the top of the sheet on every visit, whether or not you came to add anything &mdash; and the list you did come for starts below the fold. Reached from the <b>add</b> control in the header of <b>Contacts &middot; pick</b>, so saving an address you have just pasted no longer means abandoning the send for Settings. <b>Save is disabled until both fields are filled</b>, matching the shipped guard, and it sits in the action zone rather than inline with the fields &mdash; the same slot every other committing action in the system uses.</div></div>
+      <div><div class="scrcap"><i></i>Contacts &middot; row actions <span class="tag merge">gap</span></div>
+        <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
+            <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>
+            <div class="mpad" style="flex:1;opacity:.35"><div class="sh2"><span class="bk2">&lsaquo;</span><span class="t2">Contacts</span></div></div>
+            <div class="shscrim"></div>
+            <div class="msheet" style="max-height:76%">
+              <div class="mshandle"></div>
+              <div class="mshead">Contacts</div>
+              <div class="mlist" style="flex:1">
+                <div class="mrow"><div class="ic" style="background:var(--tx-swap)"></div><div><div class="nm">Savings</div><div class="ad addr">private &middot; mtst1zz9&hellip;41mn</div></div></div>
+                <div class="swrow">
+                  <div class="swacts"><button class="ed"><span aria-hidden="true" style="font-size:var(--t-body)">&#9998;</span>Edit</button><button class="del"><span aria-hidden="true" style="font-size:var(--t-body)">&#10005;</span>Delete</button></div>
+                  <div class="mrow"><div class="ic" style="background:var(--tx-sent)"><span class="ini">W</span></div><div><div class="nm">Wiktor</div><div class="ad addr">mtst1ap8&hellip;r4fp</div></div></div>
+                </div>
+                <div class="mrow"><div class="ic" style="background:var(--tx-sent)"><span class="ini">D</span></div><div><div class="nm">Dominik</div><div class="ad addr">0x4E1a2b&hellip;7c90</div></div></div>
+              </div>
+            </div>
+          </div></div></div>
+        <div class="scrnote"><b>Destructive work lives behind a gesture, not on the row.</b> The list taps to <em>use</em> a contact; edit and delete exist only once you have asked for them by swiping. That answers both previous versions: the shipped screen makes the <b>whole row</b> the delete trigger with nothing on it saying so (<code>AddressBook.tsx:78</code> &mdash; a <code>confirm()</code> guards the data but not the surprise), and the trailing &times; that replaced it put an irreversible action under a scanning thumb. <b>Edit is the neutral surface, delete is the only red thing on the screen</b>, so the pair cannot be mistaken for each other at speed. Both are 74pt wide against a 44pt floor, because a swipe lands less precisely than a tap. <b>Nothing in the app does this today:</b> there is no swipe handler in <code>AddressBook.tsx</code> and no edit mutation at all &mdash; <code>address-book.ts</code> exports only <code>addContact</code>, <code>removeContact</code> and <code>getContact</code>.</div></div>
+      <div><div class="scrcap"><i></i>Contacts &middot; delete confirm <span class="tag merge">gap</span></div>
+        <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
+            <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>
+            <div class="mpad" style="flex:1;opacity:.35"><div class="sh2"><span class="bk2">&lsaquo;</span><span class="t2">Contacts</span></div></div>
+            <div class="shscrim"></div>
+            <div class="msheet" style="max-height:76%;opacity:.5">
+              <div class="mshandle"></div>
+              <div class="mshead">Contacts</div>
+            </div>
+            <div class="shscrim" style="background:rgba(0,0,0,.42)"></div>
+            <div class="sysdlg">
+              <div class="sdt">Delete Wiktor?</div>
+              <div class="sdb">This removes the contact from this device. It does not affect anything you have already sent.</div>
+              <div class="sda"><button>Cancel</button><button class="dg">Delete</button></div>
+            </div>
+          </div></div></div>
+        <div class="scrnote"><b>A platform alert, not a sheet.</b> Every other sheet in this system is dismissible by dragging, which is the one thing an irreversible confirmation must not be &mdash; so this is the centred alert the OS provides, and the shipped code already calls for it: <code>useConfirm</code> with <code>actionConfirmation</code> and <code>deleteContactConfirm</code> (<code>AddressBook.tsx:23&ndash;37</code>). What it adds is <b>the name in the question</b>. The shipped copy asks a generic &ldquo;are you sure&rdquo;, which is unanswerable on a list where two contacts can share a name &mdash; <code>address-book.ts:15</code> guards duplicate <em>addresses</em> and not duplicate names. <b>The second sentence exists to stop the wrong worry.</b> Deleting a contact is a local bookkeeping change and users read any red confirmation in a wallet as being about money, so the screen says what is <em>not</em> at stake. Destructive action on the right and in <code>--neg</code>; Cancel takes the default position and no colour.</div></div>
+          <div><div class="scrcap"><i></i>Contacts &middot; new, duplicate <span class="tag merge">sheet</span></div>
         <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
           <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>
           <div class="mpad" style="flex:1;display:flex;flex-direction:column">
@@ -5013,12 +5087,12 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
           <div class="shscrim"></div>
           <div class="msheet" style="max-height:76%">
             <div class="mshandle"></div>
-            <div class="mshead">Edit Contact</div>
+            <div class="mshead">Edit contact</div>
             <div class="fld"><label>Name</label><input class="inp" value="Wiktor"></div>
             <div class="fld" style="margin-top:0.75rem"><label>Address</label><input class="inp" value="mtst1ap8qz&hellip;r4fp" disabled><div class="hint">The address identifies this contact and cannot be changed. Delete and re-add to move it.</div></div>
             <div class="shdiv"></div>
             <div class="mrow"><div class="ic" style="background:var(--tx-sent)"><span class="ini">W</span></div><div style="flex:1;min-width:0"><div class="nm">Wiktor</div><div class="ad addr">mtst1ap8&hellip;r4fp</div></div></div>
-            <div class="zone"><button class="btn btn-primary" style="width:100%">Save changes</button><button class="btn btn-danger" style="width:100%;margin-top:0.625rem">Remove contact</button><div class="gh">Delete contact</div></div>
+            <div class="zone"><button class="btn btn-primary" style="width:100%">Confirm</button></div>
           </div>
         </div></div></div>
         <div class="scrnote"><b>GAP &mdash; no edit mutation exists.</b> <code>address-book.ts</code> exports <code>addContact</code> (<code>:13</code>) and <code>removeContact</code> (<code>:25</code>) and nothing else, so correcting one letter of a name today means deleting the contact and retyping a 49-character bech32 address from memory. The address is the primary key that <code>removeContact</code> filters on, so it is shown read-only and the row says why, rather than being silently absent. This screen also gives the delete a <b>named, deliberate affordance</b>, which the shipped list does not have: <code>AddressBook.tsx:78</code> binds <code>onClick</code> of the whole <code>CardItem</code> to <code>handleRemoveContactClick</code>, so the entire row <i>is</i> the delete button &mdash; no trash icon, no swipe, no menu, and no hint that tapping a contact destroys it. Note the shipped list also has no way to <i>use</i> a contact: tapping cannot start a send. The live preview row is here because both the send-flow picker and the settings list render name-over-address, and a rename changes what the user will see there.</div></div>
