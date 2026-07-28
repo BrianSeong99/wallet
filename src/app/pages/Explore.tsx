@@ -184,7 +184,13 @@ const HomeOverview: FC<HomeOverviewProps> = ({ address, tokenPrices, tokens, acc
         <span className="font-heading text-heading font-extrabold text-ink">{t('assets')}</span>
       </div>
 
-      <div className="flex flex-col">
+      {/* `.mrow + .mrow` — consecutive rows sit --stack-tight apart, NOT flush.
+          The design system reaches that number by letting the rows inherit
+          `.mpad`'s --stack gap and subtracting back down to tight; this list is
+          its own flex column, so it states the tight tier directly. It was 0
+          here, which put two 15px/11px text blocks 24px apart with nothing but
+          their own padding between them and made the whole list read cramped. */}
+      <div className="flex flex-col gap-stack-tight">
         {tokens.map(asset => (
           <AssetRow
             key={asset.tokenId}
