@@ -1578,7 +1578,14 @@ ul.tick li:before{content:"→";position:absolute;left:0.125rem;color:var(--acce
 .amtcell .caret{width:.05em;height:.72em;margin-left:.09em;flex:none;
   border-radius:var(--radius-full);background:var(--accent)}
 .amtrow .tokchip{flex:none;align-self:center}
-.amtrow[data-len="s"] .amtcell{font-size:var(--t-display)}   /* tier 1, <= 4 characters */
+/* Four tiers now that --fit-* exists. Two made 63 and 64 read as different screens: identical
+   geometry, but 0 sat at 72 and 100.00 dropped straight to 32 -- two thirds of its size on the
+   first digit typed, with nothing in between. Boundaries measured at 360, the narrowest shipping
+   width, so one assignment survives 320-430. */
+.amtcell{font-size:var(--fit-4)}                              /* 11-20 chars, wraps to two lines */
+.amtrow[data-len="s"]  .amtcell{font-size:var(--fit-1)}       /* <= 4  */
+.amtrow[data-len="m"]  .amtcell{font-size:var(--fit-2)}       /* <= 6  */
+.amtrow[data-len="l"]  .amtcell{font-size:var(--fit-3)}       /* <= 7  */
 /* Tier 3. Two lines of the SAME step, not a smaller step -- the figure never goes below
    the Home balance size. Not drawn in this set: none of the four states reaches 11
    characters, and no realistic balance does either, so it exists for the 16 the field
@@ -1590,7 +1597,7 @@ ul.tick li:before{content:"→";position:absolute;left:0.125rem;color:var(--acce
 .amtsub{display:flex;align-items:center;gap:0.375rem;min-height:1.25rem;margin-top:0.375rem;
   font-size:var(--t-label);color:var(--ink-2)}
 .amtsub.err{color:var(--neg)}
-.amtblk .availrow{margin-top:0.75rem;padding:0.3125rem 0.5rem 0.3125rem 0.8125rem}
+.amtblk .availrow{margin-top:0.625rem;padding:0.3125rem 0.5rem 0.3125rem 0.8125rem}
 /* The pad IS the field, so the commit belongs under the pad. Sitting between the figure
    and the pad it read as committing the number rather than the send. The column's slack
    falls ABOVE the pad, so header/recipient/amount hold their Y from the top and pad+CTA
@@ -2042,6 +2049,11 @@ ul.tick li:before{content:"→";position:absolute;left:0.125rem;color:var(--acce
 .stbox .st{font-family:var(--display);font-weight:800;font-size:var(--t-body)}
 .stbox .ss{font-size:var(--t-label);color:var(--ink-2);margin-top:0.3125rem;line-height:1.4}
 .pad{display:grid;grid-template-columns:repeat(3,76px);justify-content:center;gap:0.875rem 1.625rem;margin-inline:auto}
+/* The pad sat 8pt from Confirm and 35pt from the figure -- the wrong way round, since an
+   accidental Confirm costs money and an accidental digit does not. Only margin-BOTTOM here:
+   .pad.pinned uses margin-top:auto to push itself down, and setting margin-top overrode that,
+   which detached the whole stack from the bottom and drove Confirm into the safe area. */
+.amtblk + .pad{margin-bottom:1.25rem}
 /* keypad as the last element must clear the home indicator itself */
 .pad.pinned{margin-top:auto;padding-bottom:max(1rem,var(--safe-bottom,0))}
 /* EXTENSION POPUP — 360x600, the hardest viewport. No notch, no home indicator,
@@ -4422,7 +4434,7 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
             <div class="sh2" style="padding-bottom:0.25rem"><span class="bk2">&lsaquo;</span><span class="t2">Send</span></div>
             <div class="recip rto"><div class="rmain" role="button" tabindex="0" aria-label="To mtst1ap8&hellip;r4fp. Edit recipient"><span class="rav"></span><span class="rtx"><span class="rlab">To</span><span class="raddr">mtst1ap8&hellip;r4fp</span></span></div><span class="fam"><span class="nlg" style="background:var(--paper)"><img src="assets/icons/miden.svg" alt=""></span>Miden</span></div>
             <div class="amtblk">
-              <div class="amtrow">
+              <div class="amtrow" data-len="m">
                 <span class="amtcell"><span class="amt" role="textbox" aria-label="Amount 100.00 USDC">100.00</span><span class="caret" aria-hidden="true"></span></span>
                 <button class="tokchip" aria-label="USDC. Change token"><span class="tkwell" style="--tok:#2775CA;width:1.375rem;height:1.375rem"><span class="svgic" style="--ic:url(assets/icons/usdc.svg);width:0.875rem;height:0.875rem" aria-hidden="true"></span></span>USDC<span class="cv">&#9662;</span></button>
               </div>
@@ -4460,7 +4472,7 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
             <div class="sh2" style="padding-bottom:0.25rem"><span class="bk2">&lsaquo;</span><span class="t2">Send</span></div>
             <div class="recip rto"><div class="rmain" role="button" tabindex="0" aria-label="To mtst1ap8&hellip;r4fp. Edit recipient"><span class="rav"></span><span class="rtx"><span class="rlab">To</span><span class="raddr">mtst1ap8&hellip;r4fp</span></span></div><span class="fam"><span class="nlg" style="background:var(--paper)"><img src="assets/icons/miden.svg" alt=""></span>Miden</span></div>
             <div class="amtblk">
-              <div class="amtrow">
+              <div class="amtrow" data-len="m">
                 <span class="amtcell"><span class="amt" role="textbox" aria-invalid="true" aria-describedby="sa-err" aria-label="Amount 500.00 USDC" style="color:var(--neg)">500.00</span><span class="caret" aria-hidden="true"></span></span>
                 <button class="tokchip" aria-label="USDC. Change token"><span class="tkwell" style="--tok:#2775CA;width:1.375rem;height:1.375rem"><span class="svgic" style="--ic:url(assets/icons/usdc.svg);width:0.875rem;height:0.875rem" aria-hidden="true"></span></span>USDC<span class="cv">&#9662;</span></button>
               </div>
@@ -4479,7 +4491,7 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
             <div class="sh2" style="padding-bottom:0.25rem"><span class="bk2">&lsaquo;</span><span class="t2">Send</span></div>
             <div class="recip rto"><div class="rmain" role="button" tabindex="0" aria-label="To mtst1ap8&hellip;r4fp. Edit recipient"><span class="rav"></span><span class="rtx"><span class="rlab">To</span><span class="raddr">mtst1ap8&hellip;r4fp</span></span></div><span class="fam"><span class="nlg" style="background:var(--paper)"><img src="assets/icons/miden.svg" alt=""></span>Miden</span></div>
             <div class="amtblk">
-              <div class="amtrow">
+              <div class="amtrow" data-len="m">
                 <span class="amtcell"><span class="amt" role="textbox" aria-label="Amount 200.00 USDC">200.00</span><span class="caret" aria-hidden="true"></span></span>
                 <button class="tokchip" aria-label="USDC. Change token"><span class="tkwell" style="--tok:#2775CA;width:1.375rem;height:1.375rem"><span class="svgic" style="--ic:url(assets/icons/usdc.svg);width:0.875rem;height:0.875rem" aria-hidden="true"></span></span>USDC<span class="cv">&#9662;</span></button>
               </div>
