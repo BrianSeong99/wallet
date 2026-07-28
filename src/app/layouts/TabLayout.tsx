@@ -1,14 +1,14 @@
 import React, { FC, useEffect, useRef } from 'react';
 
 import classNames from 'clsx';
-import { motion } from 'framer-motion';
+import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 
 import { useAppEnv } from 'app/env';
 import { useHasUnclaimedNotes } from 'app/hooks/useHasUnclaimedNotes';
 import { Icon, IconName } from 'app/icons/v2';
 import HomeSwipeContainer from 'app/layouts/HomeSwipeContainer';
 import { BottomNav, SegmentedActionBar } from 'components/ui';
-import { springs } from 'lib/animation';
+import { iosPush, pushVariants } from 'lib/animation';
 import { isEarnEnabled, isSwapEnabled } from 'lib/feature-flags';
 import { hapticSelection } from 'lib/mobile/haptics';
 import { isReturningFromWebview } from 'lib/mobile/webview-state';
@@ -58,6 +58,7 @@ function activeActionFromPath(pathname: string): string {
 
 const TabLayout: FC<PropsWithChildren> = ({ children }) => {
   const { fullPage, sidePanel } = useAppEnv();
+  const reduceMotion = useReducedMotion();
   const { pathname } = useLocation();
   const hasUnclaimedNotes = useHasUnclaimedNotes();
   const prevPathnameRef = useRef<string | null>(null);
@@ -195,7 +196,12 @@ const TabLayout: FC<PropsWithChildren> = ({ children }) => {
       {/* Top action bar — sits outside the animated content tree so it
           stays fixed across intra-home-group navigations. */}
       {showActionBar && (
-        <div className="shrink-0 relative z-10">
+        // `px-4` is the gutter the bar was missing entirely: it ran edge to
+        // edge, touching both screen bezels, where the design system insets it
+        // 16px from the frame (`.mpad` is `8px 16px 0`). The gutter belongs to
+        // this container rather than to SegmentedActionBar, so the bar stays a
+        // component with no opinion about its own outer spacing.
+        <div className="shrink-0 relative z-10 px-4 pt-2">
           <SegmentedActionBar items={actionItems} activeId={activeAction} onChange={handleActionChange} />
         </div>
       )}
@@ -208,19 +214,39 @@ const TabLayout: FC<PropsWithChildren> = ({ children }) => {
           framer. The motion.div is keyed by group so the carousel doesn't
           remount when only the centered page changes. */}
       <div className="flex-1 min-h-0 relative">
-        <motion.div
-          key={showActionBar ? 'home-group' : pathname}
-          // flex column so non-home children (AllHistory, Browser) that use
-          // `flex-1 min-h-0 overflow-y-auto` for their scroll region can
-          // actually claim the remaining height. Without this their list
-          // collapses to 0 and transactions appear missing.
-          className="absolute inset-0 overflow-hidden flex flex-col"
-          initial={skipSlideIn ? false : { x: '8%', opacity: 0.5 }}
-          animate={{ x: 0, opacity: 1 }}
-          transition={springs.standard}
-        >
-          {showActionBar ? <HomeSwipeContainer /> : children}
-        </motion.div>
+        {/* Apple's iOS parallax push, the design system's single page
+            transition — the same one onboarding uses, so a nav-bar change and
+            an onboarding step now move identically.
+
+            What was here was a bare spring on `x: 8%` with NO exit animation:
+            the outgoing page unmounted instantly while the incoming one sprang
+            in from 8%. With only one layer ever on stage there is no parallax,
+            and because `springs.standard` overshoots, the incoming page settled
+            with a small wobble against a background that had already changed —
+            which is the subtle movement that reads as a glitch rather than as
+            a transition.
+
+            `AnimatePresence` in its default (sync) mode is what puts both pages
+            on stage at once; `mode="wait"` would serialise them and `popLayout`
+            would strip `flex-1` off the exiting one. Both layers are already
+            `absolute inset-0`, so they overlap at full size. */}
+        <AnimatePresence initial={false}>
+          <motion.div
+            key={showActionBar ? 'home-group' : pathname}
+            // flex column so non-home children (AllHistory, Browser) that use
+            // `flex-1 min-h-0 overflow-y-auto` for their scroll region can
+            // actually claim the remaining height. Without this their list
+            // collapses to 0 and transactions appear missing.
+            className="absolute inset-0 overflow-hidden flex flex-col"
+            initial={skipSlideIn ? false : 'initialState'}
+            animate="animateState"
+            exit="exitState"
+            variants={pushVariants({ direction: 'forward', reduceMotion })}
+            transition={iosPush}
+          >
+            {showActionBar ? <HomeSwipeContainer /> : children}
+          </motion.div>
+        </AnimatePresence>
       </div>
 
       {/* Floating bottom nav — overlays content. The data attribute lets

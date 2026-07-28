@@ -54,7 +54,11 @@ jest.mock('app/hooks/useHasUnclaimedNotes', () => ({
 
 // `springs` is animation config only; the value is irrelevant to behaviour.
 jest.mock('lib/animation', () => ({
-  springs: { standard: { type: 'spring' } }
+  // The page transition is now the design system's iOS parallax push rather
+  // than a bare spring. The variants are exercised properly in
+  // lib/animation/transitions.test.ts; here they only need to exist.
+  iosPush: { duration: 0.54 },
+  pushVariants: () => ({ initialState: {}, animateState: {}, exitState: {} })
 }));
 
 // Icons are SVG re-exports; render nothing but expose the enum keys the layout
@@ -83,8 +87,14 @@ jest.mock('app/layouts/HomeSwipeContainer', () => ({
 // framer-motion's `motion.div` — forward props onto a plain div and surface the
 // `initial` prop (false = slide-in skipped, object = slide-in) for assertions.
 jest.mock('framer-motion', () => ({
+  // `AnimatePresence` is a passthrough: the page transition now overlaps two
+  // layers, but presence orchestration is framer's job, not this suite's.
+  AnimatePresence: ({ children }: any) => <>{children}</>,
+  // Reduced motion is off by default here so the variant path under test is
+  // the animated one.
+  useReducedMotion: () => false,
   motion: {
-    div: React.forwardRef(({ children, initial, animate, transition, ...props }: any, ref: any) => (
+    div: React.forwardRef(({ children, initial, animate, exit, variants, transition, ...props }: any, ref: any) => (
       <div ref={ref} data-testid="motion-div" data-initial={JSON.stringify(initial)} {...props}>
         {children}
       </div>
@@ -397,7 +407,7 @@ describe('TabLayout — slide-in animation (skipSlideIn)', () => {
   it('slides the incoming page in by default (first render, non-home target)', () => {
     mockLocation.pathname = '/history';
     renderLayout();
-    expect(initialOf()).toBe(JSON.stringify({ x: '8%', opacity: 0.5 }));
+    expect(initialOf()).toBe(JSON.stringify('initialState'));
   });
 
   it('skips the slide-in on the extension', () => {
@@ -420,7 +430,7 @@ describe('TabLayout — slide-in animation (skipSlideIn)', () => {
     mockReturning.value = false;
     mockLocation.pathname = '/history';
     renderLayout();
-    expect(initialOf()).toBe(JSON.stringify({ x: '8%', opacity: 0.5 }));
+    expect(initialOf()).toBe(JSON.stringify('initialState'));
   });
 
   it('skips the slide-in for intra-home-group navigations (prev + next both home-group)', () => {
@@ -438,7 +448,7 @@ describe('TabLayout — slide-in animation (skipSlideIn)', () => {
     const { rerender } = renderLayout();
     mockLocation.pathname = '/send';
     rerender(<TabLayout>{<div data-testid="child-content" />}</TabLayout>);
-    expect(initialOf()).toBe(JSON.stringify({ x: '8%', opacity: 0.5 }));
+    expect(initialOf()).toBe(JSON.stringify('initialState'));
   });
 
   it('slides in when navigating from a home-group route out to a non-home route', () => {
@@ -446,7 +456,7 @@ describe('TabLayout — slide-in animation (skipSlideIn)', () => {
     const { rerender } = renderLayout();
     mockLocation.pathname = '/history';
     rerender(<TabLayout>{<div data-testid="child-content" />}</TabLayout>);
-    expect(initialOf()).toBe(JSON.stringify({ x: '8%', opacity: 0.5 }));
+    expect(initialOf()).toBe(JSON.stringify('initialState'));
   });
 });
 
