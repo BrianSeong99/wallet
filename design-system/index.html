@@ -2286,7 +2286,12 @@ pre.code code{background:none;padding:0;font-family:var(--mono);font-size:var(--
 .dots{display:flex;gap:0.6875rem;justify-content:center;margin-bottom:0.875rem}
 .dots i{width:0.75rem;height:0.75rem;border-radius:50%;background:var(--surface-3);display:block;transition:background var(--dur-base) ease,transform var(--dur-base) var(--ease-spatial)}
 .dots i.f{background:var(--accent);transform:scale(1.12)}
-.addrbox{background:var(--surface-2);border-radius:var(--radius-md);padding:0.8125rem 0.9375rem;width:310px;display:flex;align-items:center;gap:0.625rem}
+/* Authored as a div, now a button, so it has to reset what a button brings with it: a UA
+   `color: buttontext` that does not follow the theme, a border, and a centred inherited font.
+   Left as-is it rendered the address black on the dark surface at 1.48:1 -- the div→button trap,
+   caught by the contrast sweep. Nothing about the look changes; the element just stops lying
+   about being text. */
+.addrbox{background:var(--surface-2);border-radius:var(--radius-md);padding:0.8125rem 0.9375rem;width:310px;display:flex;align-items:center;gap:0.625rem;border:0;color:var(--ink);font:inherit;text-align:left;min-height:44px;cursor:pointer}
 .addrbox .a{font-family:var(--mono);font-size:var(--t-label);flex:1}
 .pbar{height:0.4375rem;border-radius:var(--radius-full);background:var(--surface-3);overflow:hidden;width:270px}
 .pbar i{display:block;height:100%;background:var(--accent);border-radius:var(--radius-full);transition:width var(--dur-spatial) var(--ease-spatial)}
@@ -4002,7 +4007,7 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
       </details>
     </details>
         <details class="flow" open>
-          <summary><h2 class="h">Home &amp; overview</h2><span class="fn">14</span></summary>
+          <summary><h2 class="h">Home &amp; overview</h2><span class="fn">15</span></summary>
     <p class="sub">The resting state, and everything reached from the balance card. The card <em>is</em> the account: tapping it opens the list, and the list reaches one account's own sheet.</p>
                 <details class="grp"><summary><span class="gt">Overview</span><span class="gn">4</span></summary>
             <div class="scrgrid">
@@ -4276,7 +4281,7 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
         <div class="scrnote"><b>The missing link.</b> I specified &ldquo;tap the card to switch, <code>&ctdot;</code> for options&rdquo; and then wired <em>neither</em>, so the Accounts list had no entry point at all &mdash; a real gap. The chain is now: balance-card <code>&ctdot;</code> &rarr; <b>Accounts list</b> (choose) &rarr; per-row <code>&ctdot;</code> &rarr; <b>this sheet</b> (manage one account). Renaming lives here rather than in the list, per the rule that the list answers &ldquo;which account&rdquo; and a rename affordance would fight the selection gesture. The card colour also belongs here, not in the list, because colour is <em>per-account identity</em> &mdash; today it is a single global <code>localStorage</code> value, which is exactly why it currently reads as decoration. The card preview carries no pattern, so the swatch row is the only thing asserting identity while you are choosing it.</div></div>
             </div>
           </details>
-          <details class="grp"><summary><span class="gt">Token detail</span><span class="gn">3</span></summary>
+          <details class="grp"><summary><span class="gt">Token detail</span><span class="gn">4</span></summary>
             <div class="scrgrid">
               <div><div class="scrcap"><i></i>Token detail &middot; price unavailable</div>
         <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
@@ -4304,7 +4309,33 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
           </div>
         </div></div></div>
         <div class="scrnote"><b>Not a void &mdash; a fabrication. This note previously said the chart &ldquo;renders nothing&rdquo;; that was wrong.</b> <code>fetchKlineData</code> returns <code>[]</code> both for a symbol Binance does not list <em>and</em> for a network error (<code>binance.ts:128&ndash;129</code>, <code>:151&ndash;159</code>), and <code>TokenDetail.tsx:137</code> swaps an empty series for <code>FLAT_LINE_DATA</code> &mdash; ten points of constant 1 (<code>:30</code>). Meanwhile <code>getTokenPrice</code> falls through to <code>DEFAULT_PRICE = { price: 1, change24h: 0 }</code> (<code>binance.ts:21</code>, <code>:84&ndash;86</code>). So the shipped screen draws a <em>clean flat chart</em> under <code>$1.000</code> and a green <code>+0.0&percnt;</code> badge, for a token whose price is unknown. Every token on a testnet takes this path, so it is the common case. An unknown price is not a price of one, and a flat line is not the same claim as no line: the first says the value held steady, the second says we do not know. The section states which.</div></div>
-              <div><div class="scrcap"><i></i>Token detail &middot; unpriced <span class="tag retire">fork</span></div>
+              <div><div class="scrcap"><i></i>Token detail &middot; loading <span class="tag retire">bug</span></div>
+        <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
+          <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>
+          <div class="mpad" style="flex:1;display:flex;flex-direction:column;overflow:hidden">
+            <div class="sh2"><span class="bk2">&lsaquo;</span><span class="t2" style="font-family:var(--mono);font-size:var(--t-label)">mtst1qq9&hellip;4f2p</span></div>
+            <div class="tkhero">
+              <div class="skel2" style="width:2.75rem;height:2.75rem;border-radius:50%;margin:0"></div>
+              <div class="skel" style="width:48%;height:2.25rem"></div>
+              <div class="skel2" style="width:24%;margin-top:0"></div>
+            </div>
+            <div class="tkacts">
+              <button class="tkact" style="background:var(--surface-2);color:var(--ink-3)" disabled>Send</button>
+              <button class="tkact" style="background:var(--act-receive-deep)"><span class="svgic" style="--ic:url(assets/icons/receive-new.svg)" aria-hidden="true"></span>Receive</button>
+            </div>
+            <span class="seclab">Price</span>
+            <div style="height:5.5rem;display:flex;align-items:center;justify-content:center;background:var(--surface-2);border-radius:var(--radius-md)">
+              <span style="font-size:var(--t-label);color:var(--ink-2)">Loading price&hellip;</span>
+            </div>
+            <span class="seclab">Token info</span>
+            <div class="dmeta">
+              <div class="drow"><span class="k">Contract</span><span class="v mono">mtst1qq9&hellip;4f2p</span></div>
+              <div class="drow"><span class="k">Network</span><span class="v">Miden Testnet</span></div>
+            </div>
+          </div>
+        </div></div></div>
+        <div class="scrnote"><b>The same swallowed-loading bug as Pending, on a screen that shows a number.</b> <code>TokenDetail.tsx:48</code> destructures only <code>{ data: balances }</code> from <code>useAllBalances</code>, discarding the <code>isLoading</code> the hook returns (<code>balance.ts:173&ndash;179</code>, true until the first fetch lands per <code>:66&ndash;69</code>). On a cold open <code>balancesMap[address]</code> is undefined, so <code>buildDefaultZeroBalance()</code> supplies either <code>[]</code> or one MIDEN row holding <code>balance: 0</code> (<code>balance.ts:31&ndash;44</code>). The consequences run straight through the render: <code>token</code> is undefined &rarr; <code>metadata</code> is undefined &rarr; <code>symbol = t(&lsquo;unknown&rsquo;)</code> = &ldquo;Unknown&rdquo; (<code>TokenDetail.tsx:51&ndash;53</code>, <code>en.json:519</code>), which becomes the <b>header title</b> (<code>:69</code>) and the <code>TokenLogo</code> lookup key; <code>balance</code> falls back to <code>0</code> (<code>:54</code>) and renders <code>0.00</code> / <code>$0.00</code> (<code>:77&ndash;82</code>). <b>Opening a token you hold shows you a token called Unknown with a zero balance</b>, indistinguishable from an empty holding and from a bad token id, for as long as the read takes. Skeletons occupy the exact geometry the values will land in; the header falls back to the route&rsquo;s own <code>tokenId</code>, which is known with certainty, rather than to a word that is a lie. Send is held: the amount screen cannot price a balance nobody has read yet.</div></div>
+      <div><div class="scrcap"><i></i>Token detail &middot; unpriced <span class="tag retire">fork</span></div>
         <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
           <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>
           <div class="mpad" style="flex:1;display:flex;flex-direction:column;overflow:hidden">
@@ -4898,7 +4929,7 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
       </details>
     </details>
     <details class="flow" open>
-      <summary><h2 class="h">Contacts</h2><span class="fn">7</span></summary>
+      <summary><h2 class="h">Contacts</h2><span class="fn">8</span></summary>
     <p class="sub"><b>One sheet, one list, one set of gestures.</b> Everything happens here: the header adds, a row taps to use the contact, and a swipe reveals edit and delete. There is no separate manage mode &mdash; the send flow and Settings open the same sheet, because they were only ever the same list with a different title. That is a departure from the app, which has two: <code>AccountsListDrawer</code> for picking, titled <i>Contacts</i>, and an <code>AddressBook</code> drawer for managing, titled <i>Address Book</i> and carrying an always-expanded add form above the list. <b>Nothing in the list is destructive.</b> The shipped screen makes the whole row the delete trigger with nothing on it saying so (<code>AddressBook.tsx:78</code>); here delete is two deliberate steps, a swipe and a named confirmation. <b>Two things block it:</b> <code>address-book.ts</code> exports only <code>addContact</code>, <code>removeContact</code> and <code>getContact</code>, so editing does not exist at all &mdash; fixing a typo today means delete and retype &mdash; and <code>WalletContact</code> gained an optional <code>network</code> field that nothing yet writes, so a saved EVM contact still cannot remember which chain the user chose.</p>
             <details class="grp"><summary><span class="gt">Pick</span><span class="gn">2</span></summary>
         <div class="scrgrid">
@@ -4946,7 +4977,7 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
         <div class="scrnote">Drawn to show a <b>copy bug</b>, not to endorse it. The sheet is titled <code>contacts</code> = &ldquo;Contacts&rdquo; but empties to <code>noOtherAccounts</code> / <code>noOtherAccountsDescription</code> (<code>AccountsList.tsx:46&ndash;47</code>), so a user with no saved <i>contacts</i> is told they have created no <i>accounts</i> &mdash; and is given no way to add one from here. The right copy is a contacts-shaped empty state with an <b>Add contact</b> action; the shipped sheet has neither.</div></div>
         </div>
       </details>
-      <details class="grp"><summary><span class="gt">Manage</span><span class="gn">5</span></summary>
+      <details class="grp"><summary><span class="gt">Add &amp; edit</span><span class="gn">6</span></summary>
         <div class="scrgrid">
           
       <div><div class="scrcap"><i></i>Contacts &middot; new <span class="tag merge">gap</span></div>
@@ -5058,9 +5089,9 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
       </details>
     </details>
   <details class="flow" open>
-    <summary><h2 class="h">Receive flow</h2><span class="fn">13</span></summary>
+    <summary><h2 class="h">Receive flow</h2><span class="fn">4</span></summary>
     <p class="sub">Address, QR and share. Receive is address-only since claimable notes moved to their own screen.</p>
-          <details class="grp"><summary><span class="gt">Receive</span><span class="gn">5</span></summary>
+          <details class="grp"><summary><span class="gt">Receive</span><span class="gn">4</span></summary>
       <div class="scrgrid">
         <div><div class="scrcap"><i></i>Receive &middot; address copied <span class="tag retire">bug</span></div>
         <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
@@ -5076,7 +5107,7 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
             <div style="text-align:center;font-size:var(--t-label);color:var(--ink-2);margin-top:1rem">Your Miden address</div>
             <div class="addrbox" style="width:auto;margin-top:0.5rem"><span class="a">mtst1ap8&hellip;r4fp</span><span style="font-size:var(--t-caption);font-weight:800;color:var(--pos);flex:none">&#10003; Copied</span></div>
             <div class="toastzone show" style="position:relative;height:auto;background:none;overflow:visible;margin-top:auto"><div class="toast" style="position:static">Address copied to clipboard</div></div>
-            <div class="zone" style="margin-top:0"><button class="btn btn-primary">Share address</button><div class="gh">Set an amount</div></div>
+            <div class="zone" style="margin-top:0"><button class="btn btn-primary">Share QR code</button></div>
           </div>
           <div class="mnav"><button class="t on"><span class="svgic" style="--ic:url(assets/icons/home-new.svg)" aria-hidden="true"></span><span>Home</span></button><button class="t"><span class="svgic" style="--ic:url(assets/icons/explore.svg)" aria-hidden="true"></span><span>Explore</span></button><button class="t"><span class="svgic" style="--ic:url(assets/icons/activity.svg)" aria-hidden="true"></span><span>Activity</span></button></div>
         </div></div></div>
@@ -5093,29 +5124,14 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
             </div>
             <div style="text-align:center;margin-top:6%"><div class="qrbox"><div class="qrpat"></div></div></div>
             <div style="text-align:center;font-size:var(--t-label);color:var(--ink-2);margin-top:1rem">Your Miden address</div>
-            <div class="addrbox" style="width:auto;margin-top:0.5rem"><span class="a">mtst1ap8&hellip;r4fp</span><span class="svgic" style="--ic:url(assets/icons/copy.svg);width:1rem;height:1rem" aria-hidden="true"></span></div>
+            <button class="addrbox" style="width:100%;margin-top:0.5rem" aria-label="Copy address mtst1ap8&hellip;r4fp"><span class="a">mtst1ap8&hellip;r4fp</span><span class="svgic" style="--ic:url(assets/icons/copy.svg);width:1rem;height:1rem" aria-hidden="true"></span></button>
             <div class="notice"><span>&#9888;</span><span>Sharing didn&rsquo;t open. Your address is on the clipboard instead &mdash; paste it wherever you need it.</span></div>
-            <div class="zone"><button class="btn btn-primary">Try again</button><div class="gh">Set an amount</div></div>
+            <div class="zone"><button class="btn btn-primary">Try again</button></div>
           </div>
           <div class="mnav"><button class="t on"><span class="svgic" style="--ic:url(assets/icons/home-new.svg)" aria-hidden="true"></span><span>Home</span></button><button class="t"><span class="svgic" style="--ic:url(assets/icons/explore.svg)" aria-hidden="true"></span><span>Explore</span></button><button class="t"><span class="svgic" style="--ic:url(assets/icons/activity.svg)" aria-hidden="true"></span><span>Activity</span></button></div>
         </div></div></div>
         <div class="scrnote"><b>Refutes the standing WebView assumption, and finds a worse bug underneath.</b> Receive does <em>not</em> use <code>&lt;a download&gt;</code>: <code>handleShare</code> writes the QR PNG with <code>Filesystem.writeFile</code> and hands it to <code>Share.share</code> on mobile (<code>AddressTab.tsx:54&ndash;64</code>), falling back to <code>navigator.share</code> elsewhere (<code>:67&ndash;77</code>). That path is correct. The defect is the handler: <b>one <code>catch</code> at <code>AddressTab.tsx:78&ndash;81</code> swallows every outcome and silently calls <code>copy()</code></b> &mdash; and that <code>copy()</code> came from <code>useCopyToClipboard</code> destructured at <code>:40</code> <em>without</em> <code>copied</code>, so it paints nothing at all. Three different events therefore look identical and look like nothing: the share sheet failing to open, the platform having no share target, and the user simply cancelling the sheet. Cancelling is not a failure and must stay silent; failing is, and must say so and say what happened instead. The clipboard write is a real side effect on a user&rsquo;s address and cannot be performed invisibly.</div></div>
-        <div><div class="scrcap"><i></i>Receive &middot; request an amount <span class="tag merge">proposed</span></div>
-        <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
-          <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>
-          <div class="mpad" style="flex:1;display:flex;flex-direction:column">
-            <div class="sh2"><span class="bk2">&lsaquo;</span><span class="t2">Request an amount</span></div>
-            <button class="tokchip"><img src="assets/icons/miden.svg" alt=""><span>MIDEN</span><span class="cv">&rsaquo;</span></button>
-            <div class="amtblock"><div class="aa">40.00</div><div class="af">&asymp; $416.00</div></div>
-            <div class="dmeta">
-              <div class="drow"><span class="k">Requesting</span><span class="v num">40.00 MIDEN</span></div>
-              <div class="drow"><span class="k">To</span><span class="v mono">mtst1ap8&hellip;r4fp</span></div>
-            </div>
-            <div class="notice" style="background:var(--surface-2);color:var(--ink-2)"><span>&#9432;</span><span>An amount is a request, not a lock. The sender can still send any amount.</span></div>
-            <div class="zone"><button class="btn btn-primary">Show QR code</button><div class="gh">Receive without an amount</div></div>
-          </div>
-        </div></div></div>
-        <div class="scrnote"><b>The Receive mock&rsquo;s &ldquo;Set an amount&rdquo; ghost currently leads nowhere &mdash; no amount-request flow exists in the app.</b> The only Request affordance ever written is <b>commented out</b> at <code>AddressTab.tsx:113&ndash;120</code>, there is no route for it in <code>PageRouter.tsx</code>, and <code>en.json</code> holds no string for it. Two things must ship together or neither ships. First, the payload: <code>encodeAddress</code> emits <code>miden:&lt;address&gt;</code> and nothing else (<code>qr/format.ts:10&ndash;20</code>), so an amount has no place to live. Second, the decoder &mdash; and this is the trap. <code>decodeAddress</code> strips the <code>miden:</code> prefix and returns the remainder verbatim (<code>qr/format.ts:26&ndash;41</code>), and <code>isValidMidenAddress</code> only checks the <code>mtst1</code>/<code>m1</code> prefix and a 30&ndash;100 character length (<code>:50&ndash;67</code>). Append <code>?amount=40</code> to the URI without touching either and a scanning wallet <b>accepts <code>mtst1ap8&hellip;r4fp?amount=40</code> as a valid recipient address</b>. Until the parser is versioned, delete the ghost rather than let it promise this.</div></div>
+        
         <div><div class="scrcap"><i></i>Receive &middot; loading <span class="tag merge">gap</span></div>
         <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
           <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>
@@ -5128,9 +5144,9 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
             </div>
             <div style="text-align:center;margin-top:6%"><div class="qrbox"><div class="skel2" style="width:100%;height:100%;margin:0;border-radius:var(--radius-sm)"></div></div></div>
             <div style="text-align:center;font-size:var(--t-label);color:var(--ink-2);margin-top:1rem">Building your QR code</div>
-            <div class="addrbox" style="width:auto;margin-top:0.5rem"><span class="a">mtst1ap8&hellip;r4fp</span><span class="svgic" style="--ic:url(assets/icons/copy.svg);width:1rem;height:1rem" aria-hidden="true"></span></div>
+            <button class="addrbox" style="width:100%;margin-top:0.5rem" aria-label="Copy address mtst1ap8&hellip;r4fp"><span class="a">mtst1ap8&hellip;r4fp</span><span class="svgic" style="--ic:url(assets/icons/copy.svg);width:1rem;height:1rem" aria-hidden="true"></span></button>
             <div class="notice" style="background:var(--surface-2);color:var(--ink-2)"><span>&#9432;</span><span>The address below is already live &mdash; copy it now if you don&rsquo;t need the code.</span></div>
-            <div class="zone"><button class="btn btn-primary" disabled>Share address</button></div>
+            <div class="zone"><button class="btn btn-primary" disabled>Share QR code</button></div>
           </div>
           <div class="mnav"><button class="t on"><span class="svgic" style="--ic:url(assets/icons/home-new.svg)" aria-hidden="true"></span><span>Home</span></button><button class="t"><span class="svgic" style="--ic:url(assets/icons/explore.svg)" aria-hidden="true"></span><span>Explore</span></button><button class="t"><span class="svgic" style="--ic:url(assets/icons/activity.svg)" aria-hidden="true"></span><span>Activity</span></button></div>
         </div></div></div>
@@ -5147,151 +5163,13 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
             </div>
             <div style="text-align:center;margin-top:6%"><div class="qrbox"><div class="qrpat"></div></div></div>
             <div style="text-align:center;font-size:var(--t-label);color:var(--ink-2);margin-top:1rem">Your Miden address</div>
-            <div class="addrbox" style="width:auto;margin-top:0.5rem"><span class="a">mtst1ap8…r4fp</span><span class="svgic" style="--ic:url(assets/icons/copy.svg);width:1rem;height:1rem" aria-hidden="true"></span></div>
+            <button class="addrbox" style="width:100%;margin-top:0.5rem" aria-label="Copy address mtst1ap8…r4fp"><span class="a">mtst1ap8…r4fp</span><span class="svgic" style="--ic:url(assets/icons/copy.svg);width:1rem;height:1rem" aria-hidden="true"></span></button>
             <div class="notice" style="background:var(--surface-2);color:var(--ink-2)"><span>ⓘ</span><span>Only send Miden-network assets to this address.</span></div>
-            <div class="zone"><button class="btn btn-primary" style="width:100%">Share address</button></div>
+            <div class="zone"><button class="btn btn-primary" style="width:100%">Share QR code</button></div>
           </div>
           <div class="mnav"><button class="t on"><span class="svgic" style="--ic:url(assets/icons/home-new.svg)" aria-hidden="true"></span><span>Home</span></button><button class="t"><span class="svgic" style="--ic:url(assets/icons/explore.svg)" aria-hidden="true"></span><span>Explore</span></button><button class="t"><span class="svgic" style="--ic:url(assets/icons/activity.svg)" aria-hidden="true"></span><span>Activity</span></button></div>
         </div></div></div>
-        <div class="scrnote">Wrong-network deposits are unrecoverable, so the constraint is stated inline &mdash; not hidden in help. <b>The action bar and the bottom nav stay.</b> <code>/receive</code> is in <code>HOME_GROUP_ROUTES</code> (<code>TabLayout.tsx:42</code>) and <code>showActionBar</code> is <code>HOME_GROUP_ROUTES.has(pathname)</code> (<code>:142</code>), so receive is a <em>pane of home</em>, not a page pushed on top of it &mdash; the same relationship the send step has. These screens carried a back header instead, which said the opposite: that you had left home and had somewhere to come back from. Swiping between overview, send, receive and swap is the actual navigation, and the header hid it. <b>Pending notes and token detail keep their back header</b>, correctly: neither route is in that set, so both really are pushed pages. <b>The &ldquo;Set an amount&rdquo; ghost has been removed from this screen.</b> No amount-request flow exists: the only Request affordance ever written is commented out at <code>AddressTab.tsx:113&ndash;120</code>, there is no route and no <code>en.json</code> string. It survives on <b>Receive &middot; request an amount</b>, which is explicitly proposed and states the parser change it depends on. A shipped-state mock may not carry an entry point to something unbuilt.</div></div>
-      </div>
-    </details>
-    <details class="grp"><summary><span class="gt">Pending notes</span><span class="gn">5</span></summary>
-      <div class="scrgrid">
-        <div><div class="scrcap"><i></i>Pending notes &middot; loading <span class="tag merge">gap</span></div>
-        <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
-          <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>
-          <div class="mpad" style="flex:1;display:flex;flex-direction:column">
-            <div class="sh2"><span class="bk2">&lsaquo;</span><span class="t2">Pending notes</span></div>
-            <div class="dmeta" style="padding:0.875rem">
-              <div class="skel" style="width:45%"></div><div class="skel2" style="width:62%;margin-top:0.5rem"></div>
-            </div>
-            <div class="mrow"><div class="ic anon"></div><div style="flex:1"><div class="skel2" style="width:38%"></div><div class="skel2" style="width:24%;margin-top:0.375rem"></div></div></div>
-            <div class="mrow"><div class="ic anon"></div><div style="flex:1"><div class="skel2" style="width:44%"></div><div class="skel2" style="width:20%;margin-top:0.375rem"></div></div></div>
-          </div>
-        </div></div></div>
-        <div class="scrnote"><b>GAP &mdash; and the current behaviour actively lies.</b> <code>Pending.tsx</code> destructures only <code>{ data, mutate }</code> from <code>useClaimableNotes</code>, discarding the <code>isLoading</code> and <code>isValidating</code> it returns. So on a cold open <code>claimableNotes</code> is <code>undefined</code> &rarr; the list is <code>[]</code> &rarr; the screen renders <b>&ldquo;You don&rsquo;t currently have notes to claim.&rdquo;</b> for the whole fetch, then pops to a populated list. The empty state doubles as the loading state and tells the user something false about their money. The same path swallows errors: a WASM or RPC failure renders as that identical sentence, because <code>onError</code> only logs to the console.</div></div>
-        <div><div class="scrcap"><i></i>Pending notes &middot; empty <span class="tag merge">gap</span></div>
-        <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
-          <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>
-          <div class="mpad" style="flex:1;display:flex;flex-direction:column">
-            <div class="sh2"><span class="bk2">&lsaquo;</span><span class="t2">Pending notes</span></div>
-            <div class="emptyb" style="margin-top:auto;margin-bottom:auto">
-              <div class="et">Nothing to claim</div>
-              <div class="eb">You don&rsquo;t currently have notes to claim. Anything sent to you waits here until you claim it.</div>
-              <button class="btn btn-secondary">Receive</button>
-            </div>
-          </div>
-        </div></div></div>
-        <div class="scrnote"><b>The one state this screen is genuinely allowed to show &mdash; and it is the only one it ever shows.</b> <code>PendingTab.tsx:189&ndash;199</code> renders a single centred <code>text-sm</code> line, <code>noNotesToClaim</code> = &ldquo;You don&rsquo;t currently have notes to claim.&rdquo; (<code>en.json:641</code>), with no heading, no next step and no way out except the back chevron. Compare the treatment the same product gives an empty asset list on Home: title, body, and the action that resolves the state. The shipped sentence is kept verbatim as the body because it is accurate <em>here</em>; the title carries the meaning at a glance and the action is the thing a user with nothing to claim actually wants, which is their address. <code>btn-secondary</code>, not primary &mdash; an empty claim queue is the normal resting state, not a failure to correct. Note the header string is <code>pendingNotes</code> = &ldquo;Pending notes&rdquo; (<code>en.json:694</code>, <code>Pending.tsx:264</code>); the existing <b>Pending notes</b> mock titles it &ldquo;Pending&rdquo; and adds a subtitle, &ldquo;Notes sent to you that aren&rsquo;t claimed yet.&rdquo;, which appears nowhere in <code>en.json</code>.</div></div>
-        <div><div class="scrcap"><i></i>Pending notes &middot; fetch failed <span class="tag retire">bug</span></div>
-        <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
-          <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>
-          <div class="mpad" style="flex:1;display:flex;flex-direction:column">
-            <div class="sh2"><span class="bk2">&lsaquo;</span><span class="t2">Pending notes</span></div>
-            <div class="emptyb" style="margin-top:auto;margin-bottom:auto">
-              <div class="et">Couldn&rsquo;t read your notes</div>
-              <div class="eb">This is a read failure on this device, not an empty wallet &mdash; we don&rsquo;t know how many notes are waiting. Unclaimed notes stay on-chain either way.</div>
-              <button class="btn btn-secondary">Retry</button>
-              <div class="mono" style="font-size:var(--t-caption);color:var(--ink-2);margin-top:0.625rem">getConsumableNotes failed</div>
-            </div>
-          </div>
-        </div></div></div>
-        <div class="scrnote"><b>Today this renders as the empty state and tells the user something false about their money.</b> <code>Pending.tsx:38</code> destructures only <code>{ data, mutate }</code> from <code>useClaimableNotes</code>, and the hook&rsquo;s <code>onError</code> does nothing but <code>console.error</code> and stamp a debug ref (<code>claimable-notes.ts:323&ndash;330</code>). A WASM panic, a dropped RPC, a locked client &mdash; every one leaves <code>data</code> <code>undefined</code>, so <code>safeClaimableNotes</code> is <code>[]</code>, <code>groupedNotes.length === 0</code>, and <code>PendingTab.tsx:189</code> prints &ldquo;You don&rsquo;t currently have notes to claim.&rdquo; The user is told their claim queue is empty by a screen that failed to look. The distinction the copy has to carry is <em>unknown</em> versus <em>zero</em>, because the two demand opposite behaviour: zero means walk away, unknown means retry or come back. The reassurance is load-bearing and true &mdash; consumable notes live on-chain and a failed local read cannot lose them. The failing call is named in mono because a user reporting this is the only diagnostic anyone will get; <code>isValidating</code> is already on the hook&rsquo;s return and is what should drive Retry&rsquo;s busy state.</div></div>
-        <div><div class="scrcap"><i></i>Pending notes &middot; claiming <span class="tag retire">bug</span></div>
-        <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
-          <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>
-          <div class="mpad" style="flex:1;display:flex;flex-direction:column">
-            <div class="sh2"><span class="bk2">&lsaquo;</span><span class="t2">Pending notes</span></div>
-            <p class="obp" style="text-align:left;margin-top:0">Claiming 1 of 2. You can leave this screen &mdash; claims finish on their own.</p>
-            <div class="mrow"><div class="ic sq"><span class="svgic" style="--ic:url(assets/icons/receive-new.svg);" aria-hidden="true"></span></div><div><div class="nm">From mtst1kq2&hellip;88xz</div><div class="ad">Claiming note&hellip;</div></div><div class="rt"><div class="f">+40.00</div><div class="b">MIDEN</div></div></div>
-            <div class="mrow"><div class="ic sq"><span class="svgic" style="--ic:url(assets/icons/receive-new.svg);" aria-hidden="true"></span></div><div><div class="nm">From mtst1zz9&hellip;41mn</div><div class="ad">Waiting &middot; 1 hr ago</div></div><div class="rt"><div class="f" style="color:var(--pos)">+12.50</div><div class="b">MIDEN</div></div></div>
-            <div class="notice" style="background:var(--surface-2);color:var(--ink-2)"><span>&#9432;</span><span>Each note is its own transaction, so they land one at a time.</span></div>
-            <div class="zone"><button class="btn btn-primary" disabled>Claiming&hellip;</button></div>
-          </div>
-        </div></div></div>
-        <div class="scrnote"><b>Three separate places where the shipped screen shows a claim in flight by removing things.</b> One: the Claim All button is gated on <code>unclaimedNotesCount &gt; 0</code> (<code>PendingTab.tsx:235&ndash;245</code>), so the instant a claim-all starts the button <b>vanishes</b> and nothing replaces it &mdash; the user&rsquo;s own tap deletes the only evidence it registered. Two: the per-note Claim button is swapped for <code>&lt;div data-testid=&quot;claim-spinner&quot; className=&quot;w-18 h-7.5&quot; /&gt;</code> at <code>PendingTab.tsx:514&ndash;524</code>, which is an <b>empty box</b>; the only motion is <code>SyncWaveBackground</code> behind the row (<code>:500</code>), and there is no label anywhere. Three: the summary row&rsquo;s only progress readout is a bare fraction <code>{claimingCount}/{notes.length}</code> (<code>:288</code>) with no word attached to say what it counts. So the design states progress in words, keeps the action present and disabled rather than absent, and labels the in-flight row &mdash; <code>transactionStageClaiming</code> = &ldquo;Claiming note&rdquo; already exists (<code>en.json:93</code>). The in-flight amount drops its positive green because nothing has arrived yet. Two shipped behaviours the note must flag: on extension <code>claimingNoteIds</code> is deliberately never cleared (<code>Pending.tsx:233&ndash;236</code>), so a claim the service worker never finishes leaves the row spinning forever with no timeout; and on mobile a successful claim-all <code>navigate</code>s to Home (<code>Pending.tsx:228&ndash;230</code>), yanking the user off this screen with no confirmation of what landed.</div></div>
-        <div><div class="scrcap"><i></i>Pending notes &middot; claim failed <span class="tag retire">bug</span></div>
-        <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
-          <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>
-          <div class="mpad" style="flex:1;display:flex;flex-direction:column">
-            <div class="sh2"><span class="bk2">&lsaquo;</span><span class="t2">Pending notes</span></div>
-            <div class="mprompt" data-status="neg"><div class="ptx"><div class="pt">Failed to claim 1 note</div><div class="pb">The note is still yours and still claimable. Nothing left your wallet.</div></div><button class="pcta">Retry</button></div>
-            <div class="mrow"><div class="ic sq"><span class="svgic" style="--ic:url(assets/icons/receive-new.svg);" aria-hidden="true"></span></div><div><div class="nm">From mtst1kq2&hellip;88xz</div><div class="ad">Failed &middot; not claimed</div></div><div class="rt"><div class="f">+40.00</div><div class="b">MIDEN</div></div></div>
-            <div class="mrow"><div class="ic sq"><span class="svgic" style="--ic:url(assets/icons/receive-new.svg);" aria-hidden="true"></span></div><div><div class="nm">From mtst1zz9&hellip;41mn</div><div class="ad">Claimed &middot; 1 min ago</div></div><div class="rt"><div class="f" style="color:var(--pos)">+12.50</div><div class="b">MIDEN</div></div></div>
-            <div class="zone"><button class="btn btn-primary">Retry 1 note</button></div>
-          </div>
-        </div></div></div>
-        <div class="scrnote"><b>The failure message is written and then thrown away.</b> <code>DetailNoteRow</code> sets <code>error = t(&lsquo;failedToClaimNote&rsquo;)</code> = &ldquo;Failed to claim note&rdquo; (<code>PendingTab.tsx:469</code> and <code>:482</code>, <code>en.json:663</code>), derives <code>hasError</code> at <code>:437</code> &mdash; and then uses <code>hasError</code> at exactly <b>one</b> site, <code>:520</code>, to flip a button title from &ldquo;Claim&rdquo; to &ldquo;Retry&rdquo;. <b>The string is never rendered anywhere on the screen.</b> A user whose claim just failed sees one word on one button change and is told nothing about what happened or whether their money moved. It is worse from the summary screen: <code>failedNoteIds</code> is populated by <code>claimNotesBatch</code> (<code>Pending.tsx:196</code>, <code>:222</code>) and forwarded only to <code>AssetPendingDetail</code> &mdash; <code>PendingSummary</code>&rsquo;s props do not include it at all (<code>PendingTab.tsx:146&ndash;153</code>, <code>:157&ndash;164</code>) &mdash; so a Claim All that fails on every note produces <b>zero pixels of feedback</b>, and the next batch clears the record entirely (<code>Pending.tsx:186</code>). A failed claim is high-stakes and ambiguous, so the row states both halves per the never-colour-only rule: <b>Failed</b> and <b>not claimed</b>. The succeeded sibling stays visible and labelled so the user can tell which is which. The dead key <code>errorClaiming</code> = &ldquo;Error Claiming: &rdquo; (<code>en.json:566</code>) has no callers and should be deleted rather than revived &mdash; a trailing-colon prefix cannot become a sentence.</div></div>
-      </div>
-    </details>
-    <details class="grp"><summary><span class="gt">Token detail</span><span class="gn">3</span></summary>
-      <div class="scrgrid">
-        <div><div class="scrcap"><i></i>Token detail &middot; loading <span class="tag retire">bug</span></div>
-        <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
-          <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>
-          <div class="mpad" style="flex:1;display:flex;flex-direction:column;overflow:hidden">
-            <div class="sh2"><span class="bk2">&lsaquo;</span><span class="t2" style="font-family:var(--mono);font-size:var(--t-label)">mtst1qq9&hellip;4f2p</span></div>
-            <div class="tkhero">
-              <div class="skel2" style="width:2.75rem;height:2.75rem;border-radius:50%;margin:0"></div>
-              <div class="skel" style="width:48%;height:2.25rem"></div>
-              <div class="skel2" style="width:24%;margin-top:0"></div>
-            </div>
-            <div class="tkacts">
-              <button class="tkact" style="background:var(--surface-2);color:var(--ink-3)" disabled>Send</button>
-              <button class="tkact" style="background:var(--act-receive-deep)"><span class="svgic" style="--ic:url(assets/icons/receive-new.svg)" aria-hidden="true"></span>Receive</button>
-            </div>
-            <span class="seclab">Price</span>
-            <div style="height:5.5rem;display:flex;align-items:center;justify-content:center;background:var(--surface-2);border-radius:var(--radius-md)">
-              <span style="font-size:var(--t-label);color:var(--ink-2)">Loading price&hellip;</span>
-            </div>
-            <span class="seclab">Token info</span>
-            <div class="dmeta">
-              <div class="drow"><span class="k">Contract</span><span class="v mono">mtst1qq9&hellip;4f2p</span></div>
-              <div class="drow"><span class="k">Network</span><span class="v">Miden Testnet</span></div>
-            </div>
-          </div>
-        </div></div></div>
-        <div class="scrnote"><b>The same swallowed-loading bug as Pending, on a screen that shows a number.</b> <code>TokenDetail.tsx:48</code> destructures only <code>{ data: balances }</code> from <code>useAllBalances</code>, discarding the <code>isLoading</code> the hook returns (<code>balance.ts:173&ndash;179</code>, true until the first fetch lands per <code>:66&ndash;69</code>). On a cold open <code>balancesMap[address]</code> is undefined, so <code>buildDefaultZeroBalance()</code> supplies either <code>[]</code> or one MIDEN row holding <code>balance: 0</code> (<code>balance.ts:31&ndash;44</code>). The consequences run straight through the render: <code>token</code> is undefined &rarr; <code>metadata</code> is undefined &rarr; <code>symbol = t(&lsquo;unknown&rsquo;)</code> = &ldquo;Unknown&rdquo; (<code>TokenDetail.tsx:51&ndash;53</code>, <code>en.json:519</code>), which becomes the <b>header title</b> (<code>:69</code>) and the <code>TokenLogo</code> lookup key; <code>balance</code> falls back to <code>0</code> (<code>:54</code>) and renders <code>0.00</code> / <code>$0.00</code> (<code>:77&ndash;82</code>). <b>Opening a token you hold shows you a token called Unknown with a zero balance</b>, indistinguishable from an empty holding and from a bad token id, for as long as the read takes. Skeletons occupy the exact geometry the values will land in; the header falls back to the route&rsquo;s own <code>tokenId</code>, which is known with certainty, rather than to a word that is a lie. Send is held: the amount screen cannot price a balance nobody has read yet.</div></div>
-        <div><div class="scrcap"><i></i>Token detail &middot; zero balance <span class="tag merge">gap</span></div>
-        <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
-          <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>
-          <div class="mpad" style="flex:1;display:flex;flex-direction:column;overflow:hidden">
-            <div class="sh2"><span class="bk2">&lsaquo;</span><span class="t2">USDC</span></div>
-            <div class="tkhero">
-              <span class="tkwell" style="--tok:#2775CA"><span class="svgic" style="--ic:url(assets/icons/usdc.svg)" aria-hidden="true"></span></span>
-              <span class="tkbal">0.00</span><span class="tkfiat">You don&rsquo;t hold any USDC</span>
-            </div>
-            <div class="tkacts">
-              <button class="tkact" style="background:var(--act-receive-deep)"><span class="svgic" style="--ic:url(assets/icons/receive-new.svg)" aria-hidden="true"></span>Receive USDC</button>
-            </div>
-            <span class="seclab">Price</span><svg viewBox="0 0 300 88" preserveAspectRatio="none" style="width:100%;height:5.5rem;display:block" aria-hidden="true"><path d="M0 48 L30 44 L60 50 L90 41 L120 46 L150 38 L180 43 L210 35 L240 39 L270 31 L300 34" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            <div class="tftabs"><button class="tftab">1H</button><button class="tftab on">1D</button><button class="tftab">1W</button><button class="tftab">1M</button><button class="tftab">YTD</button></div>
-            <span class="seclab">Token info</span>
-            <div class="dmeta">
-              <div class="drow"><span class="k">Contract</span><span class="v mono">mtst1zz4&hellip;90ab</span></div>
-              <div class="drow"><span class="k">Network</span><span class="v">Miden Testnet</span></div>
-            </div>
-          </div>
-        </div></div></div>
-        <div class="scrnote"><b>Zero is reachable and unhandled.</b> <code>TokenDetail.tsx:86&ndash;101</code> renders Send and Receive unconditionally, so a token with nothing in it ships a live Send that deep-links to <code>/send?tokenId=</code> (<code>:88</code>) and can only fail at the amount step. Send is removed here rather than disabled: a greyed <code>tkact</code> would put a white-on-<code>surface-2</code> glyph below icon-contrast, and there is nothing to send. The fiat line is repurposed because at zero it is <b>information-free by construction</b> &mdash; <code>fiatValue = balance * priceInfo.price</code> (<code>:56</code>) is <code>0</code> for every token, priced or not, so &ldquo;$0.00&rdquo; under &ldquo;0.00&rdquo; is the same fact twice. A second, sharper problem the design cannot fix alone: <code>balance.toFixed(2)</code> at <code>:78</code> is <b>the only formatter on this hero</b>, so a token with more than two decimals renders any holding below 0.005 as <code>0.00</code> &mdash; a real balance displayed as empty, with the Send button still live beside it. That is a code fix (format at the asset&rsquo;s own <code>decimals</code>, as <code>formatBigInt</code> already does on the pending screens), and the zero state cannot be trusted until it lands.</div></div>
-        <div><div class="scrcap"><i></i>Token detail &middot; unknown token <span class="tag merge">gap</span></div>
-        <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
-          <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>
-          <div class="mpad" style="flex:1;display:flex;flex-direction:column;overflow:hidden">
-            <div class="sh2"><span class="bk2">&lsaquo;</span><span class="t2" style="font-family:var(--mono);font-size:var(--t-label)">mtst1w7x&hellip;0c31</span></div>
-            <div class="emptyb" style="margin-top:auto">
-              <div class="et">We don&rsquo;t recognise this token</div>
-              <div class="eb">Nothing on this device knows the name, symbol or decimals for this faucet, so we can&rsquo;t show a balance or a price for it.</div>
-              <button class="btn btn-secondary">Back</button>
-            </div>
-            <div class="dmeta" style="margin-top:auto;margin-bottom:max(1rem,var(--safe-bottom,0))">
-              <div class="drow"><span class="k">Contract</span><span class="v mono">mtst1w7x&hellip;0c31</span></div>
-              <div class="drow"><span class="k">Network</span><span class="v">Miden Testnet</span></div>
-            </div>
-          </div>
-        </div></div></div>
-        <div class="scrnote"><b><code>/token-detail/:tokenId</code> accepts any id and has no not-found branch.</b> <code>PageRouter.tsx:178&ndash;185</code> routes straight to the component, and <code>TokenDetail</code> never checks whether the id resolved: a stale deep link, a faucet that failed metadata fetch, or a typo all render the full screen with <code>symbol = t(&lsquo;unknown&rsquo;)</code> (<code>TokenDetail.tsx:51&ndash;53</code>), the default token avatar (<code>TokenLogo.tsx:50&ndash;57</code>), <code>0.00</code> / <code>$0.00</code>, and <b>both action buttons live</b> &mdash; Send deep-links the garbage id onward into the send flow (<code>:88</code>). It also fabricates a price section: with no entry in <code>tokenPrices</code>, <code>getTokenPrice</code> falls through to <code>DEFAULT_PRICE = { price: 1, change24h: 0 }</code> (<code>binance.ts:21</code>, <code>:84&ndash;86</code>), and <code>fetchKlineData</code> returns <code>[]</code> for an unlisted symbol (<code>:128&ndash;129</code>) <em>and</em> for a network error (<code>:151&ndash;159</code>), which <code>TokenDetail.tsx:137</code> swaps for <code>FLAT_LINE_DATA</code> &mdash; ten points of constant 1 (<code>:30</code>). The screen therefore draws a clean flat chart under a green <code>+0.0&percnt;</code> badge and <code>$1.000</code> (<code>:151&ndash;162</code>) for a token it cannot identify. This state is an error, so it is drawn as one: the id is stated in mono because it is the only true thing on the screen, the actions are gone, and the contract row stays so the user can copy the id to whoever sent the link.</div></div>
+        <div class="scrnote">Wrong-network deposits are unrecoverable, so the constraint is stated inline &mdash; not hidden in help. <b>The action bar and the bottom nav stay.</b> <code>/receive</code> is in <code>HOME_GROUP_ROUTES</code> (<code>TabLayout.tsx:42</code>) and <code>showActionBar</code> is <code>HOME_GROUP_ROUTES.has(pathname)</code> (<code>:142</code>), so receive is a <em>pane of home</em>, not a page pushed on top of it &mdash; the same relationship the send step has. These screens carried a back header instead, which said the opposite: that you had left home and had somewhere to come back from. Swiping between overview, send, receive and swap is the actual navigation, and the header hid it. <b>Pending notes and token detail keep their back header</b>, correctly: neither route is in that set, so both really are pushed pages. <b>There is no amount-request feature, so both the &ldquo;Set an amount&rdquo; ghost and the proposed screen it led to are gone.</b> Receive shares, and nothing else. Shipped gives exactly three ways to hand an address over, and all three sit on this one screen: let the other person scan the code, copy the address, or share. Share is one gesture carrying both payloads &mdash; <code>AddressTab.tsx:61</code> renders the QR to a file and calls <code>Share.share({ text: address, files: [uri] })</code>, so the sheet offers the image <em>and</em> the address text. The label names the image because that is what distinguishes it from Copy, which is text only; the address rides along either way. Two silent degradations are worth knowing: if the QR fails to rasterise the share drops to text-only (<code>:63</code>), and if there is no share sheet at all &mdash; the usual case on the extension, where <code>navigator.share</code> is often absent &mdash; the whole handler falls through to <code>copy()</code> (<code>:81</code>), so the button quietly behaves as Copy. That same fallback is the one the <b>share failed</b> state describes, and it is accurate: dismissing or failing the sheet lands on <code>copy()</code> too, which is why that screen can promise the address is already on the clipboard. The address row is a button rather than a label because copying is the path when the other person is not in the room. The only Request affordance ever written is commented out at <code>AddressTab.tsx:113&ndash;120</code> &mdash; no route, no <code>en.json</code> string, and no amount field in the URI the scanner parses. Proposing a screen for it put a feature into the design system that nobody had asked to build.</div></div>
       </div>
     </details>
   </details>
@@ -5401,7 +5279,7 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
       </details>
     </details>
     <details class="flow" open>
-      <summary><h2 class="h">Activity flow</h2><span class="fn">13</span></summary>
+      <summary><h2 class="h">Activity flow</h2><span class="fn">18</span></summary>
     <p class="sub">History, one transaction in detail, and claiming. Pending notes belong here rather than under Receive, matching the shipped split.</p>
             <details class="grp"><summary><span class="gt">Activity list</span><span class="gn">7</span></summary>
         <div class="scrgrid">
@@ -5580,7 +5458,7 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
         <div class="scrnote"><b>Opening a pending transaction today prints the literal string &ldquo;Invalid Date&rdquo;.</b> <code>HistoryView.tsx:214</code> makes every row with a <code>txId</code> tappable, pending rows included (<code>History.tsx:193</code> sets one). <code>HistoryDetails.tsx:127</code> then maps <code>timestamp: tx.completedAt</code>, which is <code>undefined</code> until the transaction finishes, and <code>formatDate</code> returns the hard&#8209;coded, untranslated <code>'Invalid Date'</code> for a non&#8209;number (<code>transactionUtils.ts:78&ndash;79</code>) &mdash; rendered straight into the Date row at <code>HistoryDetails.tsx:295</code>. The field that <em>is</em> populated on a pending row is <code>initiatedAt</code>, so the row is relabelled <b>Started</b> and reads from it. The hash row is correctly absent &mdash; <code>externalTxId</code> is unset before submission &mdash; so the steps carry progress instead, reusing the four <code>TRANSACTION_STEPS</code> and the per&#8209;step timings the send screen already stamps (<code>constants.ts:10&ndash;31</code>). Cancel lives here because this is the only surface a pending transaction can be opened from, and <code>cancelTransactionById</code> is otherwise unreachable.</div></div>
         </div>
       </details>
-      <details class="grp"><summary><span class="gt">Claim</span><span class="gn">3</span></summary>
+      <details class="grp"><summary><span class="gt">Claim &amp; pending notes</span><span class="gn">8</span></summary>
         <div class="scrgrid">
           <div><div class="scrcap"><i></i>Claim &middot; in progress <span class="tag merge">gap</span></div>
         <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
@@ -5617,7 +5495,72 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
           </div>
         </div></div></div>
         <div class="scrnote"><b>The summary string exists, is translated, and has no callers.</b> <code>claimAllSummary</code> &mdash; <code>&ldquo;$succeeded$ succeeded, $failed$ failed&rdquo;</code> &mdash; sits at <code>en.json:545</code> and appears <b>nowhere in <code>src/</code></b>. The data to fill it is tracked and then thrown away: <code>Pending.tsx:196</code> and <code>:222</code> accumulate <code>failedNoteIds</code> across the batch, and <code>Pending.tsx:229</code> immediately runs <code>navigate('/', HistoryAction.Replace)</code> on mobile, <b>unmounting the component that owns the set</b> before anything can render it. The user lands on Home with a balance that went up by less than the claim implied and no statement of why. The reassurance is the load&#8209;bearing line: a failed claim is not lost money &mdash; the note was never consumed and re&#8209;enters <code>getConsumableNotes()</code> on the next sync &mdash; and nothing in the shipped flow says so. Per&#8209;note failure text is <code>failedToClaimNote</code> (<b>&ldquo;Failed to claim note&rdquo;</b>), the string <code>PendingTab.tsx:469</code> already sets on the single&#8209;note path but which the batch path never surfaces.</div></div>
-          <div><div class="scrcap"><i></i>Pending notes</div>
+          <div><div class="scrcap"><i></i>Pending notes &middot; loading <span class="tag merge">gap</span></div>
+        <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
+          <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>
+          <div class="mpad" style="flex:1;display:flex;flex-direction:column">
+            <div class="sh2"><span class="bk2">&lsaquo;</span><span class="t2">Pending notes</span></div>
+            <div class="dmeta" style="padding:0.875rem">
+              <div class="skel" style="width:45%"></div><div class="skel2" style="width:62%;margin-top:0.5rem"></div>
+            </div>
+            <div class="mrow"><div class="ic anon"></div><div style="flex:1"><div class="skel2" style="width:38%"></div><div class="skel2" style="width:24%;margin-top:0.375rem"></div></div></div>
+            <div class="mrow"><div class="ic anon"></div><div style="flex:1"><div class="skel2" style="width:44%"></div><div class="skel2" style="width:20%;margin-top:0.375rem"></div></div></div>
+          </div>
+        </div></div></div>
+        <div class="scrnote"><b>GAP &mdash; and the current behaviour actively lies.</b> <code>Pending.tsx</code> destructures only <code>{ data, mutate }</code> from <code>useClaimableNotes</code>, discarding the <code>isLoading</code> and <code>isValidating</code> it returns. So on a cold open <code>claimableNotes</code> is <code>undefined</code> &rarr; the list is <code>[]</code> &rarr; the screen renders <b>&ldquo;You don&rsquo;t currently have notes to claim.&rdquo;</b> for the whole fetch, then pops to a populated list. The empty state doubles as the loading state and tells the user something false about their money. The same path swallows errors: a WASM or RPC failure renders as that identical sentence, because <code>onError</code> only logs to the console.</div></div>
+      <div><div class="scrcap"><i></i>Pending notes &middot; empty <span class="tag merge">gap</span></div>
+        <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
+          <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>
+          <div class="mpad" style="flex:1;display:flex;flex-direction:column">
+            <div class="sh2"><span class="bk2">&lsaquo;</span><span class="t2">Pending notes</span></div>
+            <div class="emptyb" style="margin-top:auto;margin-bottom:auto">
+              <div class="et">Nothing to claim</div>
+              <div class="eb">You don&rsquo;t currently have notes to claim. Anything sent to you waits here until you claim it.</div>
+              <button class="btn btn-secondary">Receive</button>
+            </div>
+          </div>
+        </div></div></div>
+        <div class="scrnote"><b>The one state this screen is genuinely allowed to show &mdash; and it is the only one it ever shows.</b> <code>PendingTab.tsx:189&ndash;199</code> renders a single centred <code>text-sm</code> line, <code>noNotesToClaim</code> = &ldquo;You don&rsquo;t currently have notes to claim.&rdquo; (<code>en.json:641</code>), with no heading, no next step and no way out except the back chevron. Compare the treatment the same product gives an empty asset list on Home: title, body, and the action that resolves the state. The shipped sentence is kept verbatim as the body because it is accurate <em>here</em>; the title carries the meaning at a glance and the action is the thing a user with nothing to claim actually wants, which is their address. <code>btn-secondary</code>, not primary &mdash; an empty claim queue is the normal resting state, not a failure to correct. Note the header string is <code>pendingNotes</code> = &ldquo;Pending notes&rdquo; (<code>en.json:694</code>, <code>Pending.tsx:264</code>); the existing <b>Pending notes</b> mock titles it &ldquo;Pending&rdquo; and adds a subtitle, &ldquo;Notes sent to you that aren&rsquo;t claimed yet.&rdquo;, which appears nowhere in <code>en.json</code>.</div></div>
+      <div><div class="scrcap"><i></i>Pending notes &middot; fetch failed <span class="tag retire">bug</span></div>
+        <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
+          <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>
+          <div class="mpad" style="flex:1;display:flex;flex-direction:column">
+            <div class="sh2"><span class="bk2">&lsaquo;</span><span class="t2">Pending notes</span></div>
+            <div class="emptyb" style="margin-top:auto;margin-bottom:auto">
+              <div class="et">Couldn&rsquo;t read your notes</div>
+              <div class="eb">This is a read failure on this device, not an empty wallet &mdash; we don&rsquo;t know how many notes are waiting. Unclaimed notes stay on-chain either way.</div>
+              <button class="btn btn-secondary">Retry</button>
+              <div class="mono" style="font-size:var(--t-caption);color:var(--ink-2);margin-top:0.625rem">getConsumableNotes failed</div>
+            </div>
+          </div>
+        </div></div></div>
+        <div class="scrnote"><b>Today this renders as the empty state and tells the user something false about their money.</b> <code>Pending.tsx:38</code> destructures only <code>{ data, mutate }</code> from <code>useClaimableNotes</code>, and the hook&rsquo;s <code>onError</code> does nothing but <code>console.error</code> and stamp a debug ref (<code>claimable-notes.ts:323&ndash;330</code>). A WASM panic, a dropped RPC, a locked client &mdash; every one leaves <code>data</code> <code>undefined</code>, so <code>safeClaimableNotes</code> is <code>[]</code>, <code>groupedNotes.length === 0</code>, and <code>PendingTab.tsx:189</code> prints &ldquo;You don&rsquo;t currently have notes to claim.&rdquo; The user is told their claim queue is empty by a screen that failed to look. The distinction the copy has to carry is <em>unknown</em> versus <em>zero</em>, because the two demand opposite behaviour: zero means walk away, unknown means retry or come back. The reassurance is load-bearing and true &mdash; consumable notes live on-chain and a failed local read cannot lose them. The failing call is named in mono because a user reporting this is the only diagnostic anyone will get; <code>isValidating</code> is already on the hook&rsquo;s return and is what should drive Retry&rsquo;s busy state.</div></div>
+      <div><div class="scrcap"><i></i>Pending notes &middot; claiming <span class="tag retire">bug</span></div>
+        <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
+          <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>
+          <div class="mpad" style="flex:1;display:flex;flex-direction:column">
+            <div class="sh2"><span class="bk2">&lsaquo;</span><span class="t2">Pending notes</span></div>
+            <p class="obp" style="text-align:left;margin-top:0">Claiming 1 of 2. You can leave this screen &mdash; claims finish on their own.</p>
+            <div class="mrow"><div class="ic sq"><span class="svgic" style="--ic:url(assets/icons/receive-new.svg);" aria-hidden="true"></span></div><div><div class="nm">From mtst1kq2&hellip;88xz</div><div class="ad">Claiming note&hellip;</div></div><div class="rt"><div class="f">+40.00</div><div class="b">MIDEN</div></div></div>
+            <div class="mrow"><div class="ic sq"><span class="svgic" style="--ic:url(assets/icons/receive-new.svg);" aria-hidden="true"></span></div><div><div class="nm">From mtst1zz9&hellip;41mn</div><div class="ad">Waiting &middot; 1 hr ago</div></div><div class="rt"><div class="f" style="color:var(--pos)">+12.50</div><div class="b">MIDEN</div></div></div>
+            <div class="notice" style="background:var(--surface-2);color:var(--ink-2)"><span>&#9432;</span><span>Each note is its own transaction, so they land one at a time.</span></div>
+            <div class="zone"><button class="btn btn-primary" disabled>Claiming&hellip;</button></div>
+          </div>
+        </div></div></div>
+        <div class="scrnote"><b>Three separate places where the shipped screen shows a claim in flight by removing things.</b> One: the Claim All button is gated on <code>unclaimedNotesCount &gt; 0</code> (<code>PendingTab.tsx:235&ndash;245</code>), so the instant a claim-all starts the button <b>vanishes</b> and nothing replaces it &mdash; the user&rsquo;s own tap deletes the only evidence it registered. Two: the per-note Claim button is swapped for <code>&lt;div data-testid=&quot;claim-spinner&quot; className=&quot;w-18 h-7.5&quot; /&gt;</code> at <code>PendingTab.tsx:514&ndash;524</code>, which is an <b>empty box</b>; the only motion is <code>SyncWaveBackground</code> behind the row (<code>:500</code>), and there is no label anywhere. Three: the summary row&rsquo;s only progress readout is a bare fraction <code>{claimingCount}/{notes.length}</code> (<code>:288</code>) with no word attached to say what it counts. So the design states progress in words, keeps the action present and disabled rather than absent, and labels the in-flight row &mdash; <code>transactionStageClaiming</code> = &ldquo;Claiming note&rdquo; already exists (<code>en.json:93</code>). The in-flight amount drops its positive green because nothing has arrived yet. Two shipped behaviours the note must flag: on extension <code>claimingNoteIds</code> is deliberately never cleared (<code>Pending.tsx:233&ndash;236</code>), so a claim the service worker never finishes leaves the row spinning forever with no timeout; and on mobile a successful claim-all <code>navigate</code>s to Home (<code>Pending.tsx:228&ndash;230</code>), yanking the user off this screen with no confirmation of what landed.</div></div>
+      <div><div class="scrcap"><i></i>Pending notes &middot; claim failed <span class="tag retire">bug</span></div>
+        <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
+          <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>
+          <div class="mpad" style="flex:1;display:flex;flex-direction:column">
+            <div class="sh2"><span class="bk2">&lsaquo;</span><span class="t2">Pending notes</span></div>
+            <div class="mprompt" data-status="neg"><div class="ptx"><div class="pt">Failed to claim 1 note</div><div class="pb">The note is still yours and still claimable. Nothing left your wallet.</div></div><button class="pcta">Retry</button></div>
+            <div class="mrow"><div class="ic sq"><span class="svgic" style="--ic:url(assets/icons/receive-new.svg);" aria-hidden="true"></span></div><div><div class="nm">From mtst1kq2&hellip;88xz</div><div class="ad">Failed &middot; not claimed</div></div><div class="rt"><div class="f">+40.00</div><div class="b">MIDEN</div></div></div>
+            <div class="mrow"><div class="ic sq"><span class="svgic" style="--ic:url(assets/icons/receive-new.svg);" aria-hidden="true"></span></div><div><div class="nm">From mtst1zz9&hellip;41mn</div><div class="ad">Claimed &middot; 1 min ago</div></div><div class="rt"><div class="f" style="color:var(--pos)">+12.50</div><div class="b">MIDEN</div></div></div>
+            <div class="zone"><button class="btn btn-primary">Retry 1 note</button></div>
+          </div>
+        </div></div></div>
+        <div class="scrnote"><b>The failure message is written and then thrown away.</b> <code>DetailNoteRow</code> sets <code>error = t(&lsquo;failedToClaimNote&rsquo;)</code> = &ldquo;Failed to claim note&rdquo; (<code>PendingTab.tsx:469</code> and <code>:482</code>, <code>en.json:663</code>), derives <code>hasError</code> at <code>:437</code> &mdash; and then uses <code>hasError</code> at exactly <b>one</b> site, <code>:520</code>, to flip a button title from &ldquo;Claim&rdquo; to &ldquo;Retry&rdquo;. <b>The string is never rendered anywhere on the screen.</b> A user whose claim just failed sees one word on one button change and is told nothing about what happened or whether their money moved. It is worse from the summary screen: <code>failedNoteIds</code> is populated by <code>claimNotesBatch</code> (<code>Pending.tsx:196</code>, <code>:222</code>) and forwarded only to <code>AssetPendingDetail</code> &mdash; <code>PendingSummary</code>&rsquo;s props do not include it at all (<code>PendingTab.tsx:146&ndash;153</code>, <code>:157&ndash;164</code>) &mdash; so a Claim All that fails on every note produces <b>zero pixels of feedback</b>, and the next batch clears the record entirely (<code>Pending.tsx:186</code>). A failed claim is high-stakes and ambiguous, so the row states both halves per the never-colour-only rule: <b>Failed</b> and <b>not claimed</b>. The succeeded sibling stays visible and labelled so the user can tell which is which. The dead key <code>errorClaiming</code> = &ldquo;Error Claiming: &rdquo; (<code>en.json:566</code>) has no callers and should be deleted rather than revived &mdash; a trailing-colon prefix cannot become a sentence.</div></div>
+      <div><div class="scrcap"><i></i>Pending notes</div>
         <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
           <div class="stat"><span>9:41</span><span class="r">✦ ▪ ▪</span></div>
           <div class="mpad" style="flex:1;display:flex;flex-direction:column">
