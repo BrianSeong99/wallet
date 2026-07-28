@@ -1,7 +1,7 @@
 import React, { FC, useCallback, useEffect, useState } from 'react';
 
 import classNames from 'clsx';
-import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
+import { AnimatePresence, motion, useIsPresent, useReducedMotion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 
 import { Icon, IconName } from 'app/icons/v2';
@@ -9,6 +9,7 @@ import { ProgressIndicator } from 'components/ProgressIndicator';
 import { iosPush, pushVariants } from 'lib/animation';
 import { hapticLight } from 'lib/mobile/haptics';
 import { isMobile } from 'lib/platform';
+import { PropsWithChildren } from 'lib/props-with-children';
 import type { WalletAccount } from 'lib/shared/types';
 
 import { ChooseGuardianScreen } from './common/ChooseGuardian';
@@ -123,6 +124,26 @@ const Header: React.FC<{
           className={currentStep ? '' : 'opacity-0'}
         />
       </div>
+    </div>
+  );
+};
+
+/**
+ * Hides the outgoing step from assistive tech while it animates away.
+ *
+ * `AnimatePresence` runs in its default `sync` mode here on purpose — the
+ * parallax push needs both layers on screen at once, where `wait` serialises
+ * them into a blank gap and `popLayout` strips the exiting layer's flex. The
+ * cost is that for the length of the transition BOTH steps are mounted, so the
+ * accessibility tree briefly holds two "Continue" buttons: a screen reader
+ * announces the duplicate, and the E2E harness fails a strict-mode locator on
+ * it. The leaving layer is decoration until it is gone.
+ */
+const ExitingLayerGuard: FC<PropsWithChildren> = ({ children }) => {
+  const isPresent = useIsPresent();
+  return (
+    <div className="flex flex-1 flex-col min-h-0" aria-hidden={!isPresent} data-exiting={!isPresent || undefined}>
+      {children}
     </div>
   );
 };
@@ -400,7 +421,7 @@ export const OnboardingFlow: FC<OnboardingFlowProps> = ({
               {/* Back now lives in `.obtop` as the design system draws it, so
                   the bottom secondary "Back" button that used to stack a second
                   ActionZone underneath the step's own one is gone. */}
-              {renderStep()}
+              <ExitingLayerGuard>{renderStep()}</ExitingLayerGuard>
             </motion.div>
           </AnimatePresence>
         </div>

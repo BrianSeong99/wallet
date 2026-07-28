@@ -156,6 +156,24 @@ body {
     sans-serif;
 }
 
+/* The app shell is a height chain: every layout below this point is `h-full`
+ * or `flex-1`, which resolve against a parent that has a height. Nothing in
+ * the extension entrypoints establishes one — `fullpage.html` gives <body>
+ * only a background and a top margin — so the whole tree computed to 0px and
+ * the fullpage extension rendered a BLANK screen: the markup and the text were
+ * all there, with no console errors, clipped by the first `overflow-hidden` in
+ * the chain.
+ *
+ * `100%` rather than `100dvh` because <body> carries the safe-area padding on
+ * mobile; with border-box (Tailwind's preflight) that padding stays inside the
+ * height instead of adding to it, which is what keeps the home indicator from
+ * pushing the layout off the bottom. */
+html,
+body,
+#root {
+  height: 100%;
+}
+
 #root {
   background-color: var(--color-app-bg);
 }

@@ -45,6 +45,9 @@ jest.mock('framer-motion', () => {
   const R = require('react');
   return {
     AnimatePresence: ({ children }: { children: React.ReactNode }) => R.createElement(R.Fragment, null, children),
+    // In jsdom nothing is ever mid-exit, so the guard always reports present —
+    // which is what keeps the rendered step visible to these assertions.
+    useIsPresent: () => true,
     motion: new Proxy(
       {},
       {
