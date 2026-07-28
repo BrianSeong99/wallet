@@ -613,10 +613,7 @@ export interface WalletSettings {
  * wallet has to ask again on every send — or guess, which on a wrong-chain transfer is
  * unrecoverable.
  */
-export type ContactNetwork =
-  | { family: 'miden' }
-  | { family: 'solana' }
-  | { family: 'evm'; chainId: number };
+export type ContactNetwork = { family: 'miden' } | { family: 'solana' } | { family: 'evm'; chainId: number };
 
 export interface WalletContact {
   address: string;
