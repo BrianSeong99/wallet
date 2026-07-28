@@ -121,10 +121,10 @@ documents, and which screens document a given file.
 |--:|---|---|---|
 | 50 | Send · recipient | shipped | — |
 | 51 | Send · recipient, filled | shipped | `lib/qr/format.test.ts:4` `QRCode.test.tsx:47` `SelectRecipient.tsx:65–66` |
-| 52 | Send · recipient, new address | shipped | — |
+| 52 | Send · recipient, new address | shipped | `QRCode.test.tsx:154` |
 | 53 | Send · recipient, other network | gap / sheet — proposed | — |
 | 54 | Send · recipient, unsupported | shipped | — |
-| 55 | Send · recipient, typing | shipped | `SendManager.tsx:365–379` |
+| 55 | Send · recipient, typing | shipped | `lib/qr/format.test.ts:4` `QRCode.test.tsx:47` `SendManager.tsx:365–379` |
 | 56 | Send · recipient, invalid | shipped | `SendManager.tsx:365–379` |
 | 57 | Send · scan | gap / sheet — mobile only | — |
 | 58 | Send · scan, detected | gap / sheet — gap | `format.ts:1–8` `format.ts:30–40` `format.ts:49–67` |
@@ -333,6 +333,7 @@ If one of these files changes, the screens beside it may no longer be true.
 | `EditMidenFaucetId.tsx` | Settings · faucet ID · Settings · faucet ID, saved · Settings · faucet ID, rejected |
 | `get.ts` | Activity · failed transactions · Activity · in progress · Activity · end of list |
 | `HistoryDetails.tsx` | Transaction detail · failed · Transaction detail · pending · Settings · currency |
+| `QRCode.test.tsx` | Send · recipient, filled · Send · recipient, new address · Send · recipient, typing |
 | `ready.tsx` | Receive · loading · Settings · networks, confirm switch · Settings · networks, switching |
 | `RevealSecret.tsx` | Recovery phrase · checking device · Recovery phrase · passcode · Private key · acknowledge |
 | `AmountInput.tsx` | Send · amount · Send · amount, zero |
@@ -349,6 +350,7 @@ If one of these files changes, the screens beside it may no longer be true.
 | `HomePrompts.tsx` | 08 · Back up your wallet · Home / Overview |
 | `KeysSettings.tsx` | Guardian keys · revealed · Settings · Keys |
 | `lib/miden/db/types.ts` | Send · network · Send · review, other chain |
+| `lib/qr/format.test.ts` | Send · recipient, filled · Send · recipient, typing |
 | `lib/qr/format.ts` | Send · scan, unreadable · Send · scan, unsupported network |
 | `lib/qr/index.ts` | Send · scan, unreadable · Camera · permission denied |
 | `Networks.tsx` | Settings · networks, confirm switch · Settings · networks, switch failed |
@@ -393,7 +395,6 @@ If one of these files changes, the screens beside it may no longer be true.
 | `LanguageSettings.tsx` | Settings · language |
 | `lib/biometric/index.ts` | Settings · app lock |
 | `lib/mobile/back-handler.ts` | Lock · resume re-auth |
-| `lib/qr/format.test.ts` | Send · recipient, filled |
 | `lib/qr/scanner.ts` | Camera · permission denied |
 | `lock-up/run-checks.ts` | Settings · auto-lock |
 | `main.css` | dApp · active |
@@ -402,7 +403,6 @@ If one of these files changes, the screens beside it may no longer be true.
 | `ProgressBar.tsx` | dApp · active |
 | `PromptCarousel.tsx` | Home / Overview |
 | `qr/format.ts` | Receive · request an amount |
-| `QRCode.test.tsx` | Send · recipient, filled |
 | `QRCode.tsx` | Receive · loading |
 | `receipt.ts` | Send · success |
 | `Receive/PendingTab.tsx` | Settings · currency |

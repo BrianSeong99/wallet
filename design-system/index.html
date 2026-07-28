@@ -1682,38 +1682,38 @@ ul.tick li:before{content:"→";position:absolute;left:0.125rem;color:var(--acce
    fight the mono. Truncation must also follow the match rather than staying
    head-and-tail, or a middle match hides inside the ellipsis. */
 .ad mark,.nm mark{background:none;color:var(--ink);font-weight:600}
-/* The live entry: what you are typing, echoed as a row that resolves in place.
-   It sits directly under the field because it belongs to the field, not to the
-   match list -- it is the same value, being detected. Three states, and the
-   status line names each rather than relying on the ring colour alone:
-   detecting (--ink-3, still counting characters), valid (--pos), rejected (--neg).
-   Once valid it is tappable, so the fastest path to send is the row you just
-   created rather than a separate Confirm hunt. */
-.liverow{display:flex;align-items:center;gap:0.625rem;padding:0.75rem 0;
-  border-bottom:1px solid var(--rule)}
-.liverow .lv{min-width:0;flex:1;display:flex;flex-direction:column}
-.liverow .lv .la{font-family:var(--mono);font-size:var(--t-label);color:var(--ink);
-  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.liverow .lv .ls{font-size:var(--t-caption);color:var(--ink-3);margin-top:0.125rem}
-
-
+/* .liverow is RETIRED, and its rationale is worth keeping as the record of why.
+   It echoed the value being typed as a row directly under the field, which only
+   earned its place while the field was a 44pt pill showing 12 of 48 characters:
+   the echo was the second truncation of a string the user could not read once.
+   With .heroin carrying the WHOLE address, every recipient state was rendering
+   the same value twice, so the echo went and the row kept the part that was
+   never redundant -- the RESOLUTION. That is now a plain .mrow, and the rule the
+   old component established survives intact: the status line NAMES the state in
+   words (keep typing / not in your contacts / no route to that network) instead
+   of leaning on a ring colour, so nothing here is carried by hue (SC 1.4.1). The
+   row is tappable with a chevron exactly when it commits, and inert without one
+   when there is nowhere to go -- which is also how invalid differs from
+   unsupported: one has no row at all, the other has a row that cannot be tapped. */
 /* Counting up as characters arrive is the honest progress signal for a fixed-
-   length string -- it tells you how far you are, which a spinner cannot. */
-.liverow .lcount{font-family:var(--num);font-feature-settings:var(--num-feat);
-  font-size:var(--t-caption);color:var(--ink-3);flex:none}
+   length string -- it tells you how far you are, which a spinner cannot. It reads
+   N / 48 because every bech32 fixture in the repo is 48 characters
+   (lib/qr/format.test.ts:4, QRCode.test.tsx:47). */
+.lcount{font-family:var(--num);font-feature-settings:var(--num-feat);
+  font-size:var(--t-caption);color:var(--ink-3);flex:none;margin-left:auto}
+.mrow .fam+.lcount{margin-left:0.375rem}
 /* Picking a recipient IS the action, so rows advance and this step has no Confirm.
    A separate commit button asks the user to say the same thing twice -- choose
    Wiktor, then confirm choosing Wiktor -- and it made three consecutive screens
    label their primary "Confirm", which stopped meaning anything. The chevron is
    the affordance; the rows are already past 44pt. */
 .mrow.tap{cursor:pointer}
-.mrow .go,.liverow .go{margin-left:auto;flex:none;color:var(--ink-3);font-size:var(--t-body)}
+.mrow .go{margin-left:auto;flex:none;color:var(--ink-3);font-size:var(--t-body)}
 /* With a network chip present the chip takes the free space and the chevron
    trails it, so the right edge reads as one group instead of the chip floating
    next to the name with a gap before the chevron. */
 .mrow .fam{margin-left:auto}
 .mrow .fam+.go{margin-left:0.375rem}
-.liverow[data-state="ok"]{cursor:pointer}
 /* Detected address family. All three are CORRECT addresses -- a Solana address is
    not a worse address than a Miden one, it is a different network. So the family
    is labelled neutrally and semantic colour is not used to grade it; green/amber/red
@@ -1727,7 +1727,6 @@ ul.tick li:before{content:"→";position:absolute;left:0.125rem;color:var(--acce
   font-size:var(--t-caption);font-weight:800;padding:0.1875rem 0.5rem 0.1875rem 0.1875rem;
   border-radius:var(--radius-sm);flex:none;letter-spacing:.02em;
   background:var(--surface-2);color:var(--ink-2)}
-.liverow[data-state="blocked"]{cursor:not-allowed}
 /* Inline network choice. "EVM" and "SVM" are jargon -- most people have never
    met the words, and a label nobody can read is worse than no label. The address
    format still cannot name a chain (an 0x string is valid on all of them at
@@ -4008,7 +4007,7 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
               <div class="seg" data-act="swap"><span class="svgic" style="--ic:url(assets/icons/convert.svg);" aria-hidden="true"></span><span class="lbl">Swap</span></div>
             </div>
             <div class="pgtitle" id="r-h">Send To</div>
-            <div class="fld" style="width:auto"><div class="heroin ph" role="textbox" aria-labelledby="r-h" style="font-family:var(--display);letter-spacing:-.01em">Enter Address</div>
+            <div class="fld" style="width:auto"><div class="heroin ph" role="textbox" aria-labelledby="r-h">Enter Address</div>
               <div class="fieldrow" style="flex-wrap:wrap">
                 <button class="tokchip" aria-label="Paste address"><span class="svgic" style="--ic:url(assets/icons/copy.svg);width:1.0625rem;height:1.0625rem" aria-hidden="true"></span></button>
               <button class="tokchip" aria-label="Scan a QR code"><span class="svgic" style="--ic:url(assets/icons/qr-scan.svg);width:1.0625rem;height:1.0625rem" aria-hidden="true"></span></button>
@@ -4022,7 +4021,7 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
           </div>
           <div class="mnav"><button class="t on"><span class="svgic" style="--ic:url(assets/icons/home-new.svg)" aria-hidden="true"></span><span>Home</span></button><button class="t"><span class="svgic" style="--ic:url(assets/icons/explore.svg)" aria-hidden="true"></span><span>Explore</span></button><button class="t"><span class="svgic" style="--ic:url(assets/icons/activity.svg)" aria-hidden="true"></span><span>Activity</span></button></div>
         </div></div></div>
-        <div class="scrnote"><b>Option A, chosen 2026-07-27, with four changes on top of it.</b> <b>The heading is the label now.</b> It reads <i>Send To</i> and the separate <code>To</code> beneath it is gone &mdash; two words for one thing, eighteen points apart, is not a label and a heading, it is the same label twice. The field carries <code>aria-labelledby</code> pointing at the heading, so dropping the visible <code>&lt;label&gt;</code> costs nothing under SC 3.3.2: the name is still programmatic, it is just not printed twice. <b>That change had a cost the mock exposed immediately</b> &mdash; with the label gone, the placeholder at 32px/800 sat directly under a 26px/800 heading and the two read as stacked titles, the emptiest element on the screen being the loudest. Exactly the defect this screen was redrawn to fix. The placeholder now recedes to <code>--ink-3</code> at weight 500 while the <em>filled</em> field keeps 800 and <code>--ink</code>: same box, and empty versus filled differs by weight and ink, not only by wording. <b>The placeholder dropped &ldquo;Miden&rdquo;</b> &mdash; the field takes Miden, EVM and Solana addresses and detects which as you type, so naming one network told the user the opposite of what the field does. <b>Paste and Scan are icon&#8209;only; Address Book keeps its word.</b> The two icons are <em>mechanisms</em> &mdash; they put an address in the field and nothing else happens. Address Book opens a list you have to read and choose from, so it says so. Both icon buttons carry an <code>aria-label</code>: an icon-only control without one is the anti-pattern, not the icon itself.</div></div>
+        <div class="scrnote"><b>Option A, chosen 2026-07-27, with four changes on top of it.</b> <b>The heading is the label now.</b> It reads <i>Send To</i> and the separate <code>To</code> beneath it is gone &mdash; two words for one thing, eighteen points apart, is not a label and a heading, it is the same label twice. The field carries <code>aria-labelledby</code> pointing at the heading, so dropping the visible <code>&lt;label&gt;</code> costs nothing under SC 3.3.2: the name is still programmatic, it is just not printed twice. <b>That change had a cost the mock exposed immediately</b> &mdash; with the label gone, the placeholder at 32px/800 sat directly under a 26px/800 heading and the two read as stacked titles, the emptiest element on the screen being the loudest. Exactly the defect this screen was redrawn to fix. The placeholder now recedes to <code>--ink-3</code> at weight 500 while the <em>filled</em> field keeps 700 and <code>--ink</code>: same box, and empty versus filled differs by weight and ink, not only by wording. <b>The placeholder dropped &ldquo;Miden&rdquo;</b> &mdash; the field takes Miden, EVM and Solana addresses and detects which as you type, so naming one network told the user the opposite of what the field does. <b>Shortening that string is also what let the placeholder keep the field&rsquo;s own face.</b> It carried an inline <code>font-family:var(--display)</code>, and that was a workaround rather than a decision: <i>Enter Miden Address</i> set in Geist Mono at 32px overran the line and wrapped to two, and Nunito was narrow enough to fit. <i>Enter Address</i> leaves the workaround nothing to solve &mdash; measured in the browser it fills 69&percnt; of the line at the authored 402pt frame and still sits on one line at 375, 360 and 320 &mdash; so the override is gone and the placeholder inherits <code>.heroin</code>&rsquo;s mono. A field that changes typeface between empty and filled is disorienting, and a placeholder should preview the shape of the thing that will replace it. Weight and ink already separate the two states; swapping the face as well was one signal too many. <b>Paste and Scan are icon&#8209;only; Address Book keeps its word.</b> The two icons are <em>mechanisms</em> &mdash; they put an address in the field and nothing else happens. Address Book opens a list you have to read and choose from, so it says so. Both icon buttons carry an <code>aria-label</code>: an icon-only control without one is the anti-pattern, not the icon itself.</div></div>
 
       
       
@@ -4060,19 +4059,20 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
               <div class="seg" data-act="receive"><span class="svgic" style="--ic:url(assets/icons/receive-new.svg);" aria-hidden="true"></span><span class="lbl">Receive</span></div>
               <div class="seg" data-act="swap"><span class="svgic" style="--ic:url(assets/icons/convert.svg);" aria-hidden="true"></span><span class="lbl">Swap</span></div>
             </div>
-            <div class="pgtitle">Choose recipient</div>
-            <div class="fld" style="width:auto"><label>To</label>
-              <div class="fieldrow">
-                <div class="searchf" style="width:auto;flex:1;min-width:0;background:var(--surface);box-shadow:0 0 0 1.5px var(--rule-strong);color:var(--ink);font-family:var(--mono);font-size:var(--t-label)"><span class="val">mtst1zz9&hellip;41mn</span></div>
-                <button class="tokchip" style="align-self:auto">Paste</button>
-                <button class="scanbtn" aria-label="Scan a QR code"><span class="svgic" style="--ic:url(assets/icons/qr-scan.svg)" aria-hidden="true"></span></button>
+            <div class="pgtitle" id="rn-h">Send To</div>
+            <div class="fld" style="width:auto"><div class="heroin" role="textbox" aria-labelledby="rn-h" style="color:var(--ink)">mtst1zzzqzwh6s4gvcyzsvx726y6xvsgt5qv5qruqqypuyph</div>
+              <div class="fieldrow" style="flex-wrap:wrap">
+                <button class="tokchip" aria-label="Paste address"><span class="svgic" style="--ic:url(assets/icons/copy.svg);width:1.0625rem;height:1.0625rem" aria-hidden="true"></span></button>
+              <button class="tokchip" aria-label="Scan a QR code"><span class="svgic" style="--ic:url(assets/icons/qr-scan.svg);width:1.0625rem;height:1.0625rem" aria-hidden="true"></span></button>
+              <button class="tokchip"><span class="svgic" style="--ic:url(assets/icons/contacts-book.svg);width:1.0625rem;height:1.0625rem" aria-hidden="true"></span>Address Book</button>
               </div>
             </div>
-            <div class="liverow" data-state="ok"><span class="lv"><span class="la">mtst1zz9&hellip;41mn</span><span class="ls">Not in your contacts</span></span><span class="fam"><span class="nlg" style="background:var(--paper)"><img src="assets/icons/miden.svg" alt=""></span>Miden</span><span class="go" aria-hidden="true">&rsaquo;</span></div>
+            <div class="shlab" style="margin-top:1.125rem">Send to</div>
+            <div class="mrow tap"><div class="ic anon"></div><div><div class="nm">New address</div><div class="ad">Not in your contacts</div></div><span class="fam"><span class="nlg" style="background:var(--paper)"><img src="assets/icons/miden.svg" alt=""></span>Miden</span><span class="go" aria-hidden="true">&rsaquo;</span></div>
           </div>
           <div class="mnav"><button class="t on"><span class="svgic" style="--ic:url(assets/icons/home-new.svg)" aria-hidden="true"></span><span>Home</span></button><button class="t"><span class="svgic" style="--ic:url(assets/icons/explore.svg)" aria-hidden="true"></span><span>Explore</span></button><button class="t"><span class="svgic" style="--ic:url(assets/icons/activity.svg)" aria-hidden="true"></span><span>Activity</span></button></div>
         </div></div></div>
-        <div class="scrnote"><b>&ldquo;No results&rdquo; is the wrong frame here.</b> In a wallet an unmatched address is the <em>normal</em> case &mdash; the first time you pay anyone nothing matches, and the address is perfectly valid. Rendering that as a dead end would tell the user something is wrong when nothing is. So the row states the fact, confirms the address is valid, and <b>Confirm stays enabled</b> &mdash; the green field ring is the same check the error state fails. It also answers the question this state actually raises, <em>should I save this?</em>, by saying saving happens afterwards, so a send is never blocked on a housekeeping decision. <b>Proposed:</b> there is no contact list on this screen today and no save-after-send flow.</div></div>
+        <div class="scrnote"><b>&ldquo;No results&rdquo; is the wrong frame here.</b> In a wallet an unmatched address is the <em>normal</em> case &mdash; the first time you pay anyone nothing matches, and the address is perfectly valid. Rendering that as a dead end would tell the user something is wrong when nothing is. So the row states the fact instead of reporting a miss, and it answers the question this state actually raises, <em>should I save this?</em>, by saying saving happens afterwards &mdash; a send is never blocked on a housekeeping decision.<br><br><b>On the <code>Send · recipient</code> chassis, which changes how that argument is made.</b> The previous draft carried it with <b>Confirm left enabled</b> and a green ring on the field. Both are gone: this flow has no Confirm at all, and a ring colour was the only thing separating &ldquo;valid&rdquo; from &ldquo;rejected&rdquo;. The row <em>is</em> the commit &mdash; tappable, with a chevron &mdash; and that is the whole difference from <code>unsupported</code>, whose row has neither, and from <code>invalid</code>, which has no row to tap. Nothing on the screen is now carried by hue, so it clears SC 1.4.1 without help.<br><br><b>The address is a real fixture and all of it is on screen.</b> <code>mtst1zzzqzwh6s4gvcyzsvx726y6xvsgt5qv5qruqqypuyph</code> is <code>QRCode.test.tsx:154</code> &mdash; 48 characters, like every other bech32 fixture in the repo. The previous draft printed <code>mtst1zz9&hellip;41mn</code> <em>twice</em>, truncated in the pill and truncated again in the row beneath it: two copies of a string that could not be verified in either. <b>Proposed:</b> there is no contact list on this screen today and no save-after-send flow.</div></div>
       <div><div class="scrcap"><i></i>Send &middot; recipient, other network <span class="tag merge">proposed</span></div>
         <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
           <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>
@@ -4083,15 +4083,15 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
               <div class="seg" data-act="receive"><span class="svgic" style="--ic:url(assets/icons/receive-new.svg);" aria-hidden="true"></span><span class="lbl">Receive</span></div>
               <div class="seg" data-act="swap"><span class="svgic" style="--ic:url(assets/icons/convert.svg);" aria-hidden="true"></span><span class="lbl">Swap</span></div>
             </div>
-            <div class="pgtitle">Choose recipient</div>
-            <div class="fld" style="width:auto"><label>To</label>
-              <div class="fieldrow">
-                <div class="searchf" style="width:auto;flex:1;min-width:0;background:var(--surface);box-shadow:0 0 0 1.5px var(--rule-strong);color:var(--ink);font-family:var(--mono);font-size:var(--t-label)"><span class="val">0x71C7656EC7ab88b0&hellip;8976F</span></div>
-                <button class="tokchip" style="align-self:auto">Paste</button>
-                <button class="scanbtn" aria-label="Scan a QR code"><span class="svgic" style="--ic:url(assets/icons/qr-scan.svg)" aria-hidden="true"></span></button>
+            <div class="pgtitle" id="ro-h">Send To</div>
+            <div class="fld" style="width:auto"><div class="heroin" role="textbox" aria-labelledby="ro-h" style="color:var(--ink)">0x71C7656EC7ab88b098defB751B7401B5f6d8976F</div>
+              <div class="fieldrow" style="flex-wrap:wrap">
+                <button class="tokchip" aria-label="Paste address"><span class="svgic" style="--ic:url(assets/icons/copy.svg);width:1.0625rem;height:1.0625rem" aria-hidden="true"></span></button>
+              <button class="tokchip" aria-label="Scan a QR code"><span class="svgic" style="--ic:url(assets/icons/qr-scan.svg);width:1.0625rem;height:1.0625rem" aria-hidden="true"></span></button>
+              <button class="tokchip"><span class="svgic" style="--ic:url(assets/icons/contacts-book.svg);width:1.0625rem;height:1.0625rem" aria-hidden="true"></span>Address Book</button>
               </div>
             </div>
-            <div class="liverow" data-state="ask"><span class="lv"><span class="la">0x71C7656EC7ab88b0&hellip;8976F</span><span class="ls">This address works on several networks</span></span></div>
+            <div class="mrow" style="margin-top:1.125rem"><div><div class="nm">This address works on several networks</div></div></div>
             <div class="netpick"><div class="npq">Which network is it on?</div>
               <div class="netlist">
               <div class="netrow" role="button" tabindex="0" style="min-height:44px"><span class="nlg" style="background:#627EEA"><span class="svgic" style="--ic:url(assets/icons/ethereum.svg);width:0.75rem;height:0.75rem;background-color:#FFFFFF" aria-hidden="true"></span></span><span class="nname">Ethereum</span><span class="go" aria-hidden="true">&rsaquo;</span></div>
@@ -4103,7 +4103,7 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
           </div>
           <div class="mnav"><button class="t on"><span class="svgic" style="--ic:url(assets/icons/home-new.svg)" aria-hidden="true"></span><span>Home</span></button><button class="t"><span class="svgic" style="--ic:url(assets/icons/explore.svg)" aria-hidden="true"></span><span>Explore</span></button><button class="t"><span class="svgic" style="--ic:url(assets/icons/activity.svg)" aria-hidden="true"></span><span>Activity</span></button></div>
         </div></div></div>
-        <div class="scrnote"><b>The network is chosen here, in names people recognise.</b> The format still cannot identify a chain &mdash; an <code>0x</code> string is valid on Ethereum, Base, Arbitrum and every other EVM network simultaneously &mdash; so the question is unavoidable. What changed is where it is asked and in what words: <b>&ldquo;EVM&rdquo; never appears</b>, because it is jargon most people have never met, and a label nobody can read is worse than no label at all. Guessing a default is not an option: an exchange deposit address on the wrong chain does not come back. <b>Tapping a network is the commit, and the next screen is Amount.</b> There is no resolved &ldquo;Base &middot; Change&rdquo; row and no Confirm button under the list, for the same reason the contact rows above have none &mdash; a separate commit asks the user to say the same thing twice, and the address is on screen in the field at the moment the network row is tapped, so the two facts are verified together exactly once. <b>The choice is revisable at review</b>, on the route band beside the amount, which is where the cost of each network can finally be quoted; until an amount exists there is nothing to compare, which is why these rows carry a name and nothing else. <b>Two fixes to the previous draft, both on the rows.</b> They were <code>&lt;div class="netrow"&gt;</code> with <code>cursor:pointer</code> and <b>no role and no <code>tabindex</code></b> &mdash; four unrecoverable choices that a keyboard cannot reach and a screen reader announces as text. And they cleared the 44pt floor only by accident: <code>0.6875rem</code> of padding around a 13px label is 38, and the rows measure 45&ndash;47 solely because the <code>&rsaquo;</code> sits at <code>--t-body</code> and its line box is taller than the label&rsquo;s. Drop the chevron, or set the label a step down, and the target silently falls under the floor &mdash; and <code>review.mjs</code> would not report it, because its target check matches <code>button,a,input</code> and a short class list, not <code>.netrow</code>. The 44 is now pinned rather than inherited from a glyph. <b>Proposed:</b> today this string is rejected outright with <code>invalidMidenAccountId</code> = &ldquo;Invalid Miden account ID&rdquo;, and no chain name exists anywhere in <code>en.json</code> &mdash; not Ethereum, Base, Arbitrum, Optimism or Polygon. <b>New keys:</b> <code>whichNetwork</code> &ldquo;Which network is it on?&rdquo;, <code>addressOnSeveralNetworks</code> &ldquo;This address works on several networks&rdquo;, and one display name per chain.</div></div>
+        <div class="scrnote"><b>The network is chosen here, in names people recognise.</b> The format still cannot identify a chain &mdash; an <code>0x</code> string is valid on Ethereum, Base, Arbitrum and every other EVM network simultaneously &mdash; so the question is unavoidable. What changed is where it is asked and in what words: <b>&ldquo;EVM&rdquo; never appears</b>, because it is jargon most people have never met, and a label nobody can read is worse than no label at all. Guessing a default is not an option: an exchange deposit address on the wrong chain does not come back. <b>Tapping a network is the commit, and the next screen is Amount.</b> There is no resolved &ldquo;Base &middot; Change&rdquo; row and no Confirm button under the list, for the same reason the contact rows above have none &mdash; a separate commit asks the user to say the same thing twice, and the address is on screen in the field at the moment the network row is tapped, so the two facts are verified together exactly once. <b>The choice is revisable at review</b>, on the route band beside the amount, which is where the cost of each network can finally be quoted; until an amount exists there is nothing to compare, which is why these rows carry a name and nothing else. <b>On the <code>Send · recipient</code> chassis, and the echo row went with it.</b> The address used to sit in a 44pt pill as <code>0x71C7656EC7ab88b0&hellip;8976F</code> and then again, truncated identically, in the row underneath &mdash; while the single claim this screen makes about that string is that its <em>format</em> cannot name a chain, which is a claim you can only check by reading all 42 characters. <code>.heroin</code> prints all 42. Under the field the resolution now states itself once, in words, and the row is deliberately not tappable and carries no chevron: the answer is the list below it, not the row. The <code>Send to</code> label the resolved siblings carry is absent for the same reason &mdash; that label names a destination, and on this screen the destination is precisely what has not been established yet. <b>Two fixes to the previous draft, both on the rows.</b> They were <code>&lt;div class="netrow"&gt;</code> with <code>cursor:pointer</code> and <b>no role and no <code>tabindex</code></b> &mdash; four unrecoverable choices that a keyboard cannot reach and a screen reader announces as text. And they cleared the 44pt floor only by accident: <code>0.6875rem</code> of padding around a 13px label is 38, and the rows measure 45&ndash;47 solely because the <code>&rsaquo;</code> sits at <code>--t-body</code> and its line box is taller than the label&rsquo;s. Drop the chevron, or set the label a step down, and the target silently falls under the floor &mdash; and <code>review.mjs</code> would not report it, because its target check matches <code>button,a,input</code> and a short class list, not <code>.netrow</code>. The 44 is now pinned rather than inherited from a glyph. <b>Proposed:</b> today this string is rejected outright with <code>invalidMidenAccountId</code> = &ldquo;Invalid Miden account ID&rdquo;, and no chain name exists anywhere in <code>en.json</code> &mdash; not Ethereum, Base, Arbitrum, Optimism or Polygon. <b>New keys:</b> <code>whichNetwork</code> &ldquo;Which network is it on?&rdquo;, <code>addressOnSeveralNetworks</code> &ldquo;This address works on several networks&rdquo;, and one display name per chain.</div></div>
       <div><div class="scrcap"><i></i>Send &middot; recipient, unsupported</div>
         <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
           <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>
@@ -4114,19 +4114,19 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
               <div class="seg" data-act="receive"><span class="svgic" style="--ic:url(assets/icons/receive-new.svg);" aria-hidden="true"></span><span class="lbl">Receive</span></div>
               <div class="seg" data-act="swap"><span class="svgic" style="--ic:url(assets/icons/convert.svg);" aria-hidden="true"></span><span class="lbl">Swap</span></div>
             </div>
-            <div class="pgtitle">Choose recipient</div>
-            <div class="fld" style="width:auto"><label>To</label>
-              <div class="fieldrow">
-                <div class="searchf" style="width:auto;flex:1;min-width:0;background:var(--surface);box-shadow:0 0 0 1.5px var(--rule-strong);color:var(--ink);font-family:var(--mono);font-size:var(--t-label)"><span class="val">7xKXtg2CW87d97TXJSDpbD5jBkheTqA&hellip;</span></div>
-                <button class="tokchip" style="align-self:auto">Paste</button>
-                <button class="scanbtn" aria-label="Scan a QR code"><span class="svgic" style="--ic:url(assets/icons/qr-scan.svg)" aria-hidden="true"></span></button>
+            <div class="pgtitle" id="ru-h">Send To</div>
+            <div class="fld" style="width:auto"><div class="heroin" role="textbox" aria-labelledby="ru-h" style="color:var(--ink)">7xKXtg2CW87d97TXJSDpbD5jBkheTqA83TZRuJosgAsU</div>
+              <div class="fieldrow" style="flex-wrap:wrap">
+                <button class="tokchip" aria-label="Paste address"><span class="svgic" style="--ic:url(assets/icons/copy.svg);width:1.0625rem;height:1.0625rem" aria-hidden="true"></span></button>
+              <button class="tokchip" aria-label="Scan a QR code"><span class="svgic" style="--ic:url(assets/icons/qr-scan.svg);width:1.0625rem;height:1.0625rem" aria-hidden="true"></span></button>
+              <button class="tokchip"><span class="svgic" style="--ic:url(assets/icons/contacts-book.svg);width:1.0625rem;height:1.0625rem" aria-hidden="true"></span>Address Book</button>
               </div>
             </div>
-            <div class="liverow" data-state="blocked"><span class="lv"><span class="la">7xKXtg2CW87d97TXJSDpbD5jBkheTqA&hellip;</span><span class="ls">Miden cannot send to Solana</span></span><span class="fam"><span class="nlg" style="background:#14F195"></span>Solana</span></div>
+            <div class="mrow" style="margin-top:1.125rem"><div><div class="nm">Miden cannot send to Solana</div><div class="ad">This wallet has no route to that network</div></div><span class="fam"><span class="nlg" style="background:#14F195"></span>Solana</span></div>
           </div>
           <div class="mnav"><button class="t on"><span class="svgic" style="--ic:url(assets/icons/home-new.svg)" aria-hidden="true"></span><span>Home</span></button><button class="t"><span class="svgic" style="--ic:url(assets/icons/explore.svg)" aria-hidden="true"></span><span>Explore</span></button><button class="t"><span class="svgic" style="--ic:url(assets/icons/activity.svg)" aria-hidden="true"></span><span>Activity</span></button></div>
         </div></div></div>
-        <div class="scrnote"><b>&ldquo;Recognised but unsupported&rdquo; is a different message from &ldquo;invalid&rdquo;, and the difference matters.</b> This is a perfectly well-formed Solana address; nothing is wrong with what the user typed. Today the app answers <code>invalidMidenAccountId</code> = &ldquo;Invalid Miden account ID&rdquo;, which tells them they made a mistake they did not make, and sends them off to re-check a string that is already correct. Naming the family turns a dead end into an explanation. The row is deliberately not tappable and carries no chevron &mdash; there is nowhere for it to go. <b>Proposed:</b> no non-Miden detection exists in the code.</div></div>
+        <div class="scrnote"><b>&ldquo;Recognised but unsupported&rdquo; is a different message from &ldquo;invalid&rdquo;, and the difference matters.</b> This is a perfectly well-formed Solana address; nothing is wrong with what the user typed. Today the app answers <code>invalidMidenAccountId</code> = &ldquo;Invalid Miden account ID&rdquo;, which tells them they made a mistake they did not make, and sends them off to re-check a string that is already correct. Naming the family turns a dead end into an explanation. The row is deliberately not tappable and carries no chevron &mdash; there is nowhere for it to go.<br><br><b>One condition, one vocabulary, and now in two places.</b> The row title is <code>Send &middot; scan, unsupported network</code>&rsquo;s sentence verbatim &mdash; &ldquo;Miden cannot send to Solana&rdquo; &mdash; and the line under it is that screen&rsquo;s body sentence verbatim as well, from <code>cannotSendToNetworkBody</code>. A scanned Solana address and a pasted one are one condition; two phrasings would make them read as two different failures, and the user has no way to tell which they hit.<br><br><b>On the <code>Send &middot; recipient</code> chassis, with one deliberate omission.</b> There is no <code>Send to</code> label above the row, and that is a rule rather than an oversight: the label appears only where a destination actually exists. <code>new address</code> has one and shows it; <code>other network</code> has not established one yet; here there is none to establish, and a label promising otherwise would repeat the false promise the shipped error already makes. The whole 44-character address is in the field: <code>7xKXtg2CW87d97TXJSDpbD5jBkheTqA83TZRuJosgAsU</code>, which the previous draft cut to 31 characters and then echoed, cut identically, in the row beneath it. Nothing turns red &mdash; per the <code>.fam</code> rule a Solana address is not a worse address, it is a different network &mdash; so the words carry the whole state and the screen never leans on hue. <b>Proposed:</b> no non-Miden detection exists in the code.</div></div>
       <div><div class="scrcap"><i></i>Send · recipient, typing</div>
         <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
           <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>
@@ -4137,22 +4137,22 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
               <div class="seg" data-act="receive"><span class="svgic" style="--ic:url(assets/icons/receive-new.svg);" aria-hidden="true"></span><span class="lbl">Receive</span></div>
               <div class="seg" data-act="swap"><span class="svgic" style="--ic:url(assets/icons/convert.svg);" aria-hidden="true"></span><span class="lbl">Swap</span></div>
             </div>
-            <div class="pgtitle">Choose recipient</div>
-            <div class="fld" style="width:auto"><label>To</label>
-              <div class="fieldrow">
-                <div class="searchf" style="width:auto;flex:1;min-width:0;box-shadow:var(--focus-ring);background:var(--surface);color:var(--ink);font-family:var(--mono);font-size:var(--t-label)">mtst1ap8qz4v<span style="border-left:1.5px solid var(--accent);margin-left:1px"></span></div>
-                <button class="tokchip" style="align-self:auto">Paste</button>
-                <button class="scanbtn" aria-label="Scan a QR code"><span class="svgic" style="--ic:url(assets/icons/qr-scan.svg)" aria-hidden="true"></span></button>
+            <div class="pgtitle" id="rt-h">Send To</div>
+            <div class="fld" style="width:auto"><div class="heroin" role="textbox" aria-labelledby="rt-h" style="color:var(--ink)">mtst1ap8qz4v<span style="border-left:2px solid var(--accent);margin-left:1px" aria-hidden="true"></span></div>
+              <div class="fieldrow" style="flex-wrap:wrap">
+                <button class="tokchip" aria-label="Paste address"><span class="svgic" style="--ic:url(assets/icons/copy.svg);width:1.0625rem;height:1.0625rem" aria-hidden="true"></span></button>
+              <button class="tokchip" aria-label="Scan a QR code"><span class="svgic" style="--ic:url(assets/icons/qr-scan.svg);width:1.0625rem;height:1.0625rem" aria-hidden="true"></span></button>
+              <button class="tokchip"><span class="svgic" style="--ic:url(assets/icons/contacts-book.svg);width:1.0625rem;height:1.0625rem" aria-hidden="true"></span>Address Book</button>
               </div>
             </div>
-            <div class="liverow" data-state="detecting"><span class="lv"><span class="la">mtst1ap8qz4v</span><span class="ls">Keep typing</span></span><span class="fam"><span class="nlg" style="background:var(--paper)"><img src="assets/icons/miden.svg" alt=""></span>Miden</span><span class="lcount">12 / 48</span></div>
+            <div class="mrow" style="margin-top:1.125rem"><div><div class="nm">Keep typing</div></div><span class="fam"><span class="nlg" style="background:var(--paper)"><img src="assets/icons/miden.svg" alt=""></span>Miden</span><span class="lcount">12 / 48</span></div>
             <div class="lskel"><span class="sk skc"></span><span style="flex:1"><span class="sk sk1" style="display:block"></span><span class="sk sk2" style="display:block"></span></span></div>
             <div class="shlab" style="margin-top:1.125rem">Matches</div>
             <div class="mrow tap"><div class="ic" style="background:var(--tx-sent)"><span class="ini">W</span></div><div><div class="nm">Wiktor</div><div class="ad addr"><mark>mtst1ap8qz4v</mark>&hellip;r4fp</div></div><span class="fam"><span class="nlg" style="background:var(--paper)"><img src="assets/icons/miden.svg" alt=""></span>Miden</span><span class="go" aria-hidden="true">&rsaquo;</span></div>
           </div>
           <div class="mnav"><button class="t on"><span class="svgic" style="--ic:url(assets/icons/home-new.svg)" aria-hidden="true"></span><span>Home</span></button><button class="t"><span class="svgic" style="--ic:url(assets/icons/explore.svg)" aria-hidden="true"></span><span>Explore</span></button><button class="t"><span class="svgic" style="--ic:url(assets/icons/activity.svg)" aria-hidden="true"></span><span>Activity</span></button></div>
         </div></div></div>
-        <div class="scrnote">Focused and mid-entry. The field takes <code>--focus-ring</code> and switches to mono once there is an address in it, because a bech32 string is read character by character. <b>Recents filter as you type</b> &mdash; the one match survives &mdash; which is the affordance that makes typing tolerable at all. Confirm stays inert until <code>isValidMidenAddress</code> passes; that gate is real (<code>SendManager.tsx:365&ndash;379</code>), the filtering is pro</div></div>
+        <div class="scrnote"><b>Focused and mid-entry &mdash; and a half-typed address is content, not a placeholder.</b> The field takes the filled treatment (mono, 700, <code>--ink</code>) rather than <code>.heroin.ph</code>: twelve characters the user typed <em>are</em> the value, and dropping them to placeholder grey would tell them the field is still empty. The caret carries focus on its own. The old pill announced focus with <code>--focus-ring</code> and switched to mono once an address was in it; <code>.heroin</code> is borderless and mono at rest, so there is no ring to draw and no typeface left to swap.<br><br><b>The counter reads <code>12 / 48</code>, and 48 is the right denominator.</b> Every bech32 fixture in the repo is 48 characters &mdash; <code>lib/qr/format.test.ts:4</code>, <code>QRCode.test.tsx:47</code> &mdash; so the 49 an earlier draft used was off by one against every real address the app has been tested with. Counting up is the honest progress signal for a fixed-length string: it says how far you are, which a spinner cannot.<br><br><b>Recents filter as you type</b> &mdash; the one match survives, with the matched run marked inside the row &mdash; which is the affordance that makes typing an address tolerable at all. The shipped flow gates its Confirm on <code>isValidMidenAddress</code> and that gate is real (<code>SendManager.tsx:365&ndash;379</code>); here there is no Confirm to gate, so it shows up instead as the resolution row refusing to become tappable until the string parses. <b>Proposed:</b> none of the filtering, the counter or the detection row exists in the code &mdash; there is no recents feature at all.</div></div>
       <div><div class="scrcap"><i></i>Send · recipient, invalid</div>
         <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
           <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>
@@ -4163,19 +4163,19 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
               <div class="seg" data-act="receive"><span class="svgic" style="--ic:url(assets/icons/receive-new.svg);" aria-hidden="true"></span><span class="lbl">Receive</span></div>
               <div class="seg" data-act="swap"><span class="svgic" style="--ic:url(assets/icons/convert.svg);" aria-hidden="true"></span><span class="lbl">Swap</span></div>
             </div>
-            <div class="pgtitle">Choose recipient</div>
-            <div class="fld err" style="width:auto"><label>To</label>
-              <div class="fieldrow">
-                <div class="searchf" style="width:auto;flex:1;min-width:0;box-shadow:0 0 0 1.5px var(--neg);background:var(--surface);color:var(--ink);font-family:var(--mono);font-size:var(--t-label)"><span class="val">0x71C7656EC7ab88b0&hellip;</span></div>
-                <button class="tokchip" style="align-self:auto">Paste</button>
-                <button class="scanbtn" aria-label="Scan a QR code"><span class="svgic" style="--ic:url(assets/icons/qr-scan.svg)" aria-hidden="true"></span></button>
+            <div class="pgtitle" id="ri-h">Send To</div>
+            <div class="fld err" style="width:auto"><div class="heroin" role="textbox" aria-labelledby="ri-h" aria-invalid="true" aria-describedby="ri-e" style="color:var(--ink);margin-bottom:0.375rem">0x71C7656EC7ab88b098defB751B7401B5f6d8976F</div>
+              <div class="hint" id="ri-e" role="alert" style="margin-bottom:1.125rem">Invalid Miden account ID</div>
+              <div class="fieldrow" style="flex-wrap:wrap">
+                <button class="tokchip" aria-label="Paste address"><span class="svgic" style="--ic:url(assets/icons/copy.svg);width:1.0625rem;height:1.0625rem" aria-hidden="true"></span></button>
+              <button class="tokchip" aria-label="Scan a QR code"><span class="svgic" style="--ic:url(assets/icons/qr-scan.svg);width:1.0625rem;height:1.0625rem" aria-hidden="true"></span></button>
+              <button class="tokchip"><span class="svgic" style="--ic:url(assets/icons/contacts-book.svg);width:1.0625rem;height:1.0625rem" aria-hidden="true"></span>Address Book</button>
               </div>
-              <div class="hint">Invalid Miden account ID</div>
             </div>
           </div>
           <div class="mnav"><button class="t on"><span class="svgic" style="--ic:url(assets/icons/home-new.svg)" aria-hidden="true"></span><span>Home</span></button><button class="t"><span class="svgic" style="--ic:url(assets/icons/explore.svg)" aria-hidden="true"></span><span>Explore</span></button><button class="t"><span class="svgic" style="--ic:url(assets/icons/activity.svg)" aria-hidden="true"></span><span>Activity</span></button></div>
         </div></div></div>
-        <div class="scrnote">The <b>shipped</b> error, verbatim: <code>invalidMidenAccountId</code> = &ldquo;Invalid Miden account ID&rdquo;, set on every keystroke that fails <code>isValidMidenAddress</code> (<code>SendManager.tsx:365&ndash;379</code>). This is what pasting an EVM address does <em>today</em> &mdash; the string is rejected outright, not routed to a bridge. Two things the shipped screen gets wrong and this fixes: the message is announced to nobody (no <code>role="alert"</code>, no <code>aria-live</code>, no <code>aria-invalid</code>), and it renders in <code>text-red-500</code> at <b>3.64:1</b>, under the 4.5:1 floor. Here it uses <code>.fld.err</code> + <code>.hint</code>, the system&rsquo;s one error treatment.</div></div>
+        <div class="scrnote">The <b>shipped</b> error, verbatim: <code>invalidMidenAccountId</code> = &ldquo;Invalid Miden account ID&rdquo;, set on every keystroke that fails <code>isValidMidenAddress</code> (<code>SendManager.tsx:365&ndash;379</code>). This is what pasting an EVM address does <em>today</em> &mdash; the string is rejected outright, not routed to a bridge. Two things the shipped screen gets wrong and this fixes: the message is announced to nobody (no <code>role="alert"</code>, no <code>aria-live</code>, no <code>aria-invalid</code>), and it renders in <code>text-red-500</code> at <b>3.64:1</b>, under the 4.5:1 floor. Here it uses <code>.fld.err</code> + <code>.hint</code>, the system&rsquo;s one error treatment &mdash; and the mock now carries the fix it was only describing: <code>role="alert"</code> on the message, <code>aria-invalid</code> and <code>aria-describedby</code> on the field.<br><br><b>On the <code>Send &middot; recipient</code> chassis, where the block became structural.</b> The old draft blocked the send with a red ring round the pill and a greyed Confirm. This flow has no Confirm &mdash; committing is tapping the resolution row &mdash; so a string that does not parse produces <b>no row to tap</b>, and that absence <em>is</em> the block. It is also the difference from <code>unsupported</code>, which does get a row: that one names a real network and simply cannot be reached, this one names nothing because nothing was recognised. Neither state is carried by colour: the error is a sentence, and the block is a missing control.<br><br><b>The whole string is on screen, which is the point in this state above all others.</b> <code>0x71C7656EC7ab88b098defB751B7401B5f6d8976F</code> is the same 42 characters <code>recipient, other network</code> resolves happily &mdash; the two screens differ only in whether the app can route it, and telling a user their address is invalid while showing them 18 of its characters gives them nothing to re-check.</div></div>
       <div><div class="scrcap"><i></i>Send · scan <span class="tag merge">mobile only</span></div>
         <div class="phone"><div class="screen"><div class="notch"></div><div class="mock" data-surface="camera">
           <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>
@@ -4452,8 +4452,8 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
           <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>
           <div class="mpad" style="flex:1;display:flex;flex-direction:column">
             <div class="sh2"><span class="bk2">&lsaquo;</span><span class="t2">Send</span></div>
-            <div style="font-family:var(--display);font-weight:800;font-size:var(--t-title);line-height:1.1;opacity:.4">Choose recipient</div>
-            <div class="heroin" style="opacity:.4">Enter Miden Address</div>
+            <div class="pgtitle" style="margin-top:0;opacity:.4">Send To</div>
+            <div class="heroin ph" style="opacity:.4">Enter Address</div>
           </div>
           <div class="shscrim"></div>
           <div class="msheet" style="height:55%">
@@ -4473,8 +4473,8 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
           <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>
           <div class="mpad" style="flex:1;display:flex;flex-direction:column">
             <div class="sh2"><span class="bk2">&lsaquo;</span><span class="t2">Send</span></div>
-            <div style="font-family:var(--display);font-weight:800;font-size:var(--t-title);line-height:1.1;opacity:.4">Choose recipient</div>
-            <div class="heroin" style="opacity:.4">Enter Miden Address</div>
+            <div class="pgtitle" style="margin-top:0;opacity:.4">Send To</div>
+            <div class="heroin ph" style="opacity:.4">Enter Address</div>
           </div>
           <div class="shscrim"></div>
           <div class="msheet" style="height:55%">
