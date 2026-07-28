@@ -162,13 +162,13 @@ documents, and which screens document a given file.
 
 | # | Screen | Status | Specifies |
 |--:|---|---|---|
-| 77 | Contacts · picker | gap / sheet — sheet | `SendManager.tsx:488` `SendManager.tsx:87–108` |
-| 78 | Contacts · picker, empty | gap / sheet — sheet | `AccountsList.tsx:46–47` |
-| 79 | Address book | gap / sheet — sheet | `Settings.tsx:420–431` `Settings.tsx:303` `AddressBook.tsx:77–78` `AddressBook.tsx:23–37` `AddressBook.tsx:78` |
-| 80 | Address book · duplicate | gap / sheet — sheet | `AddressBook.tsx:128` |
-| 81 | Address book · empty | gap / sheet — sheet | `AddressBook.tsx:68` |
-| 82 | Address book · no results | bug / proposed — bug | `AddressBook.tsx:68–69` |
-| 83 | Address book · edit contact | gap / sheet — gap | `AddressBook.tsx:78` |
+| 77 | Contacts · pick | gap / sheet — sheet | `SendManager.tsx:488` `SendManager.tsx:87–108` |
+| 78 | Contacts · pick, empty | gap / sheet — sheet | `AccountsList.tsx:46–47` |
+| 79 | Contacts · manage | gap / sheet — sheet | `Settings.tsx:420–431` `Settings.tsx:303` `AddressBook.tsx:77–78` `AddressBook.tsx:23–37` `AddressBook.tsx:78` |
+| 80 | Contacts · manage, duplicate | gap / sheet — sheet | `AddressBook.tsx:128` |
+| 81 | Contacts · manage, empty | gap / sheet — sheet | `AddressBook.tsx:68` |
+| 82 | Contacts · manage, no results | bug / proposed — bug | `AddressBook.tsx:68–69` |
+| 83 | Contacts · edit | gap / sheet — gap | `AddressBook.tsx:78` |
 
 ## Receive flow
 
@@ -330,14 +330,14 @@ If one of these files changes, the screens beside it may no longer be true.
 | Source | Screens that specify it |
 |---|---|
 | `en.json` | Send · success, other chain · Receive · address copied · Pending notes · empty · Pending notes · claiming · Pending notes · claim failed · Token detail · loading · Claim · partial failure · Pending notes · Guardian · rotate review · Guardian · remove · Settings · reset wallet · Settings · About · Account · rename |
-| `Settings.tsx` | Address book · Settings · language · Settings · faucet ID · Settings · connected dApps, none · Settings · networks · Settings · reset wallet · Reset wallet · confirm · Settings · About |
+| `Settings.tsx` | Contacts · manage · Settings · language · Settings · faucet ID · Settings · connected dApps, none · Settings · networks · Settings · reset wallet · Reset wallet · confirm · Settings · About |
 | `HistoryView.tsx` | Activity · empty · Activity · loading · Activity · Sent, no matches · Activity · failed transactions · Activity · in progress · Activity · end of list · Transaction detail · pending |
 | `Pending.tsx` | Pending notes · empty · Pending notes · fetch failed · Pending notes · claiming · Pending notes · claim failed · Claim · in progress · Claim · partial failure · Pending notes |
 | `Unlock.tsx` | E5 · Forgot password · Settings · reset wallet · Reset wallet · confirm · Lock · probing hardware · Lock · passcode incorrect · Lock · rate limited · Lock · resume re-auth |
 | `History.tsx` | Activity · loading · Activity · Sent, no matches · Activity · failed transactions · Activity · in progress · Activity · end of list · Transaction detail · pending |
-| `SendManager.tsx` | Send · recipient, typing · Send · recipient, invalid · Send · amount · Send · amount, zero · Send · amount, insufficient · Contacts · picker |
+| `SendManager.tsx` | Send · recipient, typing · Send · recipient, invalid · Send · amount · Send · amount, zero · Send · amount, insufficient · Contacts · pick |
 | `TokenDetail.tsx` | Token detail · price unavailable · Token detail · unpriced · Token detail · loading · Token detail · zero balance · Token detail · unknown token · Activity · in progress |
-| `AddressBook.tsx` | Address book · Address book · duplicate · Address book · empty · Address book · no results · Address book · edit contact |
+| `AddressBook.tsx` | Contacts · manage · Contacts · manage, duplicate · Contacts · manage, empty · Contacts · manage, no results · Contacts · edit |
 | `AddressTab.tsx` | Receive · address copied · Receive · share failed · Receive · request an amount · Receive · loading · Receive |
 | `DappConfirmationModal.tsx` | dApp · connect request · dApp · transaction request · dApp · claim note request · dApp · private data request · dApp · switcher |
 | `Explore.tsx` | Home / Overview · Home · offline · Accounts · list · Settings · currency · Activity · offline |
@@ -387,7 +387,7 @@ If one of these files changes, the screens beside it may no longer be true.
 | `use-secret-state.hook.ts` | Recovery phrase · password · Private key · revealed |
 | `utils/miden.ts` | Send · scan, unreadable · Send · scan, unsupported network |
 | `About.tsx` | Settings · About |
-| `AccountsList.tsx` | Contacts · picker, empty |
+| `AccountsList.tsx` | Contacts · pick, empty |
 | `App.tsx` | Activity · offline |
 | `app/defaults.tsx` | Account · rename |
 | `AssetField.tsx` | Send · amount, max |

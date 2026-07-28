@@ -1813,8 +1813,18 @@ details.grp>summary .gn{font-family:var(--num);font-feature-settings:var(--num-f
    around it, a row is edge-to-edge in a list, and an outer ring would cross its neighbours. Same
    idea, adapted to the container -- and the fill is what makes it unmistakable at a glance, since
    a 2px outline alone is a thin signal on a busy row. */
+/* Two different questions, two different marks.
+   A list you STAY in, choosing between persistent objects -- the Accounts list, the network sheet,
+   the route sheet -- gets the RING: the choice survives the interaction, so it needs a state.
+   A PICKER does not. Tapping a row commits it and the sheet closes, and the field above already
+   shows what was chosen; marking one row as "selected" inside a transient sheet says the same
+   thing twice, and a rounded outline inside a flush list reads as a form field rather than a
+   selection. So .cur is a fill and nothing else, which is the same weight the row already has
+   under the thumb -- recognition, not a control. */
 .mrow.sel,.netrow.sel{background:var(--surface-2);border-radius:var(--radius-md);
   outline:2px solid var(--accent-edge);outline-offset:-2px;border-bottom-color:transparent}
+.mrow.cur{background:var(--surface-2);border-radius:var(--radius-md)}
+[data-theme="dark"] .mrow.cur{background:var(--surface-3)}
 [data-theme="dark"] .mrow.sel,[data-theme="dark"] .netrow.sel{background:var(--surface-3)}
 /* Section label inside a sheet, e.g. "Current Contacts". */
 .shlab{font-size:var(--t-caption);font-weight:700;color:var(--ink-2);letter-spacing:.02em;margin:0 0 0.5rem}
@@ -4818,7 +4828,7 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
     <p class="sub">One address book, reached from two places and doing a different job in each: the send flow opens it <b>read&#8209;only</b> to pick a recipient, Settings opens it to manage the list. That split is why the picker has no add, no delete and no search while the settings drawer has all three. <b>Nothing in either list deletes</b> &mdash; a row taps to use or to edit, and Remove lives on the edit screen behind that step; the shipped screen binds delete to the whole row with nothing on it saying so (<code>AddressBook.tsx:78</code>). <b>Rows carry the network, not the custody label</b>, because the chain is what decides whether a send arrives &mdash; which needs the optional <code>network</code> field added to <code>WalletContact</code>, since a bare <code>0x&hellip;</code> is valid on every EVM chain at once and the choice has to be stored rather than re-derived. <b>Editing does not exist in the app at all:</b> <code>address-book.ts</code> exports only <code>addContact</code>, <code>removeContact</code> and <code>getContact</code>, so fixing a typo today means delete and retype.</p>
       <details class="grp" open><summary><span class="gt">picker</span><span class="gn">2</span></summary>
         <div class="scrgrid">
-<div><div class="scrcap"><i></i>Contacts &middot; picker <span class="tag merge">sheet</span></div>
+<div><div class="scrcap"><i></i>Contacts &middot; pick <span class="tag merge">sheet</span></div>
         <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
           <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>
           <div class="mpad" style="flex:1;display:flex;flex-direction:column">
@@ -4829,17 +4839,17 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
           <div class="shscrim"></div>
           <div class="msheet" style="height:55%">
             <div class="mshandle"></div>
-            <div class="mshead">Contacts</div>
+            <div class="mshead">Contacts<button class="shact" aria-label="Add contact"><span class="svgic" style="--ic:url(assets/icons/add.svg)" aria-hidden="true"></span></button></div>
             <div class="mlist" style="flex:1">
               <div class="mrow"><div class="ic" style="background:var(--tx-swap)"></div><div><div class="nm">Savings</div><div class="ad addr">Private &middot; mtst1zz9&hellip;41mn</div></div></div>
-              <div class="mrow"><div class="ic" style="background:var(--tx-earn)"></div><div><div class="nm">Guardian vault</div><div class="ad addr">Public &middot; mtst1gv4&hellip;07qd</div></div><span class="rbadge" style="margin-left:auto">Guardian</span></div>
-              <div class="mrow sel" aria-current="true"><div class="ic" style="background:var(--tx-sent)"><span class="ini">W</span></div><div><div class="nm">Wiktor</div><div class="ad addr">mtst1ap8&hellip;r4fp</div></div><span class="fam"><span class="nlg" style="background:var(--paper)"><img src="assets/icons/miden.svg" alt=""></span>Miden</span></div>
+              <div class="mrow"><div class="ic" style="background:var(--tx-earn)"></div><div><div class="nm">Guardian vault</div><div class="ad addr">Guardian &middot; public &middot; mtst1gv4&hellip;07qd</div></div></div>
+              <div class="mrow tap cur" aria-current="true"><div class="ic" style="background:var(--tx-sent)"><span class="ini">W</span></div><div><div class="nm">Wiktor</div><div class="ad addr">mtst1ap8&hellip;r4fp</div></div></div>
               <div class="mrow tap"><div class="ic" style="background:var(--tx-sent)"><span class="ini">D</span></div><div><div class="nm">Dominik</div><div class="ad addr">0x4E1a2b&hellip;7c90</div></div><span class="fam"><span class="nlg" style="background:#0052FF"></span>Base</span></div>
             </div>
           </div>
         </div></div></div>
-        <div class="scrnote">Reached from the <b>Address Book</b> pill on the recipient step &mdash; <code>SendManager.tsx:488</code>. A <b>read-only picker</b>: no add, no delete, and <b>no search</b>, though the settings address book has one. The order is the user&rsquo;s own accounts first, then external contacts (<code>SendManager.tsx:87&ndash;108</code>); the settings list orders them the reverse way, and neither sorts alphabetically nor separates the two groups with a heading. Rows carry no chevron and no secondary action &mdash; tapping fills the address and closes the sheet. The trailing tick marks the already-chosen recipient and is a shape, not a check character.</div></div>
-<div><div class="scrcap"><i></i>Contacts &middot; picker, empty <span class="tag merge">sheet</span></div>
+        <div class="scrnote">Reached from the <b>Address Book</b> pill on the recipient step &mdash; <code>SendManager.tsx:488</code>. A <b>read-only picker</b>: no add, no delete, and <b>no search</b>, though the settings address book has one. The order is the user&rsquo;s own accounts first, then external contacts (<code>SendManager.tsx:87&ndash;108</code>); the settings list orders them the reverse way, and neither sorts alphabetically nor separates the two groups with a heading. Rows carry no chevron and no secondary action &mdash; tapping fills the address and closes the sheet. The trailing tick marks the already-chosen recipient and is a shape, not a check character. <b>Four changes, and two of them are rules.</b> <b>It is called Contacts, everywhere.</b> The app carries two names for one surface &mdash; the send drawer is titled <code>Contacts</code> while the Settings tab is <code>addressBook</code> = &ldquo;Address Book&rdquo; &mdash; so the same list has a different name depending on which door you came through. One name, one string to change. What differs is the <em>job</em>, and the captions now say so: <b>pick</b> versus <b>manage</b>. <b>The pick sheet gains an add.</b> Pasting an address you want to keep is the single most likely reason to be looking at this list from inside a send, and until now the only route was to abandon the send and go to Settings. Add is in the header&rsquo;s trailing slot, the same position the Accounts sheet puts its utility. Delete stays out: you are scanning this list to <em>choose</em> from it, and an irreversible action does not belong under a scanning thumb. <b>No ring.</b> A picker has no selected state worth drawing: tapping a row commits it and the sheet closes, and the field above already shows what was chosen &mdash; so an outline here said the same thing twice and, inside a flush list, read as a form field. The ring belongs to lists you <em>stay</em> in, choosing between things that persist: the Accounts list, the network sheet, the route sheet. The current recipient takes a fill and <code>aria-current</code>, which is recognition rather than a control. <b>One kind of fact per slot.</b> The trailing slot held a network on two rows and a <code>Guardian</code> role badge on a third &mdash; two unrelated meanings in one position, so neither could be read at a glance. The role moved into the subtitle beside <code>public</code>&thinsp;/&thinsp;<code>private</code>, where the other account facts already live. <b>Miden is not shown.</b> It is the home chain and the default, so a chip on every row is a chip that carries no information &mdash; the same reason the route row is absent on a same-chain send rather than disabled. A <code>Base</code> or <code>Solana</code> chip earns its place because it changes what happens to the money.</div></div>
+<div><div class="scrcap"><i></i>Contacts &middot; pick, empty <span class="tag merge">sheet</span></div>
         <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
           <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>
           <div class="mpad" style="flex:1;display:flex;flex-direction:column">
@@ -4850,7 +4860,7 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
           <div class="shscrim"></div>
           <div class="msheet" style="height:55%">
             <div class="mshandle"></div>
-            <div class="mshead">Contacts</div>
+            <div class="mshead">Contacts<button class="shact" aria-label="Add contact"><span class="svgic" style="--ic:url(assets/icons/add.svg)" aria-hidden="true"></span></button></div>
             <div class="shempty">
               <div class="eic" style="background:var(--surface-2);color:var(--ink-2)"><span class="svgic" style="--ic:url(assets/icons/contacts-book.svg)" aria-hidden="true"></span></div>
               <div class="et">No other accounts</div>
@@ -4862,7 +4872,7 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
         </div>
       </details>
       <div class="scrgrid">
-<div><div class="scrcap"><i></i>Address book <span class="tag merge">sheet</span></div>
+<div><div class="scrcap"><i></i>Contacts &middot; manage <span class="tag merge">sheet</span></div>
         <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
           <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>
           <div class="mpad" style="flex:1;display:flex;flex-direction:column">
@@ -4871,22 +4881,22 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
           <div class="shscrim"></div>
           <div class="msheet" style="max-height:90%">
             <div class="mshandle"></div>
-            <div class="mshead">Address Book</div>
+            <div class="mshead">Contacts</div>
             <div class="mlist" style="flex:1">
-              <div class="shlab hi">Add Contact</div>
+              <div class="shlab hi">Add contact</div>
               <div class="fld"><label>Name</label><input class="inp" value="" placeholder="Enter username"></div>
               <div class="fld"><label>Address</label><input class="inp" value="" placeholder="Enter Address"></div>
               <button class="btn btn-primary" style="width:100%;margin-top:0.25rem" disabled>Add Contact</button>
               <div class="shdiv" style="margin:1rem 0 0.875rem"></div>
               <div class="shlab">Current Contacts</div>
               <div class="searchf" style="width:auto"><span class="svgic" style="--ic:url(assets/icons/search.svg)" aria-hidden="true"></span>Search</div>
-              <div class="mrow tap"><div class="ic" style="background:var(--tx-sent)"><span class="ini">W</span></div><div><div class="nm">Wiktor</div><div class="ad addr">mtst1ap8&hellip;r4fp</div></div><span class="fam"><span class="nlg" style="background:var(--paper)"><img src="assets/icons/miden.svg" alt=""></span>Miden</span></div>
+              <div class="mrow tap"><div class="ic" style="background:var(--tx-sent)"><span class="ini">W</span></div><div><div class="nm">Wiktor</div><div class="ad addr">mtst1ap8&hellip;r4fp</div></div></div>
               <div class="mrow tap"><div class="ic" style="background:var(--tx-sent)"><span class="ini">D</span></div><div><div class="nm">Dominik</div><div class="ad addr">0x4E1a2b&hellip;7c90</div></div><span class="fam"><span class="nlg" style="background:#0052FF"></span>Base</span></div>
             </div>
           </div>
         </div></div></div>
         <div class="scrnote">The settings address book, mounted as a drawer rather than a page (<code>Settings.tsx:420&ndash;431</code>) &mdash; so <code>/settings/address-book</code> is routable but renders the plain settings menu, because <code>activeTab</code> filters drawer tabs out (<code>Settings.tsx:303</code>). The create form sits always-expanded above the list rather than behind an add button. Two defects the mock cannot show: <b>tapping a contact row deletes it</b> &mdash; the whole row is the delete trigger, with no trash icon, swipe or menu (<code>AddressBook.tsx:77&ndash;78</code>) &mdash; though a <code>confirm()</code> dialog does guard it (<code>AddressBook.tsx:23&ndash;37</code>), so the defect is the <em>affordance</em>, not a missing guard: nothing on the row says it is destructive until the dialog appears, and there is no way to <i>use</i> a contact from here at all; and <b>there is no edit</b>, since no <code>editContact</code> mutation exists, so fixing a typo means delete and retype. Submitting also leaves the sheet open with no toast: <code>onClose</code> is passed by Settings but <code>AddressBook</code> declares no props and silently drops it. <b>Two changes, 2026-07-27.</b> <b>Rows show the network, not the custody label.</b> &ldquo;External&rdquo; says where a contact came from; the network says whether the send will arrive, and it is the fact the send flow now detects per address and shows on every Recent row. Own-wallet rows keep <code>Public</code>&thinsp;/&thinsp;<code>Private</code>, which is a real Miden account type rather than a provenance label. <b>Nothing in the list deletes.</b> The row taps to <em>edit</em> and Remove lives on the edit screen behind that step. A trailing &times; put an irreversible action in a list people scan, one thumb-width from the row it belongs to; the shipped alternative is worse, binding delete to the entire row (<code>AddressBook.tsx:78</code>) with nothing on it saying so &mdash; the <code>confirm()</code> guards the data but not the surprise. <b>Blocked on a schema field:</b> <code>WalletContact</code> gained an optional <code>network</code> (<code>shared/types.ts</code>) because a bare <code>0x&hellip;</code> is valid on every EVM chain at once, so the chain is a choice that has to be stored rather than re-derived. Until the write path sets it, the chips on these rows are derived from the address format and an EVM contact cannot show which chain it is for.</div></div>
-<div><div class="scrcap"><i></i>Address book &middot; duplicate <span class="tag merge">sheet</span></div>
+<div><div class="scrcap"><i></i>Contacts &middot; manage, duplicate <span class="tag merge">sheet</span></div>
         <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
           <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>
           <div class="mpad" style="flex:1;display:flex;flex-direction:column">
@@ -4895,9 +4905,9 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
           <div class="shscrim"></div>
           <div class="msheet" style="max-height:90%">
             <div class="mshandle"></div>
-            <div class="mshead">Address Book</div>
+            <div class="mshead">Contacts</div>
             <div class="mlist" style="flex:1">
-              <div class="shlab hi">Add Contact</div>
+              <div class="shlab hi">Add contact</div>
               <div class="fld"><label>Name</label><input class="inp" value="Wiktor"></div>
               <div class="fld err"><label>Address</label><input class="inp" value="mtst1ap8qz&hellip;r4fp"><div class="hint">Contact with the same address already exists</div></div>
               <button class="btn btn-primary" style="width:100%;margin-top:0.75rem">Add Contact</button>
@@ -4905,7 +4915,7 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
           </div>
         </div></div></div>
         <div class="scrnote">Every failure lands on the <b>address</b> field: the bech32 rejection (<code>invalidAddress</code>) and this duplicate check are both funnelled into <code>setError(&#39;address&#39;)</code> at <code>AddressBook.tsx:128</code>. No form-level banner, no toast. Worth flagging: the duplicate check runs against <code>allContacts</code>, which includes the user&rsquo;s own wallet accounts &mdash; so <b>saving your own account as a contact fails with this same message</b>, which is accurate and baffling. The address field also inherits the name field&rsquo;s <code>maximalAmount</code> = &ldquo;Maximal: 50&rdquo; cap, and a testnet address is already 49 characters.</div></div>
-<div><div class="scrcap"><i></i>Address book &middot; empty <span class="tag merge">sheet</span></div>
+<div><div class="scrcap"><i></i>Contacts &middot; manage, empty <span class="tag merge">sheet</span></div>
         <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
           <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>
           <div class="mpad" style="flex:1;display:flex;flex-direction:column">
@@ -4914,9 +4924,9 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
           <div class="shscrim"></div>
           <div class="msheet" style="max-height:90%">
             <div class="mshandle"></div>
-            <div class="mshead">Address Book</div>
+            <div class="mshead">Contacts</div>
             <div class="mlist" style="flex:1">
-              <div class="shlab hi">Add Contact</div>
+              <div class="shlab hi">Add contact</div>
               <div class="fld"><label>Name</label><input class="inp" value="" placeholder="Enter username"></div>
               <div class="fld"><label>Address</label><input class="inp" value="" placeholder="Enter Address"></div>
               <button class="btn btn-primary" style="width:100%;margin-top:0.25rem" disabled>Add Contact</button>
@@ -4928,7 +4938,7 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
           </div>
         </div></div></div>
         <div class="scrnote"><b>Empty and no-search-results are the same string.</b> <code>AddressBook.tsx:68</code> renders <code>noContactsFound</code> = &ldquo;No contacts found&rdquo; for both, so a brand-new user with zero contacts gets a <i>search-failure</i> message under a search box they never typed into. Note the inconsistency across surfaces: the send-flow sheet gets a real icon-and-description empty state, this one gets a bare line of grey text. The unused key <code>addressBookDescription</code> = &ldquo;Manage your contacts here&rdquo; already sits in <code>en.json</code>, rendered by nothing.</div></div>
-<div><div class="scrcap"><i></i>Address book &middot; no results <span class="tag retire">bug</span></div>
+<div><div class="scrcap"><i></i>Contacts &middot; manage, no results <span class="tag retire">bug</span></div>
         <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
           <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>
           <div class="mpad" style="flex:1;display:flex;flex-direction:column">
@@ -4937,7 +4947,7 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
           <div class="shscrim"></div>
           <div class="msheet" style="max-height:72%">
             <div class="mshandle"></div>
-            <div class="mshead">Address Book</div>
+            <div class="mshead">Contacts</div>
             <div class="mlist" style="flex:1">
               <div class="shlab">Current Contacts</div>
               <div class="fld"><label>Search contacts</label><input class="inp" value="dominik"></div>
@@ -4951,7 +4961,7 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
           </div>
         </div></div></div>
         <div class="scrnote"><b>Distinct from <code>Address book &middot; empty</code>, which the shipped code cannot be.</b> <code>AddressBook.tsx:68&ndash;69</code> renders one string, <code>noContactsFound</code> = &ldquo;No contacts found&rdquo;, for both <code>allContacts.length === 0</code> and <code>filteredContacts.length === 0</code> &mdash; so a user with four saved contacts who mistypes a name is told they have <i>none</i>, which is a claim about their data rather than about their query. This state echoes the query, states the true count, and offers the only useful action. Second defect drawn here: the search input at <code>:53&ndash;64</code> has a <code>placeholder</code> and <b>no <code>&lt;label&gt;</code> and no <code>aria-label</code></b> &mdash; the placeholder disappears on first keystroke, so from that point the field has no accessible name at all and a screen reader announces an unlabelled text box. A persistent visible label fixes both. The field also searches name <i>and</i> address (<code>:42</code>), which the shipped placeholder &ldquo;Search&rdquo; never says.</div></div>
-<div><div class="scrcap"><i></i>Address book &middot; edit contact <span class="tag merge">gap</span></div>
+<div><div class="scrcap"><i></i>Contacts &middot; edit <span class="tag merge">gap</span></div>
         <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
           <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>
           <div class="mpad" style="flex:1;display:flex;flex-direction:column">
@@ -4964,7 +4974,7 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
             <div class="fld"><label>Name</label><input class="inp" value="Wiktor"></div>
             <div class="fld" style="margin-top:0.75rem"><label>Address</label><input class="inp" value="mtst1ap8qz&hellip;r4fp" disabled><div class="hint">The address identifies this contact and cannot be changed. Delete and re-add to move it.</div></div>
             <div class="shdiv"></div>
-            <div class="mrow"><div class="ic" style="background:var(--tx-sent)"><span class="ini">W</span></div><div style="flex:1;min-width:0"><div class="nm">Wiktor</div><div class="ad addr">mtst1ap8&hellip;r4fp</div></div><span class="fam"><span class="nlg" style="background:var(--paper)"><img src="assets/icons/miden.svg" alt=""></span>Miden</span></div>
+            <div class="mrow"><div class="ic" style="background:var(--tx-sent)"><span class="ini">W</span></div><div style="flex:1;min-width:0"><div class="nm">Wiktor</div><div class="ad addr">mtst1ap8&hellip;r4fp</div></div></div>
             <div class="zone"><button class="btn btn-primary" style="width:100%">Save changes</button><button class="btn btn-danger" style="width:100%;margin-top:0.625rem">Remove contact</button><div class="gh">Delete contact</div></div>
           </div>
         </div></div></div>
