@@ -4998,23 +4998,18 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
         <div class="scrnote"><b>A platform alert, not a sheet.</b> Every other sheet in this system is dismissible by dragging, which is the one thing an irreversible confirmation must not be &mdash; so this is the centred alert the OS provides, and the shipped code already calls for it: <code>useConfirm</code> with <code>actionConfirmation</code> and <code>deleteContactConfirm</code> (<code>AddressBook.tsx:23&ndash;37</code>). What it adds is <b>the name in the question</b>. The shipped copy asks a generic &ldquo;are you sure&rdquo;, which is unanswerable on a list where two contacts can share a name &mdash; <code>address-book.ts:15</code> guards duplicate <em>addresses</em> and not duplicate names. <b>The second sentence exists to stop the wrong worry.</b> Deleting a contact is a local bookkeeping change and users read any red confirmation in a wallet as being about money, so the screen says what is <em>not</em> at stake. Destructive action on the right and in <code>--neg</code>; Cancel takes the default position and no colour.</div></div>
           <div><div class="scrcap"><i></i>Contacts &middot; new, duplicate <span class="tag merge">sheet</span></div>
         <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
-          <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>
-          <div class="mpad" style="flex:1;display:flex;flex-direction:column">
-            <div class="sh2"><span class="bk2">&lsaquo;</span><span class="t2">Preferences</span></div>
-          </div>
-          <div class="shscrim"></div>
-          <div class="msheet" style="max-height:90%">
-            <div class="mshandle"></div>
-            <div class="mshead">Contacts</div>
-            <div class="mlist" style="flex:1">
-              <div class="shlab hi">Add contact</div>
+            <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>
+            <div class="mpad" style="flex:1;opacity:.35"><div class="sh2"><span class="bk2">&lsaquo;</span><span class="t2">Contacts</span></div></div>
+            <div class="shscrim"></div>
+            <div class="msheet" style="max-height:76%">
+              <div class="mshandle"></div>
+              <div class="mshead">New contact</div>
               <div class="fld"><label>Name</label><input class="inp" value="Wiktor"></div>
-              <div class="fld err"><label>Address</label><input class="inp" value="mtst1ap8qz&hellip;r4fp"><div class="hint">Contact with the same address already exists</div></div>
-              <button class="btn btn-primary" style="width:100%;margin-top:0.75rem">Add Contact</button>
+              <div class="fld err" style="margin-top:0.75rem"><label>Address</label><input class="inp" value="mtst1ap8qz&hellip;r4fp" aria-invalid="true" aria-describedby="dup-e"><div class="hint" id="dup-e" role="alert">Contact with the same address already exists</div></div>
+              <div class="zone"><button class="btn btn-primary" disabled>Save contact</button></div>
             </div>
-          </div>
-        </div></div></div>
-        <div class="scrnote">Every failure lands on the <b>address</b> field: the bech32 rejection (<code>invalidAddress</code>) and this duplicate check are both funnelled into <code>setError(&#39;address&#39;)</code> at <code>AddressBook.tsx:128</code>. No form-level banner, no toast. Worth flagging: the duplicate check runs against <code>allContacts</code>, which includes the user&rsquo;s own wallet accounts &mdash; so <b>saving your own account as a contact fails with this same message</b>, which is accurate and baffling. The address field also inherits the name field&rsquo;s <code>maximalAmount</code> = &ldquo;Maximal: 50&rdquo; cap, and a testnet address is already 49 characters.</div></div>
+          </div></div></div>
+        <div class="scrnote"><b>The same sheet as <i>Contacts &middot; new</i>, with one field in an error state.</b> An earlier version drew the <em>old</em> chassis &mdash; a <code>Contacts</code> header with an <i>Add contact</i> label above the fields &mdash; so the duplicate case and the empty case read as two different features. <b>Every failure lands on the address field.</b> The bech32 rejection (<code>invalidAddress</code>) and this duplicate check are both funnelled into <code>setError(&lsquo;address&rsquo;)</code> at <code>AddressBook.tsx:128</code>: no form-level banner, no toast. That is the right place for both, because the address is what is wrong &mdash; and it is why the field carries <code>aria-invalid</code> and <code>role="alert"</code>, which the shipped form does not. <b>Save is disabled rather than enabled-and-doomed.</b> Shipped throws from <code>addContact</code> on submit, so the button stays live and fails again on every press; a duplicate is knowable before the tap. <b>The check runs against <code>allContacts</code></b>, which includes the user&rsquo;s own wallet accounts &mdash; so saving your own account reports it as a duplicate rather than saying it is already yours, which is a different and more useful sentence.</div></div>
           
           <div><div class="scrcap"><i></i>Contacts &middot; no results <span class="tag retire">bug</span></div>
         <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
