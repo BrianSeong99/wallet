@@ -112,6 +112,11 @@ export const SelectAmount: React.FC<SelectAmountProps> = ({
       error={error ? t(error) : undefined}
       helper={embedded ? undefined : helper}
       tokenSelector={tokenSelector}
+      // The step opens on an empty amount, so the field IS the screen: without
+      // this the platform decimal pad never comes up and the user lands on a
+      // dead figure with nothing focused. AmountInput already emits
+      // inputMode="decimal"; it was simply never told to take focus.
+      autoFocus
       data-testid="send-amount-input"
       onValueChange={(value, _name, values) => onAmountChange(values?.formatted || value || '')}
     />
