@@ -398,7 +398,13 @@ const Unlock: FC<UnlockProps> = ({ openForgotPasswordInFullPage = false }) => {
 
   return (
     <div
-      className="bg-app-bg h-full flex flex-col px-4 min-[360px]:px-6 mx-auto w-full max-w-125"
+      // `pt-4` is the gap under the status bar, and it is measured rather than
+      // picked: the mock puts the logo 73.7pt from the frame top — a 65.2pt
+      // `.stat` row (which carries 8px of its own bottom padding) plus
+      // `.mpad`'s 8px. On device `env(safe-area-inset-top)` covers 59pt of that
+      // via <body>, so the remaining ~15pt has to come from here. Without it
+      // the logo sat flush against the Dynamic Island.
+      className="bg-app-bg h-full flex flex-col px-4 min-[360px]:px-6 pt-4 mx-auto w-full max-w-125"
       data-testid="unlock-passcode"
     >
       {/* `justify-end` — the pad is the anchor. The system pins it to the

@@ -134,7 +134,16 @@ export const SelectAmount: React.FC<SelectAmountProps> = ({
 
   const amountField = (
     <AmountInput
-      label={label ?? t('selectAmount')}
+      // The page variant's .sh2 header already names the screen; a second
+      // heading under it is the stacked-titles defect. Swap still wants both,
+      // because it stacks two of these and each needs naming.
+      bare={!embedded}
+      label={embedded ? (label ?? t('selectAmount')) : undefined}
+      // "0.00" asserts that two decimals have already been typed into a field
+      // holding nothing — and on a 6-decimal token it is not even the right
+      // count of them. One zero is the shortest honest form; the fraction
+      // appears when the user presses the separator.
+      placeholder={embedded ? undefined : '0'}
       value={amount}
       error={error ? t(error) : undefined}
       helper={embedded ? undefined : helper}
@@ -203,7 +212,10 @@ export const SelectAmount: React.FC<SelectAmountProps> = ({
           header and no back control at all: the only route back to the address
           was the hardware handler, which exists on iOS and Android and nowhere
           else. */}
-      <div className="flex shrink-0 items-center gap-1 pt-2">
+      {/* pt-4, not pt-2: `.mpad`'s 8px sits under a `.stat` row that is itself
+          8px taller than the device's safe-area inset, so matching the mock's
+          optical gap below the status bar takes 16. Same number as Unlock. */}
+      <div className="flex shrink-0 items-center gap-1 pt-4">
         {onBack && (
           <button
             type="button"

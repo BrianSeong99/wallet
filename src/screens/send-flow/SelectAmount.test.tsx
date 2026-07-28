@@ -133,7 +133,9 @@ describe('SelectAmount', () => {
       );
 
       // Default label + forwarded testid.
-      expect(screen.getByTestId('ai-label')).toHaveTextContent('selectAmount');
+      // The page variant is `bare`: its .sh2 header names the screen, so the
+      // field draws no label of its own. Swap (embedded) still gets one.
+      expect(screen.getByTestId('ai-label')).toBeEmptyDOMElement();
       expect(screen.getByTestId('amount-input')).toHaveAttribute('data-forwarded-testid', 'send-amount-input');
 
       // Balance helper: trimmed balance + fiat value (200 * 0.2 = $40.00).
@@ -312,8 +314,10 @@ describe('SelectAmount', () => {
   });
 
   describe('label and error', () => {
-    it('renders the label override in place of the default', () => {
-      renderComponent({ label: 'You Pay' });
+    it('renders the label override in place of the default (embedded only)', () => {
+      // Only the embedded variant carries a label at all — swap stacks two of
+      // these fields and each one needs naming. The page variant is `bare`.
+      renderComponent({ label: 'You Pay', embedded: true });
       expect(screen.getByTestId('ai-label')).toHaveTextContent('You Pay');
       expect(screen.getByTestId('ai-label')).not.toHaveTextContent('selectAmount');
     });

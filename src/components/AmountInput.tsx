@@ -30,6 +30,14 @@ export interface AmountInputProps {
   helper?: React.ReactNode;
   /** Token chip rendered under the orange divider (e.g. "Select a token" / "USDC ▾"). */
   tokenSelector?: React.ReactNode;
+  /**
+   * Drops the label slot, the orange underline and the field's own top margin.
+   * The send amount step draws none of them: its `.sh2` header already names
+   * the screen, so a second "Select Amount" heading beneath it is the same
+   * stacked-titles defect the recipient step was redrawn to fix, and the
+   * underline is a divider under a figure that has nothing below it to divide.
+   */
+  bare?: boolean;
   autoFocus?: boolean;
   disabled?: boolean;
   className?: string;
@@ -50,6 +58,7 @@ export const AmountInput: React.FC<AmountInputProps> = ({
   error,
   helper,
   tokenSelector,
+  bare = false,
   autoFocus,
   disabled,
   className,
@@ -59,14 +68,18 @@ export const AmountInput: React.FC<AmountInputProps> = ({
 
   return (
     <div className={classNames('flex flex-col', className)}>
-      {label != null &&
+      {!bare &&
+        label != null &&
         (typeof label === 'string' ? (
           <span className="font-heading text-2xl font-bold text-gray leading-none">{label}</span>
         ) : (
           label
         ))}
 
-      <div className="flex cursor-text items-baseline mt-3" onClick={() => inputRef.current?.focus()}>
+      <div
+        className={classNames('flex cursor-text items-baseline', !bare && 'mt-3')}
+        onClick={() => inputRef.current?.focus()}
+      >
         <CurrencyInput
           ref={inputRef}
           className={classNames(
@@ -98,7 +111,7 @@ export const AmountInput: React.FC<AmountInputProps> = ({
       ) : null}
 
       {/* Orange underline divider */}
-      <div className="mt-3 h-2 rounded-full bg-primary-500 w-55" />
+      {!bare && <div className="mt-3 h-2 rounded-full bg-primary-500 w-55" />}
 
       {tokenSelector != null && <div className="mt-4">{tokenSelector}</div>}
     </div>
