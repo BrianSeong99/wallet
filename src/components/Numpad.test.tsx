@@ -123,7 +123,17 @@ describe('Numpad', () => {
     const { container } = renderNumpad({ className: 'custom-class' });
 
     const grid = container.firstElementChild as HTMLElement;
-    expect(grid).toHaveClass('grid', 'grid-cols-3', 'gap-4', 'w-fit', 'mx-auto', 'custom-class');
+    // `.pad` — columns are exactly the key width (4.75rem), so the gap is the
+    // only thing between them: 0.875rem down, 1.625rem across.
+    expect(grid).toHaveClass(
+      'grid',
+      'grid-cols-[repeat(3,4.75rem)]',
+      'justify-center',
+      'gap-y-3.5',
+      'gap-x-6.5',
+      'mx-auto',
+      'custom-class'
+    );
   });
 
   it('renders without a className without throwing', () => {
