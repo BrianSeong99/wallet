@@ -180,6 +180,7 @@ export default {
         'accent-ink': 'var(--accent-ink)',
         'accent-wash': 'var(--accent-wash)',
         'accent-critical': 'var(--accent-critical)',
+        'accent-deep': 'var(--accent-deep)',
         'on-accent': 'var(--on-accent)',
         'on-accent-sm': 'var(--on-accent-sm)',
         pos: 'var(--pos)',

@@ -24,12 +24,19 @@ export type { GuardianOption };
 // partner's mark is a usage problem, not a design choice. #484848 measures
 // 9.15:1 on the light card but only 1.72:1 on the dark one, so dark mode puts
 // each mark on a white plate (see `.glogo` below) instead of repainting it.
-// `paddingXClass` is per-mark optical padding — the wordmarks have very
-// different aspect ratios and would otherwise touch the plate's edges.
-const GUARDIAN_LOGOS: Record<string, { Logo: ImportedSVGComponent; paddingXClass: string }> = {
-  'open-zeppelin': { Logo: OpenZeppelinLogo, paddingXClass: 'px-4' },
-  gateway: { Logo: GatewayLogo, paddingXClass: 'px-3' },
-  'lambda-class': { Logo: LambdaClassLogo, paddingXClass: 'px-5' }
+//
+// No per-mark padding. There used to be a `paddingXClass` (px-4 / px-3 / px-5)
+// applied to the SVG itself, which is not in the design system — `.glogo` pads
+// the WELL and `.glogo img` only constrains max-height/max-width. It also ran
+// backwards: OpenZeppelin has the narrowest aspect ratio (169x47 = 3.60 against
+// Gateway's 4.55) so it is already the smallest mark at a shared 24px cap, and
+// it was given the most padding, eating 32px from an 86px wordmark. Measured
+// rendering shows no aspect-ratio distortion in any of the three — the mark was
+// simply being starved of width.
+const GUARDIAN_LOGOS: Record<string, ImportedSVGComponent> = {
+  'open-zeppelin': OpenZeppelinLogo,
+  gateway: GatewayLogo,
+  'lambda-class': LambdaClassLogo
 };
 
 export interface ChooseGuardianScreenProps {
@@ -148,7 +155,7 @@ export const ChooseGuardianScreen: React.FC<ChooseGuardianScreenProps> = ({
           const isSelected = selectedId === option.id;
           const isDefault = option.id === defaultId;
           const isCurrent = currentEndpoint != null && option.endpoint === currentEndpoint;
-          const { Logo, paddingXClass } = GUARDIAN_LOGOS[option.id]!;
+          const Logo = GUARDIAN_LOGOS[option.id]!;
           return (
             // `.gcard` — the WHOLE card is the tap target, meta included, so the
             // hit area matches the thing the user is choosing.
@@ -184,9 +191,23 @@ export const ChooseGuardianScreen: React.FC<ChooseGuardianScreenProps> = ({
                   className={cn(
                     'absolute inset-x-0 top-0 flex h-5 items-center justify-center',
                     'text-caption font-extrabold tracking-[0.02em]',
-                    // A small glyph on the accent fill needs `--on-accent-sm`
-                    // (near-black); white on it is 2.9:1 and fails.
-                    isCurrent ? 'bg-surface-3 text-ink' : 'bg-accent text-on-accent-sm'
+                    // White label, on a DEEPER orange than --accent.
+                    //
+                    // The design system specs --on-accent-sm (near-black) here
+                    // and names this "the badge contrast trap": white on
+                    // --accent is exactly 3.00:1, which conforms under SC 1.4.3
+                    // only as LARGE text (>=18.66px bold). The primary button
+                    // gets away with white for precisely that reason — its
+                    // label is 19px bold — but this band is 11px, where 3.00:1
+                    // is a real failure.
+                    //
+                    // Darkening the FILL instead of the label keeps the white
+                    // that was asked for and clears 4.5:1 with margin
+                    // (--accent-ink #A84A1A vs #FFFFFF is ~5.5:1). It is the
+                    // same move the system already makes for --accent-critical
+                    // on irreversible actions: when white has to stay, the fill
+                    // is what moves. Still unmistakably the brand orange.
+                    isCurrent ? 'bg-surface-3 text-ink' : 'bg-accent-deep text-on-accent'
                   )}
                 >
                   {isCurrent ? t('currentLabel') : t('default')}
@@ -202,10 +223,10 @@ export const ChooseGuardianScreen: React.FC<ChooseGuardianScreenProps> = ({
                 className={cn(
                   'flex flex-1 items-center justify-center gap-[0.3125rem] px-2.5 py-1.5 min-h-[2.375rem]',
                   'dark:mx-2.5 dark:my-1.5 dark:min-h-[1.875rem] dark:rounded-sm-token dark:bg-pure-white dark:px-2',
-                  '[&>svg]:max-h-6 [&>svg]:w-auto [&>svg]:max-w-full'
+                  '[&>svg]:max-h-6 [&>svg]:max-w-full [&>svg]:w-auto [&>svg]:h-auto'
                 )}
               >
-                <Logo className={paddingXClass} />
+                <Logo />
               </div>
               {/* `.gmeta` — 11px is the type floor; this row was 10px. */}
               <div className="px-1 pb-[0.4375rem] text-caption leading-[1.4] text-ink-2">

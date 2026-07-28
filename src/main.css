@@ -596,6 +596,20 @@ body[data-hide-navbar] [data-tabbar-footer='true'] {
     --accent-critical: #d9661f;
     --on-accent: #ffffff;
     --on-accent-sm: #1c1a18;
+    /* A deeper accent FILL, for the case where a white label must stay.
+     * White on --accent is exactly 3.00:1 and conforms only as large text
+     * (>=18.66px bold) — fine for the 19px CTA, a real SC 1.4.3 failure for an
+     * 11px badge. The system's answer elsewhere is to darken the label
+     * (--on-accent-sm); this is the inverse for when the label is fixed: darken
+     * the FILL instead. White on it is 5.74:1.
+     *
+     * Deliberately does NOT flip between themes. --accent-ink would have been
+     * the obvious reuse, but it collapses back to the brand orange in dark
+     * (where it is an INK on a dark ground, not a fill under white), which puts
+     * white back at 3.00:1. The requirement here is "white stays legible", so
+     * the value has to stay deep in both. */
+    --accent-deep: #a84a1a;
+
     /* Channels of --accent, for the few places that need the accent at an
      * arbitrary alpha inside a gradient or shadow. color-mix() would be the
      * modern way, but .browserslistrc targets Safari >= 14 and color-mix needs
@@ -751,6 +765,8 @@ body[data-hide-navbar] [data-tabbar-footer='true'] {
     --accent-critical: #d9661f;
     --on-accent: #ffffff;
     --on-accent-sm: #191919;
+    /* Same value as light — see the note there: this one must not flip. */
+    --accent-deep: #a84a1a;
     --accent-rgb: 231 117 55;
 
     /* Dark exposed a three-way hue collision: --accent (21°), --pend (15°)
@@ -825,6 +841,7 @@ body[data-hide-navbar] [data-tabbar-footer='true'] {
     --accent: #7286a0;
     --accent-hover: #5a6b80;
     --accent-ink: #4e5f73;
+    --accent-deep: #4e5f73; /* white on it = 6.55:1 */
     --accent-wash: #eef1f4;
     --accent-critical: #5a6b80;
     --accent-rgb: 114 134 160;
@@ -836,6 +853,7 @@ body[data-hide-navbar] [data-tabbar-footer='true'] {
     --accent: #7286a0;
     --accent-hover: #8a9db5;
     --accent-ink: #7286a0;
+    --accent-deep: #4e5f73; /* white on it = 6.55:1 */
     --accent-wash: #1f2830;
     --accent-critical: #5a6b80;
     --accent-rgb: 114 134 160;
