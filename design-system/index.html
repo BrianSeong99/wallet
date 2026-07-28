@@ -1719,6 +1719,21 @@ ul.tick li:before{content:"→";position:absolute;left:0.125rem;color:var(--acce
    tapping any asset row on Home opens. Hero balance, two coloured actions, a
    price chart with five timeframes, a token-info card and a filtered history. */
 .tkhero{display:flex;flex-direction:column;align-items:center;padding:0.5rem 0 0.25rem}
+/* The hero mark had NO RULE. `.ic` is authored as `.mrow .ic`, so inside .tkhero it inherited
+   nothing -- no plate, no circle, no containment -- and the raw file painted itself. usdc.svg is
+   a white glyph with no background, so the token detail screen rendered an invisible icon on
+   white. Exactly the parent-scoped-class trap COMPONENTS.md documents, found a fourth time.
+   The mark is now a MASK, not an image: --tok paints the plate, the glyph is knocked out in
+   white, and the source file's own fill is irrelevant. That is what makes it survive any token
+   logo, including the ones that ship as white-on-transparent. Plate defaults to --ink rather
+   than the accent: white on brand orange is 3.00:1, which clears SC 1.4.11 for a graphic by
+   0.00 and is not a margin worth shipping. --card-slate, NOT --ink: --ink flips to near-white in
+   dark, so the first version painted a white mark on a white plate at 1.00:1. --card-slate is
+   the token already built to carry a white label in both themes -- it is what the account cards
+   use for exactly this reason. */
+.tkwell{width:2.75rem;height:2.75rem;border-radius:50%;flex:none;display:flex;
+  align-items:center;justify-content:center;background:var(--tok,var(--card-slate))}
+.tkwell .svgic{width:1.5rem;height:1.5rem;background-color:#fff}
 .tkhero .tkbal{font-family:var(--num);font-feature-settings:var(--num-feat);font-weight:800;
   font-size:var(--t-balance);line-height:1;margin-top:0.5rem}
 .tkhero .tkfiat{font-size:var(--t-label);color:var(--ink-2);margin-top:0.25rem}
@@ -3619,7 +3634,7 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
           <div class="mpad" style="flex:1;display:flex;flex-direction:column;overflow:hidden">
             <div class="sh2"><span class="bk2">&lsaquo;</span><span class="t2">MIDEN</span></div>
             <div class="tkhero">
-              <span class="ic" style="width:2.75rem;height:2.75rem"><img src="assets/icons/usdc.svg" alt=""></span>
+              <span class="tkwell" style="--tok:#2775CA"><span class="svgic" style="--ic:url(assets/icons/usdc.svg)" aria-hidden="true"></span></span>
               <span class="tkbal">200.00</span><span class="tkfiat">$200.00</span>
             </div>
             <div class="tkacts">
@@ -3645,7 +3660,7 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
           <div class="mpad" style="flex:1;display:flex;flex-direction:column;overflow:hidden">
             <div class="sh2"><span class="bk2">&lsaquo;</span><span class="t2">MIDEN</span></div>
             <div class="tkhero">
-              <span class="ic" style="width:2.75rem;height:2.75rem"><img src="assets/icons/miden.svg" alt=""></span>
+              <span class="tkwell"><span class="svgic" style="--ic:url(assets/icons/miden.svg)" aria-hidden="true"></span></span>
               <span class="tkbal">1,204.50</span><span class="tkfiat">$12,480.50</span>
             </div>
             <div class="tkacts">
@@ -4474,7 +4489,7 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
           <div class="mpad" style="flex:1;display:flex;flex-direction:column;overflow:hidden">
             <div class="sh2"><span class="bk2">&lsaquo;</span><span class="t2">USDC</span></div>
             <div class="tkhero">
-              <span class="ic" style="width:2.75rem;height:2.75rem;display:flex;align-items:center;justify-content:center;border-radius:50%;overflow:hidden"><img src="assets/icons/usdc.svg" alt="" style="width:2.75rem;height:2.75rem;display:block;background:#2775CA;border-radius:50%"></span>
+              <span class="tkwell" style="--tok:#2775CA"><span class="svgic" style="--ic:url(assets/icons/usdc.svg)" aria-hidden="true"></span></span>
               <span class="tkbal">0.00</span><span class="tkfiat">You don&rsquo;t hold any USDC</span>
             </div>
             <div class="tkacts">
