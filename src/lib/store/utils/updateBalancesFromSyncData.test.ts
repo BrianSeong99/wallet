@@ -23,7 +23,7 @@ jest.mock('../../miden/front/assets', () => ({
 }));
 
 jest.mock('lib/prices', () => ({
-  getTokenPrice: jest.fn(() => ({ price: 1, change24h: 0, percentageChange24h: 0 , isKnown: true}))
+  getTokenPrice: jest.fn(() => ({ price: 1, change24h: 0, percentageChange24h: 0, isKnown: true }))
 }));
 
 describe('updateBalancesFromSyncData', () => {
@@ -109,7 +109,7 @@ describe('updateBalancesFromSyncData', () => {
 
   it('uses existing tokenPrices from store (non-nullish tokenPrices branch)', async () => {
     useWalletStore.setState({
-      tokenPrices: { MIDEN: { price: 2.5, change24h: 0.1, percentageChange24h: 5 , isKnown: true} }
+      tokenPrices: { MIDEN: { price: 2.5, change24h: 0.1, percentageChange24h: 5, isKnown: true } }
     });
 
     const vaultAssets: SerializedVaultAsset[] = [{ faucetId: MOCK_MIDEN_FAUCET_ID, amountBaseUnits: '1000000' }];

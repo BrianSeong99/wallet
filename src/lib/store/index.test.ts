@@ -1076,7 +1076,9 @@ describe('useWalletStore', () => {
       expect(useWalletStore.getState().selectedFiatCurrency).toBe('USD');
       useWalletStore.getState().setFiatRates({ usd: 1 });
       expect(useWalletStore.getState().fiatRates).toEqual({ usd: 1 });
-      useWalletStore.getState().setTokenPrices({ ETH: { price: 3000, change24h: 1, percentageChange24h: 0.1 , isKnown: true} });
+      useWalletStore
+        .getState()
+        .setTokenPrices({ ETH: { price: 3000, change24h: 1, percentageChange24h: 0.1, isKnown: true } });
       expect(useWalletStore.getState().tokenPrices.ETH?.price).toBe(3000);
     });
 

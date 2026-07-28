@@ -77,7 +77,7 @@ beforeEach(() => {
 
 describe('AssetRow', () => {
   it('renders a positive 24h delta with a "+" prefix, positive direction, and status-positive sparkline color', () => {
-    mockGetTokenPrice.mockReturnValue(priceInfo({ price: 100, percentageChange24h: 5.256 , isKnown: true}));
+    mockGetTokenPrice.mockReturnValue(priceInfo({ price: 100, percentageChange24h: 5.256, isKnown: true }));
     mockUseTokenSparkline.mockReturnValue([10, 20, 30]);
 
     render(<AssetRow asset={makeAsset({ balance: 2 })} tokenPrices={TOKEN_PRICES} />);
@@ -104,7 +104,7 @@ describe('AssetRow', () => {
   });
 
   it('treats an exactly-zero change as positive', () => {
-    mockGetTokenPrice.mockReturnValue(priceInfo({ percentageChange24h: 0 , isKnown: true}));
+    mockGetTokenPrice.mockReturnValue(priceInfo({ percentageChange24h: 0, isKnown: true }));
 
     render(<AssetRow asset={makeAsset()} tokenPrices={TOKEN_PRICES} />);
 
@@ -115,7 +115,7 @@ describe('AssetRow', () => {
   });
 
   it('renders a negative 24h delta without a prefix, negative direction, and status-negative sparkline color', () => {
-    mockGetTokenPrice.mockReturnValue(priceInfo({ price: 50, percentageChange24h: -3.1 , isKnown: true}));
+    mockGetTokenPrice.mockReturnValue(priceInfo({ price: 50, percentageChange24h: -3.1, isKnown: true }));
     mockUseTokenSparkline.mockReturnValue([5, 4, 3]);
 
     render(<AssetRow asset={makeAsset({ balance: 4 })} tokenPrices={TOKEN_PRICES} />);
@@ -134,7 +134,7 @@ describe('AssetRow', () => {
     // for 24 hours. It did not; the price is unknown, and those are different
     // claims. Binance lists none of the devnet/testnet tokens, so this is the
     // NORMAL case on this wallet, not an edge case.
-    mockGetTokenPrice.mockReturnValue(priceInfo({ percentageChange24h: 8 , isKnown: true}));
+    mockGetTokenPrice.mockReturnValue(priceInfo({ percentageChange24h: 8, isKnown: true }));
     mockUseTokenSparkline.mockReturnValue([]);
 
     render(<AssetRow asset={makeAsset()} tokenPrices={TOKEN_PRICES} />);
