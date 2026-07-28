@@ -1822,17 +1822,53 @@ details.grp>summary .gn{font-family:var(--num);font-feature-settings:var(--num-f
    around it, a row is edge-to-edge in a list, and an outer ring would cross its neighbours. Same
    idea, adapted to the container -- and the fill is what makes it unmistakable at a glance, since
    a 2px outline alone is a thin signal on a busy row. */
-/* Two different questions, two different marks.
-   A list you STAY in, choosing between persistent objects -- the Accounts list, the network sheet,
-   the route sheet -- gets the RING: the choice survives the interaction, so it needs a state.
-   A PICKER does not. Tapping a row commits it and the sheet closes, and the field above already
-   shows what was chosen; marking one row as "selected" inside a transient sheet says the same
-   thing twice, and a rounded outline inside a flush list reads as a form field rather than a
-   selection. So .cur is a fill and nothing else, which is the same weight the row already has
-   under the thumb -- recognition, not a control. */
+/* ---- Selection: one treatment per container SHAPE, not per question ----------------------
+   A ROW fills. A CARD takes an offset ring (.mbc/.gcard/.ropt above). That split is about
+   geometry, not semantics: a card floats with space around it, so a ring can sit off its edge
+   without touching anything, while a row is edge-to-edge in a list where an outer ring would
+   cross its neighbours and an inset one reads as a form field.
+   Rows used to carry BOTH a fill and a 2px inset ring. That is the same belt-and-braces mistake
+   as confirming a copy twice: the fill already says "this one" unmistakably, and the ring was
+   the outlined-control treatment this system rejects everywhere else. It also made the flush
+   fill look broken -- with no inline padding the fill ended on the same pixel as the value text,
+   so the corner radius cut across the glyphs and the route sheet read as clipped when nothing
+   was actually out of bounds.
+   .mrow.cur is gone. It was a picker-only fill with ZERO usages left in the page -- dead CSS
+   describing a distinction the markup had already dropped. */
 .mrow.sel,.netrow.sel{background:var(--surface-2);border-radius:var(--radius-md);
-  outline:2px solid var(--accent-edge);outline-offset:-2px;border-bottom-color:transparent}
-.mrow.cur{background:var(--surface-2);border-radius:var(--radius-md)}
+  border-bottom-color:transparent;
+  /* The fill needs padding, and the row must not move when it gains one. Padding inside a
+     matching negative margin buys the fill 8px of air on each side while the box, and therefore
+     every glyph in it, stays exactly where it was unselected. Both containers a selected row
+     lives in have room for the bleed: .mlist carries 9px of inline padding, .mpad 16px. */
+  margin-inline:-0.5rem;padding-inline:0.5rem}
+/* The non-colour half of the state (SC 1.4.1): a fill is colour, so the label carries weight too. */
+.mrow.sel .nm,.netrow.sel .nname{font-weight:800}
+/* ---- The pip IS the state; the fill is decoration ------------------------------------------
+   Measured, after removing the ring: the selected fill is 1.10:1 against the sheet in light and
+   1.24:1 in dark. SC 1.4.11 asks 3:1 of anything that identifies a state, so a row that only
+   fills is a row whose state is invisible to anyone who needs contrast -- and the ring, whatever
+   it looked like, was carrying that signal. It could not just be deleted; it had to be replaced.
+   A pip at the START of the row, not a check at the end: the mark belongs beside the thing it
+   qualifies, not in the value column where it argues with the number.
+   Painted on ::before, because an empty span held at opacity 0 is a real element with a real
+   computed colour -- the contrast sweep measures it and scores 1.0:1. A pseudo-element that is
+   simply transparent when unselected has nothing to measure. Same trap as the unchecked tick.
+   The slot is reserved on every row of any list that HAS a selection, so choosing moves nothing;
+   `:has` means a list earns the slot by containing a choice rather than by being labelled. */
+.mlist:has(> .mrow.sel) > .mrow::before{content:'';width:0.5625rem;height:0.5625rem;border-radius:50%;
+  background:transparent;flex:none;margin-right:-0.25rem;
+  /* Aligned to the LABEL, not to the row. Centred on a two-line row the mark floats between the
+     name and the detail line and reads as a list bullet; level with the name it reads as marking
+     the name. .nm is 16px at 1.2, so half a line is 9.6px and the pip is 9px. */
+  align-self:flex-start;margin-top:0.34375rem}
+.mlist:has(> .mrow.sel) > .mrow.sel::before{background:var(--accent-edge)}
+/* Scoped to .mlist, and NOT to the network switcher, for two reasons that both come from its
+   markup. Its state is already carried by a HEADING -- the chosen network is the only row under
+   "Current", the alternatives sit under "Switch to" -- and a word is a stronger cue than any mark
+   this system could draw. And its rows live in two separate .netpick parents, so a slot reserved
+   per-parent would indent the Current row while leaving the Switch-to rows flush: a mark meant to
+   align things would be the one thing knocking them out of line. Fill plus label weight there. */
 /* Swipe-revealed row actions. Destructive work moves off the row and behind a gesture: the list
    taps to USE a contact, and edit and delete only exist once you have asked for them. This is the
    answer to the shipped behaviour, where the whole row was the delete trigger with nothing on it
@@ -1862,7 +1898,6 @@ details.grp>summary .gn{font-family:var(--num);font-feature-settings:var(--num-f
   font-size:var(--t-label);cursor:pointer;color:var(--ink);font-weight:600}
 .sysdlg .sda button+button{border-left:1px solid var(--rule)}
 .sysdlg .sda .dg{color:var(--neg);font-weight:800}
-[data-theme="dark"] .mrow.cur{background:var(--surface-3)}
 [data-theme="dark"] .mrow.sel,[data-theme="dark"] .netrow.sel{background:var(--surface-3)}
 /* Section label inside a sheet, e.g. "Current Contacts". */
 .shlab{font-size:var(--t-caption);font-weight:700;color:var(--ink-2);letter-spacing:.02em;margin:0 0 0.5rem}
@@ -1999,7 +2034,11 @@ button.fam{min-height:44px;padding-inline:0.625rem}
    ride on a statement row that has since gone, and the 10px it carried then was a within-group
    step measured from that row -- with the row removed the same 10 read as the field and the
    question belonging to each other. The container gap supplies --stack; this adds the rest. */
-.netpick{margin-top:calc(var(--stack-loose) - var(--stack))}
+/* Inline padding cancelled by an equal negative margin, so the selected row's fill has 8px to
+   bleed into and the rows themselves do not move. Without it the bleed overflowed .netpick by
+   exactly 8px -- flagged by the reflow sweep at the AUTHORED width, not just at 320. .mlist
+   already carries its own version of this for the account cards' outer rings. */
+.netpick{margin-top:calc(var(--stack-loose) - var(--stack));padding-inline:0.5rem;margin-inline:-0.5rem}
 .netpick .npq{font-size:var(--t-caption);font-weight:700;color:var(--ink-2);margin-bottom:0.5rem}
 /* Recent is send HISTORY, not the address book, so most entries will not be
    contacts. The two cases invert: a saved contact leads with the name and
@@ -3206,6 +3245,43 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
       <div class="ccol"><div class="clabel">segmented</div>
         <div class="segdemo"><span class="ind"></span><button class="on">Tokens</button><button>NFTs</button><button>Activity</button></div></div>
     </div>
+
+    <h3 class="sh">Selection &mdash; one treatment per container <em>shape</em></h3>
+    <p class="sub">Three containers can be chosen in this product &mdash; a row in a list, a row under a heading, and a card &mdash; and each takes the treatment its geometry allows. This is not three designs; it is one idea (mark the chosen thing, move nothing else) fitted to three boxes.</p>
+    <div class="crow">
+      <div class="ccol" style="flex:1;min-width:15rem">
+        <div class="clabel">row in a list &mdash; fill + pip</div>
+        <div class="mlist" style="overflow:visible">
+          <div class="mrow"><div style="flex:1;min-width:0"><div class="nm">Fast</div><div class="ad">Via Epoch &middot; 0.45 fee</div></div><div class="rt"><div class="f">99.55 USDC</div><div class="b">~2 min</div></div></div>
+          <div class="mrow sel" aria-current="true"><div style="flex:1;min-width:0"><div class="nm">Slow</div><div class="ad">Via Agglayer &middot; 0.15 fee</div></div><div class="rt"><div class="f">99.85 USDC</div><div class="b">~1 hour</div></div></div>
+        </div>
+      </div>
+      <div class="ccol" style="flex:1;min-width:11rem">
+        <div class="clabel">row under a heading &mdash; the heading is the state</div>
+        <div class="netpick"><div class="npq">Current</div>
+          <div class="netrow sel" aria-current="true"><span class="nlg" style="background:var(--paper)"><img src="assets/icons/miden.svg" alt=""></span><span class="nname">Testnet</span></div>
+        </div>
+        <div class="netpick"><div class="npq">Switch to</div>
+          <div class="netrow"><span class="nlg" style="background:var(--paper)"><img src="assets/icons/miden.svg" alt=""></span><span class="nname">Devnet</span></div>
+        </div>
+      </div>
+      <div class="ccol" style="flex:1;min-width:13rem">
+        <div class="clabel">card &mdash; offset ring</div>
+        <div class="ropt sel"><div class="rt2">Guardian <span class="rbadge">DEFAULT</span></div><div class="rd">Recommended. Guardian-based recovery for your account.</div></div>
+        <div class="ropt"><div class="rt2">Recovery phrase</div><div class="rd">You hold the only copy. Nobody can restore it for you.</div></div>
+      </div>
+    </div>
+    <div class="callout warn"><b>Rule &mdash; the fill is decoration; something else is the state.</b> Measured on the route sheet, the selected fill is <b>1.10:1</b> against the sheet in light and <b>1.24:1</b> in dark. SC 1.4.11 asks <b>3:1</b> of anything required to identify a state, so a row that only fills is a row whose selection is invisible to a reader who needs contrast &mdash; it looks chosen to us and to nobody else. Each container therefore names a carrier that clears the bar on its own: the <b>pip</b> in a list (<b>3.02:1</b> on the fill in light, <b>4.21:1</b> in dark), the <b>word</b> under a heading (&ldquo;Current&rdquo; &mdash; a label beats any mark), the <b>ring&rsquo;s presence</b> on a card. The fill is then free to be as quiet as it likes.</div>
+    <div class="callout"><b>Rule &mdash; selecting a row moves nothing.</b> A fill needs padding, and a row that gains padding when chosen shifts every glyph in it. So the selected row pads <em>inside a matching negative margin</em>: the fill gains 8px of air on each side while the box stays exactly where it was. The pip&rsquo;s slot is reserved on every row of any list that has a selection, for the same reason. Both containers have room for the bleed &mdash; <code>.mlist</code> carries 9px of inline padding, <code>.mpad</code> 16px.</div>
+    <div class="callout"><b>Why not a ring on a row, a radio in a row, or a check at the end.</b> Rows used to carry a fill <em>and</em> a 2px inset ring &mdash; the same doubling as confirming a copy twice, and an outlined control in a system that rejects them everywhere else. It also made the flush fill look broken: with no inline padding the fill ended on the same pixel as the value, so the corner radius cut across the glyphs and the sheet read as clipped when nothing was out of bounds. A <code>.rad</code> radio is the right control for a standalone choice in a form, but a list row is <em>already</em> a 44pt target whose whole width commits the choice &mdash; a ring inside it draws a second control around the same hit area. And a check in the value column puts the one element meaning &ldquo;this is your choice&rdquo; as far from the choice as the layout allows, arguing with the number beside it.</div>
+    <table class="map">
+      <tr><th>Container</th><th>Treatment</th><th>What carries the state</th><th>Why not the others</th></tr>
+      <tr><td>Row in a list <span class="small"><code>.mrow.sel</code> in <code>.mlist</code></span></td><td>Fill (bled) + pip + label 800</td><td><span class="tag survive">pip, 3.02:1 / 4.21:1</span></td><td>Outer ring would cross its neighbours</td></tr>
+      <tr><td>Row under a heading <span class="small"><code>.netrow.sel</code> in <code>.netpick</code></span></td><td>Fill + label 800</td><td><span class="tag survive">the heading &ldquo;Current&rdquo;</span></td><td>Rows sit in two parents — a reserved slot would indent one group and not the other</td></tr>
+      <tr><td>Card <span class="small"><code>.mbc</code> / <code>.gcard</code> / <code>.ropt</code></span></td><td>3px ring, <code>outline-offset:3px</code></td><td><span class="tag survive">the ring&rsquo;s presence</span></td><td>A card floats, so the ring has somewhere to sit</td></tr>
+      <tr><td><code>.mrow.cur</code> <span class="small">picker-only fill</span></td><td>&mdash;</td><td>&mdash;</td><td><span class="tag retire">deleted — 0 usages, described a distinction the markup had dropped</span></td></tr>
+      <tr><td>Pending note row</td><td>&mdash;</td><td>&mdash;</td><td><span class="tag retire">selection removed — <em>Claim all</em> is the only action, so no note is ever the chosen one</span></td></tr>
+    </table>
 
     <h3 class="sh">Cards &amp; surfaces</h3>
     <div class="crow">
@@ -5534,7 +5610,7 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
           <div class="mpad" style="flex:1;display:flex;flex-direction:column">
             <div class="sh2"><span class="bk2">‹</span><span class="t2">Pending notes</span></div>
             <div class="mrow"><div class="ic sq"><span class="svgic" style="--ic:url(assets/icons/receive-new.svg);" aria-hidden="true"></span></div><div><div class="nm">From mtst1kq2…88xz</div><div class="ad">2 min ago</div></div><div class="rt"><div class="f" style="color:var(--pos)">+40.00</div><div class="b">MIDEN</div></div></div>
-            <div class="mrow sel" aria-current="true"><div class="ic sq"><span class="svgic" style="--ic:url(assets/icons/receive-new.svg);" aria-hidden="true"></span></div><div><div class="nm">From mtst1zz9…41mn</div><div class="ad">1 hr ago</div></div><div class="rt"><div class="f" style="color:var(--pos)">+12.50</div><div class="b">MIDEN</div></div></div>
+            <div class="mrow"><div class="ic sq"><span class="svgic" style="--ic:url(assets/icons/receive-new.svg);" aria-hidden="true"></span></div><div><div class="nm">From mtst1zz9…41mn</div><div class="ad">1 hr ago</div></div><div class="rt"><div class="f" style="color:var(--pos)">+12.50</div><div class="b">MIDEN</div></div></div>
             <div class="zone"><button class="btn btn-primary" style="width:100%">Claim all · 52.50</button></div>
           </div>
         </div></div></div>
