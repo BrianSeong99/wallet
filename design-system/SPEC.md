@@ -212,3 +212,49 @@ token chip sits an image beside one, and a naive line count reads those as wraps
 
 **Baseline size only.** At 200% text a long label *should* wrap rather than clip; that is the
 accessible behaviour and the `inflated @200%` check tracks it separately.
+
+---
+
+## A container's size belongs to the container, not to its contents
+
+**Fixed surfaces stay fixed.** A card, a sheet or a notification does not grow because today's copy
+runs three lines instead of two, or because this account holds nine tokens instead of two.
+
+This came up three separate times before it was written down — the Home balance card, the
+notification prompt, the token picker — which is what makes it a rule rather than three fixes.
+
+**Why it is not merely tidy.** A surface that resizes moves everything below it. On Home that meant
+the assets list sat at a different Y depending on whether the wallet was loading, offline, or had
+an unpriced token — five distinct card heights across eight states, so the list moved as conditions
+the user did not cause came and went. On a picker it is worse: the sheet is where your thumb
+already is, and a list that is short today and tall next month relocates the controls between one
+use and the next. **The user pays for the flexibility by re-finding things.**
+
+We were already half-following it, which is the usual tell. `Contacts · picker` is fixed-height
+*"so a short list does not make the sheet jump"* — while the token picker, the same component doing
+the same job one step earlier in the same flow, sized to its contents.
+
+### How to hold it
+
+| Surface | Rule |
+|---|---|
+| Cards (`.mbc.hero`) | A `min-height` floor derived from the tallest natural state, with the slack falling where a variable element would sit — so the fixed elements hold their Y. |
+| Sheets and pickers | A fixed fraction of the frame, the list scrolling inside. Never fit-to-content. |
+| Notifications (`.mprompt`) | One height, body clamped to the line count that fits. |
+
+### When the content genuinely does not fit
+
+**Truncate and provide a route to the whole thing** — never grow the box, and never leave a
+sentence cut off with nowhere to go. A clamped body earns a chevron and opens a detail view; the
+chevron appears *only* when there is more to read, so it stays an honest signal rather than
+decoration.
+
+This is the resolution to a tension worth recording: `.pb`'s clamp was widened from 2 lines to 3
+precisely because `connectivityNodeBody` truncated mid-sentence at *"Your balance may be"*. A fixed
+height forces the clamp back to 2 — which is only acceptable because the truncation now leads
+somewhere.
+
+### The exception
+
+Content that is *itself* the variable thing — a scrolling list's rows, a wrapping address — sizes
+naturally **inside** a fixed container. The rule is about the container.
