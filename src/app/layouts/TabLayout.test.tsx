@@ -402,7 +402,7 @@ describe('TabLayout — bottom nav footer padding', () => {
 });
 
 describe('TabLayout — slide-in animation (skipSlideIn)', () => {
-  const initialOf = () => screen.getByTestId('motion-div').getAttribute('data-initial');
+  const initialOf = () => screen.getByTestId('page-layer').getAttribute('data-initial');
 
   it('slides the incoming page in by default (first render, non-home target)', () => {
     mockLocation.pathname = '/history';

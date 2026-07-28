@@ -193,18 +193,42 @@ const TabLayout: FC<PropsWithChildren> = ({ children }) => {
       )}
       style={containerStyles}
     >
-      {/* Top action bar — sits outside the animated content tree so it
-          stays fixed across intra-home-group navigations. */}
-      {showActionBar && (
-        // `px-4` is the gutter the bar was missing entirely: it ran edge to
-        // edge, touching both screen bezels, where the design system insets it
-        // 16px from the frame (`.mpad` is `8px 16px 0`). The gutter belongs to
-        // this container rather than to SegmentedActionBar, so the bar stays a
-        // component with no opinion about its own outer spacing.
-        <div className="shrink-0 relative z-10 px-4 pt-2">
-          <SegmentedActionBar items={actionItems} activeId={activeAction} onChange={handleActionChange} />
-        </div>
-      )}
+      {/* Top action bar — sits outside the animated content tree so it stays
+          fixed across intra-home-group navigations.
+
+          Its PRESENCE is animated, and that is the fix for the glitch on
+          Home -> Explore/Activity. The bar exists only on home-group routes, so
+          leaving it a bare `&&` meant it popped out of flow the instant the
+          route changed: measured, the content layer jumped 60px up and grew
+          60px in a single frame, while the page underneath was still sliding.
+          Two unrelated motions at once, one of them instantaneous, is what read
+          as "glitchy".
+
+          Collapsing the height on the SAME curve as the page makes it one
+          coordinated movement instead. `overflow-hidden` stops the bar spilling
+          while its box is shorter than its content, and reduced motion skips
+          straight to the end state rather than animating a height.
+
+          `px-4` is the gutter the bar was missing entirely: it ran edge to edge,
+          touching both bezels, where the design system insets it 16px from the
+          frame (`.mpad` is `8px 16px 0`). The gutter lives on this container, so
+          the bar keeps no opinion about its own outer spacing. */}
+      <AnimatePresence initial={false}>
+        {showActionBar && (
+          <motion.div
+            key="action-bar"
+            className="shrink-0 relative z-10 overflow-hidden"
+            initial={reduceMotion ? false : { height: 0, opacity: 0 }}
+            animate={{ height: 'auto', opacity: 1 }}
+            exit={reduceMotion ? { opacity: 0 } : { height: 0, opacity: 0 }}
+            transition={iosPush}
+          >
+            <div className="px-4 pt-2">
+              <SegmentedActionBar items={actionItems} activeId={activeAction} onChange={handleActionChange} />
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Animated content. For home-group routes we mount the
           HomeSwipeContainer once (a five-page horizontal carousel) and let it
@@ -238,6 +262,10 @@ const TabLayout: FC<PropsWithChildren> = ({ children }) => {
             // actually claim the remaining height. Without this their list
             // collapses to 0 and transactions appear missing.
             className="absolute inset-0 overflow-hidden flex flex-col"
+            // Stable hook: the action bar above is also a motion.div now, so
+            // "the page layer" needs to be addressable by something other than
+            // its position in the DOM.
+            data-testid="page-layer"
             initial={skipSlideIn ? false : 'initialState'}
             animate="animateState"
             exit="exitState"
