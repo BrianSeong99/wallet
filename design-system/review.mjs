@@ -68,6 +68,11 @@ const prep = () => {
     document.head.appendChild(st);
   }
   document.querySelectorAll('.section').forEach(s => s.classList.add('active'));
+  // Flows are collapsible <details>. A closed one renders its screens at 0x0, which the hidden-frame
+  // check would report as missing screens -- and worse, every other check inside them would
+  // vacuously pass. Force them all open for the audit; cleanup does not close them again, because
+  // the authored state is open.
+  document.querySelectorAll('details').forEach(d => { d.open = true; });
   // Audit with the Earn flag ON. The site mirrors isEarnEnabled()=false, which display:none's
   // the three earn screens -- and a hidden .phone measures 0x0, so every check inside it
   // silently passes while the summary still counts it as a screen. Auditing the flag-on state

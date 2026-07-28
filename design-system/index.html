@@ -1251,6 +1251,26 @@ ul.tick li:before{content:"→";position:absolute;left:0.125rem;color:var(--acce
 @media (prefers-reduced-motion: reduce){.btn.press,.segdemo .ind,.toggle .knob,.sheet,.sheetback{transition-duration:.01ms}.skel,.replay.go .box{animation-duration:.01ms}}
 /* ---------- full screen set ---------- */
 .scrgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;margin-top:1rem;--ps:.5}
+/* Collapsible flows. <details>, not a JS accordion: it is keyboard-operable and toggleable with
+   no script, it survives Ctrl+F (the browser opens a closed details to reveal a match), and the
+   open/closed state is a DOM property the review harness can force rather than a class it has to
+   know about. 178 screens is past the point where one scroll is navigation. */
+details.flow{border-top:1px solid var(--rule);margin-top:1.75rem}
+details.flow>summary{display:flex;align-items:center;gap:0.625rem;cursor:pointer;list-style:none;
+  padding:1.125rem 0 0;margin-bottom:0.375rem}
+details.flow>summary::-webkit-details-marker{display:none}
+details.flow>summary>h2.h{margin:0;flex:1}
+/* The disclosure triangle is drawn, not borrowed: the native marker is unstyleable across engines
+   and sits at a different size in each. Rotates rather than swapping glyphs, so the control reads
+   as one object moving instead of two states alternating. */
+details.flow>summary::before{content:'';width:0.4375rem;height:0.4375rem;flex:none;
+  border-right:2px solid var(--ink-3);border-bottom:2px solid var(--ink-3);
+  transform:rotate(45deg);transition:transform var(--dur-base) var(--ease-out-cubic)}
+details.flow[open]>summary::before{transform:rotate(-135deg)}
+details.flow>summary .fn{font-family:var(--num);font-feature-settings:var(--num-feat);
+  font-weight:700;font-size:var(--t-caption);color:var(--ink-3);flex:none}
+/* 44pt on the whole summary row, since the row is the target -- not the triangle. */
+details.flow>summary{min-height:44px}
 .scrcap{font-family:var(--display);font-weight:800;font-size:var(--t-label);margin-bottom:0.5625rem;display:flex;align-items:center;gap:0.4375rem}
 .scrcap i{width:0.4375rem;height:0.4375rem;border-radius:50%;background:var(--accent);display:block;flex:none}
 /* Screen number. Injected at load in document order, never authored -- a hand-written number is
@@ -3423,7 +3443,8 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
     <h1 class="title">All screens</h1>
     <p class="lede">The whole wallet, designed on the system. Every screen is composed from the documented components — graphite money surface, grey content blocks, the action zone, real in-repo icons and illustrations — at true iPhone 17 dimensions. Nothing here is a bespoke layout.</p>
 
-    <h2 class="h">Onboarding</h2>
+    <details class="flow" open>
+      <summary><h2 class="h">Onboarding</h2><span class="fn">30</span></summary>
     <p class="sub">Mirrors the shipped <code>STEP_TO_PROGRESS</code> model: <b>4 steps</b> (3 when the protection choice is skipped) &mdash; not the 7 I had invented. Detours never move the bar. Every screen the app ships is now represented, including the import path, the biometric fallback and the error states.</p>
     <div class="scrgrid">
       <div><div class="scrcap"><i></i>01 &middot; Splash</div>
@@ -3895,7 +3916,9 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
 
     <div class="callout"><b>What changed.</b> The bar now derives from the shipped <code>STEP_TO_PROGRESS</code> map instead of an invented 7-step model; detours hold their step; and <b>six screens the app already ships</b> are represented for the first time &mdash; passcode-mismatch, create-password, account-recovery, creating-wallet, verify-seed, and the whole import path. The spec no longer describes behaviour the product lacks, nor omits behaviour it has.</div>
 
-        <h2 class="h">Home &amp; overview</h2>
+    </details>
+        <details class="flow" open>
+          <summary><h2 class="h">Home &amp; overview</h2><span class="fn">14</span></summary>
     <p class="sub">The resting state, and everything reached from the balance card. The card <em>is</em> the account: tapping it opens the list, and the list reaches one account's own sheet.</p>
     <div class="scrgrid">
       <div><div class="scrcap"><i></i>Token detail &middot; price unavailable</div>
@@ -4233,7 +4256,9 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
         </div></div></div>
         <div class="scrnote"><b>The missing link.</b> I specified &ldquo;tap the card to switch, <code>&ctdot;</code> for options&rdquo; and then wired <em>neither</em>, so the Accounts list had no entry point at all &mdash; a real gap. The chain is now: balance-card <code>&ctdot;</code> &rarr; <b>Accounts list</b> (choose) &rarr; per-row <code>&ctdot;</code> &rarr; <b>this sheet</b> (manage one account). Renaming lives here rather than in the list, per the rule that the list answers &ldquo;which account&rdquo; and a rename affordance would fight the selection gesture. The card colour also belongs here, not in the list, because colour is <em>per-account identity</em> &mdash; today it is a single global <code>localStorage</code> value, which is exactly why it currently reads as decoration. The card preview carries no pattern, so the swatch row is the only thing asserting identity while you are choosing it.</div></div>
     </div>
-    <h2 class="h">Send flow</h2>
+    </details>
+    <details class="flow" open>
+      <summary><h2 class="h">Send flow</h2><span class="fn">17</span></summary>
     <p class="sub">Recipient &rarr; amount &rarr; review &rarr; result, with the picker sheets and the bridged variants hanging off each step. <b>The recipient field is the spine of this flow</b> &mdash; fixed at three lines with the type fitting the box, so pasting a 48-character address no longer pushes the actions, the resolution row and the network list down together. <b>Two steps were removed rather than restyled:</b> a second &ldquo;Confirm recipient&rdquo; screen that confirmed the address twice, and a <code>Confirm</code> button on the recipient step that a resolved row already stands in for. <b>Cross-chain is drawn and 0&percnt; built</b> &mdash; <code>grep -rnwE "evm|EVM" src/</code> returns nothing, <code>en.json</code> holds no chain name, and <code>SendTransaction.extraInputs</code> is hard-narrowed to <code>{ recallBlocks?: number }</code>, so every bridged screen here is a proposal.</p>
     <div class="scrgrid">
       <div><div class="scrcap"><i></i>Send · recipient</div>
@@ -4581,7 +4606,9 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
       
       
     </div>
-    <h2 class="h">Cross-chain send</h2>
+    </details>
+    <details class="flow" open>
+      <summary><h2 class="h">Cross-chain send</h2><span class="fn">8</span></summary>
     <p class="sub">Every screen here exists <b>only because the destination is not Miden</b>. The shared steps stay in the send flow above &mdash; a scan is an input method whichever chain the address belongs to, and the amount and token controls are the same either way. What is different is that the wallet has to <b>ask which chain</b>, because a bare <code>0x&hellip;</code> is valid on every EVM chain at once and the address carries no hint; then it has to <b>quote a route</b>, because the fee and the arrival time are a choice; and then it has to stop calling the send finished, because &ldquo;Payment Sent!&rdquo; is false while the money is in flight. <b>None of it is built.</b> <code>grep -rnwE "evm|EVM" src/</code> returns nothing, <code>en.json</code> holds no chain name, and <code>SendTransaction.extraInputs</code> is hard&#8209;narrowed to <code>{ recallBlocks?: number }</code> so <code>IBridgedSendExtraInputs</code> cannot be populated &mdash; while <code>IBridgeProvider</code>, <code>bridgeSpeedFast</code>, <code>bridgeSpeedSlow</code>, <code>bridgeRouteViaEpoch</code>, <code>bridgeRouteViaAgglayer</code> and <code>transactionRoute</code> all ship and render nowhere. There is also no fee model anywhere in the wallet, so every fee and total drawn here is a specification rather than a readout.</p>
     <div class="scrgrid">
       <div><div class="scrcap"><i></i>Send &middot; recipient, other network <span class="tag merge">proposed</span></div>
@@ -4769,7 +4796,9 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
         </div></div></div>
         <div class="scrnote"><b>&ldquo;Payment Sent!&rdquo; is false for a bridge, and it is what ships.</b> <code>BridgeSuccess.tsx:59</code> passes <code>t(&lsquo;paymentSent&rsquo;)</code> &mdash; the same headline the same-chain receipt uses &mdash; under the same green tick. On a Miden send that is true: the note exists, the recipient can consume it, the transaction is over. On a bridged send the money has left Miden and <b>has not arrived</b>; on the Agglayer route that is an hour in which the recipient has nothing and the sender has been told it is done. Same-chain, sent is the end state. Cross-chain, sent is the middle. The headline names the state that is actually true and the destination that makes it legible, and the glyph goes from a completion tick to an in-flight arrow in <code>--pend</code> &mdash; never colour alone, the words carry it. <b>The component&rsquo;s own docstring already specifies this screen and its render does not produce it.</b> <code>BridgeSuccess.tsx:25&ndash;30</code> promises &ldquo;an &lsquo;Arriving on Ethereum&rsquo; sub-line (with a FAST/SLOW speed badge) under the amount&rdquo;. The render is <code>SuccessSummaryPill</code>, <code>SuccessDivider</code>, <code>ReceiptRows</code> (<code>:68&ndash;70</code>) &mdash; <b>no sub-line and no badge anywhere</b>. The speed survives only as a <code>Route</code> row value inside <code>buildReceiptRows</code> (<code>receipt.ts:43&ndash;48</code>), which is the one place it cannot do its job. So this draws the docstring: destination and arrival estimate in the hero, badge beside them, provider named. <b>Arrival is not a receipt row.</b> A receipt is a record of what happened; the arrival estimate is a claim about what has <em>not</em> happened yet, and it is the only fact on the screen the user needs before they close it. Row five of five is where you put the block explorer link, not the answer to &ldquo;when does my friend get paid?&rdquo;. Promoting it also deletes the duplicate: the shipped screen prints the recipient twice, once in the pill and once as the <code>To</code> row, and the hero now earns its second line instead. <b>The remaining rows are <code>buildReceiptRows</code> verbatim minus <code>Route</code></b> &mdash; To &rarr; Total Paid &rarr; Source TX (<code>receipt.ts:30&ndash;66</code>) &mdash; and two of those three labels are <b>absent from <code>en.json</code></b>: <code>totalPaid</code> and <code>sourceTx</code> survive on <code>defaultValue</code> fallbacks in code, so every non-English locale shows the raw key. <code>paymentSent</code> ships (<code>en.json:474</code>) and is now wrong for this caller, which is the harder bug of the two. <b><code>Total Paid</code> is 100.00 and the pill says 99.85, and that is deliberate.</b> The sender parted with the full amount; the recipient gets the amount minus the provider&rsquo;s cut. A receipt that reports one number for both hides the fee a second time, after review already had to invent it. <b>The return condition is restored.</b> <code>Send &middot; review, other chain</code> states that a failed delivery returns the funds, and success drops it entirely &mdash; so the one moment the user is left waiting with no recourse is the one where the app stops explaining. It is also the sentence that makes the hour tolerable. It deliberately does not end &ldquo;No funds are lost&rdquo;, which is true of a recallable Miden note and not of a solver-filled bridge transfer. <b>The actions are reordered, and the primary is renamed because the shipped string does not fit the slot.</b> Shipped is Done primary / View in Activities secondary (<code>:60&ndash;65</code>), which is correct for an end state. This is not one: the transfer is trackable, the only place to track it is the activity list, so that job takes the primary and Done stays as the dismissal. <code>viewInActivities</code> cannot ride there &mdash; <code>.btn-primary</code> sets <code>--t-cta</code> 19px, and at 200&percnt; text &ldquo;View in Activities&rdquo; measures 342pt against a 318pt button and wraps to two lines, which is both the no-wrapping-label rule and a 2.8&times; inflation the review harness fails. It stays correct as the secondary, where the body ramp fits it. The primary takes <code>trackTransfer</code> instead, which is the better label regardless: &ldquo;View in Activities&rdquo; names a destination, and what the user wants named on a screen about something still in flight is the job. <b>Nothing here is reachable.</b> <code>SendTransaction.extraInputs</code> is <code>&lbrace; recallBlocks?: number &rbrace;</code> (<code>types.ts:187</code>), so the discriminator <code>TransactionSuccess.tsx:12&ndash;20</code> narrows on can never be stored, and <code>BridgeSuccess</code> renders only in its own test. <b>Copy verbatim from <code>en.json</code>:</b> <code>bridgeSpeedSlow</code> &ldquo;Slow&rdquo;, <code>bridgeRouteViaAgglayer</code> &ldquo;Via Agglayer&rdquo;, <code>to</code> &ldquo;To&rdquo;, <code>done</code> &ldquo;Done&rdquo;, <code>viewInActivities</code> &ldquo;View in Activities&rdquo;, <code>viewOnMidenscan</code> &ldquo;View on Midenscan&rdquo;. <b>New keys:</b> <code>bridgeInFlightTitle</code> &ldquo;On its way to $network$&rdquo;, <code>bridgeArrivesIn</code> &ldquo;Arrives in ~$duration$&rdquo;, <code>bridgeUndeliveredNote</code> &ldquo;If it is not delivered the $amount$ returns to this account, though not immediately.&rdquo;, <code>trackTransfer</code> &ldquo;Track transfer&rdquo;. <b>Owed:</b> <code>totalPaid</code> &ldquo;Total Paid&rdquo; and <code>sourceTx</code> &ldquo;Source TX&rdquo; need adding to <code>en.json</code> regardless of this screen.</div></div>
     </div>
-    <h2 class="h">Contacts</h2>
+    </details>
+    <details class="flow" open>
+      <summary><h2 class="h">Contacts</h2><span class="fn">7</span></summary>
     <p class="sub">One address book, reached from two places and doing a different job in each: the send flow opens it <b>read&#8209;only</b> to pick a recipient, Settings opens it to manage the list. That split is why the picker has no add, no delete and no search while the settings drawer has all three. <b>Nothing in either list deletes</b> &mdash; a row taps to use or to edit, and Remove lives on the edit screen behind that step; the shipped screen binds delete to the whole row with nothing on it saying so (<code>AddressBook.tsx:78</code>). <b>Rows carry the network, not the custody label</b>, because the chain is what decides whether a send arrives &mdash; which needs the optional <code>network</code> field added to <code>WalletContact</code>, since a bare <code>0x&hellip;</code> is valid on every EVM chain at once and the choice has to be stored rather than re-derived. <b>Editing does not exist in the app at all:</b> <code>address-book.ts</code> exports only <code>addContact</code>, <code>removeContact</code> and <code>getContact</code>, so fixing a typo today means delete and retype.</p>
     <div class="scrgrid">
       <div><div class="scrcap"><i></i>Contacts &middot; picker <span class="tag merge">sheet</span></div>
@@ -4921,7 +4950,9 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
         </div></div></div>
         <div class="scrnote"><b>GAP &mdash; no edit mutation exists.</b> <code>address-book.ts</code> exports <code>addContact</code> (<code>:13</code>) and <code>removeContact</code> (<code>:25</code>) and nothing else, so correcting one letter of a name today means deleting the contact and retyping a 49-character bech32 address from memory. The address is the primary key that <code>removeContact</code> filters on, so it is shown read-only and the row says why, rather than being silently absent. This screen also gives the delete a <b>named, deliberate affordance</b>, which the shipped list does not have: <code>AddressBook.tsx:78</code> binds <code>onClick</code> of the whole <code>CardItem</code> to <code>handleRemoveContactClick</code>, so the entire row <i>is</i> the delete button &mdash; no trash icon, no swipe, no menu, and no hint that tapping a contact destroys it. Note the shipped list also has no way to <i>use</i> a contact: tapping cannot start a send. The live preview row is here because both the send-flow picker and the settings list render name-over-address, and a rename changes what the user will see there.</div></div>
     </div>
-  <h2 class="h">Receive flow</h2>
+    </details>
+  <details class="flow" open>
+    <summary><h2 class="h">Receive flow</h2><span class="fn">13</span></summary>
     <p class="sub">Address, QR and share. Receive is address-only since claimable notes moved to their own screen.</p>
     <div class="scrgrid">
       <div><div class="scrcap"><i></i>Pending notes &middot; loading <span class="tag merge">gap</span></div>
@@ -5123,7 +5154,9 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
         </div></div></div>
         <div class="scrnote">Wrong-network deposits are unrecoverable, so the constraint is stated inline &mdash; not hidden in help. <b>The &ldquo;Set an amount&rdquo; ghost has been removed from this screen.</b> No amount-request flow exists: the only Request affordance ever written is commented out at <code>AddressTab.tsx:113&ndash;120</code>, there is no route and no <code>en.json</code> string. It survives on <b>Receive &middot; request an amount</b>, which is explicitly proposed and states the parser change it depends on. A shipped-state mock may not carry an entry point to something unbuilt.</div></div>
     </div>
-    <h2 class="h">Swap flow</h2>
+    </details>
+    <details class="flow" open>
+      <summary><h2 class="h">Swap flow</h2><span class="fn">6</span></summary>
     <p class="sub">In-protocol DEX swap. <code>isSwapEnabled()</code> is <b>true</b>, so unlike Earn this ships today.</p>
     <div class="scrgrid">
       <div><div class="scrcap"><i></i>Swap &middot; success</div>
@@ -5220,7 +5253,9 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
         </div></div></div>
         <div class="scrnote">Pay/receive as two stacked blocks with the swap control straddling them — direction is spatial, not just labelled.</div></div>
     </div>
-    <h2 class="h">Activity flow</h2>
+    </details>
+    <details class="flow" open>
+      <summary><h2 class="h">Activity flow</h2><span class="fn">13</span></summary>
     <p class="sub">History, one transaction in detail, and claiming. Pending notes belong here rather than under Receive, matching the shipped split.</p>
     <div class="scrgrid">
 <div><div class="scrcap"><i></i>Activity</div>
@@ -5439,7 +5474,9 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
         </div></div></div>
         <div class="scrnote">Claim&#8209;all carries the total, so the action states its own consequence. <b>Two corrections since this was drawn.</b> The title was &ldquo;Pending&rdquo;; the shipped string is <code>pendingNotes</code> = &ldquo;Pending notes&rdquo; (<code>en.json:694</code>, <code>Pending.tsx:264</code>). And a subtitle, &ldquo;Notes sent to you that aren&rsquo;t claimed yet.&rdquo;, was invented &mdash; it exists nowhere in <code>en.json</code>, so it is removed rather than left as copy an engineer would try to implement. <b>Still divergent, deliberately:</b> the shipped screen groups notes by asset with a drill&#8209;in detail view, where this draws flat rows. The grouping is the better shape and this mock has not caught up.</div></div>
     </div>
-    <h2 class="h">Earn flow <span class="tag merge">gated off</span></h2>
+    </details>
+    <details class="flow" open>
+      <summary><h2 class="h">Earn flow <span class="tag merge">gated off</span></h2><span class="fn">3</span></summary>
     <p class="sub">Built and routed, but <code>isEarnEnabled()</code> returns <b>false</b>, so none of it is reachable. Kept as spec for a shipped-but-hidden feature.</p>
     <div class="scrgrid">
 <div data-earn-surface><div class="scrcap"><i></i>Earn · vaults <span class="tag merge">gated off</span></div>
@@ -5492,7 +5529,9 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
         </div></div></div>
         <div class="scrnote">Identical amount-entry pattern to Send — one component, so the muscle memory transfers.</div></div>
     </div>
-    <h2 class="h">Settings &amp; browser</h2>
+    </details>
+    <details class="flow" open>
+      <summary><h2 class="h">Settings &amp; browser</h2><span class="fn">17</span></summary>
     <p class="sub">Reached from Activity's header gear &mdash; Home has no header of its own, which is why Settings also appears as a ghost action in the accounts sheet.</p>
     <div class="scrgrid">
 <div><div class="scrcap"><i></i>Settings</div>
@@ -5823,7 +5862,9 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
 
 
     </div>
-    <h2 class="h">Security &amp; recovery</h2>
+    </details>
+    <details class="flow" open>
+      <summary><h2 class="h">Security &amp; recovery</h2><span class="fn">22</span></summary>
     <p class="sub">Everything gated behind an authentication step. <b>Three of these screens open as a blank frame today</b> &mdash; <code>RevealSeedPhrase.tsx:111&ndash;113</code>, <code>RevealSecret.tsx:332&ndash;334</code> and <code>EncryptedWalletFileWalletPassword.tsx:136&ndash;138</code> each <code>return null</code> while the hardware-protector probe runs, with no header and no spinner.</p>
     <div class="scrgrid">
 <div><div class="scrcap"><i></i>Reveal recovery phrase</div>
@@ -6204,7 +6245,9 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
         </div></div></div>
         <div class="scrnote"><b>Do not build this screen against the current backend.</b> <code>removeAccount</code> is an <em>empty function body</em> at <code>back/actions.ts:267</code>, and <code>front/client.ts:331</code> is an empty <code>useCallback</code> &mdash; a delete UI wired to either would close the sheet, resolve successfully, and delete nothing, which is the most dangerous class of bug a wallet can ship: the user believes the keys are off the device and they are not. The source comment above <code>:267</code> says so and names the unfinished work: for Guardian accounts a real removal must also release the hardware-backed hot key via <code>secureHotKey.deleteHotKey</code> and clear the cold-key blob (<code>accColdSecretKeyStrgKey</code>), or the Secure Enclave entry and the cold key outlive the deleted account. <b>The balance row is drawn because the fear is wrong.</b> Users read &ldquo;remove account&rdquo; as &ldquo;destroy funds&rdquo;; the funds are on Miden and the risk is purely key custody, so the row separates the two and the warning names the one case &mdash; an imported account &mdash; where the recovery phrase does <em>not</em> save you. Ship the copy, gate the button, and leave it disabled until <code>removeAccount</code> is real.</div></div>
     </div>
-    <h2 class="h">dApp browser</h2>
+    </details>
+    <details class="flow" open>
+      <summary><h2 class="h">dApp browser</h2><span class="fn">11</span></summary>
     <p class="sub">The tab labelled <b>Explore</b> in the bottom nav. Note the naming trap: <code>src/app/pages/Explore.tsx</code> is the wallet <em>home</em>, not this. On mobile and desktop, five of the eight request types a dApp can make have <b>no consent UI at all</b> &mdash; <code>dapp.ts:1529&ndash;1531</code> throws unless <code>isExtension()</code>.</p>
     <div class="scrgrid">
 <div><div class="scrcap"><i></i>dApp browser</div>
@@ -6456,7 +6499,9 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
         </div></div></div>
         <div class="scrnote"><b>BUG &mdash; every control on the tray is under both floors at once.</b> The cards are 104&times;132 (<code>DappPeekCard.tsx:43&ndash;44</code>) with a 30pt stack offset (<code>:50</code>), and onto that footprint the front card puts a close &times; at <code>h-6 w-6</code> = 24pt (<code>:382</code>), a &ldquo;&plus;N&rdquo; pill at <code>h-6</code> with <code>text-[10px]</code> (<code>:395&ndash;398</code>), a name at <code>text-[11px]</code> (<code>:371</code>) and a favicon fallback letter at <code>text-[8px]</code> (<code>:365</code>). Two targets at 24pt against a 44pt floor and three type sizes at or under the 11pt floor, on a surface that floats over live content &mdash; so a mis-hit lands on the page behind. <b>Closing moves off the card entirely.</b> A 44pt target cannot honestly coexist with a 104pt-wide thumbnail; the tray&rsquo;s job is resuming and disposal belongs in the switcher, which now has Close all. <b>&ldquo;&plus;N&rdquo; is a glyph doing a sentence&rsquo;s job.</b> <code>MAX_VISIBLE_CARDS = 3</code> (<code>DappPeekTray.tsx:58</code>) and the overflow badge renders only on the front card (<code>:410</code>), so the count of hidden sessions is two characters on a 24pt chip. Promoted to a full-width row that names what it opens &mdash; which also makes the tray reachable when every card is occluded. <b>Two cards, not three:</b> at 402pt the third is largely hidden by the stack offset and carries no controls, so it is decoration paid for in vertical space above the nav pill.</div></div>
     </div>
-    <h2 class="h">Global states</h2>
+    </details>
+    <details class="flow" open>
+      <summary><h2 class="h">Global states</h2><span class="fn">10</span></summary>
     <p class="sub">Surfaces that belong to no single flow: the lock screen, connectivity, permissions and the migration walls. <b>The connectivity banner is mounted once</b>, at <code>Explore.tsx:141</code>, so going offline anywhere else in the app shows nothing at all.</p>
     <div class="scrgrid">
 <div><div class="scrcap"><i></i>Lock &middot; probing hardware <span class="tag merge">gap</span></div>
@@ -6627,7 +6672,8 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
 
   </section>
 
-  <!-- CONSTRAINTS & EVIDENCE -->
+      </details>
+<!-- CONSTRAINTS & EVIDENCE -->
   <section class="section" id="constraints">
     <div class="eyebrow">Applied · evidence-first</div>
     <h1 class="title">Constraints &amp; evidence</h1>
