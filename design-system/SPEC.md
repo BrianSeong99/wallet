@@ -215,6 +215,48 @@ accessible behaviour and the `inflated @200%` check tracks it separately.
 
 ---
 
+## A fill is decoration; something else is the state
+
+**A selected row is not a filled row.** The fill is how selection *looks*; it is never what makes
+selection *knowable*.
+
+The measurement is the whole argument. On the route sheet the selected fill is **1.10:1** against
+the sheet in light and **1.24:1** in dark. SC 1.4.11 asks **3:1** of any visual information required
+to identify a state, so a row whose only difference is that fill is a row that looks chosen to the
+designer and to nobody else. It is easy to ship, because on the machine you designed it on it looks
+obvious.
+
+So each container names a carrier that clears the bar **on its own**, and only then is the fill free
+to be as quiet as it likes:
+
+| Container | Fill | Carrier | Measured |
+|---|---|---|---|
+| Row in a list (`.mrow.sel` in `.mlist`) | `surface-2` / `surface-3` | a **pip** at the row's leading edge | 3.02:1 light · 4.21:1 dark |
+| Row under a heading (`.netrow.sel` in `.netpick`) | same | the **word** — the chosen row is the only one under *Current* | a label needs no ratio |
+| Card (`.mbc` / `.gcard` / `.ropt`) | none | the **ring's presence**, held off the edge by a gap | 3:1 vs the gap, checked by `review.mjs` |
+
+Three corollaries, each learned the hard way:
+
+1. **Selecting a row moves nothing.** A fill needs padding, and a row that gains padding when chosen
+   shifts every glyph in it. The selected row pads *inside a matching negative margin*, so the fill
+   gains 8px of air on each side while the box stays put. The pip's slot is reserved on every row of
+   any list that has a selection, for the same reason.
+2. **Paint the mark on a pseudo-element.** An empty span held at `opacity:0` is a real element with a
+   real computed colour: the contrast sweep measures it and scores it 1.0:1. A `::before` that is
+   simply transparent when unselected has nothing to measure.
+3. **One carrier, not two.** Rows used to fill *and* take a 2px inset ring. Doubling a signal is not
+   robustness — the fill already said "this one", and the ring was an outlined control in a system
+   that rejects them everywhere else. It also made the flush fill look broken: with no inline padding
+   the fill ended on the same pixel as the value text, so the corner radius cut across the glyphs and
+   the sheet read as clipped when nothing was out of bounds.
+
+**And no selection without something selected.** A highlight on a row in a list that has no chosen
+row is decoration impersonating state — the pending-notes row carried `.sel` and `aria-current` while
+*Claim all* was the only action available. `.mrow.cur` went the same way: a picker-only fill with zero
+usages, describing a distinction the markup had already dropped.
+
+---
+
 ## A container's size belongs to the container, not to its contents
 
 **Fixed surfaces stay fixed.** A card, a sheet or a notification does not grow because today's copy
