@@ -13,7 +13,7 @@
 //   2. CONTRAST  — text vs composited background (4.5:1, or 3:1 for large text),
 //                  currentColor icons (3:1), .nti non-text indicators (3:1), and the
 //                  .sel selection ring vs the colour showing through its offset gap (3:1)
-//   3. TARGETS   — every interactive element >= 44pt
+//   3. TARGETS   — every interactive element >= 44x44pt, BOTH dimensions
 //   4. TYPE      — nothing below the 11pt Apple floor
 //   5. SCALING   — targets survive 200% text (root 16px -> 32px): still 44x44, and nothing
 //                  inflating >2.5x, which is what an absolute floor authored in rem does
@@ -170,8 +170,13 @@ const probe = () => {
         if (topPt < 0 || bottomPt < 0) f.clipped.push({ el: label, topPt: Math.round(topPt), bottomPt: Math.round(bottomPt) });
       }
 
-      // 3. targets
-      if (interactive && Math.round(pt(r.height)) < 44) f.targets.push({ el: label, hPt: Math.round(pt(r.height)) });
+      // 3. targets. BOTH dimensions: SC 2.5.5 is 44x44, not 44 tall. This measured height only,
+      // and an icon-only .tokchip shipped at 43 wide -- 17pt glyph inside 2 x 13pt padding -- with
+      // nothing to catch it, because every target that had ever been too small had been too short.
+      if (interactive) {
+        const wPt = Math.round(pt(r.width)), hPt = Math.round(pt(r.height));
+        if (wPt < 44 || hPt < 44) f.targets.push({ el: label, wPt, hPt });
+      }
 
       // 2 + 4. text
       const own = [...el.childNodes].filter(n => n.nodeType === 3 && n.textContent.trim()).map(n => n.textContent.trim()).join(' ');

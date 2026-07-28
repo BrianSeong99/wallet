@@ -2104,7 +2104,10 @@ button.fam{min-height:44px;padding-inline:0.625rem}
 @keyframes tspin{to{transform:rotate(360deg)}}
 .tstep[data-state="pending"] .tsi{border:2px solid var(--rule-strong)}
 /* Token selector chip on the amount step. */
-.tokchip{display:inline-flex;align-self:flex-start;align-items:center;gap:0.4375rem;min-height:44px;padding:0 0.8125rem;
+/* min-WIDTH as well as min-height. SC 2.5.5 is 44x44, not 44 tall -- and an icon-only .tokchip
+   measured 43 wide (17pt glyph + 2 x 13pt padding), which no check caught because the target sweep
+   only measured height. A label makes the width a non-issue, so this only bites the icon-only form. */
+.tokchip{display:inline-flex;align-self:flex-start;align-items:center;gap:0.4375rem;min-height:44px;min-width:44px;justify-content:center;padding:0 0.8125rem;
   border-radius:var(--radius-full);background:var(--surface-2);border:0;cursor:pointer;
   font-family:var(--ui);font-size:var(--t-label);font-weight:700;color:var(--ink)}
 .tokchip img{width:1.1875rem;height:1.1875rem;border-radius:50%;flex:none}
@@ -4372,7 +4375,7 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
               <div class="fieldrow" style="flex-wrap:wrap">
                 <button class="tokchip" aria-label="Paste address"><span class="svgic" style="--ic:url(assets/icons/copy.svg);width:1.0625rem;height:1.0625rem" aria-hidden="true"></span></button>
               <button class="tokchip" aria-label="Scan a QR code"><span class="svgic" style="--ic:url(assets/icons/qr-scan.svg);width:1.0625rem;height:1.0625rem" aria-hidden="true"></span></button>
-              <button class="tokchip"><span class="svgic" style="--ic:url(assets/icons/contacts-book.svg);width:1.0625rem;height:1.0625rem" aria-hidden="true"></span>Address Book</button>
+              <button class="tokchip" aria-label="Contacts"><span class="svgic" style="--ic:url(assets/icons/contacts-book.svg);width:1.0625rem;height:1.0625rem" aria-hidden="true"></span></button>
               </div>
             </div>
             <div class="shlab" style="margin-top:1.125rem">Recent</div>
@@ -4382,7 +4385,7 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
           </div>
           <div class="mnav"><button class="t on"><span class="svgic" style="--ic:url(assets/icons/home-new.svg)" aria-hidden="true"></span><span>Home</span></button><button class="t"><span class="svgic" style="--ic:url(assets/icons/explore.svg)" aria-hidden="true"></span><span>Explore</span></button><button class="t"><span class="svgic" style="--ic:url(assets/icons/activity.svg)" aria-hidden="true"></span><span>Activity</span></button></div>
         </div></div></div>
-        <div class="scrnote"><b>Option A, chosen 2026-07-27, with four changes on top of it.</b> <b>The heading is the label now.</b> It reads <i>Send To</i> and the separate <code>To</code> beneath it is gone &mdash; two words for one thing, eighteen points apart, is not a label and a heading, it is the same label twice. The field carries <code>aria-labelledby</code> pointing at the heading, so dropping the visible <code>&lt;label&gt;</code> costs nothing under SC 3.3.2: the name is still programmatic, it is just not printed twice. <b>That change had a cost the mock exposed immediately</b> &mdash; with the label gone, the placeholder at 32px/800 sat directly under a 26px/800 heading and the two read as stacked titles, the emptiest element on the screen being the loudest. Exactly the defect this screen was redrawn to fix. The placeholder now recedes to <code>--ink-3</code> at weight 500 while the <em>filled</em> field keeps 700 and <code>--ink</code>: same box, and empty versus filled differs by weight and ink, not only by wording. <b>The placeholder dropped &ldquo;Miden&rdquo;</b> &mdash; the field takes Miden, EVM and Solana addresses and detects which as you type, so naming one network told the user the opposite of what the field does. <b>Shortening that string is also what let the placeholder keep the field&rsquo;s own face.</b> It carried an inline <code>font-family:var(--display)</code>, and that was a workaround rather than a decision: <i>Enter Miden Address</i> set in Geist Mono at 32px overran the line and wrapped to two, and Nunito was narrow enough to fit. <i>Enter Address</i> leaves the workaround nothing to solve &mdash; measured in the browser it fills 69&percnt; of the line at the authored 402pt frame and still sits on one line at 375, 360 and 320 &mdash; so the override is gone and the placeholder inherits <code>.heroin</code>&rsquo;s mono. A field that changes typeface between empty and filled is disorienting, and a placeholder should preview the shape of the thing that will replace it. Weight and ink already separate the two states; swapping the face as well was one signal too many. <b>Paste and Scan are icon&#8209;only; Address Book keeps its word.</b> The two icons are <em>mechanisms</em> &mdash; they put an address in the field and nothing else happens. Address Book opens a list you have to read and choose from, so it says so. Both icon buttons carry an <code>aria-label</code>: an icon-only control without one is the anti-pattern, not the icon itself.</div></div>
+        <div class="scrnote"><b>Option A, chosen 2026-07-27, with four changes on top of it.</b> <b>The heading is the label now.</b> It reads <i>Send To</i> and the separate <code>To</code> beneath it is gone &mdash; two words for one thing, eighteen points apart, is not a label and a heading, it is the same label twice. The field carries <code>aria-labelledby</code> pointing at the heading, so dropping the visible <code>&lt;label&gt;</code> costs nothing under SC 3.3.2: the name is still programmatic, it is just not printed twice. <b>That change had a cost the mock exposed immediately</b> &mdash; with the label gone, the placeholder at 32px/800 sat directly under a 26px/800 heading and the two read as stacked titles, the emptiest element on the screen being the loudest. Exactly the defect this screen was redrawn to fix. The placeholder now recedes to <code>--ink-3</code> at weight 500 while the <em>filled</em> field keeps 700 and <code>--ink</code>: same box, and empty versus filled differs by weight and ink, not only by wording. <b>The placeholder dropped &ldquo;Miden&rdquo;</b> &mdash; the field takes Miden, EVM and Solana addresses and detects which as you type, so naming one network told the user the opposite of what the field does. <b>Shortening that string is also what let the placeholder keep the field&rsquo;s own face.</b> It carried an inline <code>font-family:var(--display)</code>, and that was a workaround rather than a decision: <i>Enter Miden Address</i> set in Geist Mono at 32px overran the line and wrapped to two, and Nunito was narrow enough to fit. <i>Enter Address</i> leaves the workaround nothing to solve &mdash; measured in the browser it fills 69&percnt; of the line at the authored 402pt frame and still sits on one line at 375, 360 and 320 &mdash; so the override is gone and the placeholder inherits <code>.heroin</code>&rsquo;s mono. A field that changes typeface between empty and filled is disorienting, and a placeholder should preview the shape of the thing that will replace it. Weight and ink already separate the two states; swapping the face as well was one signal too many. <b>All three actions are icon&#8209;only.</b> An earlier draft kept the word on <i>Address Book</i>, arguing that the other two are mechanisms while that one opens a list you have to read. That distinction does not survive contact with the row: all three do the same job, which is to put an address in the field &mdash; from the clipboard, from the camera, or from a list &mdash; and three matched icons read as one set of input methods where two icons plus a chip read as two kinds of thing. The word was also naming a surface that is no longer called that: it is <b>Contacts</b> everywhere now, and the glyph is a contacts glyph, so the label was repeating the icon. Each button carries an <code>aria-label</code> &mdash; an icon-only control without one is the anti-pattern, not the icon.</div></div>
           <div><div class="scrcap"><i></i>Send · recipient, filled</div>
         <div class="phone"><div class="screen"><div class="notch"></div><div class="mock">
           <div class="stat"><span>9:41</span><span class="r">&#10022; &#9642; &#9642;</span></div>
@@ -4398,7 +4401,7 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
               <div class="fieldrow" style="flex-wrap:wrap">
                 <button class="tokchip" aria-label="Paste address"><span class="svgic" style="--ic:url(assets/icons/copy.svg);width:1.0625rem;height:1.0625rem" aria-hidden="true"></span></button>
               <button class="tokchip" aria-label="Scan a QR code"><span class="svgic" style="--ic:url(assets/icons/qr-scan.svg);width:1.0625rem;height:1.0625rem" aria-hidden="true"></span></button>
-              <button class="tokchip"><span class="svgic" style="--ic:url(assets/icons/contacts-book.svg);width:1.0625rem;height:1.0625rem" aria-hidden="true"></span>Address Book</button>
+              <button class="tokchip" aria-label="Contacts"><span class="svgic" style="--ic:url(assets/icons/contacts-book.svg);width:1.0625rem;height:1.0625rem" aria-hidden="true"></span></button>
               </div>
             </div>
             <div class="shlab" style="margin-top:1.125rem">Send to</div>
@@ -4422,7 +4425,7 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
               <div class="fieldrow" style="flex-wrap:wrap">
                 <button class="tokchip" aria-label="Paste address"><span class="svgic" style="--ic:url(assets/icons/copy.svg);width:1.0625rem;height:1.0625rem" aria-hidden="true"></span></button>
               <button class="tokchip" aria-label="Scan a QR code"><span class="svgic" style="--ic:url(assets/icons/qr-scan.svg);width:1.0625rem;height:1.0625rem" aria-hidden="true"></span></button>
-              <button class="tokchip"><span class="svgic" style="--ic:url(assets/icons/contacts-book.svg);width:1.0625rem;height:1.0625rem" aria-hidden="true"></span>Address Book</button>
+              <button class="tokchip" aria-label="Contacts"><span class="svgic" style="--ic:url(assets/icons/contacts-book.svg);width:1.0625rem;height:1.0625rem" aria-hidden="true"></span></button>
               </div>
             </div>
             <div class="shlab" style="margin-top:1.125rem">Send to</div>
@@ -4446,7 +4449,7 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
               <div class="fieldrow" style="flex-wrap:wrap">
                 <button class="tokchip" aria-label="Paste address"><span class="svgic" style="--ic:url(assets/icons/copy.svg);width:1.0625rem;height:1.0625rem" aria-hidden="true"></span></button>
               <button class="tokchip" aria-label="Scan a QR code"><span class="svgic" style="--ic:url(assets/icons/qr-scan.svg);width:1.0625rem;height:1.0625rem" aria-hidden="true"></span></button>
-              <button class="tokchip"><span class="svgic" style="--ic:url(assets/icons/contacts-book.svg);width:1.0625rem;height:1.0625rem" aria-hidden="true"></span>Address Book</button>
+              <button class="tokchip" aria-label="Contacts"><span class="svgic" style="--ic:url(assets/icons/contacts-book.svg);width:1.0625rem;height:1.0625rem" aria-hidden="true"></span></button>
               </div>
             </div>
             <div class="mrow" style="margin-top:1.125rem"><div><div class="nm">Keep typing</div></div><span class="fam"><span class="nlg" style="background:var(--paper)"><img src="assets/icons/miden.svg" alt=""></span>Miden</span><span class="lcount">12 / 48</span></div>
@@ -4473,7 +4476,7 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
               <div class="fieldrow" style="flex-wrap:wrap">
                 <button class="tokchip" aria-label="Paste address"><span class="svgic" style="--ic:url(assets/icons/copy.svg);width:1.0625rem;height:1.0625rem" aria-hidden="true"></span></button>
               <button class="tokchip" aria-label="Scan a QR code"><span class="svgic" style="--ic:url(assets/icons/qr-scan.svg);width:1.0625rem;height:1.0625rem" aria-hidden="true"></span></button>
-              <button class="tokchip"><span class="svgic" style="--ic:url(assets/icons/contacts-book.svg);width:1.0625rem;height:1.0625rem" aria-hidden="true"></span>Address Book</button>
+              <button class="tokchip" aria-label="Contacts"><span class="svgic" style="--ic:url(assets/icons/contacts-book.svg);width:1.0625rem;height:1.0625rem" aria-hidden="true"></span></button>
               </div>
             </div>
           </div>
@@ -4714,7 +4717,7 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
               <div class="fieldrow" style="flex-wrap:wrap">
                 <button class="tokchip" aria-label="Paste address"><span class="svgic" style="--ic:url(assets/icons/copy.svg);width:1.0625rem;height:1.0625rem" aria-hidden="true"></span></button>
               <button class="tokchip" aria-label="Scan a QR code"><span class="svgic" style="--ic:url(assets/icons/qr-scan.svg);width:1.0625rem;height:1.0625rem" aria-hidden="true"></span></button>
-              <button class="tokchip"><span class="svgic" style="--ic:url(assets/icons/contacts-book.svg);width:1.0625rem;height:1.0625rem" aria-hidden="true"></span>Address Book</button>
+              <button class="tokchip" aria-label="Contacts"><span class="svgic" style="--ic:url(assets/icons/contacts-book.svg);width:1.0625rem;height:1.0625rem" aria-hidden="true"></span></button>
               </div>
             </div>
             <div class="netpick"><div class="npq">Which network is it on?</div>
@@ -4744,7 +4747,7 @@ if (reduceMotion) { initial = { opacity: 0 }; animate = { opacity: 1 }; exit = {
               <div class="fieldrow" style="flex-wrap:wrap">
                 <button class="tokchip" aria-label="Paste address"><span class="svgic" style="--ic:url(assets/icons/copy.svg);width:1.0625rem;height:1.0625rem" aria-hidden="true"></span></button>
               <button class="tokchip" aria-label="Scan a QR code"><span class="svgic" style="--ic:url(assets/icons/qr-scan.svg);width:1.0625rem;height:1.0625rem" aria-hidden="true"></span></button>
-              <button class="tokchip"><span class="svgic" style="--ic:url(assets/icons/contacts-book.svg);width:1.0625rem;height:1.0625rem" aria-hidden="true"></span>Address Book</button>
+              <button class="tokchip" aria-label="Contacts"><span class="svgic" style="--ic:url(assets/icons/contacts-book.svg);width:1.0625rem;height:1.0625rem" aria-hidden="true"></span></button>
               </div>
             </div>
             <div class="mrow" style="margin-top:1.125rem"><div><div class="nm">Miden cannot send to Solana</div><div class="ad">This wallet has no route to that network</div></div><span class="fam"><span class="nlg" style="background:#14F195"></span>Solana</span></div>
