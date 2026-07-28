@@ -1,14 +1,14 @@
 import React, { FC, useEffect, useRef } from 'react';
 
 import classNames from 'clsx';
-import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
+import { motion } from 'framer-motion';
 
 import { useAppEnv } from 'app/env';
 import { useHasUnclaimedNotes } from 'app/hooks/useHasUnclaimedNotes';
 import { Icon, IconName } from 'app/icons/v2';
 import HomeSwipeContainer from 'app/layouts/HomeSwipeContainer';
 import { BottomNav, SegmentedActionBar } from 'components/ui';
-import { iosPush, springs } from 'lib/animation';
+import { springs } from 'lib/animation';
 import { isEarnEnabled, isSwapEnabled } from 'lib/feature-flags';
 import { hapticSelection } from 'lib/mobile/haptics';
 import { isReturningFromWebview } from 'lib/mobile/webview-state';
@@ -58,7 +58,6 @@ function activeActionFromPath(pathname: string): string {
 
 const TabLayout: FC<PropsWithChildren> = ({ children }) => {
   const { fullPage, sidePanel } = useAppEnv();
-  const reduceMotion = useReducedMotion();
   const { pathname } = useLocation();
   const hasUnclaimedNotes = useHasUnclaimedNotes();
   const prevPathnameRef = useRef<string | null>(null);
@@ -193,67 +192,61 @@ const TabLayout: FC<PropsWithChildren> = ({ children }) => {
       )}
       style={containerStyles}
     >
-      {/* Top action bar — sits outside the animated content tree so it stays
-          fixed across intra-home-group navigations.
-
-          Its PRESENCE is animated, and that is the fix for the glitch on
-          Home -> Explore/Activity. The bar exists only on home-group routes, so
-          leaving it a bare `&&` meant it popped out of flow the instant the
-          route changed: measured, the content layer jumped 60px up and grew
-          60px in a single frame, while the page underneath was still sliding.
-          Two unrelated motions at once, one of them instantaneous, is what read
-          as "glitchy".
-
-          Collapsing the height on the SAME curve as the page makes it one
-          coordinated movement instead. `overflow-hidden` stops the bar spilling
-          while its box is shorter than its content, and reduced motion skips
-          straight to the end state rather than animating a height.
-
-          `px-4` is the gutter the bar was missing entirely: it ran edge to edge,
-          touching both bezels, where the design system insets it 16px from the
-          frame (`.mpad` is `8px 16px 0`). The gutter lives on this container, so
-          the bar keeps no opinion about its own outer spacing. */}
-      <AnimatePresence initial={false}>
-        {showActionBar && (
-          <motion.div
-            key="action-bar"
-            className="shrink-0 relative z-10 overflow-hidden"
-            initial={reduceMotion ? false : { height: 0, opacity: 0 }}
-            animate={{ height: 'auto', opacity: 1 }}
-            exit={reduceMotion ? { opacity: 0 } : { height: 0, opacity: 0 }}
-            transition={iosPush}
-          >
-            <div className="px-4 pt-2">
-              <SegmentedActionBar items={actionItems} activeId={activeAction} onChange={handleActionChange} />
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
       {/* Animated content. For home-group routes we mount the
           HomeSwipeContainer once (a five-page horizontal carousel) and let it
           drive intra-group transitions via drag — pathname is just the
           source of truth for which page is centered. For other routes
           (Browser, Activity, etc.) we still slide each new page in via
           framer. The motion.div is keyed by group so the carousel doesn't
-          remount when only the centered page changes. */}
+          remount when only the centered page changes.
+
+          THE ACTION BAR LIVES INSIDE THIS LAYER, and that is what makes the
+          Home <-> Explore transition purely horizontal.
+
+          It used to sit above, outside the animated tree, and exist only on
+          home-group routes. However its disappearance was expressed — a bare
+          `&&`, or an animated height collapse — it was a VERTICAL motion, so
+          the content below rose as the bar left and dropped as it returned,
+          while the page itself was moving sideways. Measured, the bare version
+          jumped the content layer 60px in a single frame; animating the height
+          only smeared the same 60px over the transition.
+
+          Inside the layer there is no vertical component at all: the bar is
+          part of the page, so it slides out WITH the home content as one unit
+          and Explore slides in beside it. Nothing moves up or down.
+
+          It still stays fixed across intra-home-group navigation, because the
+          key is `'home-group'` for every home route — Overview -> Send does not
+          remount this subtree, so the bar never re-animates within the group.
+
+          `px-4` is the gutter the bar was missing entirely: it ran edge to edge,
+          touching both bezels, where the design system insets it 16px from the
+          frame (`.mpad` is `8px 16px 0`). The gutter lives on this container, so
+          the bar keeps no opinion about its own outer spacing. */}
       <div className="flex-1 min-h-0 relative">
         <motion.div
           key={showActionBar ? 'home-group' : pathname}
           // flex column so non-home children (AllHistory, Browser) that use
           // `flex-1 min-h-0 overflow-y-auto` for their scroll region can
           // actually claim the remaining height. Without this their list
-          // collapses to 0 and transactions appear missing.
+          // collapses to 0 and transactions appear missing. It is also what
+          // lets the action bar sit as a `shrink-0` row above the carousel.
           className="absolute inset-0 overflow-hidden flex flex-col"
-          // Stable hook: the action bar above is also a motion.div, so "the
-          // page layer" needs to be addressable by something other than its
-          // position in the DOM.
           data-testid="page-layer"
           initial={skipSlideIn ? false : { x: '8%', opacity: 0.5 }}
           animate={{ x: 0, opacity: 1 }}
           transition={springs.standard}
         >
-          {showActionBar ? <HomeSwipeContainer /> : children}
+          {showActionBar ? (
+            <>
+              <div className="shrink-0 relative z-10 px-4 pt-2">
+                <SegmentedActionBar items={actionItems} activeId={activeAction} onChange={handleActionChange} />
+              </div>
+              <HomeSwipeContainer />
+            </>
+          ) : (
+            children
+          )}
         </motion.div>
       </div>
 
