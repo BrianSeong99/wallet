@@ -148,7 +148,7 @@ documents, and which screens document a given file.
 | 76 | Send · success, other chain | bug / proposed — bug | `BridgeSuccess.tsx:59` `BridgeSuccess.tsx:25–30` `receipt.ts:43–48` `receipt.ts:30–66` `en.json:474` `types.ts:187` `TransactionSuccess.tsx:12–20` |
 | 77 | Contacts · picker | gap / sheet — sheet | `SendManager.tsx:488` `SendManager.tsx:87–108` |
 | 78 | Contacts · picker, empty | gap / sheet — sheet | `AccountsList.tsx:46–47` |
-| 79 | Address book | gap / sheet — sheet | `Settings.tsx:420–431` `Settings.tsx:303` `AddressBook.tsx:77–78` `AddressBook.tsx:23–37` |
+| 79 | Address book | gap / sheet — sheet | `Settings.tsx:420–431` `Settings.tsx:303` `AddressBook.tsx:77–78` `AddressBook.tsx:23–37` `AddressBook.tsx:78` |
 | 80 | Address book · duplicate | gap / sheet — sheet | `AddressBook.tsx:128` |
 | 81 | Address book · empty | gap / sheet — sheet | `AddressBook.tsx:68` |
 
