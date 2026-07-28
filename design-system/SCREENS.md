@@ -6,7 +6,7 @@ Every screen in `index.html`, grouped by the flow it belongs to, in page order.
 change to `index.html`. Serve the site with `python3 -m http.server 4599 --directory design-system`
 and find a screen by searching its caption.
 
-Total: **178 screens** across **15 flows**. The *Specifies* column lists the
+Total: **178 screens** across **16 flows**. The *Specifies* column lists the
 shipped source each screen's rationale cites, so this reads in both directions: what a screen
 documents, and which screens document a given file.
 
@@ -17,7 +17,8 @@ documents, and which screens document a given file.
 | Send → Review → Sign — where the Tier-2 evidence lands | 3 |
 | Onboarding | 30 |
 | Home & overview | 14 |
-| Send flow | 25 |
+| Send flow | 17 |
+| Cross-chain send | 8 |
 | Contacts | 7 |
 | Receive flow | 13 |
 | Swap flow | 6 |
@@ -118,34 +119,41 @@ documents, and which screens document a given file.
 
 ## Send flow
 
-<sub>section `#allscreens` · 25 screens</sub>
+<sub>section `#allscreens` · 17 screens</sub>
 
 | # | Screen | Status | Specifies |
 |--:|---|---|---|
 | 52 | Send · recipient | shipped | — |
 | 53 | Send · recipient, filled | shipped | `lib/qr/format.test.ts:4` `QRCode.test.tsx:47` `SelectRecipient.tsx:65–66` |
 | 54 | Send · recipient, new address | shipped | `QRCode.test.tsx:154` |
-| 55 | Send · recipient, other network | gap / sheet — proposed | — |
-| 56 | Send · recipient, unsupported | shipped | — |
-| 57 | Send · recipient, typing | shipped | `lib/qr/format.test.ts:4` `QRCode.test.tsx:47` `SendManager.tsx:365–379` |
-| 58 | Send · recipient, invalid | shipped | `SendManager.tsx:365–379` |
-| 59 | Send · scan | gap / sheet — mobile only | — |
-| 60 | Send · scan, detected | gap / sheet — gap | `format.ts:1–8` `format.ts:30–40` `format.ts:49–67` |
-| 61 | Send · scan, unreadable | gap / sheet — gap | `lib/qr/index.ts:2` `utils/miden.ts:5` `lib/qr/format.ts:58` `format.ts:57–62` `utils/miden.ts:7` |
-| 62 | Send · scan, unsupported network | gap / sheet — gap | `utils/miden.ts:14–16` `lib/qr/format.ts:49–67` `scanner.ts:72–74` |
-| 63 | Send · scan, no code found | gap / sheet — gap | `scanner.ts:46–48` `scanner.ts:99–102` |
-| 64 | Send · network | bug / proposed — proposed | `lib/miden/db/types.ts:33` |
-| 65 | Send · amount | shipped — shipped | `SelectAmount.tsx:124–150` `SendManager.tsx:116` `TabLayout.tsx:42` `SendManager.tsx:84–85` `SelectAmount.tsx:136–148` `AmountInput.tsx:70–88` `SelectAmount.tsx:108–118` `AmountInput.tsx:81` `AmountInput.tsx:101` `AmountInput.tsx:84` `AmountInput.tsx:13–19` `binance.ts:21` |
-| 66 | Send · amount, zero | gap / sheet — gap | `SelectAmount.tsx:70` `SendManager.tsx:46` `AmountInput.tsx:48` `AmountInput.tsx:75` `SelectAmount.tsx:84–88` |
-| 67 | Send · amount, insufficient | gap / sheet — gap | `SendManager.tsx:317` `SelectAmount.tsx:144` |
-| 68 | Send · amount, max | gap / sheet — proposed | `AssetField.tsx:27` `SelectAmount.tsx:46–48` |
-| 69 | Send · amount, other chain | bug / proposed — proposed | `db/types.ts:22` |
-| 70 | Send · token picker | gap / sheet — sheet | `SelectToken.tsx:63-79` |
-| 71 | Send · review | shipped — shipped | — |
-| 72 | Send · route | gap / sheet — proposed | `success/receipt.ts:69–79` `lib/miden/db/types.ts:22` `types.ts:187` |
-| 73 | Send · review, other chain | gap / sheet — proposed | `lib/miden/db/types.ts:29–36` `types.ts:187` `TransactionSuccess.tsx:12–20` `TransactionSuccess.test.tsx:149` |
-| 74 | Send · in progress | shipped | — |
-| 75 | Send · success | shipped | `receipt.ts:30–65` |
+| 55 | Send · recipient, typing | shipped | `lib/qr/format.test.ts:4` `QRCode.test.tsx:47` `SendManager.tsx:365–379` |
+| 56 | Send · recipient, invalid | shipped | `SendManager.tsx:365–379` |
+| 57 | Send · scan | gap / sheet — mobile only | — |
+| 58 | Send · scan, detected | gap / sheet — gap | `format.ts:1–8` `format.ts:30–40` `format.ts:49–67` |
+| 59 | Send · scan, unreadable | gap / sheet — gap | `lib/qr/index.ts:2` `utils/miden.ts:5` `lib/qr/format.ts:58` `format.ts:57–62` `utils/miden.ts:7` |
+| 60 | Send · scan, no code found | gap / sheet — gap | `scanner.ts:46–48` `scanner.ts:99–102` |
+| 61 | Send · amount | shipped — shipped | `SelectAmount.tsx:124–150` `SendManager.tsx:116` `TabLayout.tsx:42` `SendManager.tsx:84–85` `SelectAmount.tsx:136–148` `AmountInput.tsx:70–88` `SelectAmount.tsx:108–118` `AmountInput.tsx:81` `AmountInput.tsx:101` `AmountInput.tsx:84` `AmountInput.tsx:13–19` `binance.ts:21` |
+| 62 | Send · amount, zero | gap / sheet — gap | `SelectAmount.tsx:70` `SendManager.tsx:46` `AmountInput.tsx:48` `AmountInput.tsx:75` `SelectAmount.tsx:84–88` |
+| 63 | Send · amount, insufficient | gap / sheet — gap | `SendManager.tsx:317` `SelectAmount.tsx:144` |
+| 64 | Send · amount, max | gap / sheet — proposed | `AssetField.tsx:27` `SelectAmount.tsx:46–48` |
+| 65 | Send · token picker | gap / sheet — sheet | `SelectToken.tsx:63-79` |
+| 66 | Send · review | shipped — shipped | — |
+| 67 | Send · in progress | shipped | — |
+| 68 | Send · success | shipped | `receipt.ts:30–65` |
+
+## Cross-chain send
+
+<sub>section `#allscreens` · 8 screens</sub>
+
+| # | Screen | Status | Specifies |
+|--:|---|---|---|
+| 69 | Send · recipient, other network | gap / sheet — proposed | — |
+| 70 | Send · recipient, unsupported | shipped | — |
+| 71 | Send · scan, unsupported network | gap / sheet — gap | `utils/miden.ts:14–16` `lib/qr/format.ts:49–67` `scanner.ts:72–74` |
+| 72 | Send · network | bug / proposed — proposed | `lib/miden/db/types.ts:33` |
+| 73 | Send · amount, other chain | bug / proposed — proposed | `db/types.ts:22` |
+| 74 | Send · route | gap / sheet — proposed | `success/receipt.ts:69–79` `lib/miden/db/types.ts:22` `types.ts:187` |
+| 75 | Send · review, other chain | gap / sheet — proposed | `lib/miden/db/types.ts:29–36` `types.ts:187` `TransactionSuccess.tsx:12–20` `TransactionSuccess.test.tsx:149` |
 | 76 | Send · success, other chain | bug / proposed — bug | `BridgeSuccess.tsx:59` `BridgeSuccess.tsx:25–30` `receipt.ts:43–48` `receipt.ts:30–66` `en.json:474` `types.ts:187` `TransactionSuccess.tsx:12–20` |
 
 ## Contacts
@@ -372,7 +380,7 @@ If one of these files changes, the screens beside it may no longer be true.
 | `Networks.tsx` | Settings · networks, confirm switch · Settings · networks, switch failed |
 | `NoteToastProvider.tsx` | Toast · link copied · Notifications · rationale |
 | `receipt.ts` | Send · success · Send · success, other chain |
-| `scanner.ts` | Send · scan, unsupported network · Send · scan, no code found |
+| `scanner.ts` | Send · scan, no code found · Send · scan, unsupported network |
 | `store/index.ts` | Settings · currency · Account · rename |
 | `ToggleSwitch.tsx` | Settings · general · Settings · general, save failed |
 | `TransactionSuccess.tsx` | Send · review, other chain · Send · success, other chain |
