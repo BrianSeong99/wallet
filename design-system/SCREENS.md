@@ -132,8 +132,8 @@ documents, and which screens document a given file.
 | 60 | Send · scan, unsupported network | gap / sheet — gap | `utils/miden.ts:14–16` `lib/qr/format.ts:49–67` `scanner.ts:72–74` |
 | 61 | Send · scan, no code found | gap / sheet — gap | `scanner.ts:46–48` `scanner.ts:99–102` |
 | 62 | Send · network | shipped — kept | `lib/miden/db/types.ts:33` |
-| 63 | Send · amount | bug / proposed — redrawn | `SelectAmount.tsx:124–150` `SendManager.tsx:116` `TabLayout.tsx:42` `SendManager.tsx:84–85` `AmountInput.tsx:70–88` `SelectAmount.tsx:108–118` `AmountInput.tsx:81` `AmountInput.tsx:101` `AmountInput.tsx:13–19` `binance.ts:21` |
-| 64 | Send · amount, zero | gap / sheet — gap | `SelectAmount.tsx:70` `SendManager.tsx:46` `AmountInput.tsx:75` `SelectAmount.tsx:84–88` |
+| 63 | Send · amount | bug / proposed — redrawn | `SelectAmount.tsx:124–150` `SendManager.tsx:116` `TabLayout.tsx:42` `SendManager.tsx:84–85` `SelectAmount.tsx:136–148` `AmountInput.tsx:70–88` `SelectAmount.tsx:108–118` `AmountInput.tsx:81` `AmountInput.tsx:101` `AmountInput.tsx:84` `AmountInput.tsx:13–19` `binance.ts:21` |
+| 64 | Send · amount, zero | gap / sheet — gap | `SelectAmount.tsx:70` `SendManager.tsx:46` `AmountInput.tsx:48` `AmountInput.tsx:75` `SelectAmount.tsx:84–88` |
 | 65 | Send · amount, insufficient | gap / sheet — gap | `SendManager.tsx:317` `SelectAmount.tsx:144` |
 | 66 | Send · amount, max | gap / sheet — proposed | `AssetField.tsx:27` `SelectAmount.tsx:46–48` |
 | 67 | Send · token picker | gap / sheet — sheet | `SelectToken.tsx:63-79` |
