@@ -130,15 +130,27 @@ const ForgotPasswordInfoScreen: FC<ForgotPasswordInfoScreenProps> = ({ onClose, 
             Out. */}
         <p className="mb-1 text-left text-caption leading-[1.45] text-ink-2">{t('forgotFundsSafe')}</p>
         {/* `.zpair` — two peers at equal width. Sign Out is the destructive one
-            and stays inert until all four rungs are true. */}
-        <div className="flex gap-2.5">
-          <Button title={t('cancel')} variant={ButtonVariant.Secondary} onClick={onClose} className="flex-1" />
+            and stays inert until all four rungs are true.
+
+            `w-full` is load-bearing: the zone is `items-center`, so without it
+            this row shrinks to its content, both buttons collapse to their
+            label width, and "Sign Out" wraps onto two lines. The pair also
+            takes the spec's tighter horizontal padding (0.625rem against the
+            standalone button's 1rem) — two buttons sharing one row have half
+            the width each and cannot afford the full gutter. */}
+        <div className="flex w-full gap-2.5">
+          <Button
+            title={t('cancel')}
+            variant={ButtonVariant.Secondary}
+            onClick={onClose}
+            className="flex-1 px-2.5 whitespace-nowrap"
+          />
           <Button
             title={t('signOut')}
             variant={ButtonVariant.Primary}
             disabled={!allAcked}
             onClick={onSignOut}
-            className="flex-1"
+            className="flex-1 px-2.5 whitespace-nowrap"
           />
         </div>
       </ActionZone>
