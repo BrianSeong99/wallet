@@ -1672,7 +1672,12 @@ details.grp>summary .gn{font-family:var(--num);font-feature-settings:var(--num-f
 .availrow{display:flex;align-items:center;justify-content:space-between;background:var(--surface-2);border-radius:var(--radius-md);padding:0.625rem 0.8125rem;font-size:var(--t-label);color:var(--ink-2)}
 .notice{display:flex;gap:0.5rem;border-radius:var(--radius-md);padding:0.5625rem 0.75rem;font-size:var(--t-caption);line-height:1.4;font-weight:600;
   background:color-mix(in srgb,var(--neg) 10%,transparent);color:var(--neg);margin-top:0.625rem}
+/* The safe area is paid once, by whatever sits last in the frame. A .zone followed by the bottom
+   nav is not last -- the nav's own bottom margin already clears the home indicator -- so a zone
+   that also pays max(1rem, --safe-bottom) charges the inset twice and leaves 34px between the CTA
+   and the nav where a gutter was wanted. Below the nav there is nothing to clear. */
 .zone{margin-top:auto;padding-top:1rem;padding-bottom:max(1rem,var(--safe-bottom,0))}
+.mock:has(.mnav) .zone{padding-bottom:0.75rem}
 /* Any button in the action zone is full-width, not just the primary variant. The rule was
    scoped to .btn-primary, so putting a secondary in the same slot silently lost the width --
    the zone's geometry is a property of the SLOT, not of which variant sits in it. */
