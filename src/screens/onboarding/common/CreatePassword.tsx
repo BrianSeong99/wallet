@@ -7,6 +7,7 @@ import { MIN_PASSWORD_LENGTH, PRIVACY_POLICY_URL, STRONG_PASSWORD_LENGTH, TERMS_
 import { Icon, IconName } from 'app/icons/v2';
 import { Button } from 'components/Button';
 import { Input } from 'components/Input';
+import { ActionZone } from 'components/ui/ActionZone';
 
 export interface PasswordValidation {
   minChar: boolean;
@@ -47,38 +48,48 @@ export const PasswordStrengthIndicator = ({
 
     return t('8chars1number');
   }, [validationChecks, t]);
+  // Four tiers, four DISTINCT tokens. `pos`/`warn`/`neg` are the status set;
+  // amber is `--warn`, deliberately not `--pend`, because on dark `--accent`,
+  // `--pend` and `--neg` all sit at the same hue and lightness, so "low" and
+  // "medium" rendered identically and both read as brand colour. The unfilled
+  // segment is `--surface-3` rather than a fixed grey so it flips with theme.
   const validationColor = useMemo(() => {
     if (validationChecks === 5) {
-      return 'bg-green-500';
+      return 'bg-pos';
     }
     if (validationChecks >= 3) {
-      return 'bg-yellow-500';
+      return 'bg-warn';
     }
 
     if (validationChecks === 2) {
-      return 'bg-red-500';
+      return 'bg-neg';
     }
 
-    return 'bg-gray-100';
+    return 'bg-surface-3';
   }, [validationChecks]);
 
   // TODO: show strength indicator if password is more than 0 characters
   return (
-    <div className="h-4 text-xs">
+    <div className="h-4">
       {password.length > 0 ? (
-        <div className="flex flex-row justify-between items-center">
-          <div className="flex flex-row gap-x-2">
+        <div className="flex flex-row justify-between items-center gap-stack">
+          {/* `.opwbar` — the meter spans the field it measures, so the segments
+              share the width instead of being three fixed 40px stubs floated
+              left of a lot of dead space. */}
+          <div className="flex flex-1 flex-row gap-1">
             {[2, 3, 5].map(check => (
               <div
                 key={`check-${check}`}
-                className={`h-1 w-10 rounded-md ${validationChecks >= check ? validationColor : 'bg-gray-100'}`}
+                className={`h-1 flex-1 rounded-full ${validationChecks >= check ? validationColor : 'bg-surface-3'}`}
               />
             ))}
           </div>
-          <p className="text-xs text-text-muted">{validationMessage}</p>
+          {/* The tier is spelled out in words as well as colour, so the meter
+              still reads without hue (SC 1.4.1). */}
+          <p className="text-caption font-bold text-ink-2 shrink-0">{validationMessage}</p>
         </div>
       ) : (
-        <p className="text-xs text-text-muted">{t('minimumCharsWithAtLeast')}</p>
+        <p className="text-caption text-ink-2">{t('minimumCharsWithAtLeast')}</p>
       )}
     </div>
   );
@@ -153,16 +164,21 @@ export const CreatePasswordScreen: React.FC<CreatePasswordScreenProps> = ({ clas
 
   return (
     <div
-      className={classNames('flex flex-col flex-1', 'bg-app-bg gap-y-6 px-4 pt-10 text-heading-gray', className)}
+      // 24px gutter, not 16 — this is a page, and the design system has exactly
+      // one page gutter.
+      className={classNames('flex flex-col flex-1', 'bg-app-bg gap-stack-loose px-6 pt-8 text-ink', className)}
       {...props}
     >
-      <div className="flex flex-col items-center text-heading-gray gap-1">
-        <header className="font-heading text-[2rem] leading-none font-bold">{t('createPassword')}</header>
-        <p className="text-base leading-none text-center font-normal">{t('createPasswordDescription')}</p>
+      {/* `.obh` / `.obp`, left-aligned as on `06b`. Hand-rolled rather than
+          `OnboardingHeading`, which bakes in `text-center` and composes with
+          clsx, so a `text-left` override would not reliably win. */}
+      <div className="flex flex-col gap-stack-tight">
+        <h1 className="font-heading font-black text-title leading-[1.12] text-ink">{t('createPassword')}</h1>
+        <p className="text-label leading-[1.45] text-ink-2">{t('createPasswordDescription')}</p>
       </div>
 
-      <article className="w-full justify-center items-center flex flex-col gap-y-6">
-        <div className="flex flex-col gap-y-2 w-full">
+      <article className="w-full justify-center items-center flex flex-col gap-stack-loose">
+        <div className="flex flex-col gap-stack-tight w-full">
           <Input
             type={isPasswordVisible ? 'text' : 'password'}
             label={t('password')}
@@ -179,7 +195,7 @@ export const CreatePasswordScreen: React.FC<CreatePasswordScreenProps> = ({ clas
           <PasswordStrengthIndicator password={password} validation={passwordValidation} />
         </div>
 
-        <div className="flex flex-col gap-y-2 w-full">
+        <div className="flex flex-col gap-stack-tight w-full">
           <Input
             ref={verifyPasswordRef}
             type={isVerifyPasswordVisible ? 'text' : 'password'}
@@ -194,9 +210,12 @@ export const CreatePasswordScreen: React.FC<CreatePasswordScreenProps> = ({ clas
             onChange={e => setVerifyPassword(e.target.value)}
             onKeyDown={handleEnterKey}
           />
+          {/* `.fok` / `.ferr`: settled validation only. There is deliberately no
+              error ring on the field while it is being typed — incomplete is
+              not invalid. */}
           <p
             className={classNames(
-              'h-4 text-green-500 text-xs',
+              'h-4 text-caption font-bold leading-[1.45] text-pos',
               isValidPassword && password === verifyPassword ? 'block' : 'hidden'
             )}
           >
@@ -204,7 +223,7 @@ export const CreatePasswordScreen: React.FC<CreatePasswordScreenProps> = ({ clas
           </p>
           <p
             className={classNames(
-              'h-4 text-red-500 text-xs',
+              'h-4 text-caption font-bold leading-[1.45] text-neg',
               verifyPassword.length >= password.length && password !== verifyPassword ? 'block' : 'hidden'
             )}
           >
@@ -212,8 +231,8 @@ export const CreatePasswordScreen: React.FC<CreatePasswordScreenProps> = ({ clas
           </p>
         </div>
       </article>
-      <div className="flex flex-col gap-2 self-center w-full mt-auto">
-        <p className="text-text-muted text-xs text-center px-4">
+      <ActionZone>
+        <p className="w-full text-caption leading-[1.45] text-ink-2 text-center">
           {t('byProceeding')}{' '}
           <a target="_blank" href={TERMS_OF_USE_URL} className="underline" rel="noreferrer">
             {t('termsOfUsage')}
@@ -225,7 +244,7 @@ export const CreatePasswordScreen: React.FC<CreatePasswordScreenProps> = ({ clas
           .
         </p>
         <Button title={t('continue')} disabled={!isValidPassword} onClick={onPasswordSubmit} />
-      </div>
+      </ActionZone>
     </div>
   );
 };

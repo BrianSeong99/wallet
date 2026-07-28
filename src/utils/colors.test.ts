@@ -1,4 +1,4 @@
-import colorsDefault, { getColorHex, getRandomColor, isColorCode } from './colors';
+import colorsDefault, { getColorHex, isColorCode } from './colors';
 import { ColorCode } from '../types/colors';
 
 /*
@@ -77,52 +77,6 @@ describe('isColorCode', () => {
 
   it('returns false for an unknown shade of a known color', () => {
     expect(isColorCode('primary-999')).toBe(false);
-  });
-});
-
-describe('getRandomColor', () => {
-  afterEach(() => {
-    jest.restoreAllMocks();
-  });
-
-  it('returns the first color for Math.random() === 0', () => {
-    jest.spyOn(Math, 'random').mockReturnValue(0);
-    // keys order: primary, grey, blue, yellow, green, red -> index 0
-    expect(getRandomColor()).toBe('primary-500');
-  });
-
-  it('returns a middle color (grey is NOT excluded — delete gray is a no-op)', () => {
-    // floor(0.2 * 6) === 1 -> 'grey'
-    jest.spyOn(Math, 'random').mockReturnValue(0.2);
-    expect(getRandomColor()).toBe('grey-500');
-  });
-
-  it('returns the last color for Math.random() close to 1', () => {
-    // floor(0.999 * 6) === 5 -> 'red'
-    jest.spyOn(Math, 'random').mockReturnValue(0.999);
-    expect(getRandomColor()).toBe('red-500');
-  });
-
-  it('always yields a valid, shade-500 color code', () => {
-    jest.spyOn(Math, 'random').mockReturnValue(0.5);
-    const result = getRandomColor();
-    expect(isColorCode(result)).toBe(true);
-    expect(result.endsWith('-500')).toBe(true);
-  });
-
-  it('falls back to "primary" when no color names remain', () => {
-    // Empty the shared pool so colorNames[...] is undefined -> `?? 'primary'`.
-    const saved = { ...colorsDefault };
-    const spy = jest.spyOn(Math, 'random').mockReturnValue(0.5);
-    try {
-      for (const key of Object.keys(colorsDefault)) {
-        delete colorsDefault[key];
-      }
-      expect(getRandomColor()).toBe('primary-500');
-    } finally {
-      spy.mockRestore();
-      Object.assign(colorsDefault, saved);
-    }
   });
 });
 

@@ -396,7 +396,9 @@ describe('Unlock — mobile passcode numpad', () => {
     await renderUnlock();
 
     expect(screen.getByTestId('unlock-passcode')).toBeInTheDocument();
-    expect(screen.getByText('enterYour6DigitCode')).toBeInTheDocument();
+    // Screen 12 draws NO idle subcopy: the six dots state the digit count, so
+    // "Enter your 6-digit code" was the caption restating the control below it.
+    expect(screen.queryByText('enterYour6DigitCode')).not.toBeInTheDocument();
     expect(mockBioHasKey).toHaveBeenCalledTimes(1);
     expect(mockUnlock).not.toHaveBeenCalled();
 
@@ -446,7 +448,9 @@ describe('Unlock — mobile passcode numpad', () => {
     // A fresh digit clears the error (handleDigit isError branch).
     type(container, '9');
     expect(screen.queryByText('incorrectPasscode')).not.toBeInTheDocument();
-    expect(screen.getByText('enterYour6DigitCode')).toBeInTheDocument();
+    // Screen 12 draws NO idle subcopy: the six dots state the digit count, so
+    // "Enter your 6-digit code" was the caption restating the control below it.
+    expect(screen.queryByText('enterYour6DigitCode')).not.toBeInTheDocument();
   });
 
   it('applies the random back-off delay and time-lock past the last attempt', async () => {
@@ -481,7 +485,9 @@ describe('Unlock — mobile passcode numpad', () => {
     // Deleting after an error clears it (handleDelete isError branch).
     fireEvent.click(container.querySelector('[data-testid="numpad-delete"]') as HTMLButtonElement);
     expect(screen.queryByText('incorrectPasscode')).not.toBeInTheDocument();
-    expect(screen.getByText('enterYour6DigitCode')).toBeInTheDocument();
+    // Screen 12 draws NO idle subcopy: the six dots state the digit count, so
+    // "Enter your 6-digit code" was the caption restating the control below it.
+    expect(screen.queryByText('enterYour6DigitCode')).not.toBeInTheDocument();
   });
 
   it('blocks input and shows a two-digit countdown while time-locked', async () => {

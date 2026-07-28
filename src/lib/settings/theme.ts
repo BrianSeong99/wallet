@@ -1,3 +1,5 @@
+import { isDevnet } from 'utils/brand-colors';
+
 import { ResolvedTheme, ThemeSetting } from './constants';
 import { getThemeSetting, setThemeSetting } from './helpers';
 
@@ -62,6 +64,14 @@ function ensureSystemListener() {
 }
 
 export function initTheme() {
+  // Stamp the network onto <html> so the CSS token layer can swap the accent
+  // group to slate on devnet. `isDevnet` is a build-time constant, so the
+  // non-matching branch is eliminated from the bundle. Without this the Crust
+  // --accent tokens would be a fixed orange and any component migrated onto
+  // them would lose the devnet environment tell that `primary-500` still has.
+  if (isDevnet) {
+    document.documentElement.dataset.network = 'devnet';
+  }
   applyTheme(getThemeSetting());
   ensureSystemListener();
 }

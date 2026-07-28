@@ -13,12 +13,10 @@ export interface AssetRowProps {
   'data-testid'?: string;
 }
 
-const FLAT_SPARKLINE_POINTS = [1, 1];
-
 /**
  * Wallet-aware row used in Explore + SelectToken — wraps AssetListItem with
  * the standard data plumbing: TokenLogo for the icon, 1D sparkline from
- * Binance (flat-grey fallback for unindexed symbols), fiat price, and
+ * Binance (omitted entirely for unindexed symbols), fiat price, and
  * coloured 24h delta.
  */
 export const AssetRow: FC<AssetRowProps> = ({ asset, tokenPrices, onClick, 'data-testid': dataTestId }) => {
@@ -28,23 +26,29 @@ export const AssetRow: FC<AssetRowProps> = ({ asset, tokenPrices, onClick, 'data
   const deltaValue = `${isPositive ? '+' : ''}${priceInfo.percentageChange24h.toFixed(2)}%`;
   const direction: 'positive' | 'negative' = isPositive ? 'positive' : 'negative';
 
+  // No chart when there is no price feed. `useTokenSparkline` returns [] for
+  // any symbol Binance does not list — which is every token on devnet and
+  // testnet — and the row used to substitute two constant points: a 120px
+  // dead-straight rule that reads as "this token held perfectly flat for 24
+  // hours". It is not flat, it is unknown, and those are different claims.
+  // Rabby and Uniswap both delete the chart outright rather than draw one of
+  // nothing; the row omits it and the slot collapses.
   const points = useTokenSparkline(metadata.symbol, '1D');
   const hasRealPoints = points.length > 1;
-  const sparkPoints = hasRealPoints ? points : FLAT_SPARKLINE_POINTS;
-  const sparkColor = hasRealPoints
-    ? isPositive
-      ? 'var(--status-positive)'
-      : 'var(--status-negative)'
-    : 'var(--text-tertiary)';
+  const sparkColor = isPositive ? 'var(--status-positive)' : 'var(--status-negative)';
 
   return (
     <AssetListItem
       icon={<TokenLogo symbol={metadata.symbol} />}
       name={metadata.name || metadata.symbol}
       amount={`${balance.toFixed(2)} ${metadata.symbol}`}
-      chart={<Sparkline points={sparkPoints} color={sparkColor} width={120} height={32} />}
-      price={`$${(balance * priceInfo.price).toFixed(2)}`}
-      delta={{ value: deltaValue, direction }}
+      chart={hasRealPoints ? <Sparkline points={points} color={sparkColor} width={120} height={32} /> : undefined}
+      // No fiat and no delta without a real quote. `balance * 0` would render
+      // "$0.00", which reads as "this is worthless" rather than "we do not
+      // know what this is worth" — and `balance * 1` (the old default) read as
+      // a real valuation. Both are assertions the app cannot make.
+      price={priceInfo.isKnown ? `$${(balance * priceInfo.price).toFixed(2)}` : undefined}
+      delta={priceInfo.isKnown ? { value: deltaValue, direction } : undefined}
       onClick={onClick}
       data-testid={dataTestId}
     />

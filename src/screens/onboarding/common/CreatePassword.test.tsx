@@ -65,7 +65,7 @@ describe('PasswordStrengthIndicator', () => {
     expect(screen.queryByText('veryStrong')).not.toBeInTheDocument();
   });
 
-  it('renders "veryStrong" with green bars when all five checks pass', () => {
+  it('renders "veryStrong" with positive bars when all five checks pass', () => {
     const { container } = render(
       <PasswordStrengthIndicator
         password="whatever"
@@ -79,13 +79,13 @@ describe('PasswordStrengthIndicator', () => {
       />
     );
     expect(screen.getByText('veryStrong')).toBeInTheDocument();
-    // checks === 5 >= every threshold [2,3,5] => all three bars coloured green.
-    const bars = container.querySelectorAll('div.h-1.w-10');
+    // checks === 5 >= every threshold [2,3,5] => all three bars coloured with the positive token.
+    const bars = container.querySelectorAll('div.h-1.flex-1');
     expect(bars).toHaveLength(3);
-    bars.forEach(bar => expect(bar).toHaveClass('bg-green-500'));
+    bars.forEach(bar => expect(bar).toHaveClass('bg-pos'));
   });
 
-  it('renders "medium" with yellow bars when four checks pass (third bar stays gray)', () => {
+  it('renders "medium" with warn bars when four checks pass (third bar stays unfilled)', () => {
     const { container } = render(
       <PasswordStrengthIndicator
         password="whatever"
@@ -93,12 +93,12 @@ describe('PasswordStrengthIndicator', () => {
       />
     );
     expect(screen.getByText('medium')).toBeInTheDocument();
-    const bars = container.querySelectorAll('div.h-1.w-10');
-    // checks === 4: >= 2 and >= 3 => yellow; >= 5 is false => gray. Covers both
-    // arms of the per-bar `validationChecks >= check ? color : 'bg-gray-100'`.
-    expect(bars[0]).toHaveClass('bg-yellow-500');
-    expect(bars[1]).toHaveClass('bg-yellow-500');
-    expect(bars[2]).toHaveClass('bg-gray-100');
+    const bars = container.querySelectorAll('div.h-1.flex-1');
+    // checks === 4: >= 2 and >= 3 => warn; >= 5 is false => the unfilled surface. Covers both
+    // arms of the per-bar `validationChecks >= check ? color : 'bg-surface-3'`.
+    expect(bars[0]).toHaveClass('bg-warn');
+    expect(bars[1]).toHaveClass('bg-warn');
+    expect(bars[2]).toHaveClass('bg-surface-3');
   });
 
   it('renders "medium" when exactly three checks pass (>= 3 boundary)', () => {
@@ -111,26 +111,26 @@ describe('PasswordStrengthIndicator', () => {
     expect(screen.getByText('medium')).toBeInTheDocument();
   });
 
-  it('renders "low" with red bars when exactly two checks pass', () => {
+  it('renders "low" with negative bars when exactly two checks pass', () => {
     const { container } = render(
       <PasswordStrengthIndicator password="whatever" validation={buildValidation({ minChar: true, cases: true })} />
     );
     expect(screen.getByText('low')).toBeInTheDocument();
-    const bars = container.querySelectorAll('div.h-1.w-10');
-    // checks === 2: only first bar (>= 2) coloured red; the rest gray.
-    expect(bars[0]).toHaveClass('bg-red-500');
-    expect(bars[1]).toHaveClass('bg-gray-100');
-    expect(bars[2]).toHaveClass('bg-gray-100');
+    const bars = container.querySelectorAll('div.h-1.flex-1');
+    // checks === 2: only first bar (>= 2) coloured negative; the rest unfilled.
+    expect(bars[0]).toHaveClass('bg-neg');
+    expect(bars[1]).toHaveClass('bg-surface-3');
+    expect(bars[2]).toHaveClass('bg-surface-3');
   });
 
-  it('renders the "8chars1number" fallback with all-gray bars for a non-empty weak password', () => {
+  it('renders the "8chars1number" fallback with all-unfilled bars for a non-empty weak password', () => {
     const { container } = render(
       <PasswordStrengthIndicator password="a" validation={buildValidation({ minChar: true })} />
     );
     expect(screen.getByText('8chars1number')).toBeInTheDocument();
-    const bars = container.querySelectorAll('div.h-1.w-10');
-    // checks === 1: below every threshold => all bars gray (fallback color).
-    bars.forEach(bar => expect(bar).toHaveClass('bg-gray-100'));
+    const bars = container.querySelectorAll('div.h-1.flex-1');
+    // checks === 1: below every threshold => all bars unfilled (fallback colour).
+    bars.forEach(bar => expect(bar).toHaveClass('bg-surface-3'));
   });
 });
 

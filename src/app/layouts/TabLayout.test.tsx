@@ -54,7 +54,10 @@ jest.mock('app/hooks/useHasUnclaimedNotes', () => ({
 
 // `springs` is animation config only; the value is irrelevant to behaviour.
 jest.mock('lib/animation', () => ({
-  springs: { standard: { type: 'spring' } }
+  // The page transition is back on the original spring; `iosPush` is still used
+  // for the action bar's presence animation.
+  springs: { standard: { type: 'spring' } },
+  iosPush: { duration: 0.54 }
 }));
 
 // Icons are SVG re-exports; render nothing but expose the enum keys the layout
@@ -83,8 +86,14 @@ jest.mock('app/layouts/HomeSwipeContainer', () => ({
 // framer-motion's `motion.div` — forward props onto a plain div and surface the
 // `initial` prop (false = slide-in skipped, object = slide-in) for assertions.
 jest.mock('framer-motion', () => ({
+  // `AnimatePresence` is a passthrough: the page transition now overlaps two
+  // layers, but presence orchestration is framer's job, not this suite's.
+  AnimatePresence: ({ children }: any) => <>{children}</>,
+  // Reduced motion is off by default here so the variant path under test is
+  // the animated one.
+  useReducedMotion: () => false,
   motion: {
-    div: React.forwardRef(({ children, initial, animate, transition, ...props }: any, ref: any) => (
+    div: React.forwardRef(({ children, initial, animate, exit, variants, transition, ...props }: any, ref: any) => (
       <div ref={ref} data-testid="motion-div" data-initial={JSON.stringify(initial)} {...props}>
         {children}
       </div>
@@ -113,8 +122,8 @@ jest.mock('components/ui', () => ({
       </button>
     </div>
   ),
-  SegmentedActionBar: ({ items, activeId, onChange, layoutId }: any) => (
-    <div data-testid="action-bar" data-active={activeId} data-layout-id={layoutId}>
+  SegmentedActionBar: ({ items, activeId, onChange }: any) => (
+    <div data-testid="action-bar" data-active={activeId}>
       {items.map((it: any) => (
         <button key={it.id} data-testid={`action-${it.id}`} onClick={() => onChange(it.id)}>
           {it.label}
@@ -224,7 +233,9 @@ describe('TabLayout — action bar visibility (showActionBar)', () => {
     mockLocation.pathname = '/send';
     renderLayout();
     expect(screen.getByTestId('action-bar')).toBeInTheDocument();
-    expect(screen.getByTestId('action-bar')).toHaveAttribute('data-layout-id', 'tab-layout-action-fill');
+    // No layoutId any more: the segmented control animates via CSS flex-grow,
+    // so there is no shared layout id to plumb through.
+    expect(screen.getByTestId('action-bar')).not.toHaveAttribute('data-layout-id');
     expect(screen.getByTestId('home-swipe')).toBeInTheDocument();
     expect(screen.queryByTestId('child-content')).toBeNull();
   });
@@ -390,7 +401,7 @@ describe('TabLayout — bottom nav footer padding', () => {
 });
 
 describe('TabLayout — slide-in animation (skipSlideIn)', () => {
-  const initialOf = () => screen.getByTestId('motion-div').getAttribute('data-initial');
+  const initialOf = () => screen.getByTestId('page-layer').getAttribute('data-initial');
 
   it('slides the incoming page in by default (first render, non-home target)', () => {
     mockLocation.pathname = '/history';

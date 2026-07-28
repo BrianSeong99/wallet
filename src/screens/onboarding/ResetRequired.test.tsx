@@ -14,41 +14,20 @@ jest.mock('react-i18next', () => ({
   useTranslation: () => ({ t: (key: string) => key })
 }));
 
-// Icon barrel — expose only the `IconName` members the screen references.
+// Icon barrel — expose the `IconName` members the screen references plus an
+// `Icon` stub that echoes the name and the size it was rendered at, so the
+// hero illustration stays assertable without the real SVG set.
 jest.mock('app/icons/v2', () => ({
-  IconName: { MidenLogo: 'MidenLogo' }
-}));
-
-// `NavigationHeader` — surface just the title so the header wiring is
-// assertable without dragging in `CircleButton` / the real icon set.
-jest.mock('components/NavigationHeader', () => ({
-  NavigationHeader: ({ title }: { title: string }) => <div data-testid="nav-header">{title}</div>
-}));
-
-// `Message` — echo every prop the screen threads through as data attributes /
-// text so each one can be asserted individually.
-jest.mock('components/Message', () => ({
-  Message: ({
-    title,
-    description,
-    secondDescription,
-    icon,
-    iconClassName,
-    className
-  }: {
-    title: string;
-    description: string;
-    secondDescription?: string;
-    icon: string;
-    iconClassName?: string;
-    className?: string;
-  }) => (
-    <div data-testid="message" data-icon={icon} data-icon-classname={iconClassName} data-classname={className}>
-      <span data-testid="message-title">{title}</span>
-      <span data-testid="message-description">{description}</span>
-      <span data-testid="message-second-description">{secondDescription}</span>
-    </div>
+  IconName: { MidenLogo: 'MidenLogo' },
+  Icon: ({ name, size }: { name: string; size?: string }) => (
+    <span data-testid="hero-icon" data-icon={name} data-size={size} />
   )
+}));
+
+// `ScreenHeader` — surface just the title so the header wiring is
+// assertable without dragging in `CircleButton` / the real icon set.
+jest.mock('components/ScreenHeader', () => ({
+  ScreenHeader: ({ title }: { title: string }) => <div data-testid="nav-header">{title}</div>
 }));
 
 // `Button` — render the title and forward the click so `onConfirm` wiring and
@@ -74,16 +53,20 @@ describe('ResetRequired', () => {
     expect(screen.getByTestId('nav-header')).toHaveTextContent('resetRequired');
   });
 
-  it('renders the Message with the reset-required copy, icon and icon sizing', () => {
+  it('renders the reset-required copy, icon and hero sizing', () => {
     renderComponent();
 
-    const message = screen.getByTestId('message');
-    expect(screen.getByTestId('message-title')).toHaveTextContent('resetRequired');
-    expect(screen.getByTestId('message-description')).toHaveTextContent('resetRequiredDescription');
-    expect(screen.getByTestId('message-second-description')).toHaveTextContent('resetRequiredSecondDescription');
-    expect(message).toHaveAttribute('data-icon', 'MidenLogo');
-    expect(message).toHaveAttribute('data-icon-classname', 'w-[218px] h-[218px]');
-    expect(message).toHaveAttribute('data-classname', 'flex-1');
+    // Same three strings the `Message` block used to be handed, now asserted on
+    // the heading / subcopy primitives that replaced it.
+    expect(screen.getByRole('heading')).toHaveTextContent('resetRequired');
+    expect(screen.getByText('resetRequiredDescription')).toBeInTheDocument();
+    expect(screen.getByText('resetRequiredSecondDescription')).toBeInTheDocument();
+
+    const icon = screen.getByTestId('hero-icon');
+    expect(icon).toHaveAttribute('data-icon', 'MidenLogo');
+    // Sizing moved off the icon (it was pinned at 218px) and onto the shared
+    // hero wrapper, which is the design system's `--hero-w`.
+    expect(icon.parentElement).toHaveClass('w-hero');
   });
 
   it('renders the primary reset button', () => {

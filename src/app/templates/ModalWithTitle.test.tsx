@@ -20,7 +20,7 @@ import ModalWithTitle from './ModalWithTitle';
 //   - `app/atoms/CustomModal`: capture the props ModalWithTitle forwards (so we
 //     can assert the composed `className` + any `...restProps` such as `isOpen`
 //     / `onRequestClose` pass through) while rendering its children into the
-//     DOM — this avoids pulling in the real react-modal / mobile-bubble chain.
+//     DOM — this avoids pulling in the real vaul / mobile-bubble chain.
 // ---------------------------------------------------------------------------
 
 const useAppEnvMock = jest.fn(() => ({ compact: false }));

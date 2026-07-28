@@ -1,5 +1,6 @@
 import React, { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
+import classNames from 'clsx';
 import { useTranslation } from 'react-i18next';
 
 import { openInFullPage, useAppEnv } from 'app/env';
@@ -9,15 +10,19 @@ import SimplePageLayout from 'app/layouts/SimplePageLayout';
 import { Button, ButtonVariant } from 'components/Button';
 import { Input } from 'components/Input';
 import { Numpad } from 'components/Numpad';
+import { ActionZone, GhostAction } from 'components/ui/ActionZone';
 import { useFormAnalytics } from 'lib/analytics';
 import { useLocalStorage, useMidenContext } from 'lib/miden/front';
 import { MidenSharedStorageKey } from 'lib/miden/types';
 import { isDesktop, isExtension, isMobile } from 'lib/platform';
 import { navigate } from 'lib/woozie';
 
+import { OnboardingHeading } from '../../screens/onboarding/common/layout';
+
 const BrandIcon = () => (
   <div className="flex flex-col items-center gap-2">
     <BreadLogo style={{ width: 80, height: 'auto' }} />
+    {/* eslint-disable-next-line i18next/no-literal-string -- brand wordmark, never translated */}
     <span className="text-3xl font-semibold font-heading text-heading-gray">Bread</span>
   </div>
 );
@@ -57,11 +62,40 @@ const Unlock: FC<UnlockProps> = ({ openForgotPasswordInFullPage = false }) => {
   const [hardwareUnlockChecked, setHardwareUnlockChecked] = useState(false);
   // For hardware-only wallets (no password protector), show biometric-only UI
   const [isHardwareOnlyWallet, setIsHardwareOnlyWallet] = useState(false);
+  // Screen 12 puts "Use Face ID" in the action zone. The automatic attempt on
+  // mount is one shot — if the user cancels the system sheet there is no way
+  // back to it, which made the numpad the only route on a device that has
+  // biometrics set up. The label follows the hardware: only Face ID is called
+  // Face ID.
+  const [biometryType, setBiometryType] = useState<'face' | 'other' | null>(null);
 
   // Use ref to prevent double unlock attempts (React 18 Strict Mode runs effects twice)
   const unlockInProgressRef = useRef(false);
 
   // On mobile/desktop, try hardware unlock automatically on mount
+  // Purely a question about the DEVICE — does it have biometrics we can offer
+  // on the lock screen — so it stays out of the unlock path above. Folding it
+  // in there ran it on the extension (no biometrics at all) and called
+  // hasHardwareKey a second time on a path that had already answered it.
+  useEffect(() => {
+    if (!isMobile()) return;
+    let cancelled = false;
+    void (async () => {
+      try {
+        const { checkBiometricAvailability } = await import('lib/biometric');
+        const availability = await checkBiometricAvailability();
+        if (!cancelled && availability.isAvailable) {
+          setBiometryType(availability.biometryType === 'face' ? 'face' : 'other');
+        }
+      } catch {
+        // No biometrics here; the zone just holds the ghost link.
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
   useEffect(() => {
     const tryHardwareUnlock = async () => {
       if (isExtension() || hardwareUnlockAttempted) {
@@ -226,6 +260,10 @@ const Unlock: FC<UnlockProps> = ({ openForgotPasswordInFullPage = false }) => {
     [isError]
   );
 
+  // Also backs "Use Face ID" on screen 12: the automatic attempt on mount is
+  // one shot, so cancelling the system sheet used to leave the numpad as the
+  // only route on a device that has biometrics set up. Same hardware path,
+  // reached deliberately.
   const onRetryHardwareUnlock = useCallback(async () => {
     try {
       await unlock();
@@ -348,53 +386,79 @@ const Unlock: FC<UnlockProps> = ({ openForgotPasswordInFullPage = false }) => {
     );
   }
 
-  const subtitle = isDisabled
+  // Screen 12 draws NO idle subcopy — the six dots say how many digits are
+  // wanted, so "Enter your 6-digit code" was the caption restating the control
+  // beneath it. What survives is the error line, which the mock has no state
+  // for but the screen genuinely needs.
+  const errorMessage = isDisabled
     ? `${t('unlockPasswordErrorDelay')} ${timeleft}`
     : isError
       ? t('incorrectPasscode')
-      : t('enterYour6DigitCode');
-
-  const subtitleClass = isDisabled || isError ? 'text-red-500' : 'text-gray-secondary';
+      : null;
 
   return (
-    <div className="bg-app-bg h-full overflow-y-auto" data-testid="unlock-passcode">
-      <div className="min-h-full flex flex-col items-center px-6 pb-8">
-        <div className="flex flex-col items-center w-full mt-8 shrink-0">
-          <h1 className="text-3xl font-semibold font-heading text-heading-gray text-center leading-[100%] tracking-tight">
-            {t('enterYourPasscode')}
-          </h1>
-          <p className={`text-lg text-center mt-3 ${subtitleClass}`}>{subtitle}</p>
+    <div
+      // `pt-4` is the gap under the status bar, and it is measured rather than
+      // picked: the mock puts the logo 73.7pt from the frame top — a 65.2pt
+      // `.stat` row (which carries 8px of its own bottom padding) plus
+      // `.mpad`'s 8px. On device `env(safe-area-inset-top)` covers 59pt of that
+      // via <body>, so the remaining ~15pt has to come from here. Without it
+      // the logo sat flush against the Dynamic Island.
+      className="bg-app-bg h-full flex flex-col px-4 min-[360px]:px-6 pt-4 mx-auto w-full max-w-125"
+      data-testid="unlock-passcode"
+    >
+      {/* `justify-end` — the pad is the anchor. The system pins it to the
+          bottom of the content zone and lets the logo, heading and dots ride
+          above it, so the keys land under the thumb on every height instead of
+          the whole stack floating from the top. */}
+      <div className="flex-1 min-h-0 flex flex-col justify-end items-center w-full">
+        <BreadLogo className="w-13 h-auto shrink-0" />
 
-          <div className="flex items-center gap-3.5 mt-6">
-            {Array.from({ length: PASSCODE_LENGTH }).map((_, index) => {
-              const filled = index < code.length;
-              return (
-                <div
-                  key={index}
-                  className={
-                    filled
-                      ? 'w-3.5 h-3.5 rounded-full bg-[#C7C7CC] border-2 border-[#C7C7CC]'
-                      : 'w-3.5 h-3.5 rounded-full border-2 border-[#C7C7CC]'
-                  }
-                />
-              );
-            })}
-          </div>
+        {/* `.obh` at its own 0.75rem, not the 1rem it carries in onboarding —
+            this screen has no step chrome above it. */}
+        <OnboardingHeading className="mt-3">{t('enterYourPasscode')}</OnboardingHeading>
+
+        {errorMessage && (
+          <p className="mt-2 text-label font-bold text-neg text-center" role="alert">
+            {errorMessage}
+          </p>
+        )}
+
+        {/* `.dots` — 0.75rem circles on --surface-3; a filled one takes --accent
+            AND scales 1.12, so the fill is confirmed by a size change and not by
+            colour alone (SC 1.4.1). They were #C7C7CC hardcoded, identical in
+            both themes and in both states bar the fill. */}
+        <div className="flex items-center justify-center gap-2.75 mt-5 mb-5.5">
+          {Array.from({ length: PASSCODE_LENGTH }).map((_, index) => (
+            <div
+              key={index}
+              className={classNames(
+                'size-3 rounded-full transition-[background-color,transform] duration-[var(--dur-base)]',
+                'motion-reduce:transition-none',
+                index < code.length ? 'bg-accent scale-[1.12]' : 'bg-surface-3'
+              )}
+            />
+          ))}
         </div>
 
-        <div className="w-full pt-8">
-          <Numpad onDigit={handleDigit} onDelete={handleDelete} />
-        </div>
-
-        <button
-          id="forgot-password"
-          type="button"
-          onClick={onForgotPasswordClick}
-          className="mt-4 text-heading-gray text-base font-medium"
-        >
-          {t('forgotPasscode')}
-        </button>
+        {/* `.pad.pinned` — margin-top:auto plus the home-indicator inset. */}
+        <Numpad
+          onDigit={handleDigit}
+          onDelete={handleDelete}
+          className="mt-auto pb-[max(1rem,var(--safe-bottom,0px))]"
+        />
       </div>
+
+      <ActionZone>
+        {biometryType && (
+          <Button
+            title={biometryType === 'face' ? t('useFaceId') : t('useFaceIdOrBiometric')}
+            variant={ButtonVariant.Secondary}
+            onClick={onRetryHardwareUnlock}
+          />
+        )}
+        <GhostAction id="forgot-password" title={t('forgotPasscode')} onClick={onForgotPasswordClick} />
+      </ActionZone>
     </div>
   );
 };

@@ -143,7 +143,7 @@ describe('AdvancedSettings (page)', () => {
     expect(mockResolveCommitments).not.toHaveBeenCalled();
 
     await waitFor(() => {
-      const chip = container.querySelector('.font-mono') as HTMLElement;
+      const chip = container.querySelector('.font-address') as HTMLElement;
       // U+00A0 placeholder keeps the row height stable before/without a key.
       expect(chip.textContent).toBe(' ');
     });
@@ -170,7 +170,7 @@ describe('AdvancedSettings (page)', () => {
     await waitFor(() => expect(mockResolveCommitments).toHaveBeenCalledTimes(1));
 
     await waitFor(() => {
-      const chip = container.querySelector('.font-mono') as HTMLElement;
+      const chip = container.querySelector('.font-address') as HTMLElement;
       expect(chip.textContent).toBe(' ');
     });
     expect(getCopyButton(container)).toBeDisabled();

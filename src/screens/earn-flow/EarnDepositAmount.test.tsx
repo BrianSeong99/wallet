@@ -111,8 +111,6 @@ describe('EarnDepositAmount', () => {
     const select = screen.getByTestId('select-amount');
     expect(select).toHaveAttribute('data-label', 'Deposit Amount');
     expect(select).toHaveAttribute('data-confirm-title', 'Confirm');
-    expect(select).toHaveAttribute('data-show-network-pill', 'false');
-    expect(select).toHaveAttribute('data-footer', 'pt-4 pb-6');
   });
 
   it('falls back to the default vault when vaultId matches nothing', () => {

@@ -54,6 +54,13 @@ const renderScreen = (overrides: Partial<React.ComponentProps<typeof ImportRecov
   return { onSubmit, ...utils };
 };
 
+// Preset selection is a filled chip plus an --accent-ink selection ring; it used
+// to be a 2px border swap (`border-primary-500` / `border-grey-200`), which was
+// a bordered tap target. Same two states, same assertions — only the class that
+// carries "active" moved from the border to the outline.
+const ACTIVE_PRESET_CLASS = 'outline-accent-ink';
+const INACTIVE_PRESET_CLASS = 'outline-transparent';
+
 const continueButton = () => screen.getByTestId('continue-button') as HTMLButtonElement;
 const guardianInput = () => screen.getByTestId('guardian-input') as HTMLInputElement;
 const ozPreset = () => screen.getByRole('button', { name: /Open-Zeppelin/ });
@@ -80,10 +87,13 @@ describe('ImportRecoveryMethodScreen', () => {
     expect(screen.getByText('importPublicAccount')).toBeInTheDocument();
     expect(screen.getByText('importPublicAccountDescription')).toBeInTheDocument();
 
-    // Only the Guardian option is flagged as default.
+    // Only the Guardian option is flagged as default. The badge now asks for
+    // the `accent` fill/ink pair by name instead of hand-painting
+    // `bg-primary-500 text-white` over the `default` variant, so the asserted
+    // variant moves with it — same badge, same flag, legible fill.
     const badge = screen.getByTestId('default-badge');
     expect(badge).toHaveTextContent('default');
-    expect(badge).toHaveAttribute('data-variant', 'default');
+    expect(badge).toHaveAttribute('data-variant', 'accent');
   });
 
   it('defaults to Guardian: shows presets, the endpoint readout, a down chevron, and no custom input', () => {
@@ -95,8 +105,8 @@ describe('ImportRecoveryMethodScreen', () => {
     expect(screen.getByRole('button', { name: /Lambda Class/ })).toBeInTheDocument();
 
     // The seeded OpenZeppelin preset is active; the others are not.
-    expect(ozPreset()).toHaveClass('border-primary-500');
-    expect(gatewayPreset()).toHaveClass('border-grey-200');
+    expect(ozPreset()).toHaveClass(ACTIVE_PRESET_CLASS);
+    expect(gatewayPreset()).toHaveClass(INACTIVE_PRESET_CLASS);
 
     // Not customizing: the endpoint readout is shown, the input is not.
     expect(screen.getByText('guardianEndpoint')).toBeInTheDocument();
@@ -143,8 +153,8 @@ describe('ImportRecoveryMethodScreen', () => {
 
     const gatewayEndpoint = GUARDIAN_OPTIONS.find(o => o.id === 'gateway')!.endpoint.get(DEFAULT_NETWORK)!;
     expect(screen.getByText(gatewayEndpoint)).toBeInTheDocument();
-    expect(gatewayPreset()).toHaveClass('border-primary-500');
-    expect(ozPreset()).toHaveClass('border-grey-200');
+    expect(gatewayPreset()).toHaveClass(ACTIVE_PRESET_CLASS);
+    expect(ozPreset()).toHaveClass(INACTIVE_PRESET_CLASS);
     expect(screen.queryByText('guardianAccountNotFound')).not.toBeInTheDocument();
   });
 
@@ -159,7 +169,7 @@ describe('ImportRecoveryMethodScreen', () => {
     expect(guardianInput()).toHaveAttribute('placeholder', DEFAULT_ENDPOINT);
     expect(screen.queryByText('guardianEndpoint')).not.toBeInTheDocument();
     expect(screen.getByTestId('chevron-icon')).toHaveAttribute('data-name', 'ChevronUp');
-    expect(ozPreset()).toHaveClass('border-grey-200');
+    expect(ozPreset()).toHaveClass(INACTIVE_PRESET_CLASS);
 
     // Close again: input hides, readout returns, chevron flips down.
     fireEvent.click(customToggle());

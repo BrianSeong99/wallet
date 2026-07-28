@@ -36,7 +36,7 @@ import RevealSecret from 'app/templates/RevealSecret';
 import RevealSeedPhraseFlow from 'app/templates/RevealSeedPhrase';
 import VerifySeedPhraseFlow from 'app/templates/VerifySeedPhraseFlow';
 import { Button, ButtonVariant } from 'components/Button';
-import { NavigationHeader } from 'components/NavigationHeader';
+import { ScreenHeader } from 'components/ScreenHeader';
 import { getCurrentLocale } from 'lib/i18n/core';
 import { DEFAULT_NETWORK, MIDEN_NETWORK_NAME } from 'lib/miden-chain/constants';
 import { hapticLight, hapticMedium } from 'lib/mobile/haptics';
@@ -357,7 +357,16 @@ const Settings: FC<SettingsProps> = ({ tabSlug }) => {
 
   return (
     <>
-      {!activeTab && <NavigationHeader title={t('settings')} onBack={() => navigate('/')} />}
+      {!activeTab && (
+        <ScreenHeader
+          align="center"
+          showBorder={false}
+          className="px-4 bg-app-bg"
+          title={t('settings')}
+          backLabel={t('back')}
+          onBack={() => navigate('/')}
+        />
+      )}
 
       <div className="flex-1 min-h-0 overflow-y-auto bg-app-bg flex flex-col">
         {activeTab ? (
@@ -365,7 +374,14 @@ const Settings: FC<SettingsProps> = ({ tabSlug }) => {
             <activeTab.Component />
           ) : (
             <>
-              <NavigationHeader title={t(activeTab.titleI18nKey)} onBack={goBack} />
+              <ScreenHeader
+                align="center"
+                showBorder={false}
+                className="px-4 bg-app-bg"
+                title={t(activeTab.titleI18nKey)}
+                backLabel={t('back')}
+                onBack={goBack}
+              />
               <div className="px-4 flex-1 flex flex-col min-h-0">
                 <activeTab.Component />
               </div>

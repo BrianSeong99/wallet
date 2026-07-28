@@ -87,7 +87,10 @@ describe('fetchBalances', () => {
       tokenId: 'miden-faucet-id',
       tokenSlug: 'MIDEN',
       metadata: MIDEN_METADATA,
-      fiatPrice: 1,
+      // 0, not 1. Binance does not list MIDEN, so there is no quote — and the
+      // old DEFAULT_PRICE handed back a fabricated $1 that this assertion
+      // locked in. An unknown price is not a price of one.
+      fiatPrice: 0,
       balance: 0,
       change24h: 0
     });

@@ -79,7 +79,7 @@ export const SwapAmounts: React.FC<SwapAmountsProps> = ({
         />
 
         <div className="flex items-center gap-3">
-          <div className="h-0.75 flex-1 bg-[#ECEBE8]" />
+          <div className="h-0.75 flex-1 bg-rule-default" />
           <motion.button
             type="button"
             onClick={() => {
@@ -100,7 +100,7 @@ export const SwapAmounts: React.FC<SwapAmountsProps> = ({
               />
             </svg>
           </motion.button>
-          <div className="h-0.75 flex-1 bg-[#ECEBE8]" />
+          <div className="h-0.75 flex-1 bg-rule-default" />
         </div>
 
         <SelectAmount
@@ -115,7 +115,7 @@ export const SwapAmounts: React.FC<SwapAmountsProps> = ({
         />
 
         {statusMessage && (
-          <span className={clsx('text-sm font-medium', statusIsError ? 'text-status-negative' : 'text-[#808080]')}>
+          <span className={clsx('text-sm font-medium', statusIsError ? 'text-status-negative' : 'text-ink-3')}>
             {statusMessage}
           </span>
         )}

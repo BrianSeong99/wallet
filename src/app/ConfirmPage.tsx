@@ -193,7 +193,7 @@ const PayloadContent: React.FC<PayloadContentProps> = ({ payload, error, account
                 <span className="text-text-muted">{t('account')}</span>
                 <div className="text-black flex flex-col items-end">
                   <span>{account.name}</span>
-                  <span>{truncateAddress(account.publicKey)}</span>
+                  <span className="font-address">{truncateAddress(account.publicKey)}</span>
                 </div>
               </div>
             </>
@@ -234,13 +234,13 @@ const PayloadContent: React.FC<PayloadContentProps> = ({ payload, error, account
                 <span className="text-text-muted">{t('account')}</span>
                 <div className="text-black flex flex-col items-end">
                   <span>{account.name}</span>
-                  <span>{truncateAddress(account.publicKey)}</span>
+                  <span className="font-address">{truncateAddress(account.publicKey)}</span>
                 </div>
               </div>
               <div className="flex justify-between text-sm">
                 <span className="text-text-muted">{t('noteId')}</span>
                 <div className="text-black flex flex-col items-end">
-                  <span>{truncateHash(payload.noteId)}</span>
+                  <span className="font-address">{truncateHash(payload.noteId)}</span>
                 </div>
               </div>
             </>

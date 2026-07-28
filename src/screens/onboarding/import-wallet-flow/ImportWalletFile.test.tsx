@@ -22,9 +22,9 @@ import { ImportWalletFileScreen } from './ImportWalletFile';
  *     crypto primitives, and `lib/miden/repo`'s `importDb` are jest.fn()s so we
  *     can trace exactly what the component threads through the decrypt pipeline
  *     and drive the wrong-password / thrown-error / omitted-accounts arms.
- *   - `FormField` / `FormSubmitButton` / the v2 icon barrel are thin harnesses
- *     that surface only the props under test (errorCaption, disabled, loading,
- *     children).
+ *   - `FormField` / `Button` / the v2 icon barrel are thin harnesses that
+ *     surface only the props under test (errorCaption, disabled, isLoading,
+ *     title).
  *   - The global `FileReader` is replaced with a synchronous fake so the
  *     `onload` (valid JSON / invalid JSON) and `onerror` arms of `processFiles`
  *     fire deterministically inside React's act() scope.
@@ -138,20 +138,38 @@ jest.mock('app/atoms/FormField', () => {
   };
 });
 
-jest.mock('app/atoms/FormSubmitButton', () => {
+// The screen's submit moved from `FormSubmitButton` to the canonical `Button`
+// (inside the shared `ActionZone`) so it stops overriding Button's --t-cta
+// label size. Same harness, same surfaced props — `loading` is now spelled
+// `isLoading` and the label arrives as `title` rather than children — so every
+// assertion below keeps its original meaning.
+jest.mock('components/Button', () => {
   const ReactLib = require('react');
   return {
     __esModule: true,
-    default: ({ children, disabled, loading }: { children: React.ReactNode; disabled?: boolean; loading?: boolean }) =>
+    ButtonVariant: { Primary: 'primary', Secondary: 'secondary', Ghost: 'ghost' },
+    Button: ({
+      title,
+      children,
+      disabled,
+      isLoading,
+      type
+    }: {
+      title?: string;
+      children?: React.ReactNode;
+      disabled?: boolean;
+      isLoading?: boolean;
+      type?: string;
+    }) =>
       ReactLib.createElement(
         'button',
         {
-          type: 'submit',
+          type: type ?? 'button',
           'data-testid': 'submit-button',
-          'data-loading': String(Boolean(loading)),
+          'data-loading': String(Boolean(isLoading)),
           disabled: Boolean(disabled)
         },
-        children
+        title ?? children
       )
   };
 });
@@ -297,10 +315,10 @@ describe('drag handlers', () => {
   it('highlights the drop zone on drag enter', () => {
     const { container } = renderScreen();
     const dropzone = getDropzone(container);
-    expect(dropzone.className).not.toContain('border-blue-500');
+    expect(dropzone.className).not.toContain('border-accent');
 
     fireEvent.dragEnter(dropzone);
-    expect(getDropzone(container).className).toContain('border-blue-500');
+    expect(getDropzone(container).className).toContain('border-accent');
   });
 
   it('drag over is a no-op that prevents the browser default', () => {
@@ -308,16 +326,16 @@ describe('drag handlers', () => {
     fireEvent.dragEnter(getDropzone(container));
     // dragOver just calls preventDefault; highlight stays on.
     fireEvent.dragOver(getDropzone(container));
-    expect(getDropzone(container).className).toContain('border-blue-500');
+    expect(getDropzone(container).className).toContain('border-accent');
   });
 
   it('clears the highlight on drag leave when leaving to a non-child target', () => {
     const { container } = renderScreen();
     fireEvent.dragEnter(getDropzone(container));
-    expect(getDropzone(container).className).toContain('border-blue-500');
+    expect(getDropzone(container).className).toContain('border-accent');
 
     fireEvent.dragLeave(getDropzone(container), { relatedTarget: document.body });
-    expect(getDropzone(container).className).not.toContain('border-blue-500');
+    expect(getDropzone(container).className).not.toContain('border-accent');
   });
 
   it('keeps the highlight when the drag leave goes to a child element', () => {
@@ -332,7 +350,7 @@ describe('drag handlers', () => {
     Object.defineProperty(event, 'relatedTarget', { value: childInput });
     fireEvent(dropzone, event);
 
-    expect(getDropzone(container).className).toContain('border-blue-500');
+    expect(getDropzone(container).className).toContain('border-accent');
   });
 
   it('loads a dropped JSON file and clears the highlight', () => {

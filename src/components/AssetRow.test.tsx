@@ -65,7 +65,7 @@ function makeAsset(overrides: Partial<{ symbol: string; name: string; balance: n
 }
 
 function priceInfo(overrides: Partial<TokenPriceInfo> = {}): TokenPriceInfo {
-  return { price: 100, change24h: 0, percentageChange24h: 5, ...overrides };
+  return { price: 100, change24h: 0, percentageChange24h: 5, isKnown: true, ...overrides };
 }
 
 beforeEach(() => {
@@ -77,7 +77,7 @@ beforeEach(() => {
 
 describe('AssetRow', () => {
   it('renders a positive 24h delta with a "+" prefix, positive direction, and status-positive sparkline color', () => {
-    mockGetTokenPrice.mockReturnValue(priceInfo({ price: 100, percentageChange24h: 5.256 }));
+    mockGetTokenPrice.mockReturnValue(priceInfo({ price: 100, percentageChange24h: 5.256, isKnown: true }));
     mockUseTokenSparkline.mockReturnValue([10, 20, 30]);
 
     render(<AssetRow asset={makeAsset({ balance: 2 })} tokenPrices={TOKEN_PRICES} />);
@@ -104,7 +104,7 @@ describe('AssetRow', () => {
   });
 
   it('treats an exactly-zero change as positive', () => {
-    mockGetTokenPrice.mockReturnValue(priceInfo({ percentageChange24h: 0 }));
+    mockGetTokenPrice.mockReturnValue(priceInfo({ percentageChange24h: 0, isKnown: true }));
 
     render(<AssetRow asset={makeAsset()} tokenPrices={TOKEN_PRICES} />);
 
@@ -115,7 +115,7 @@ describe('AssetRow', () => {
   });
 
   it('renders a negative 24h delta without a prefix, negative direction, and status-negative sparkline color', () => {
-    mockGetTokenPrice.mockReturnValue(priceInfo({ price: 50, percentageChange24h: -3.1 }));
+    mockGetTokenPrice.mockReturnValue(priceInfo({ price: 50, percentageChange24h: -3.1, isKnown: true }));
     mockUseTokenSparkline.mockReturnValue([5, 4, 3]);
 
     render(<AssetRow asset={makeAsset({ balance: 4 })} tokenPrices={TOKEN_PRICES} />);
@@ -128,17 +128,18 @@ describe('AssetRow', () => {
     expect(screen.getByTestId('sparkline')).toHaveAttribute('data-color', 'var(--status-negative)');
   });
 
-  it('falls back to a flat grey sparkline when there are no real points (length <= 1)', () => {
-    // Positive change, but no real sparkline data => tertiary color wins.
-    mockGetTokenPrice.mockReturnValue(priceInfo({ percentageChange24h: 8 }));
+  it('renders NO sparkline when there are no real points (length <= 1)', () => {
+    // The row used to substitute two constant points here, which drew a
+    // dead-straight 120px rule — a claim that the token held perfectly flat
+    // for 24 hours. It did not; the price is unknown, and those are different
+    // claims. Binance lists none of the devnet/testnet tokens, so this is the
+    // NORMAL case on this wallet, not an edge case.
+    mockGetTokenPrice.mockReturnValue(priceInfo({ percentageChange24h: 8, isKnown: true }));
     mockUseTokenSparkline.mockReturnValue([]);
 
     render(<AssetRow asset={makeAsset()} tokenPrices={TOKEN_PRICES} />);
 
-    const spark = screen.getByTestId('sparkline');
-    // FLAT_SPARKLINE_POINTS fallback.
-    expect(spark).toHaveAttribute('data-points', JSON.stringify([1, 1]));
-    expect(spark).toHaveAttribute('data-color', 'var(--text-tertiary)');
+    expect(screen.queryByTestId('sparkline')).not.toBeInTheDocument();
   });
 
   it('treats a single-point series as "no real points" (boundary: length === 1)', () => {
@@ -146,9 +147,7 @@ describe('AssetRow', () => {
 
     render(<AssetRow asset={makeAsset()} tokenPrices={TOKEN_PRICES} />);
 
-    const spark = screen.getByTestId('sparkline');
-    expect(spark).toHaveAttribute('data-points', JSON.stringify([1, 1]));
-    expect(spark).toHaveAttribute('data-color', 'var(--text-tertiary)');
+    expect(screen.queryByTestId('sparkline')).not.toBeInTheDocument();
   });
 
   it('uses metadata.name for the displayed name and passes the symbol to TokenLogo', () => {

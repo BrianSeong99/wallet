@@ -1,5 +1,7 @@
 import React, { ComponentProps, FC, HTMLAttributes } from 'react';
 
+import classNames from 'clsx';
+
 import CopyButton, { CopyButtonProps } from 'app/atoms/CopyButton';
 import HashShortView from 'app/atoms/HashShortView';
 import { Icon, IconName } from 'app/icons/v2';
@@ -23,7 +25,9 @@ const HashChip: FC<HashChipProps> = ({
   ...rest
 }) => (
   <CopyButton text={hash} type={type} {...rest}>
-    <span className="flex flex-row items-center">
+    {/* Hashes and ids are the other half of the mono role; a `displayName`
+        substitutes a human label, which stays in the UI face. */}
+    <span className={classNames('flex flex-row items-center', !displayName && 'font-address')}>
       <HashShortView
         hash={hash}
         trimHash={trimHash}

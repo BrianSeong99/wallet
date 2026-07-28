@@ -1,6 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 
-import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
 
 import { ReactComponent as GatewayLogo } from 'app/icons/guardian-operator-logs/gateway.svg';
@@ -8,6 +7,7 @@ import { ReactComponent as LambdaClassLogo } from 'app/icons/guardian-operator-l
 import { ReactComponent as OpenZeppelinLogo } from 'app/icons/guardian-operator-logs/open-zeppelin.svg';
 import { Button } from 'components/Button';
 import { Input } from 'components/Input';
+import { ActionZone } from 'components/ui/ActionZone';
 import { getGuardianOptionsForNetwork } from 'lib/miden-chain/constants';
 import { hapticLight } from 'lib/mobile/haptics';
 import { isValidGuardianUrl, sanitizeGuardianUrl } from 'lib/settings/helpers';
@@ -15,16 +15,28 @@ import type { GuardianOption } from 'lib/shared/types';
 import { cn } from 'lib/ui/util';
 
 import { GuardianInfoDrawer } from './GuardianInfoDrawer';
+import { OnboardingHeading, OnboardingScreen, OnboardingSubcopy } from './layout';
 
 export type { GuardianOption };
 
-// Brand wordmark per guardian option id. Paths are hardcoded brand-grey
-// (#484848); `[&_path]:fill-heading-gray` recolors them to the auto-flipping
-// heading token so they stay legible in both themes.
-const GUARDIAN_LOGOS: Record<string, { Logo: ImportedSVGComponent; paddingXClass: string }> = {
-  'open-zeppelin': { Logo: OpenZeppelinLogo, paddingXClass: 'px-4' },
-  gateway: { Logo: GatewayLogo, paddingXClass: 'px-3' },
-  'lambda-class': { Logo: LambdaClassLogo, paddingXClass: 'px-5' }
+// Brand wordmark per guardian option id. The marks are third-party trademarks
+// shipped at a fixed #484848 and are deliberately NOT recoloured: altering a
+// partner's mark is a usage problem, not a design choice. #484848 measures
+// 9.15:1 on the light card but only 1.72:1 on the dark one, so dark mode puts
+// each mark on a white plate (see `.glogo` below) instead of repainting it.
+//
+// No per-mark padding. There used to be a `paddingXClass` (px-4 / px-3 / px-5)
+// applied to the SVG itself, which is not in the design system — `.glogo` pads
+// the WELL and `.glogo img` only constrains max-height/max-width. It also ran
+// backwards: OpenZeppelin has the narrowest aspect ratio (169x47 = 3.60 against
+// Gateway's 4.55) so it is already the smallest mark at a shared 24px cap, and
+// it was given the most padding, eating 32px from an 86px wordmark. Measured
+// rendering shows no aspect-ratio distortion in any of the three — the mark was
+// simply being starved of width.
+const GUARDIAN_LOGOS: Record<string, ImportedSVGComponent> = {
+  'open-zeppelin': OpenZeppelinLogo,
+  gateway: GatewayLogo,
+  'lambda-class': LambdaClassLogo
 };
 
 export interface ChooseGuardianScreenProps {
@@ -106,111 +118,166 @@ export const ChooseGuardianScreen: React.FC<ChooseGuardianScreenProps> = ({
   };
 
   return (
-    <div className="bg-app-bg h-full overflow-y-auto" data-testid="onboarding-choose-guardian">
-      <div className="min-h-full flex flex-col px-6 pb-6">
-        {!hideHeader && (
-          <div className="pt-8 shrink-0">
-            <h1 className="text-[2rem] font-semibold font-heading text-heading-gray leading-[105%] tracking-tight">
-              {title ?? t('chooseYourGuardian')}
-            </h1>
-            <p className="text-lg font-medium text-heading-gray mt-2 leading-[130%]">
-              {description ?? t('chooseGuardianDescription')}
-            </p>
-            <button
-              type="button"
-              onClick={() => {
-                hapticLight();
-                setIsInfoOpen(true);
-              }}
-              className="mt-2 text-base font-bold text-primary-500 underline underline-offset-4 decoration-2"
-            >
-              {t('learnMoreAboutGuardian')}
-            </button>
-          </div>
-        )}
+    <OnboardingScreen testId="onboarding-choose-guardian">
+      {!hideHeader && (
+        // `.obh` / `.obp`, LEFT-aligned as screen `06` draws them. Both compose
+        // through `cn` (twMerge), so the `text-left` override beats the
+        // components' own `text-center` default instead of merely tying with it.
+        // `pt-4` is `.obh`'s own `margin-top:1rem`; the step chrome row
+        // (`.obtop`) above is the navigator's and carries its own padding.
+        <div className="shrink-0 flex flex-col gap-stack-tight pt-4">
+          <OnboardingHeading className="text-left">{title ?? t('chooseYourGuardian')}</OnboardingHeading>
+          <OnboardingSubcopy className="text-left">{description ?? t('chooseGuardianDescription')}</OnboardingSubcopy>
+          <button
+            type="button"
+            onClick={() => {
+              hapticLight();
+              setIsInfoOpen(true);
+            }}
+            // `--accent-ink`, not `--accent`: the raw brand orange measures
+            // 2.90:1 on paper and fails SC 1.4.3 at any text size. It flips to
+            // the brand hue in dark, where the same orange clears on #191919.
+            // No underline — the mock draws this as weight-700 accent text.
+            className="self-start text-caption font-bold text-accent-ink"
+          >
+            {t('learnMoreAboutGuardian')}
+          </button>
+        </div>
+      )}
 
-        <div className="grid grid-cols-[repeat(2,177px)] justify-center gap-x-4 gap-y-3 mt-7">
-          {options.map(option => {
-            const isSelected = selectedId === option.id;
-            const isDefault = option.id === defaultId;
-            const isCurrent = currentEndpoint != null && option.endpoint === currentEndpoint;
-            const { Logo, paddingXClass } = GUARDIAN_LOGOS[option.id]!;
-            return (
-              <div key={option.id} className="flex flex-col">
-                <button
-                  type="button"
-                  onClick={() => handleSelect(option.id)}
+      {/* `.gguard`. Equal fractional columns rather than two fixed 177px tracks,
+          so the grid keeps its gutters on a 320px-wide popup instead of
+          overflowing it, and `auto-rows-fr` equalises rows whatever the option
+          count is — the provider list is data (3 on this network, 4 in the
+          mock), so the grid must not assume a count. */}
+      <div className="mt-stack grid shrink-0 grid-cols-2 auto-rows-fr gap-[0.5625rem]">
+        {options.map(option => {
+          const isSelected = selectedId === option.id;
+          const isDefault = option.id === defaultId;
+          const isCurrent = currentEndpoint != null && option.endpoint === currentEndpoint;
+          const Logo = GUARDIAN_LOGOS[option.id]!;
+          return (
+            // `.gcard` — the WHOLE card is the tap target, meta included, so the
+            // hit area matches the thing the user is choosing.
+            <button
+              key={option.id}
+              type="button"
+              onClick={() => handleSelect(option.id)}
+              aria-pressed={isSelected}
+              className={cn(
+                'relative flex min-h-[6.3125rem] w-full flex-col overflow-hidden rounded-md-token bg-surface text-center',
+                // `pt-5` reserves the band's height on EVERY card, badged or
+                // not, which is what keeps all cards the same box.
+                'pt-5',
+                // The hairline is the CARD's edge — structural separation, not
+                // an outlined tap target — so it is a 1.5px shadow rim rather
+                // than a border that would shift layout when it changed.
+                'shadow-[0_0_0_0.09375rem_var(--rule-strong)]',
+                // Selection is a ring held OFF the card by a gap, so it reads
+                // as the card lifting rather than as its border thickening.
+                // `--accent-ink`, not `--accent`: the raw brand orange is
+                // 2.90:1 on paper and would fail SC 1.4.11 as a ring.
+                'outline-3 outline-offset-5 outline-transparent',
+                'transition-[outline-color,outline-offset] duration-150 motion-reduce:transition-none',
+                isSelected && 'outline-accent-edge outline-offset-3',
+                // The always-on outline would otherwise swallow the browser's
+                // default focus ring, so keyboard focus gets its own.
+                'focus-visible:ring-3 focus-visible:ring-accent/50'
+              )}
+            >
+              {(isCurrent || isDefault) && (
+                // `.band` — absolutely positioned into the reserved `pt-5`.
+                <span
                   className={cn(
-                    'relative flex h-30.5 w-44.25 flex-col overflow-hidden rounded-[20px] transition-all duration-150',
-                    'border-2',
-                    isSelected ? 'border-primary-500 border-4' : 'border-[#E3E3E3] dark:border-grey-800'
+                    'absolute inset-x-0 top-0 flex h-5 items-center justify-center',
+                    'text-caption font-extrabold tracking-[0.02em]',
+                    // White label, on a DEEPER orange than --accent.
+                    //
+                    // The design system specs --on-accent-sm (near-black) here
+                    // and names this "the badge contrast trap": white on
+                    // --accent is exactly 3.00:1, which conforms under SC 1.4.3
+                    // only as LARGE text (>=18.66px bold). The primary button
+                    // gets away with white for precisely that reason — its
+                    // label is 19px bold — but this band is 11px, where 3.00:1
+                    // is a real failure.
+                    //
+                    // Darkening the FILL instead of the label keeps the white
+                    // that was asked for and clears 4.5:1 with margin
+                    // (--accent-ink #A84A1A vs #FFFFFF is ~5.5:1). It is the
+                    // same move the system already makes for --accent-critical
+                    // on irreversible actions: when white has to stay, the fill
+                    // is what moves. Still unmistakably the brand orange.
+                    isCurrent ? 'bg-surface-3 text-ink' : 'bg-accent text-on-accent-sm'
                   )}
                 >
-                  {(isCurrent || isDefault) && (
-                    <div
-                      className={cn(
-                        'flex h-8 w-full shrink-0 items-center justify-center',
-                        isCurrent ? 'bg-grey-200 text-heading-gray dark:bg-grey-700' : 'bg-primary-500 text-pure-white'
-                      )}
-                    >
-                      <span className="text-sm font-semibold">{isCurrent ? t('currentLabel') : t('default')}</span>
-                    </div>
-                  )}
-                  <div className="flex flex-1 items-center justify-center">
-                    <Logo className={clsx('[&_path]:fill-heading-gray', paddingXClass)} />
-                  </div>
-                </button>
-                <div className="mt-2 px-1 text-center text-gray-secondary dark:text-pure-white text-[10px] leading-tight">
-                  <p className="">
-                    {t('guardianOperatedBy')} <span className="font-bold">{option.operatedBy}</span>
-                  </p>
-                  <div className="w-18.75 mx-auto bg-[#E7753770] h-px" />
-                  <p className="mt-0.5">
-                    {t('guardianLocation')} <span className="font-bold">{option.location}</span>
-                  </p>
-                </div>
+                  {isCurrent ? t('currentLabel') : t('default')}
+                </span>
+              )}
+              {/* `.glogo` — flex:1 so wordmarks of different intrinsic heights
+                  still centre in the same well. In dark mode the well becomes a
+                  white plate: the marks are fixed #484848 and fall to 1.72:1 on
+                  the dark card, well under the 3:1 a meaningful graphic needs.
+                  `pure-white`, not `white` — `bg-white` is an auto-flipping
+                  token here and would turn the plate dark again. */}
+              <div
+                className={cn(
+                  'flex flex-1 items-center justify-center gap-[0.3125rem] px-2.5 py-1.5 min-h-[2.375rem]',
+                  'dark:mx-2.5 dark:my-1.5 dark:min-h-[1.875rem] dark:rounded-sm-token dark:bg-pure-white dark:px-2',
+                  '[&>svg]:max-h-5 [&>svg]:max-w-[78%] [&>svg]:w-auto [&>svg]:h-auto'
+                )}
+              >
+                <Logo />
               </div>
-            );
-          })}
-        </div>
-
-        {allowCustomEndpoint && (
-          <div className="mt-4 flex flex-col gap-2 shrink-0">
-            <button
-              type="button"
-              onClick={() => {
-                hapticLight();
-                setIsCustom(prev => !prev);
-                setCustomError(null);
-              }}
-              className="self-start text-xs font-bold text-primary-500"
-            >
-              {t('useCustomGuardianUrl')}
+              {/* `.gmeta` — 11px is the type floor; this row was 10px. */}
+              <div className="px-1 pb-[0.4375rem] text-caption leading-[1.4] text-ink-2">
+                <p>
+                  {t('guardianOperatedBy')} <span>{option.operatedBy}</span>
+                </p>
+                <p>
+                  {t('guardianLocation')} <span>{option.location}</span>
+                </p>
+              </div>
             </button>
-            {isCustom && (
-              <>
-                <Input
-                  id="custom-guardian-endpoint"
-                  value={customUrl}
-                  placeholder="https://"
-                  onChange={event => {
-                    setCustomUrl(event.target.value);
-                    if (customError) setCustomError(null);
-                  }}
-                />
-                {customError && <p className="text-red-500 text-xs">{customError}</p>}
-              </>
-            )}
-          </div>
-        )}
-
-        <div className="w-full flex flex-col items-center gap-4 pt-6 mt-auto shrink-0">
-          <Button title={submitLabel ?? t('continue')} onClick={handleContinue} />
-        </div>
+          );
+        })}
       </div>
 
+      {allowCustomEndpoint && (
+        <div className="mt-stack-loose flex flex-col gap-stack-tight shrink-0">
+          <button
+            type="button"
+            onClick={() => {
+              hapticLight();
+              setIsCustom(prev => !prev);
+              setCustomError(null);
+            }}
+            className="self-start text-caption font-bold text-accent-ink"
+          >
+            {t('useCustomGuardianUrl')}
+          </button>
+          {isCustom && (
+            <>
+              <Input
+                id="custom-guardian-endpoint"
+                value={customUrl}
+                placeholder="https://"
+                onChange={event => {
+                  setCustomUrl(event.target.value);
+                  if (customError) setCustomError(null);
+                }}
+              />
+              {customError && <p className="text-caption font-bold text-neg">{customError}</p>}
+            </>
+          )}
+        </div>
+      )}
+
+      <ActionZone>
+        <Button title={submitLabel ?? t('continue')} onClick={handleContinue} />
+      </ActionZone>
+
       <GuardianInfoDrawer open={isInfoOpen} onOpenChange={setIsInfoOpen} />
-    </div>
+    </OnboardingScreen>
   );
 };
 

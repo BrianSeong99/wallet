@@ -6,6 +6,9 @@ import { useTranslation } from 'react-i18next';
 import { IconName } from 'app/icons/v2';
 import { Button, ButtonVariant } from 'components/Button';
 import { Chip } from 'components/Chip';
+import { ActionZone } from 'components/ui/ActionZone';
+
+import { OnboardingHeading, OnboardingSubcopy } from '../common/layout';
 
 export interface BackUpSeedPhraseScreenProps extends HTMLAttributes<HTMLDivElement> {
   seedPhrase: string[];
@@ -46,57 +49,79 @@ export const BackUpSeedPhraseScreen: React.FC<BackUpSeedPhraseScreenProps> = ({
   }, []);
 
   return (
-    <div className={classNames('flex flex-col flex-1', 'bg-app-bg gap-6 px-4 pt-4', className)} {...props}>
-      <div className="flex flex-col items-center text-heading-gray gap-2">
-        <header className="text-[28px] font-medium">{t('backUpYourWallet')}</header>
-        <div className="text-[10px] text-center font-regular">
-          <p>{t('backUpWalletInstructions')}</p>
-          <p>{t('doNotShareWithAnywone')}</p>
-          <p>{t('seedPhraseRecoveryCaption')}</p>
-        </div>
+    <div
+      className={classNames(
+        'flex flex-col flex-1 min-h-0 overflow-y-auto',
+        'bg-app-bg gap-stack-loose px-6 pt-4',
+        className
+      )}
+      {...props}
+    >
+      <div className="flex flex-col gap-stack-tight">
+        <OnboardingHeading className="text-left">{t('backUpYourWallet')}</OnboardingHeading>
+        <OnboardingSubcopy className="text-left">{t('backUpWalletInstructions')}</OnboardingSubcopy>
+        <OnboardingSubcopy className="text-left">{t('seedPhraseRecoveryCaption')}</OnboardingSubcopy>
       </div>
 
-      <article className="grid grid-cols-3 gap-2 w-full">
+      <article className="grid grid-cols-3 gap-stack-tight w-full">
         {seedPhrase.map((word, index) => (
           <Chip
-            className="w-26 h-8"
             key={`seed-word-${index}`}
             label={
+              // --t-caption, matching the design system's `.seedw`: three columns
+              // of 12 words inside a 24px gutter do not fit at the Chip's default
+              // body size, and the index + word would collide on a small screen.
+              // The size sits on the inner element so it cascades over the Chip's
+              // own text size without depending on class order.
               <label
                 className={classNames(
-                  'flex flex-row gap-1 w-full',
+                  'flex flex-row items-baseline gap-1.5 w-full text-caption',
                   'transition duration-300 ease-in-out justify-between',
                   isWordsVisible ? 'blur-none' : 'blur-sm'
                 )}
               >
-                <p className="text-text-muted select-none pointer-events-none">{`${index + 1}.`}</p>
-                <p className="flex w-[80%] justify-center">{`${word}`}</p>
+                <p className="text-ink-2 select-none pointer-events-none">{`${index + 1}.`}</p>
+                <p className="flex flex-1 justify-center">{`${word}`}</p>
               </label>
             }
           />
         ))}
       </article>
 
-      <div className="flex gap-2 w-full text-heading-gray">
+      {/* The "do not share" line is the one irreversible-loss warning on this
+          screen, so it gets the system's notice treatment (`--neg` on
+          `--neg-wash`) rather than sitting as a third grey paragraph above the
+          words, where it read as fine print. Both tokens flip with the theme. */}
+      <p className="w-full rounded-md-token bg-neg-wash px-3 py-2 text-caption font-semibold leading-[1.4] text-neg">
+        {t('doNotShareWithAnywone')}
+      </p>
+
+      <div className="flex gap-stack-tight w-full">
+        {/* Both are filled-secondary rather than one outlined and one bare:
+            these sit side by side doing the same kind of job, and an outline on
+            a tap target reads as structural separation. They also disagreed
+            with each other, which is the drift in miniature.
+            `h-11` is the 44pt touch floor -- these were `h-8` (32px), i.e. below
+            it -- and no text size is passed, so the Button keeps its own. */}
         <Button
-          className="border-border-card border-[0.5px] text-xs font-medium h-8 w-1/2 py-5"
-          variant={ButtonVariant.Ghost}
+          className="h-11 w-1/2"
+          variant={ButtonVariant.Secondary}
           title={t(isWordsVisible ? 'hide' : 'show')}
           iconLeft={isWordsVisible ? IconName.EyeOff : IconName.Eye}
           onClick={onWordsVisibilityToggle}
         />
         <Button
-          className="text-xs font-medium h-8 border-0 w-1/2 py-5"
-          variant={ButtonVariant.Ghost}
+          className="h-11 w-1/2"
+          variant={ButtonVariant.Secondary}
           title={t(isCopied ? 'copied' : 'copyToClipboard')}
           iconLeft={isCopied ? IconName.CheckboxCircleFill : IconName.FileCopy}
           onClick={onCopyToClipboard}
         />
       </div>
 
-      <div className="flex flex-col gap-2 self-center w-full mt-auto">
-        <Button title={t('continue')} onClick={onSubmit} className="text-base" />
-      </div>
+      <ActionZone>
+        <Button title={t('continue')} onClick={onSubmit} />
+      </ActionZone>
     </div>
   );
 };

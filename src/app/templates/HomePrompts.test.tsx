@@ -22,6 +22,22 @@ jest.mock('lib/woozie', () => ({
 // The real banner lazy-requires native Capacitor haptics + the miden front
 // barrel. Stub it to a marker so we can assert it renders (or not) based on
 // `account.requiresHotKeyRotation`.
+// Connectivity and claimable notes are both live data sources on Home now.
+// Default them to "nothing to report" so the existing cases still assert on
+// the wallet prompts alone; the cases that need them override per-test.
+jest.mock('components/ConnectivityIssueBanner', () => ({
+  useConnectivityIssue: () => ({
+    view: null,
+    onRetry: jest.fn(),
+    onDismiss: jest.fn(),
+    isBalanceStale: false
+  })
+}));
+
+jest.mock('app/hooks/useHasUnclaimedNotes', () => ({
+  useUnclaimedNotesCount: () => 0
+}));
+
 jest.mock('app/templates/ActivateHotKeyBanner', () => ({
   ActivateHotKeyBanner: () => <div data-testid="hotkey-banner">hotkey-banner</div>
 }));

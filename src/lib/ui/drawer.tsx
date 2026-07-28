@@ -19,16 +19,26 @@ const DrawerContext = createContext<DrawerContextValue>({ open: false, onClose: 
 interface DrawerProps {
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
+  /** When true, only the `<Drawer.Handle />` can drag the surface. Use it for
+   *  blocking decisions (alert / confirm) that must be answered rather than
+   *  swiped away — Esc and an overlay click still resolve them. */
+  handleOnly?: boolean;
   children: React.ReactNode;
 }
 
-function Drawer({ open = false, onOpenChange, children }: DrawerProps) {
+function Drawer({ open = false, onOpenChange, handleOnly, children }: DrawerProps) {
   const onClose = useCallback(() => onOpenChange?.(false), [onOpenChange]);
   // Keep the bottom tab navbar hidden while any drawer is open.
   useHideNavbarWhileOpen(open);
   return (
     <DrawerContext.Provider value={{ open, onClose }}>
-      <VaulDrawer.Root open={open} onOpenChange={onOpenChange} shouldScaleBackground direction="bottom">
+      <VaulDrawer.Root
+        open={open}
+        onOpenChange={onOpenChange}
+        handleOnly={handleOnly}
+        shouldScaleBackground
+        direction="bottom"
+      >
         {children}
       </VaulDrawer.Root>
     </DrawerContext.Provider>
@@ -50,8 +60,12 @@ interface DrawerContentProps extends Omit<
 function DrawerContent({ className, overlayClassName, children, hideHandle = true, ...props }: DrawerContentProps) {
   return (
     <VaulDrawer.Portal>
+      {/* Scrim: the dim is what isolates the sheet, the blur is only depth.
+       *  40% light / 55% dark sits inside the 40–60% guidance; `bg-black/30`
+       *  was below the floor. The blur radius stays small (4px) and is never
+       *  animated — `backdrop-filter` is paint-bound. */}
       <VaulDrawer.Overlay
-        className={cn('fixed inset-0 z-50 bg-black/30 backdrop-blur-sm dark:bg-black/50', overlayClassName)}
+        className={cn('fixed inset-0 z-50 bg-black/40 backdrop-blur-[4px] dark:bg-black/55', overlayClassName)}
       />
       <VaulDrawer.Content
         data-slot="drawer-content"

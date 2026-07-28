@@ -22,7 +22,7 @@ export const AdvancedDetails: React.FC<AdvancedDetailsProps> = ({ label, childre
         <span aria-hidden>{open ? '▾' : '▸'}</span>
       </button>
       {open && (
-        <div className="text-xs font-mono bg-gray-50 rounded-lg p-2 overflow-x-auto break-words whitespace-pre-wrap">
+        <div className="text-xs font-address bg-gray-50 rounded-lg p-2 overflow-x-auto break-words whitespace-pre-wrap">
           {children}
         </div>
       )}

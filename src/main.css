@@ -83,6 +83,38 @@ button:disabled,
  * TailwindCSS
  */
 
+/**
+ * Self-hosted webfonts.
+ *
+ * These replace the runtime <link> to fonts.googleapis.com that every HTML
+ * entrypoint used to carry. Self-hosting removes a third-party request from
+ * boot (and the privacy/offline/MV3-CSP problems that come with it); the
+ * bundler fingerprints the woff2 files like any other asset.
+ *
+ * Both packages register a *"… Variable"* family name, so the family stacks
+ * below and `AwaitFonts` must ask for that exact name — 'Inter' alone no
+ * longer matches anything and would silently fall through to system-ui.
+ */
+/* Inter is imported as the `opsz` cut, not the default `wght` one. The Google
+ * Fonts URL this replaces requested `Inter:ital,opsz,wght@0,14..32,…`, and
+ * Inter's optical-size axis changes glyph widths and spacing with font-size;
+ * browsers apply it automatically via font-optical-sizing: auto. Importing the
+ * wght-only cut dropped the axis and visibly reflowed every Inter paragraph —
+ * caught by screenshot-diffing the onboarding screen, not by the build.
+ * Nunito has no opsz axis, so its default entrypoint is correct. */
+@import '@fontsource-variable/inter/opsz.css';
+@import '@fontsource-variable/nunito';
+
+/* Geist Mono ships in-repo (fonts/) but was never referenced. Crust reserves
+ * mono for addresses, hashes and ids only. Single variable file, 100–900. */
+@font-face {
+  font-family: 'Geist Mono';
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url('../fonts/GeistMono/webfonts/GeistMono[wght].woff2') format('woff2-variations');
+}
+
 @import 'tailwindcss';
 @import 'tw-animate-css';
 @config '../tailwind.config.ts';
@@ -91,13 +123,16 @@ button:disabled,
 
 @theme {
   --font-sans:
-    'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans',
-    sans-serif;
+    'Inter Variable', 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue',
+    Arial, 'Noto Sans', sans-serif;
   --font-heading:
-    'Nunito', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    'Nunito Variable', 'Nunito', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue',
+    Arial, sans-serif;
   --font-onboarding-heading:
-    'Nunito', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-  --font-inter: 'Inter', system-ui, sans-serif;
+    'Nunito Variable', 'Nunito', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue',
+    Arial, sans-serif;
+  --font-inter: 'Inter Variable', 'Inter', system-ui, sans-serif;
+  --font-mono: 'Geist Mono', ui-monospace, SFMono-Regular, monospace;
   --default-font-family: var(--font-sans);
 }
 
@@ -108,6 +143,7 @@ html,
 body {
   background-color: var(--color-app-bg);
   font-family:
+    'Inter Variable',
     'Inter',
     system-ui,
     -apple-system,
@@ -209,8 +245,24 @@ button,
   filter: brightness(0.75);
 }
 
-.font-tnum {
-  font-feature-settings: 'tnum';
+/* Tabular + LINING figures. `tnum` alone keeps digits from jittering as a value
+ * changes; `lnum` keeps them from dropping below the baseline in faces that
+ * default to old-style figures. The design system states both via --num-feat,
+ * so this reads the token rather than restating half of it — "numbers are the
+ * product" is one of the system's six principles, and it was applied twice in
+ * the whole app before this. */
+.font-tnum,
+.tabular {
+  font-feature-settings: var(--num-feat);
+  font-variant-numeric: tabular-nums lining-nums;
+}
+
+/* Addresses, hashes and ids only — never body copy, never numbers. Numbers use
+ * the display face with tabular figures; a monospace FONT is a different thing
+ * from a tabular FIGURE setting. */
+.font-address {
+  font-family: var(--mono);
+  font-feature-settings: var(--num-feat);
 }
 
 /* Fix CSS transition flickering in Firefox */
@@ -310,6 +362,31 @@ button,
 
 /* Wallet navigation is React-only: BottomNav is mounted inside TabLayout. */
 
+/**
+ * Liquid Glass bottom-nav indicator — the bubble DEFORMS as it travels rather
+ * than rigidly sliding, which is the part that separates the material from a
+ * segmented control. Lives here (not in tailwind.config's theme.keyframes)
+ * because it is a one-shot the component re-arms imperatively, and because
+ * `scale` is deliberately the ONLY property it touches: as an independent
+ * transform property it composes with the indicator's `translate` instead of
+ * overwriting it, which is what lets the travel be a pure `--i` derivation with
+ * nothing to measure. Approximates springs.pill (320/30) as a tween.
+ *
+ * Applied from BottomNav.tsx as `animate-[navliquid_…]`; reduced motion drops
+ * it there via `motion-reduce:animate-none`.
+ */
+@keyframes navliquid {
+  0% {
+    scale: 1;
+  }
+  45% {
+    scale: 1.03 0.975;
+  }
+  100% {
+    scale: 1;
+  }
+}
+
 /* Parked-dApp bubble host — default transform is identity, and it
  * rides a ~spring transition so that when the drawer-open rule
  * below kicks in the bubble slides off the bottom of the screen on
@@ -396,7 +473,7 @@ body[data-hide-navbar] [data-tabbar-footer='true'] {
     --tx-swap: #beacd2;
     --tx-earn: #777487;
     --tx-faucet: #891db1;
-    --rule-default: rgba(63, 63, 63, 0.08);
+    /* --rule-default is aliased onto --rule further down this block. */
     --rule-strong: rgba(63, 63, 63, 0.16);
     --color-border-button: #cbcbcb;
     --radius-sm: 8px;
@@ -424,6 +501,190 @@ body[data-hide-navbar] [data-tabbar-footer='true'] {
     --card-blue-deep: #405565;
     --card-green-deep: #50634c;
     --card-purple-deep: #5d5368;
+
+    /* ==================================================================
+     * Crust design system — token layer (P0).
+     *
+     * Introduced ALONGSIDE the legacy names above; nothing is rewired that
+     * would move a pixel. Legacy aliases are added only where the legacy
+     * value and the Crust value are byte-identical in BOTH themes (see the
+     * "legacy aliases" group at the end of this block). Every token whose
+     * Crust value DIFFERS from the shipped one is listed as a deliberate
+     * later change rather than being flipped here — that is the whole point
+     * of P0 being pixel-identical.
+     *
+     * Deferred value changes (do NOT flip in P0):
+     *   --tx-received/sent/swap/earn/faucet  shipped hues stay; Crust
+     *       darkens them and pairs them with --tx-glyph. Blocked on
+     *       TransactionIcon.test.tsx, which asserts text-pure-white in 5
+     *       places, so the glyph change needs its tests in the same commit.
+     *   --card-*        Crust darkens all five so the card's own muted label
+     *       can reach 4.5:1; shipped values measure 1.86–2.55:1 at .55 alpha.
+     *   --surface-balance / -fg-muted  → Crust --balance / --balance-fg-muted.
+     *   --accent-primary-hover  light differs (#C95A21 vs Crust #D3651F);
+     *       dark is already identical.
+     *   --status-positive/-negative  need the fill-vs-ink split, not a
+     *       single value (see TOKENS.md "Blocker 1").
+     * ================================================================== */
+
+    /* Vertical rhythm. Owned by the CONTAINER, never by the component.
+     * Theme-independent on purpose: scoping these to one theme leaves
+     * `gap: var(--stack)` invalid in the other, where it silently falls back
+     * to `normal` (0). That exact bug shipped in the design system. */
+    --stack-tight: 0.5rem;
+    --stack: 0.75rem;
+    --stack-loose: 1rem;
+
+    /* Type roles. --num is the display face: the balance joins the onboarding
+     * family rather than reading as a code readout. Tabular FIGURES still
+     * apply via --num-feat; that is a figure setting, not a monospace font. */
+    --display: var(--font-heading);
+    --ui: var(--font-sans);
+    --mono: var(--font-mono);
+    --num: var(--display);
+    --num-feat: 'tnum' 1, 'lnum' 1;
+
+    /* Type ramp. The design system specifies nine steps
+     * (11/13/15/16/19/20/26/32/72), but that ramp does not fit the app it was
+     * drawn for: `text-xs`/`text-sm`/`text-lg` (12/14/18) are used 137 times
+     * between them, and there are further off-scale one-offs at 28 and 32.
+     * Snapping all of those would reflow text on most screens, so the ramp is
+     * extended to cover real usage rather than the app being bent to fit it.
+     * 12/14/18 deliberately match Tailwind's own xs/sm/lg, so `text-xs` and
+     * friends stay valid and are part of the system rather than drift.
+     *
+     * Note the design system contradicts itself here: its :root declares both
+     * --t-caption 11px and --text-caption 12px. 11 is taken as the caption
+     * floor (the value its own comment argues for and its harness enforces),
+     * and 12 becomes --t-xs.
+     *
+     * --t-cta is an accessibility constraint, not styling: white on the brand
+     * orange is exactly 3.00:1, which conforms only as large text
+     * (>= 18.66px bold), so the CTA label may never be set smaller. */
+    --t-caption: 0.6875rem; /* 11 — Apple's floor, enforced by the harness */
+    --t-xs: 0.75rem; /* 12 */
+    --t-label: 0.8125rem; /* 13 */
+    --t-sm: 0.875rem; /* 14 */
+    --t-body: 0.9375rem; /* 15 */
+    --t-subhead: 1rem; /* 16 */
+    --t-lg: 1.125rem; /* 18 */
+    --t-cta: 1.1875rem; /* 19 — see above, accessibility-critical */
+    --t-heading: 1.25rem; /* 20 */
+    --t-title: 1.625rem; /* 26 */
+    --t-title-lg: 1.75rem; /* 28 — onboarding step headline */
+    --t-balance: 2rem; /* 32 */
+    --t-display: 4.5rem; /* 72 */
+
+    /* Onboarding step-illustration width. In rem so it scales with the user's
+     * text size along with everything around it — the illustration is part of
+     * the composition, not device chrome. */
+    --hero-w: 8.75rem; /* 140 */
+
+    /* Radius. sm/md/lg already ship as --radius-sm (8px) and the
+     * --radius-{md,lg}-token pair (12/16) — i.e. the Crust scale under older
+     * names — so only `full` is new here. --radius-md is deliberately NOT
+     * redefined: it belongs to the shadcn primitives at 0.375rem and is read
+     * through min(var(--radius-md), 10px) in lib/ui/button.tsx, so raising it
+     * to Crust's 12px would change their rendering. Collapsing that
+     * duplication is P1. */
+    --radius-full: 999px;
+
+    /* Motion. Read from src/lib/animation/*, not invented — springs are the
+     * app's primary mechanism and these curves are the tween fallback. */
+    --dur-fast: 0.18s;
+    --dur-normal: 0.28s;
+    --dur-slow: 0.42s;
+    --dur-xslow: 0.6s;
+    --ease-in-cubic: cubic-bezier(0.32, 0, 0.67, 0);
+    --ease-out-cubic: cubic-bezier(0.16, 1, 0.3, 1);
+    --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+    --ease-out-back: cubic-bezier(0.34, 1.56, 0.64, 1);
+
+    /* --- Crust colour ramp: LIGHT (warm paper, graphite ink, one orange) --- */
+    --paper: #fbfbfb;
+    --surface: #ffffff;
+    --surface-2: #f6f4f2;
+    --surface-3: #efedea;
+    --ink: #3f3f3f;
+    --ink-2: #5f5f5f;
+    --ink-3: #6e6e6e;
+    --rule: rgba(63, 63, 63, 0.08);
+
+    /* Accent roles are split by JOB, not by shade. --accent is a FILL;
+     * --accent-ink is orange TEXT (the brand orange as text is only 2.90:1);
+     * --on-accent is white and valid only at --t-cta size; --on-accent-sm is
+     * near-black for small labels on an accent fill (5.78:1, any size). */
+    --accent: #e77537;
+    --accent-hover: #d3651f;
+    --accent-ink: #a84a1a;
+    --accent-wash: #fff3ec;
+    --accent-critical: #d9661f;
+    --on-accent: #ffffff;
+    --on-accent-sm: #1c1a18;
+    /* The selection ring. Measured off the design system: #DB6F34 light,
+     * collapsing to the brand orange in dark. It is a hair deeper than
+     * --accent so a ring sitting just outside a card still separates from it,
+     * while reading as the same orange as the primary button. NOT
+     * --accent-ink (#A84A1A) — that is 28% darker and reads red rather than
+     * brand. */
+    --accent-edge: #db6f34;
+
+    /* Channels of --accent, for the few places that need the accent at an
+     * arbitrary alpha inside a gradient or shadow. color-mix() would be the
+     * modern way, but .browserslistrc targets Safari >= 14 and color-mix needs
+     * 16.4+, whereas rgb(R G B / A) is supported back to 12.1. */
+    --accent-rgb: 231 117 55;
+
+    /* Status is FOUR meanings, so four tokens. Declared as the INK role —
+     * each passes 4.5:1 as text; fill and wash roles derive from them. */
+    --pos: #4a6b44;
+    --pos-wash: #eaf1e8;
+    --pend: #a8421f;
+    --neg: #a33421;
+    --neg-wash: #f7eae7;
+    --warn: #8a5a00;
+    --warn-wash: #f6eedc;
+
+    /* Action identity. Darkened from the shipped pastels because a COLLAPSED
+     * action segment is icon-only, with no label to fall back on, so SC
+     * 1.4.11's 3:1 genuinely applies. Hue preserved; only lightness moves. */
+    --act-send: #748a9a;
+    --act-receive: #7c8b78;
+    --act-swap: #8f829f;
+    --act-earn: #777487;
+
+    /* The dark glyph that carries contrast on the pastel tx squares. The
+     * --tx-* fills themselves are NOT flipped in P0 (see header). */
+    --tx-glyph: #3f3f3f;
+
+    --nav-pill: rgba(63, 63, 63, 0.1);
+    --nav-bg: rgba(255, 255, 255, 0.62);
+    --nav-ink-off: #727272;
+    --nav-rim: rgba(255, 255, 255, 0.85);
+    --nav-rim-lo: rgba(63, 63, 63, 0.06);
+
+    /* Balance surface, darkened from the shipped #6F6F6F so a muted tier can
+     * exist at all: at .55 alpha the shipped card composites to 2.70:1 for
+     * both "Total Balance" and the account number. */
+    --balance: #4f4f4f;
+    --balance-deep: #3d3d3d;
+    --balance-fg: #ffffff;
+    --balance-fg-muted: rgba(255, 255, 255, 0.7);
+
+    --shadow-1: 0 1px 2px rgba(63, 63, 63, 0.06), 0 1px 3px rgba(63, 63, 63, 0.05);
+    --shadow-2: 0 6px 16px rgba(63, 63, 63, 0.1), 0 2px 6px rgba(63, 63, 63, 0.06);
+    --focus-ring: 0 0 0 0.1875rem var(--accent-wash), 0 0 0 0.09375rem var(--accent);
+    --pat: rgba(255, 255, 255, 0.035);
+    --code-bg: #f3f1ee;
+
+    /* --- legacy aliases: byte-identical in BOTH themes, so re-pointing them
+     * cannot move a pixel. Everything else keeps its literal value until the
+     * phase that deliberately changes it. --- */
+    --color-text-primary: var(--ink);
+    --text-primary: var(--ink);
+    --accent-primary: var(--accent);
+    --text-on-accent: var(--on-accent);
+    --rule-default: var(--rule);
   }
 
   .dark {
@@ -476,7 +737,7 @@ body[data-hide-navbar] [data-tabbar-footer='true'] {
     --tx-swap: #beacd2;
     --tx-earn: #777487;
     --tx-faucet: #891db1;
-    --rule-default: rgba(255, 255, 255, 0.08);
+    /* --rule-default is aliased onto --rule further down this block. */
     --rule-strong: rgba(255, 255, 255, 0.16);
     --color-border-button: #444444;
 
@@ -498,5 +759,143 @@ body[data-hide-navbar] [data-tabbar-footer='true'] {
     --card-blue-deep: #405565;
     --card-green-deep: #50634c;
     --card-purple-deep: #5d5368;
+
+    /* --- Crust colour ramp: DARK (graphite ground, same single orange) ---
+     * Only the colour ramp is re-declared here. The primitives at :root
+     * (spacing, type, radius, motion) are theme-INDEPENDENT and must not be
+     * repeated in a theme block. */
+    --paper: #191919;
+    --surface: #232323;
+    --surface-2: #2b2b2b;
+    --surface-3: #333333;
+    --ink: #ffffff;
+    --ink-2: rgba(255, 255, 255, 0.65);
+    --ink-3: rgba(255, 255, 255, 0.55);
+    --rule: rgba(255, 255, 255, 0.08);
+
+    /* In dark the brand orange clears 5.86:1 as both fill and text, so
+     * --accent-ink collapses back onto the brand hue. Same token names,
+     * theme-resolved values — contrast is satisfied by the system rather
+     * than by the author remembering. */
+    --accent: #e77537;
+    --accent-hover: #f08b57;
+    --accent-ink: #e77537;
+    --accent-wash: #33210f;
+    --accent-critical: #d9661f;
+    --on-accent: #ffffff;
+    --on-accent-sm: #191919;
+    /* Dark collapses the edge back onto the brand orange. */
+    --accent-edge: #e77537;
+    --accent-rgb: 231 117 55;
+
+    /* Dark exposed a three-way hue collision: --accent (21°), --pend (15°)
+     * and the old --neg (9°) were the same orange at the same lightness, so
+     * an error was indistinguishable from the brand colour. --neg moves to a
+     * true red and --warn is a distinct amber. */
+    --pos: #90ba89;
+    --pos-wash: #26301f;
+    --pend: #e85d2f;
+    --neg: #f5736b;
+    --neg-wash: #3a1f1c;
+    --warn: #e8b33f;
+    --warn-wash: #33290f;
+
+    /* Dark keeps the shipped pastels exactly. */
+    --act-send: #91acc1;
+    --act-receive: #99ac94;
+    --act-swap: #beacd2;
+    --act-earn: #777487;
+
+    --tx-glyph: #1c1a18;
+
+    --nav-pill: rgba(255, 255, 255, 0.16);
+    --nav-bg: rgba(38, 38, 38, 0.58);
+    --nav-ink-off: #989898;
+    --nav-rim: rgba(255, 255, 255, 0.16);
+    --nav-rim-lo: rgba(0, 0, 0, 0.35);
+
+    /* Near-black in dark: the balance card is a *coloured* surface only in
+     * light mode, so in dark it sits in the theme instead of floating as an
+     * odd grey box. */
+    --balance: #101010;
+    --balance-deep: #000000;
+    --balance-fg: #ffffff;
+    --balance-fg-muted: #ffffff;
+
+    /* Dark uses surface-step and rule contrast rather than shadow. */
+    --shadow-1: 0 1px 2px rgba(0, 0, 0, 0.4);
+    --shadow-2: 0 8px 24px rgba(0, 0, 0, 0.5);
+    --pat: rgba(255, 255, 255, 0.05);
+    --code-bg: #111111;
+
+    /* --- legacy aliases (identical values, see the light block) --- */
+    --color-text-primary: var(--ink);
+    --text-primary: var(--ink);
+    --accent-primary: var(--accent);
+    --text-on-accent: var(--on-accent);
+    --rule-default: var(--rule);
+  }
+
+  /* ==================================================================
+   * Surface scopes.
+   *
+   * A component never decides its own text colour: the SURFACE it sits on
+   * redefines the ink tokens, so anything dropped inside reads correctly on any
+   * ground. This is the mechanism that makes `color: var(--ink-2)` correct on
+   * white AND on the graphite balance card, with no per-component override and
+   * no specificity fight.
+   *
+   * The direction colours are scoped rather than global because the page-level
+   * --pos/--neg are tuned for the page and measure 1.07-2.62:1 on this card.
+   * These clear 3:1 as graphics on every card colour (3.32:1 worst case up,
+   * 3.06:1 down); `down` is lightened from --neg's #F5736B to clear the darkest
+   * card. This scope was missing from the P0 token port.
+   * ================================================================== */
+  [data-surface='graphite'] {
+    --st-up: #90ba89;
+    --st-down: #ff847b;
+    --st-glyph: var(--st-up);
+  }
+
+  /* ==================================================================
+   * Devnet accent — the environment tell.
+   *
+   * On devnet the whole accent group swaps from Bread orange to slate, so it
+   * is obvious at a glance which network you are on. That mechanism already
+   * shipped, but only through the Tailwind palette (`primary-500`), which is
+   * resolved from MIDEN_NETWORK at build time in tailwind.config.ts. The Crust
+   * CSS vars were a fixed hex, so anything migrated onto --accent would have
+   * silently lost the devnet branding -- which is why the button family's
+   * colours are still on primary-500.
+   *
+   * `data-network` is stamped on <html> by initTheme() from the same build-time
+   * constant (utils/brand-colors `isDevnet`), so the token layer now inherits
+   * the shipped mechanism rather than duplicating it.
+   *
+   * Values come from utils/brand-colors. --accent-ink is NOT the raw slate:
+   * #7286A0 as text on paper is 3.53:1, so the light ink uses the deeper
+   * #4E5F73 (6.9:1), exactly as the orange ramp uses #A84A1A rather than
+   * #E77537. In dark, the slate already clears 4.95:1, so it collapses back.
+   * ================================================================== */
+  :root[data-network='devnet'] {
+    --accent: #7286a0;
+    --accent-hover: #5a6b80;
+    --accent-ink: #4e5f73;
+    --accent-edge: #5a6b80;
+    --accent-wash: #eef1f4;
+    --accent-critical: #5a6b80;
+    --accent-rgb: 114 134 160;
+  }
+
+  /* Must follow the light devnet block: equal specificity, so source order
+   * decides which wins when <html> carries both `dark` and the attribute. */
+  .dark[data-network='devnet'] {
+    --accent: #7286a0;
+    --accent-hover: #8a9db5;
+    --accent-ink: #7286a0;
+    --accent-edge: #7286a0;
+    --accent-wash: #1f2830;
+    --accent-critical: #5a6b80;
+    --accent-rgb: 114 134 160;
   }
 }

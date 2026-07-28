@@ -57,8 +57,15 @@ const typeCode = (code: string) => {
 
 const pressDelete = () => fireEvent.click(screen.getByTestId('numpad-delete'));
 
-/** Count the number of "filled" passcode dots currently rendered. */
-const filledDotCount = (container: HTMLElement) => container.querySelectorAll('div.bg-\\[\\#C7C7CC\\]').length;
+/**
+ * Count the number of "filled" passcode dots currently rendered.
+ *
+ * The dots were a raw `#C7C7CC` on BOTH states (identical fill and border), so
+ * this used to select on that hex. Filled is now `--accent` and empty is
+ * `--surface-3`; the selector tracks the new filled token, and the assertion it
+ * feeds is unchanged.
+ */
+const filledDotCount = (container: HTMLElement) => container.querySelectorAll('div.bg-accent').length;
 
 const renderComponent = (props: Partial<React.ComponentProps<typeof SetupPasscodeScreen>> = {}) =>
   render(<SetupPasscodeScreen {...props} />);

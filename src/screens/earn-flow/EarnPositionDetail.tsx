@@ -40,7 +40,7 @@ const EarnPositionDetail: FC<EarnPositionDetailProps> = ({ positionId }) => {
             size="md"
             aria-label="Back"
           />
-          <h1 className="min-w-0 truncate font-heading text-[26px] font-bold leading-none text-heading-gray">
+          <h1 className="min-w-0 truncate font-heading text-title font-bold leading-none text-heading-gray">
             My {position.protocol} &bull; {position.asset} position
           </h1>
         </div>
@@ -135,7 +135,7 @@ const PositionAreaChart: FC<{ position: EarnPosition }> = ({ position }) => {
 const PositionHeading: FC<{ position: EarnPosition }> = ({ position }) => (
   <div className="mt-4 flex items-center gap-2">
     <PositionLogo asset={position.asset} className="h-6 w-6" />
-    <h2 className="font-heading text-[26px] font-bold leading-none text-heading-gray">
+    <h2 className="font-heading text-title font-bold leading-none text-heading-gray">
       {position.protocol} &bull; {position.asset}
     </h2>
     <span className="rounded-full bg-[#DDD4CE] px-2 py-1 text-[10px] font-medium leading-none text-heading-gray">

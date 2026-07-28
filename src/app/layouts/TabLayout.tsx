@@ -100,6 +100,13 @@ const TabLayout: FC<PropsWithChildren> = ({ children }) => {
     }
   ];
 
+  // Action identity: each glyph keeps its OWN hue, but the hue now comes from a
+  // theme-flipping --act-* token instead of a hex baked into the SVG. The SVGs are
+  // currentColor, so the tint is applied here, per action — the app equivalent of
+  // the design system's `data-act` attribute. Light values are darkened from the
+  // shipped pastels: a collapsed segment is icon-only with no label, so SC 1.4.11's
+  // 3:1 applies and the pastels measured 2.37-2.42:1 on the chip. Dark keeps the
+  // pastels. Overview deliberately has no tint — wallet.svg follows the ink.
   const actionItems = [
     {
       id: 'overview',
@@ -109,12 +116,12 @@ const TabLayout: FC<PropsWithChildren> = ({ children }) => {
     {
       id: 'send',
       label: 'Send',
-      icon: <Icon name={IconName.Send} className="w-5 h-5" />
+      icon: <Icon name={IconName.Send} className="w-5 h-5 text-act-send" />
     },
     {
       id: 'receive',
       label: 'Receive',
-      icon: <Icon name={IconName.Receive} className="w-5 h-5" />
+      icon: <Icon name={IconName.Receive} className="w-5 h-5 text-act-receive" />
     },
     // Earn and Swap segments are feature-gated (isEarnEnabled / isSwapEnabled).
     ...(isEarnEnabled()
@@ -122,7 +129,7 @@ const TabLayout: FC<PropsWithChildren> = ({ children }) => {
           {
             id: 'earn',
             label: 'Earn',
-            icon: <Icon name={IconName.Earn} className="w-5 h-5" />
+            icon: <Icon name={IconName.Earn} className="w-5 h-5 text-act-earn" />
           }
         ]
       : []),
@@ -131,7 +138,7 @@ const TabLayout: FC<PropsWithChildren> = ({ children }) => {
           {
             id: 'swap',
             label: 'Swap',
-            icon: <Icon name={IconName.Convert} className="w-5 h-5" fill="currentColor" />
+            icon: <Icon name={IconName.Convert} className="w-5 h-5 text-act-swap" />
           }
         ]
       : [])
@@ -185,39 +192,61 @@ const TabLayout: FC<PropsWithChildren> = ({ children }) => {
       )}
       style={containerStyles}
     >
-      {/* Top action bar — sits outside the animated content tree so it
-          stays fixed across intra-home-group navigations. */}
-      {showActionBar && (
-        <div className="shrink-0 relative z-10">
-          <SegmentedActionBar
-            items={actionItems}
-            activeId={activeAction}
-            onChange={handleActionChange}
-            layoutId="tab-layout-action-fill"
-          />
-        </div>
-      )}
-
       {/* Animated content. For home-group routes we mount the
           HomeSwipeContainer once (a five-page horizontal carousel) and let it
           drive intra-group transitions via drag — pathname is just the
           source of truth for which page is centered. For other routes
           (Browser, Activity, etc.) we still slide each new page in via
           framer. The motion.div is keyed by group so the carousel doesn't
-          remount when only the centered page changes. */}
+          remount when only the centered page changes.
+
+          THE ACTION BAR LIVES INSIDE THIS LAYER, and that is what makes the
+          Home <-> Explore transition purely horizontal.
+
+          It used to sit above, outside the animated tree, and exist only on
+          home-group routes. However its disappearance was expressed — a bare
+          `&&`, or an animated height collapse — it was a VERTICAL motion, so
+          the content below rose as the bar left and dropped as it returned,
+          while the page itself was moving sideways. Measured, the bare version
+          jumped the content layer 60px in a single frame; animating the height
+          only smeared the same 60px over the transition.
+
+          Inside the layer there is no vertical component at all: the bar is
+          part of the page, so it slides out WITH the home content as one unit
+          and Explore slides in beside it. Nothing moves up or down.
+
+          It still stays fixed across intra-home-group navigation, because the
+          key is `'home-group'` for every home route — Overview -> Send does not
+          remount this subtree, so the bar never re-animates within the group.
+
+          `px-4` is the gutter the bar was missing entirely: it ran edge to edge,
+          touching both bezels, where the design system insets it 16px from the
+          frame (`.mpad` is `8px 16px 0`). The gutter lives on this container, so
+          the bar keeps no opinion about its own outer spacing. */}
       <div className="flex-1 min-h-0 relative">
         <motion.div
           key={showActionBar ? 'home-group' : pathname}
           // flex column so non-home children (AllHistory, Browser) that use
           // `flex-1 min-h-0 overflow-y-auto` for their scroll region can
           // actually claim the remaining height. Without this their list
-          // collapses to 0 and transactions appear missing.
+          // collapses to 0 and transactions appear missing. It is also what
+          // lets the action bar sit as a `shrink-0` row above the carousel.
           className="absolute inset-0 overflow-hidden flex flex-col"
+          data-testid="page-layer"
           initial={skipSlideIn ? false : { x: '8%', opacity: 0.5 }}
           animate={{ x: 0, opacity: 1 }}
           transition={springs.standard}
         >
-          {showActionBar ? <HomeSwipeContainer /> : children}
+          {showActionBar ? (
+            <>
+              <div className="shrink-0 relative z-10 px-4 pt-2">
+                <SegmentedActionBar items={actionItems} activeId={activeAction} onChange={handleActionChange} />
+              </div>
+              <HomeSwipeContainer />
+            </>
+          ) : (
+            children
+          )}
         </motion.div>
       </div>
 

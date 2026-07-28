@@ -34,19 +34,6 @@ export const getColorHex = (colorCode: ColorCode): string => {
   return hex;
 };
 
-export const getRandomColor = (): ColorCode => {
-  /*
-    Returns: A random vibrant color with shade 500 (gray colors are excluded).
-  */
-
-  delete _colors.gray;
-  const colorNames = Object.keys(_colors);
-  const randomColorName = colorNames[Math.floor(Math.random() * colorNames.length)] ?? 'primary';
-  const colorShade = '500';
-
-  return `${randomColorName}-${colorShade}`;
-};
-
 export const isColorCode = (colorCode: string): boolean => {
   /*
     Receives: A color string like 'primary-500'.

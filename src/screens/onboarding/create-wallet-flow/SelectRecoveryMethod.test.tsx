@@ -77,37 +77,47 @@ describe('SelectRecoveryMethodScreen', () => {
       const badges = screen.getAllByTestId('default-badge');
       expect(badges).toHaveLength(1);
       expect(badges[0]).toHaveTextContent('default');
-      expect(badges[0]).toHaveAttribute('data-variant', 'default');
-      expect(badges[0]).toHaveAttribute('data-classname', 'bg-primary-500 text-white');
+      // The fill/ink pair now comes from the Badge's own `accent` variant
+      // (--accent + --on-accent-sm) instead of an ad-hoc
+      // `bg-primary-500 text-white` override at the call site.
+      expect(badges[0]).toHaveAttribute('data-variant', 'accent');
+      expect(badges[0]).not.toHaveAttribute('data-classname');
       // The badge lives inside the Guardian card, not the OffChain card.
       expect(optionCardByTitle('guardianRecovery')).toContainElement(badges[0]!);
     });
 
-    it('applies mb-2 to non-last options and mb-8 to the last option', () => {
+    // Same spacing rule as before, expressed in the rhythm tokens: the tight
+    // step between options, the loose one below the last before the CTA.
+    it('applies the tight stack to non-last options and the loose one to the last option', () => {
       renderScreen();
 
-      expect(optionCardByTitle('guardianRecovery')).toHaveClass('mb-2');
-      expect(optionCardByTitle('guardianRecovery')).not.toHaveClass('mb-8');
-      expect(optionCardByTitle('fullyPrivateRecovery')).toHaveClass('mb-8');
-      expect(optionCardByTitle('fullyPrivateRecovery')).not.toHaveClass('mb-2');
+      expect(optionCardByTitle('guardianRecovery')).toHaveClass('mb-stack-tight');
+      expect(optionCardByTitle('guardianRecovery')).not.toHaveClass('mb-stack-loose');
+      expect(optionCardByTitle('fullyPrivateRecovery')).toHaveClass('mb-stack-loose');
+      expect(optionCardByTitle('fullyPrivateRecovery')).not.toHaveClass('mb-stack-tight');
     });
 
-    it('pre-selects the default option and dims the non-selected one', () => {
+    // Selection is now carried by the accent ring on the SELECTED card rather
+    // than by dimming the other one; the assertions keep their meaning
+    // (exactly one card is marked, the other is not).
+    it('pre-selects the default option and rings it', () => {
       renderScreen();
 
-      // Guardian is the default => selected => not dimmed.
-      expect(optionCardByTitle('guardianRecovery')).not.toHaveClass('opacity-50');
-      // OffChain is not selected => dimmed.
-      expect(optionCardByTitle('fullyPrivateRecovery')).toHaveClass('opacity-50');
+      // Guardian is the default => selected => carries the accent ring.
+      expect(optionCardByTitle('guardianRecovery')).toHaveClass('outline-accent');
+      // OffChain is not selected => transparent ring.
+      expect(optionCardByTitle('fullyPrivateRecovery')).toHaveClass('outline-transparent');
+      expect(optionCardByTitle('fullyPrivateRecovery')).not.toHaveClass('outline-accent');
     });
 
-    it('updates the selection (and dimming) when another option is clicked', () => {
+    it('updates the selection (and the ring) when another option is clicked', () => {
       renderScreen();
 
       fireEvent.click(optionCardByTitle('fullyPrivateRecovery'));
 
-      expect(optionCardByTitle('fullyPrivateRecovery')).not.toHaveClass('opacity-50');
-      expect(optionCardByTitle('guardianRecovery')).toHaveClass('opacity-50');
+      expect(optionCardByTitle('fullyPrivateRecovery')).toHaveClass('outline-accent');
+      expect(optionCardByTitle('guardianRecovery')).toHaveClass('outline-transparent');
+      expect(optionCardByTitle('guardianRecovery')).not.toHaveClass('outline-accent');
     });
 
     it('submits the pre-selected (Guardian) wallet type when Continue is clicked', () => {
@@ -116,7 +126,10 @@ describe('SelectRecoveryMethodScreen', () => {
 
       const button = screen.getByTestId('continue-button');
       expect(button).toHaveTextContent('continue');
-      expect(button).toHaveAttribute('data-classname', 'text-base');
+      // The screen no longer passes className="text-base". That override beat
+      // Button's own text-cta and put the label back under the size that
+      // white-on-accent requires to stay legible.
+      expect(button).not.toHaveAttribute('data-classname', 'text-base');
 
       fireEvent.click(button);
       expect(onSubmit).toHaveBeenCalledTimes(1);
@@ -165,9 +178,9 @@ describe('SelectRecoveryMethodScreen', () => {
       const onSubmit = jest.fn();
       renderScreen({ options: customOptions, onSubmit });
 
-      // No isDefault => first option (OnChain) is pre-selected and undimmed.
-      expect(optionCardByTitle('On Chain')).not.toHaveClass('opacity-50');
-      expect(optionCardByTitle('Off Chain')).toHaveClass('opacity-50');
+      // No isDefault => first option (OnChain) is pre-selected and ringed.
+      expect(optionCardByTitle('On Chain')).toHaveClass('outline-accent');
+      expect(optionCardByTitle('Off Chain')).toHaveClass('outline-transparent');
 
       fireEvent.click(screen.getByTestId('continue-button'));
       expect(onSubmit).toHaveBeenCalledWith(WalletType.OnChain);

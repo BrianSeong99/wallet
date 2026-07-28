@@ -5,7 +5,7 @@ import { fireEvent, render, screen } from '@testing-library/react';
 import { Badge, badgeVariants } from './badge';
 
 // Base classes shared by every variant (from the cva base string).
-const BASE_CLASSES = ['inline-flex', 'w-fit', 'shrink-0', 'items-center', 'rounded-10', 'text-xs', 'font-medium'];
+const BASE_CLASSES = ['inline-flex', 'w-fit', 'shrink-0', 'items-center', 'rounded-sm-token', 'text-xs', 'font-medium'];
 
 describe('Badge', () => {
   it('renders a <span> by default carrying the badge data-slot and default variant', () => {
@@ -21,16 +21,24 @@ describe('Badge', () => {
     expect(el).toHaveTextContent('hello');
     expect(el).toHaveClass(...BASE_CLASSES);
     // Default variant styling.
-    expect(el).toHaveClass('bg-primary', 'text-primary-foreground');
+    expect(el).toHaveClass('bg-surface-2', 'text-ink-2');
   });
 
   it.each([
-    ['default', ['bg-primary', 'text-primary-foreground']],
-    ['secondary', ['bg-secondary', 'text-secondary-foreground']],
-    ['destructive', ['bg-destructive', 'text-white']],
-    ['outline', ['border-border', 'text-foreground']],
-    ['ghost', []],
-    ['link', ['text-primary', 'underline-offset-4']]
+    ['default', ['bg-surface-2', 'text-ink-2']],
+    // The accent band labels with --on-accent-sm, never white: white on the
+    // brand orange is 2.90:1 and conforms only as large text.
+    ['accent', ['bg-accent', 'text-on-accent-sm']],
+    // Solid status pills take --paper as the on-fill ink so one declaration is
+    // correct in both themes.
+    ['pos', ['bg-pos', 'text-paper']],
+    ['warn', ['bg-warn', 'text-paper']],
+    ['neg', ['bg-neg', 'text-paper']],
+    ['pend', ['bg-pend', 'text-paper']],
+    // Washes invert: the status becomes the ink on its own wash.
+    ['pos-wash', ['bg-pos-wash', 'text-pos']],
+    ['warn-wash', ['bg-warn-wash', 'text-warn']],
+    ['neg-wash', ['bg-neg-wash', 'text-neg']]
   ] as const)('applies the %s variant classes and reflects it on data-variant', (variant, expectedClasses) => {
     render(
       <Badge data-testid="badge" variant={variant}>
@@ -42,7 +50,7 @@ describe('Badge', () => {
     expect(el).toHaveAttribute('data-variant', variant);
     // The base classes are always present regardless of variant.
     expect(el).toHaveClass(...BASE_CLASSES);
-    // Each variant-specific class must be present (ghost contributes none).
+    // Each variant-specific class must be present.
     for (const expectedClass of expectedClasses) {
       expect(el).toHaveClass(expectedClass);
     }
@@ -61,12 +69,12 @@ describe('Badge', () => {
     expect(el).toHaveClass('px-4');
     expect(el).not.toHaveClass('px-2');
     // Non-conflicting base classes survive.
-    expect(el).toHaveClass('inline-flex', 'rounded-10');
+    expect(el).toHaveClass('inline-flex', 'rounded-sm-token');
   });
 
   it('lets a caller-supplied className win a tailwind-merge conflict against a variant class', () => {
     // `cn` runs through tailwind-merge, so a conflicting bg utility from the
-    // caller should replace the default variant's bg-primary.
+    // caller should replace the default variant's bg-surface-2.
     render(
       <Badge data-testid="badge" variant="default" className="bg-red-500">
         badge
@@ -75,7 +83,7 @@ describe('Badge', () => {
 
     const el = screen.getByTestId('badge');
     expect(el).toHaveClass('bg-red-500');
-    expect(el).not.toHaveClass('bg-primary');
+    expect(el).not.toHaveClass('bg-surface-2');
   });
 
   it('spreads arbitrary span props onto the rendered element', () => {
@@ -107,7 +115,7 @@ describe('Badge', () => {
 
   it('renders as its child element (via Slot) when asChild is true', () => {
     const { container } = render(
-      <Badge asChild variant="link" data-testid="badge">
+      <Badge asChild variant="accent" data-testid="badge">
         <a href="https://miden.xyz">link badge</a>
       </Badge>
     );
@@ -118,7 +126,7 @@ describe('Badge', () => {
     expect(anchor).not.toBeNull();
     expect(anchor).toHaveAttribute('href', 'https://miden.xyz');
     expect(anchor).toHaveAttribute('data-slot', 'badge');
-    expect(anchor).toHaveAttribute('data-variant', 'link');
+    expect(anchor).toHaveAttribute('data-variant', 'accent');
     expect(anchor).toHaveClass(...BASE_CLASSES);
     expect(anchor).toHaveTextContent('link badge');
     // No wrapper <span> is produced when asChild is used.
@@ -155,29 +163,44 @@ describe('badgeVariants', () => {
       expect(classes).toContain(base);
     }
     // Falls back to the default variant styling.
-    expect(classes).toContain('bg-primary');
-    expect(classes).toContain('text-primary-foreground');
+    expect(classes).toContain('bg-surface-2');
+    expect(classes).toContain('text-ink-2');
   });
 
   it('returns the base classes plus the default variant when variant is omitted from the options object', () => {
     const classes = badgeVariants({});
     expect(classes).toContain('inline-flex');
-    expect(classes).toContain('bg-primary');
+    expect(classes).toContain('bg-surface-2');
   });
 
   it.each([
-    ['default', 'bg-primary'],
-    ['secondary', 'bg-secondary'],
-    ['destructive', 'bg-destructive'],
-    ['outline', 'border-border'],
-    ['link', 'text-primary']
+    ['default', 'bg-surface-2'],
+    ['accent', 'bg-accent'],
+    ['pos', 'bg-pos'],
+    ['warn', 'bg-warn'],
+    ['neg', 'bg-neg'],
+    ['pend', 'bg-pend'],
+    ['pos-wash', 'bg-pos-wash'],
+    ['warn-wash', 'bg-warn-wash'],
+    ['neg-wash', 'bg-neg-wash']
   ] as const)('includes the %s variant class when requested', (variant, expectedClass) => {
     const classes = badgeVariants({ variant });
     expect(classes).toContain('inline-flex');
     expect(classes).toContain(expectedClass);
   });
 
+  it('never emits a border utility — a badge is not a bordered control', () => {
+    expect(badgeVariants({ variant: 'accent' })).not.toMatch(/(^|\s)border/);
+  });
+
+  it('offers no pending wash: --pend deliberately has none', () => {
+    // The status matrix is intentionally asymmetric. Inventing a pending wash
+    // to square it off would be inventing a requirement.
+    expect(badgeVariants({ variant: 'pend' })).toContain('bg-pend');
+    expect(badgeVariants({ variant: 'pend' })).not.toContain('pend-wash');
+  });
+
   it('produces a string usable as a className', () => {
-    expect(typeof badgeVariants({ variant: 'secondary' })).toBe('string');
+    expect(typeof badgeVariants({ variant: 'accent' })).toBe('string');
   });
 });

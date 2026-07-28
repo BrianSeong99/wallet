@@ -16,7 +16,11 @@ export const SyncWaveBackground: FC<SyncWaveBackgroundProps> = ({ isSyncing, cla
       <div
         className="absolute inset-0 animate-gradient-wave motion-reduce:animate-none"
         style={{
-          background: 'linear-gradient(90deg, transparent 0%, rgba(249, 115, 22, 0.3) 50%, transparent 100%)',
+          // Was rgba(249, 115, 22, .3) -- Tailwind's orange-500 (#F97316), not
+          // the Bread accent (#E77537), so the sync shimmer was a different
+          // orange from every other accent surface. Driving it from
+          // --accent-rgb also makes it follow the devnet slate.
+          background: 'linear-gradient(90deg, transparent 0%, rgb(var(--accent-rgb) / 0.3) 50%, transparent 100%)',
           backgroundSize: '200% 100%'
         }}
       />

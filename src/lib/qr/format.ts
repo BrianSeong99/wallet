@@ -1,3 +1,5 @@
+import { MIDEN_BECH32_PREFIXES } from 'utils/miden';
+
 /**
  * QR code payload format utilities for Miden addresses.
  *
@@ -41,7 +43,13 @@ export function decodeAddress(payload: string): string {
 
 /**
  * Validates if a string is a valid Miden address.
- * Miden addresses start with "mtst1" (testnet) or "m1" (mainnet).
+ *
+ * The prefix set comes from `utils/miden` rather than being restated here.
+ * This function used to carry its own copy and the two disagreed on every
+ * network but testnet: `m1` here against `mm1` there, and no devnet prefix at
+ * all. Since this is the validator the QR scanner runs, a correct mainnet code
+ * was rejected as invalid, and a devnet build rejected every code it could
+ * possibly be shown.
  *
  * @param address The address to validate
  * @returns true if the address appears to be a valid Miden address
@@ -53,11 +61,7 @@ export function isValidMidenAddress(address: string): boolean {
 
   const trimmed = address.trim();
 
-  // Basic validation: must start with known prefix and have reasonable length
-  const isTestnet = trimmed.startsWith('mtst1');
-  const isMainnet = trimmed.startsWith('m1');
-
-  if (!isTestnet && !isMainnet) {
+  if (!MIDEN_BECH32_PREFIXES.some(prefix => trimmed.startsWith(prefix))) {
     return false;
   }
 

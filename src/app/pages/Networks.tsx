@@ -28,6 +28,9 @@ const NetworksSettings: FC = () => {
                 </div>
               }
               iconRight={network.id === item.id ? IconName.CheckboxCircleFill : null}
+              // CardItem gates onClick behind `hoverable` (default false), so
+              // without this the row rendered as clickable but never fired.
+              hoverable
               onClick={() => onNetworkSelect(item.id)}
             />
           ))}

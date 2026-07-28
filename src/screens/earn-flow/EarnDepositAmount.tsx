@@ -44,9 +44,7 @@ const EarnDepositAmount: FC<EarnDepositAmountProps> = ({ vaultId }) => {
           isValidAmount={isValidAmount}
           label="Deposit Amount"
           confirmTitle="Confirm"
-          showNetworkPill={false}
           showBalanceHelper={!hasAmount}
-          footerClassName="pt-4 pb-6"
           onAmountChange={setAmount}
           onSelectToken={() => undefined}
           onConfirm={() => {

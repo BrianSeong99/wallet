@@ -99,11 +99,16 @@ describe('ConfirmationScreen', () => {
       expect(screen.getByTestId('onboarding-confirmation')).toBeInTheDocument();
     });
 
-    it('renders the hero illustration svg with the fixed width sizing', () => {
+    // Was an inline `style={{ width: 240 }}` against a 140px spec.
+    // `OnboardingHero` now sizes it from `--hero-w`, so the assertion moves from
+    // the pixel value to the token that produces it — still asserting the
+    // illustration has one system-defined width, not a per-screen number.
+    it('renders the hero illustration svg at the system hero width, with no inline sizing', () => {
       const { container } = renderComponent();
       const svg = container.querySelector('svg');
       expect(svg).toBeInTheDocument();
-      expect(svg).toHaveStyle({ width: '240px' });
+      expect(svg).not.toHaveAttribute('style');
+      expect(svg?.parentElement).toHaveClass('w-hero');
     });
 
     it('renders the translated ready heading and reminder copy', () => {

@@ -46,6 +46,12 @@ function pickActiveCategory(state: ReturnType<typeof useConnectivityState>['stat
   return null;
 }
 
+// `iconColor` is a JS constant handed to <Icon fill>, so it can't take a
+// Tailwind class. It stays raw hex for now: the amber (#FEA644) and grey
+// (#9ca3af) are near --warn / --ink-3 but not equal, and the informational
+// blue (#5b8def) has no Crust equivalent at all — the token set is
+// pos/warn/pend/neg with no info tier. Moving these needs the icons switched
+// to currentColor first, which is a mechanism change, not a token swap.
 const VIEWS: Record<ConnectivityCategory, BannerView> = {
   network: {
     category: 'network',
@@ -80,6 +86,49 @@ const VIEWS: Record<ConnectivityCategory, BannerView> = {
     bodyKey: 'connectivityResolvingBody'
   }
 };
+
+/**
+ * The connectivity notice, as data.
+ *
+ * Home renders this as a `.mprompt` in the carousel rather than as a banner
+ * above the balance card — see `HomePrompts`. The banner component below is
+ * kept for surfaces that still want the strip form, but Home's copy of it was
+ * a fifth component doing what the prompt carousel already does, and it pushed
+ * the balance down the screen at the exact moment the balance is the thing the
+ * user opened the app to check.
+ *
+ * `isBalanceStale` is the other half: when the network or the node is down, the
+ * 24h delta and its sparkline both describe a price move fetched over the very
+ * connection that just went away. Showing a stale +0.32% beside a balance we
+ * have just told the user we cannot verify is worse than showing nothing.
+ */
+export function useConnectivityIssue() {
+  const { state, dismiss } = useConnectivityState();
+
+  const active = useMemo(() => pickActiveCategory(state), [state]);
+  const view = active ? VIEWS[active] : null;
+
+  const onRetry = useCallback(() => {
+    hapticLight();
+    if (!isExtension()) return;
+    void getIntercom()
+      .request({ type: WalletMessageType.SyncRequest })
+      .catch(() => {});
+  }, []);
+
+  const onDismiss = useCallback(() => {
+    if (!view) return;
+    hapticLight();
+    dismiss(view.category);
+  }, [dismiss, view]);
+
+  return {
+    view,
+    onRetry,
+    onDismiss,
+    isBalanceStale: active === 'network' || active === 'node'
+  };
+}
 
 export const ConnectivityIssueBanner: FC<ConnectivityIssueBannerProps> = ({ className }) => {
   const { t } = useTranslation();

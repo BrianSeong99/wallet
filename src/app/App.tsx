@@ -44,7 +44,7 @@ const App: FC<AppProps> = ({ env }) => {
 
             <AwaitI18N />
 
-            <AwaitFonts name="Inter" weights={[300, 400, 500, 600]} className="antialiased font-inter">
+            <AwaitFonts name="Inter Variable" weights={[300, 400, 500, 600]} className="antialiased font-inter">
               <BootAnimation>
                 {/* Vaul's shouldScaleBackground scales the element carrying
                     data-vaul-drawer-wrapper while a bottom sheet is open

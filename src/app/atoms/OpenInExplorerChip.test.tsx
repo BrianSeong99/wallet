@@ -39,11 +39,14 @@ describe('OpenInExplorerChip', () => {
     expect(link).toHaveAttribute('target', '_blank');
     expect(link).toHaveAttribute('rel', 'noopener noreferrer');
 
-    // Default branches: bgShade=100, textShade=600, rounded='sm'.
-    expect(link).toHaveClass('bg-gray-100', 'hover:bg-gray-100');
-    expect(link).toHaveClass('text-black');
-    expect(link).toHaveClass('rounded-sm');
-    expect(link).not.toHaveClass('rounded');
+    // Default branches: variant='default', radius='sm'.
+    expect(link).toHaveClass('bg-surface-2', 'hover:bg-surface-3');
+    expect(link).toHaveClass('text-ink');
+    expect(link).toHaveClass('rounded-sm-token');
+    expect(link).not.toHaveClass('rounded-md-token');
+
+    // A link is a tap target — SC 2.5.5's 44pt floor.
+    expect(link).toHaveClass('min-h-11', 'min-w-11');
 
     // The tippy ref callback is used on the anchor.
     expect(mockUseTippy).toHaveBeenCalledTimes(1);
@@ -67,31 +70,34 @@ describe('OpenInExplorerChip', () => {
     );
   });
 
-  it('applies bgShade=200, textShade=500, rounded="base" and a custom className', () => {
+  it('applies the muted variant, the md radius and a custom className', () => {
     render(
       <OpenInExplorerChip
         baseUrl="https://explorer.test"
         hash="deadbeef"
-        bgShade={200}
-        textShade={500}
-        rounded="base"
+        variant="muted"
+        radius="md"
         className="custom-class"
       />
     );
 
     const link = screen.getByRole('link');
 
-    expect(link).toHaveClass('bg-chip-bg', 'hover:bg-gray-100');
-    expect(link).toHaveClass('text-text-muted');
-    expect(link).toHaveClass('rounded');
-    expect(link).not.toHaveClass('rounded-sm');
+    expect(link).toHaveClass('bg-surface-3', 'hover:bg-surface-2');
+    expect(link).toHaveClass('text-ink-3');
+    expect(link).toHaveClass('rounded-md-token');
+    expect(link).not.toHaveClass('rounded-sm-token');
     expect(link).toHaveClass('custom-class');
   });
 
-  it('applies textShade=700 (black text) branch', () => {
-    render(<OpenInExplorerChip baseUrl="https://explorer.test" hash="feedface" textShade={700} />);
+  it('keeps fill and ink paired so a variant cannot be half-applied', () => {
+    // The old API had independent `bgShade` / `textShade` axes; the ink now
+    // travels with the fill, so asking for the default variant can never yield
+    // the muted ink.
+    render(<OpenInExplorerChip baseUrl="https://explorer.test" hash="feedface" variant="default" />);
 
     const link = screen.getByRole('link');
-    expect(link).toHaveClass('text-black');
+    expect(link).toHaveClass('text-ink');
+    expect(link).not.toHaveClass('text-ink-3');
   });
 });

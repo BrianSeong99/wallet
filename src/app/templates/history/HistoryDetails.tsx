@@ -267,7 +267,9 @@ export const HistoryDetails: FC<HistoryDetailsProps> = ({ transactionId }) => {
           <div className="flex-1 flex flex-col items-center justify-center p-4">
             <p className="text-red-500 text-center mb-2">{t('smthWentWrong')}</p>
             <p className="text-text-muted text-sm text-center select-text">{loadError}</p>
-            <p className="text-text-muted text-xs text-center mt-2 select-text">ID: {transactionId}</p>
+            <p className="text-text-muted text-xs text-center mt-2 select-text">
+              ID: <span className="font-address">{transactionId}</span>
+            </p>
           </div>
         ) : entry === null ? (
           <ActivitySpinner />
@@ -278,11 +280,13 @@ export const HistoryDetails: FC<HistoryDetailsProps> = ({ transactionId }) => {
               <TransactionIcon entry={entry} size="lg" />
               <div className="mt-1 flex max-w-full items-baseline justify-center gap-2 text-center font-heading font-extrabold text-[2.5rem] leading-none">
                 {entry.amount !== undefined && (
-                  <span className="text-heading-gray">{formatDisplayAmount(entry.amount)}</span>
+                  <span className="font-tnum text-heading-gray">{formatDisplayAmount(entry.amount)}</span>
                 )}
                 {entry.token && <span className="text-text-muted">{entry.token}</span>}
               </div>
-              {approximateUsdAmount && <p className="text-sm font-medium text-gray">{approximateUsdAmount}</p>}
+              {approximateUsdAmount && (
+                <p className="font-tnum text-sm font-medium text-gray">{approximateUsdAmount}</p>
+              )}
               <div className="mt-2">
                 <StatusPill status={entry.status} />
               </div>
@@ -292,7 +296,7 @@ export const HistoryDetails: FC<HistoryDetailsProps> = ({ transactionId }) => {
             <div className="mt-4">
               <DetailCard title={t('transferDetails')}>
                 <DetailRow label={t('date')}>
-                  <span className="text-sm text-heading-gray font-medium">{formatDate(entry.timestamp)}</span>
+                  <span className="font-tnum text-sm text-heading-gray font-medium">{formatDate(entry.timestamp)}</span>
                 </DetailRow>
 
                 {entry.externalTxId && (
@@ -345,14 +349,20 @@ export const HistoryDetails: FC<HistoryDetailsProps> = ({ transactionId }) => {
                   </DetailRow>
                   {swapTracking && (
                     <DetailRow label={t('fillRounds')} isLast={!requestedToken}>
-                      <span data-testid="swap-order-fill-rounds" className="text-sm text-heading-gray font-medium">
+                      <span
+                        data-testid="swap-order-fill-rounds"
+                        className="font-tnum text-sm text-heading-gray font-medium"
+                      >
                         {swapTracking.currentDepth}
                       </span>
                     </DetailRow>
                   )}
                   {swapTracking && requestedToken && (
                     <DetailRow label={t('amountFilled')} isLast>
-                      <span data-testid="swap-order-amount-filled" className="text-sm text-heading-gray font-medium">
+                      <span
+                        data-testid="swap-order-amount-filled"
+                        className="font-tnum text-sm text-heading-gray font-medium"
+                      >
                         {formatAmount(filledRequested ?? 0n, requestedToken.decimals)} /{' '}
                         {formatAmount(requestedToken.amount, requestedToken.decimals)}
                         {requestedToken.symbol ? ` ${requestedToken.symbol}` : ''}
@@ -368,7 +378,7 @@ export const HistoryDetails: FC<HistoryDetailsProps> = ({ transactionId }) => {
               <div className="mt-6 mb-4">
                 <DetailCard title={t('notesSection')}>
                   <DetailRow label={t('created')}>
-                    <span className="text-sm text-heading-gray font-medium">{createdCount}</span>
+                    <span className="font-tnum text-sm text-heading-gray font-medium">{createdCount}</span>
                   </DetailRow>
                   <DetailRow label="Note" isLast>
                     <span className={`text-sm font-medium ${entry.noteType ? 'text-[#E8913A]' : 'text-text-muted'}`}>

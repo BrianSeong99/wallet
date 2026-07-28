@@ -67,8 +67,11 @@ describe('SyncWaveBackground', () => {
 
       const shimmer = (container.firstChild as HTMLElement).firstElementChild as HTMLElement;
 
+      // Driven by --accent-rgb rather than a literal, so the shimmer follows
+      // the brand accent (and the devnet slate) instead of Tailwind's
+      // orange-500. Same assertion, new source of truth.
       expect(shimmer.style.background).toBe(
-        'linear-gradient(90deg, transparent 0%, rgba(249, 115, 22, 0.3) 50%, transparent 100%)'
+        'linear-gradient(90deg, transparent 0%, rgb(var(--accent-rgb) / 0.3) 50%, transparent 100%)'
       );
       expect(shimmer.style.backgroundSize).toBe('200% 100%');
     });

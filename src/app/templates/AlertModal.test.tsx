@@ -18,7 +18,7 @@ import { ModalWithTitleProps } from './ModalWithTitle';
 //   - `ModalWithTitle`: capture the props AlertModal forwards (so we can assert
 //     `onRequestClose` + any `...restProps` such as `title` / `isOpen` are
 //     passed through) while rendering its children into the DOM — this avoids
-//     pulling in the real react-modal / CustomModal / useAppEnv chain.
+//     pulling in the real overlay-primitive / CustomModal / useAppEnv chain.
 //   - `FormSubmitButton`: a plain <button> that forwards `type`, `className`,
 //     `onClick` and children so the OK-button branch (including the
 //     `onRequestClose` wiring) is assertable without framer-motion / haptics.

@@ -14,139 +14,131 @@ jest.mock('react-i18next', () => ({
   useTranslation: () => ({ t: (key: string) => key })
 }));
 
-// Icon barrel — expose only the `IconName` members the screen references.
-jest.mock('app/icons/v2', () => ({
-  IconName: { Lock: 'Lock' }
+jest.mock('lib/mobile/haptics', () => ({
+  hapticLight: jest.fn()
 }));
 
-// `NavigationHeader` — surface the title, mode and the close handler so the
-// header wiring is assertable without dragging in `CircleButton` / the real
-// icon set.
-jest.mock('components/NavigationHeader', () => ({
-  NavigationHeader: ({ title, mode, onClose }: { title: string; mode?: string; onClose?: () => void }) => (
-    <div data-testid="nav-header" data-mode={mode}>
-      <span data-testid="nav-header-title">{title}</span>
-      <button data-testid="nav-header-close" onClick={onClose}>
-        close
-      </button>
-    </div>
-  )
-}));
-
-// `Message` — echo every prop the screen threads through as data attributes /
-// text so each one can be asserted individually.
-jest.mock('components/Message', () => ({
-  Message: ({
+// `Button` — render the title, forward the click, and surface `disabled`, which
+// is the whole point of the gate: Sign Out must stay inert until all four
+// affirmations are true.
+jest.mock('components/Button', () => ({
+  Button: ({
     title,
-    description,
-    secondDescription,
-    icon,
-    descriptionClasses,
-    className
+    onClick,
+    variant,
+    disabled
   }: {
     title: string;
-    description: string;
-    secondDescription?: string;
-    icon: string;
-    descriptionClasses?: string;
-    className?: string;
+    onClick?: () => void;
+    variant?: string;
+    disabled?: boolean;
   }) => (
-    <div
-      data-testid="message"
-      data-icon={icon}
-      data-description-classes={descriptionClasses}
-      data-classname={className}
-    >
-      <span data-testid="message-title">{title}</span>
-      <span data-testid="message-description">{description}</span>
-      <span data-testid="message-second-description">{secondDescription}</span>
-    </div>
-  )
-}));
-
-// `Button` — render the title and forward the click so `onSignOut` wiring and
-// the chosen variant can both be verified.
-jest.mock('components/Button', () => ({
-  Button: ({ title, onClick, variant }: { title: string; onClick?: () => void; variant?: string }) => (
-    <button data-testid="sign-out-button" data-variant={variant} onClick={onClick}>
+    <button data-testid={`button-${title}`} data-variant={variant} disabled={disabled} onClick={onClick}>
       {title}
     </button>
   ),
-  ButtonVariant: { Primary: 'Primary' }
+  ButtonVariant: { Primary: 'Primary', Secondary: 'Secondary' }
 }));
 
 // ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------
 
+const ACK_IDS = ['ack-erased', 'ack-data', 'ack-guardian', 'ack-phrase'];
+
 const renderComponent = (onClose: () => void = jest.fn(), onSignOut: () => void = jest.fn()) =>
   render(<ForgotPasswordInfo onClose={onClose} onSignOut={onSignOut} />);
 
+const tickAll = () => ACK_IDS.forEach(id => fireEvent.click(screen.getByTestId(id)));
+
 describe('ForgotPasswordInfo', () => {
-  it('renders the navigation header in close mode with the forgot-password title', () => {
+  it('renders the heading, subcopy and the promoted warning notice', () => {
     renderComponent();
 
-    const header = screen.getByTestId('nav-header');
-    expect(screen.getByTestId('nav-header-title')).toHaveTextContent('forgotPassword');
-    expect(header).toHaveAttribute('data-mode', 'close');
+    expect(screen.getByText('forgotPassword')).toBeInTheDocument();
+    expect(screen.getByText('forgotPasswordDescription')).toBeInTheDocument();
+    expect(screen.getByText('forgotPasswordSecondDescription')).toBeInTheDocument();
   });
 
-  it('renders the Message with the forgot-password copy, lock icon and description sizing', () => {
+  it('renders all four affirmations with their descriptions, under the confirm-all label', () => {
     renderComponent();
 
-    const message = screen.getByTestId('message');
-    expect(screen.getByTestId('message-title')).toHaveTextContent('forgotPassword');
-    expect(screen.getByTestId('message-description')).toHaveTextContent('forgotPasswordDescription');
-    expect(screen.getByTestId('message-second-description')).toHaveTextContent('forgotPasswordSecondDescription');
-    expect(message).toHaveAttribute('data-icon', 'Lock');
-    expect(message).toHaveAttribute('data-description-classes', 'text-sm');
-    expect(message).toHaveAttribute('data-classname', 'flex-1');
+    expect(screen.getByText('forgotAckConfirmAll')).toBeInTheDocument();
+    ACK_IDS.forEach(id => expect(screen.getByTestId(id)).toBeInTheDocument());
+
+    ['forgotAckErased', 'forgotAckData', 'forgotAckGuardian', 'forgotAckPhrase'].forEach(key => {
+      expect(screen.getByText(key)).toBeInTheDocument();
+      expect(screen.getByText(`${key}Desc`)).toBeInTheDocument();
+    });
   });
 
-  it('renders the primary sign-out button', () => {
+  it('states the reassurance in the action zone, not as a fifth affirmation', () => {
     renderComponent();
 
-    const button = screen.getByTestId('sign-out-button');
-    expect(button).toHaveTextContent('signOut');
-    expect(button).toHaveAttribute('data-variant', 'Primary');
+    // It is true and worth saying, but it is not something to AFFIRM — inside
+    // the ladder it would let the user tick past the destruction notice while
+    // agreeing to good news.
+    expect(screen.getByText('forgotFundsSafe')).toBeInTheDocument();
+    expect(screen.queryByTestId('ack-funds')).not.toBeInTheDocument();
   });
 
-  it('invokes onClose when the header close control is clicked', () => {
-    const onClose = jest.fn();
-    renderComponent(onClose);
+  it('keeps Sign Out disabled until every affirmation is true', () => {
+    renderComponent();
 
-    fireEvent.click(screen.getByTestId('nav-header-close'));
-    expect(onClose).toHaveBeenCalledTimes(1);
+    const signOut = screen.getByTestId('button-signOut');
+    expect(signOut).toBeDisabled();
+
+    // Three of four is still not the gate.
+    ACK_IDS.slice(0, 3).forEach(id => fireEvent.click(screen.getByTestId(id)));
+    expect(signOut).toBeDisabled();
+
+    fireEvent.click(screen.getByTestId(ACK_IDS[3]!));
+    expect(signOut).toBeEnabled();
   });
 
-  it('invokes onSignOut when the sign-out button is clicked', () => {
+  it('re-disables Sign Out when an affirmation is withdrawn', () => {
+    renderComponent();
+    tickAll();
+
+    const signOut = screen.getByTestId('button-signOut');
+    expect(signOut).toBeEnabled();
+
+    fireEvent.click(screen.getByTestId('ack-guardian'));
+    expect(signOut).toBeDisabled();
+  });
+
+  it('invokes onSignOut only once the gate is open', () => {
     const onSignOut = jest.fn();
     renderComponent(jest.fn(), onSignOut);
 
-    fireEvent.click(screen.getByTestId('sign-out-button'));
+    fireEvent.click(screen.getByTestId('button-signOut'));
+    expect(onSignOut).not.toHaveBeenCalled();
+
+    tickAll();
+    fireEvent.click(screen.getByTestId('button-signOut'));
     expect(onSignOut).toHaveBeenCalledTimes(1);
   });
 
-  it('keeps the two handlers independent — closing does not sign out and vice versa', () => {
+  it('exits via Cancel in the action zone — there is no second dismissal', () => {
     const onClose = jest.fn();
     const onSignOut = jest.fn();
     renderComponent(onClose, onSignOut);
 
-    fireEvent.click(screen.getByTestId('nav-header-close'));
+    // The header × is gone: two escapes on one screen is one more than a
+    // destructive decision should offer. Hardware back still works.
+    expect(screen.queryByTestId('nav-header-close')).not.toBeInTheDocument();
+
+    fireEvent.click(screen.getByTestId('button-cancel'));
     expect(onClose).toHaveBeenCalledTimes(1);
     expect(onSignOut).not.toHaveBeenCalled();
-
-    fireEvent.click(screen.getByTestId('sign-out-button'));
-    expect(onSignOut).toHaveBeenCalledTimes(1);
-    expect(onClose).toHaveBeenCalledTimes(1);
   });
 
-  it('does not invoke either handler before any interaction', () => {
+  it('Cancel stays available regardless of how many affirmations are ticked', () => {
     const onClose = jest.fn();
-    const onSignOut = jest.fn();
-    renderComponent(onClose, onSignOut);
+    renderComponent(onClose);
 
-    expect(onClose).not.toHaveBeenCalled();
-    expect(onSignOut).not.toHaveBeenCalled();
+    expect(screen.getByTestId('button-cancel')).toBeEnabled();
+    tickAll();
+    expect(screen.getByTestId('button-cancel')).toBeEnabled();
   });
 });

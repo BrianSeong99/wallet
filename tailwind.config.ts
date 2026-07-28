@@ -31,7 +31,12 @@ export default {
         'border-light': 'var(--color-border-light)',
         'text-muted': 'var(--color-text-muted)',
         'border-subtle': 'var(--color-border-subtle)',
-        'heading-gray': 'var(--color-text-secondary)',
+        // Normalised to --ink. This token is named "secondary" but is used as
+        // PRIMARY text across the app (26 usages in onboarding alone), and it
+        // resolved to #484848 where the ink is #3F3F3F. TOKENS.md calls this out
+        // explicitly. Pointing it at --ink fixes the body/heading colour
+        // everywhere at once rather than per call site.
+        'heading-gray': 'var(--ink)',
         gray: {
           DEFAULT: 'var(--text-gray)',
           25: 'var(--color-surface-secondary)',
@@ -97,30 +102,13 @@ export default {
               900: '#652D15',
               950: '#381508'
             },
-        logoOrange: isDevnet
-          ? {
-              200: '#8A9DB5',
-              300: '#C5D0DC',
-              400: '#7F95AD',
-              500: '#7286A0',
-              700: '#4E5F73'
-            }
-          : {
-              200: '#F1A47E',
-              300: '#F7C8B1',
-              400: '#E77537',
-              500: '#E77537',
-              700: '#9F4518'
-            },
         // Brand colors
-        'primary-white': '#fcfaf7',
         'primary-orange': isDevnet ? '#8A9DB5' : '#E77537',
         'primary-orange-disabled': isDevnet ? '#7F95AD' : '#DCD4C8',
         'primary-orange-light': isDevnet ? '#C5D0DC' : '#F7C8B1',
         'primary-orange-dark': isDevnet ? '#4E5F73' : '#9F4518',
         'primary-orange-lighter': isDevnet ? '#EEF1F4' : '#FFF3EC',
         'primary-orange-darker': isDevnet ? '#3A4857' : '#652D15',
-        'primary-gray': '#656565',
         'border-card': 'var(--color-border)',
         'border-faint': '#BABABA33',
         'chip-bg': 'var(--color-chip-bg)',
@@ -175,6 +163,48 @@ export default {
         'card-blue-deep': 'var(--card-blue-deep)',
         'card-green-deep': 'var(--card-green-deep)',
         'card-purple-deep': 'var(--card-purple-deep)',
+        // ---- Crust design system tokens ----
+        // Added alongside the legacy names above so P1/P2 have something to
+        // migrate *to*. Adding an unused utility name cannot change rendering;
+        // the call-site rewrites are the later phases' job.
+        paper: 'var(--paper)',
+        surface: 'var(--surface)',
+        'surface-2': 'var(--surface-2)',
+        'surface-3': 'var(--surface-3)',
+        ink: 'var(--ink)',
+        'ink-2': 'var(--ink-2)',
+        'ink-3': 'var(--ink-3)',
+        rule: 'var(--rule)',
+        accent: 'var(--accent)',
+        'accent-hover': 'var(--accent-hover)',
+        'accent-ink': 'var(--accent-ink)',
+        'accent-wash': 'var(--accent-wash)',
+        'accent-critical': 'var(--accent-critical)',
+        'accent-edge': 'var(--accent-edge)',
+        // Balance-card direction colours, scoped to [data-surface=graphite].
+        'st-up': 'var(--st-up)',
+        'st-down': 'var(--st-down)',
+        'on-accent': 'var(--on-accent)',
+        'on-accent-sm': 'var(--on-accent-sm)',
+        pos: 'var(--pos)',
+        'pos-wash': 'var(--pos-wash)',
+        pend: 'var(--pend)',
+        neg: 'var(--neg)',
+        'neg-wash': 'var(--neg-wash)',
+        warn: 'var(--warn)',
+        'warn-wash': 'var(--warn-wash)',
+        'act-send': 'var(--act-send)',
+        'act-receive': 'var(--act-receive)',
+        'act-swap': 'var(--act-swap)',
+        'act-earn': 'var(--act-earn)',
+        'tx-glyph': 'var(--tx-glyph)',
+        'nav-pill': 'var(--nav-pill)',
+        'nav-bg': 'var(--nav-bg)',
+        'nav-ink-off': 'var(--nav-ink-off)',
+        balance: 'var(--balance)',
+        'balance-deep': 'var(--balance-deep)',
+        'balance-fg': 'var(--balance-fg)',
+        'balance-fg-muted': 'var(--balance-fg-muted)',
         ...customColors,
         // Override primary from customColors with network-conditional values
         primary: primaryPalette
@@ -182,35 +212,86 @@ export default {
       return baseColors;
     })(),
 
-    // Custom font families with Geist
+    // Font families. The "Variable" suffix is the family name the self-hosted
+    // @fontsource packages actually register — plain 'Inter' matches nothing
+    // now that the Google Fonts <link> is gone, so it stays only as a fallback
+    // for anyone with the font installed locally.
+    //
+    // `mono` was previously ['Inter'], i.e. font-mono rendered as a
+    // proportional face. Crust reserves mono for addresses, hashes and ids;
+    // Geist Mono already shipped in fonts/ and was simply never referenced.
     fontFamily: {
-      sans: ['Inter'],
-      serif: ['Inter'],
-      mono: ['Inter'],
-      inter: ['Inter']
+      sans: ['Inter Variable', 'Inter'],
+      serif: ['Inter Variable', 'Inter'],
+      mono: ['Geist Mono', 'ui-monospace', 'SFMono-Regular', 'monospace'],
+      inter: ['Inter Variable', 'Inter'],
+      display: ['Nunito Variable', 'Nunito']
     },
 
     extend: {
-      // Custom spacing values not in Tailwind defaults
+      // Custom spacing values not in Tailwind defaults.
+      // The `stack-*` trio is the vertical rhythm, and it belongs to the
+      // CONTAINER (gap-stack on a flex column), never as outer margin on a
+      // component — that is what stops every child inventing its own spacing.
+      // All rem, so the rhythm scales with the user's text size.
       spacing: {
         15: '3.75rem',
-        35: '8.75rem'
+        35: '8.75rem',
+        'stack-tight': 'var(--stack-tight)',
+        stack: 'var(--stack)',
+        'stack-loose': 'var(--stack-loose)'
+      },
+      // Step-illustration width, so screens stop hardcoding pixel sizes.
+      width: {
+        hero: 'var(--hero-w)'
       },
       // Custom shadows
       boxShadow: {
         'xs-white': '0 0 0 1px rgba(255, 255, 255, 0.05)',
         'top-light': '0 -1px 2px 0 rgba(0, 0, 0, 0.1)',
-        outline: isDevnet ? '0 0 0 3px rgba(114, 134, 160, 0.5)' : '0 0 0 3px rgba(231, 117, 55, 0.5)'
+        outline: isDevnet ? '0 0 0 3px rgba(114, 134, 160, 0.5)' : '0 0 0 3px rgba(231, 117, 55, 0.5)',
+        // Crust elevation: flat (rule border) / e1 raised / e2 overlay. The CSS
+        // vars landed in main.css in P0 but were never exposed here, so there
+        // was no way to spend them -- BottomNav is still on a raw shadow-[…].
+        e1: 'var(--shadow-1)',
+        e2: 'var(--shadow-2)'
       },
       // Custom border radius
       borderRadius: {
         '4xl': '2rem',
         5: '5px',
         10: '10px',
-        // Design system semantic radii (Foundations · Radius)
+        // Design system semantic radii (Foundations · Radius).
+        // These three already ARE the Crust scale (8/12/16) under older
+        // names; P1 collapses the 11+ ad-hoc radii onto them. `full` is the
+        // fourth and last step.
         'sm-token': 'var(--radius-sm)',
         'md-token': 'var(--radius-md-token)',
-        'lg-token': 'var(--radius-lg-token)'
+        'lg-token': 'var(--radius-lg-token)',
+        'full-token': 'var(--radius-full)'
+      },
+      // Crust type ramp. Extended past the design system's nine steps to cover
+      // sizes the app genuinely uses — see the note in main.css. `xs`/`sm`/`lg`
+      // are intentionally omitted here because Tailwind already defines them at
+      // exactly 12/14/18; redeclaring would be duplication, not clarity.
+      fontSize: {
+        caption: 'var(--t-caption)',
+        label: 'var(--t-label)',
+        body: 'var(--t-body)',
+        subhead: 'var(--t-subhead)',
+        cta: 'var(--t-cta)',
+        heading: 'var(--t-heading)',
+        title: 'var(--t-title)',
+        'title-lg': 'var(--t-title-lg)',
+        // Named `numeric-hero`, not `balance`, even though the CSS var is
+        // --t-balance. `text-balance` is a three-way collision: Tailwind v4
+        // ships it as a built-in text-wrap utility, and the `balance` COLOUR
+        // token below also lives in the `text-` namespace, where colour wins.
+        // The result was `.text-balance { color: … }` with no font-size rule
+        // emitted at all -- a silently dead step. `numeric-hero` is the name
+        // TOKENS.md gives this step anyway.
+        'numeric-hero': 'var(--t-balance)',
+        'display-xl': 'var(--t-display)'
       },
       // Custom stroke color
       stroke: {

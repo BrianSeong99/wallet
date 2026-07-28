@@ -4,8 +4,9 @@ import { Trans, useTranslation } from 'react-i18next';
 
 import { ReactComponent as WhatIsGuardianHero } from 'app/icons/onboarding/what-is-guardian-hero.svg';
 import { Icon, IconName } from 'app/icons/v2';
-import { Button } from 'components/Button';
+import { Button, ButtonVariant } from 'components/Button';
 import { Drawer, DrawerContent, DrawerTitle } from 'lib/ui/drawer';
+import { cn } from 'lib/ui/util';
 
 export interface GuardianInfoDrawerProps {
   open: boolean;
@@ -16,25 +17,41 @@ interface InfoRowProps {
   badge: React.ReactNode;
   title: string;
   description: string;
+  /** The rule sits BETWEEN rows (`.isrow + .isrow`), so the first has none. */
   hasDivider?: boolean;
 }
 
+/**
+ * `.isrow` — the row's own type, not the step-screen type. The title is the
+ * 13px display face at 800 and the description the 11px `--ink-2` caption; both
+ * were running two steps larger, which is what made the sheet scroll.
+ *
+ * Left-aligned, as the mock draws it. These were centred, which broke the
+ * badge/label relationship: a centred row re-centres on every line-wrap, so the
+ * three badges no longer formed a column the eye could scan down.
+ */
 const InfoRow: React.FC<InfoRowProps> = ({ badge, title, description, hasDivider = true }) => (
-  <div className={hasDivider ? 'border-b border-[#E9E9E9]' : undefined}>
-    <div className="mx-auto flex max-w-[32rem] flex-col items-center px-4 py-4 text-center">
-      <div className="flex max-w-full items-center justify-center gap-3">
-        {badge}
-        <h3 className="min-w-0 break-words text-left font-heading text-[18px] font-semibold leading-[1.2] text-[#151515] dark:text-heading-gray">
-          {title}
-        </h3>
-      </div>
-      <p className="mt-2.5 break-words text-[15px] font-normal leading-[1.32] text-gray-secondary">{description}</p>
+  <div className={cn('py-[0.6875rem]', hasDivider && 'border-t border-rule')}>
+    {/* `.ish` — `font-heading` sits here so the badge glyph inherits the
+        display face, exactly as `.isb` inherits it from `.ish` in the spec. */}
+    <div className="flex items-center gap-2 font-heading text-label font-extrabold leading-[1.55] text-ink">
+      {badge}
+      <h3 className="min-w-0 break-words">{title}</h3>
     </div>
+    <p className="mt-1 break-words text-caption leading-[1.45] text-ink-2">{description}</p>
   </div>
 );
 
+/**
+ * `.isb` — a 20px circle. The glyph colour is passed in rather than fixed to
+ * white: on the accent fill a small white glyph is 2.9:1 and fails, so that
+ * badge uses `--on-accent-sm`; the positive/negative fills use `--paper`, which
+ * flips with the theme instead of staying white on dark's much lighter green.
+ */
 const IconBadge: React.FC<{ className: string; children: React.ReactNode }> = ({ className, children }) => (
-  <div className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full ${className}`}>{children}</div>
+  <span className={cn('flex size-5 shrink-0 items-center justify-center rounded-full leading-none', className)}>
+    {children}
+  </span>
 );
 
 export const GuardianInfoDrawer: React.FC<GuardianInfoDrawerProps> = ({ open, onOpenChange }) => {
@@ -42,56 +59,72 @@ export const GuardianInfoDrawer: React.FC<GuardianInfoDrawerProps> = ({ open, on
 
   return (
     <Drawer open={open} onOpenChange={onOpenChange}>
-      <DrawerContent
-        className="max-h-[78vh] overflow-hidden rounded-t-[28px] border-t-[6px] border-primary-500 bg-surface-solid"
-        overlayClassName="bg-transparent backdrop-blur-0 dark:bg-transparent"
-      >
-        <div className="flex flex-col overflow-y-auto px-5 pb-[calc(1rem+env(safe-area-inset-bottom))] pt-4">
-          <DrawerTitle className="text-center font-heading text-[28px] font-semibold leading-[1.1] text-heading-gray">
+      {/* Rebuilt on the SHARED sheet anatomy (`.sheetc`): grab handle, dim
+          scrim, hairline divider, secondary dismiss.
+          This deliberately drops the three things the shipped component added —
+          a 6px accent top border, a transparent overlay, and a second 6px accent
+          rule under the intro. All three fight the primitive and read as a
+          warning banner on dark. The scrim in particular is load-bearing: the
+          dim is what isolates the sheet, and `bg-transparent` put it below the
+          40–60% floor entirely. Omitting `overlayClassName` is the fix — the
+          Drawer primitive's default is already 40% light / 55% dark with a
+          non-animated 4px blur, which is exactly the spec. */}
+      <DrawerContent className="max-h-[82%] overflow-hidden rounded-t-lg-token bg-surface">
+        <div className="flex flex-col overflow-y-auto px-5 pt-2 pb-[max(1rem,env(safe-area-inset-bottom))]">
+          {/* `.shandle`. Hand-rolled rather than the primitive's `hideHandle`
+              affordance, which draws a 2px `primary-500` bar — the spec's
+              handle is a 4px `--rule-strong` one. Decorative: vaul still owns
+              the drag gesture, so this carries no semantics of its own. */}
+          <div aria-hidden className="mx-auto mb-3 h-1 w-10 shrink-0 rounded-full bg-rule-strong" />
+
+          <DrawerTitle className="text-center font-heading text-subhead font-extrabold leading-[1.55] text-ink">
             {t('whatIsAGuardian')}
           </DrawerTitle>
 
-          <WhatIsGuardianHero className="mx-auto mt-2 h-[111px] w-[125px] shrink-0" />
+          {/* 5.75rem, not the step screens' `--hero-w` (8.75rem): a sheet hero
+              is a smaller register than a step illustration. */}
+          <WhatIsGuardianHero className="mx-auto mt-2 block h-auto w-[5.75rem] shrink-0" />
 
-          <p className="mx-auto mt-3 max-w-[34rem] text-center text-[18px] font-normal leading-[1.28] text-heading-gray">
-            <Trans i18nKey="guardianInfoDescription" components={{ b: <span className="font-semibold" /> }} />
+          <p className="mt-[0.4375rem] text-center text-label leading-[1.5] text-ink-2">
+            <Trans i18nKey="guardianInfoDescription" components={{ b: <span className="font-bold text-ink" /> }} />
           </p>
 
-          <div className="mt-5 h-1.5 w-full shrink-0 rounded-full bg-primary-500" />
+          {/* `.shdiv` — full-bleed, so the negative margin matches the sheet's
+              own `px-5` gutter exactly. It reaches the padding edge and no
+              further, so it adds no horizontal overflow. */}
+          <div className="-mx-5 my-[0.9375rem] h-px shrink-0 bg-rule" />
 
-          <div className="mt-3 flex flex-col">
+          <div className="flex flex-col">
             <InfoRow
               badge={
-                <IconBadge className="bg-[#7D936D]">
-                  <Icon name={IconName.Checkmark} size="xs" fill="currentColor" className="text-pure-white" />
+                <IconBadge className="bg-pos">
+                  <Icon name={IconName.Checkmark} size="xs" fill="currentColor" className="text-paper" />
                 </IconBadge>
               }
               title={t('guardianInfoWhatItDoesTitle')}
               description={t('guardianInfoWhatItDoesDescription')}
+              hasDivider={false}
             />
             <InfoRow
-              badge={
-                <IconBadge className="bg-primary-500">
-                  <span className="font-heading text-[17px] font-bold leading-none text-pure-white">!</span>
-                </IconBadge>
-              }
+              badge={<IconBadge className="bg-accent text-caption font-extrabold text-on-accent-sm">!</IconBadge>}
               title={t('guardianInfoSwitchingIsEasyTitle')}
               description={t('guardianInfoSwitchingIsEasyDescription')}
             />
             <InfoRow
               badge={
-                <IconBadge className="bg-[#C96060]">
-                  <Icon name={IconName.Close} size="xs" fill="currentColor" className="text-pure-white" />
+                <IconBadge className="bg-neg">
+                  <Icon name={IconName.Close} size="xs" fill="currentColor" className="text-paper" />
                 </IconBadge>
               }
               title={t('guardianInfoWhatItCannotDoTitle')}
               description={t('guardianInfoWhatItCannotDoDescription')}
-              hasDivider={false}
             />
           </div>
 
-          <div className="mt-4 flex justify-center">
-            <Button title={t('gotIt')} onClick={() => onOpenChange(false)} />
+          {/* `.shft` — a SECONDARY dismiss. Closing an explainer is not a
+              primary action competing with the "Continue" behind it. */}
+          <div className="mt-3.5 flex shrink-0 justify-center">
+            <Button variant={ButtonVariant.Secondary} title={t('gotIt')} onClick={() => onOpenChange(false)} />
           </div>
         </div>
       </DrawerContent>

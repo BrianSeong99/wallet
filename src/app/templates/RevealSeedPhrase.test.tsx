@@ -90,9 +90,9 @@ jest.mock('app/icons/v2', () => ({
   IconName: { CheckboxCircleFill: 'CheckboxCircleFill', FileCopy: 'FileCopy' }
 }));
 
-jest.mock('components/NavigationHeader', () => ({
+jest.mock('components/ScreenHeader', () => ({
   __esModule: true,
-  NavigationHeader: (props: { title?: string; onBack?: () => void }) => (
+  ScreenHeader: (props: { title?: string; onBack?: () => void }) => (
     <div data-testid="nav-header">
       <span data-testid="nh-title">{props.title}</span>
       <button data-testid="nh-back" onClick={props.onBack} />
@@ -278,7 +278,7 @@ describe('RevealSeedPhrase', () => {
     expect(mockRevealMnemonic).toHaveBeenCalledWith(undefined);
     expect(mockSetSecret).toHaveBeenCalledWith('alpha beta gamma delta');
 
-    // Revealed view: NavigationHeader + capitalized words + copy/hide buttons.
+    // Revealed view: ScreenHeader + capitalized words + copy/hide buttons.
     expect(container.querySelector('[data-testid="nh-title"]')!.textContent).toBe('recoveryPhrase');
     expect(container.textContent).toContain('Alpha');
     expect(container.textContent).toContain('Delta');
@@ -322,7 +322,7 @@ describe('RevealSeedPhrase', () => {
     expect(mockGoBack).toHaveBeenCalled();
   });
 
-  it('runs handleHide from the revealed-view NavigationHeader back button', async () => {
+  it('runs handleHide from the revealed-view ScreenHeader back button', async () => {
     mockHasHardwareProtector.mockResolvedValue(true);
     const container = await render();
 
@@ -349,7 +349,7 @@ describe('RevealSeedPhrase', () => {
     // goBack fired from the catch (and/or the auto-close effect).
     expect(mockGoBack).toHaveBeenCalled();
 
-    // The error view's NavigationHeader back button also calls goBack.
+    // The error view's ScreenHeader back button also calls goBack.
     mockGoBack.mockClear();
     await act(async () => {
       (container.querySelector('[data-testid="nh-back"]') as HTMLButtonElement).click();
@@ -425,7 +425,7 @@ describe('RevealSeedPhrase', () => {
     expect(mockGoBack).toHaveBeenCalled();
   });
 
-  it('goes back from the drawer-view NavigationHeader back button', async () => {
+  it('goes back from the drawer-view ScreenHeader back button', async () => {
     mockHasHardwareProtector.mockResolvedValue(false);
     const container = await render();
 

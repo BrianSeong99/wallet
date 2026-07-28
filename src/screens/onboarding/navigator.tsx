@@ -4,8 +4,10 @@ import classNames from 'clsx';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 
-import { Button, ButtonVariant } from 'components/Button';
+import { Icon, IconName } from 'app/icons/v2';
 import { ProgressIndicator } from 'components/ProgressIndicator';
+import { iosPush, pushVariants } from 'lib/animation';
+import { hapticLight } from 'lib/mobile/haptics';
 import { isMobile } from 'lib/platform';
 import type { WalletAccount } from 'lib/shared/types';
 
@@ -61,13 +63,59 @@ const STEP_TO_PROGRESS: Partial<Record<OnboardingStep, number>> = {
 };
 
 const Header: React.FC<{
-  onBack: () => void;
+  /**
+   * Omitted on steps with nowhere to go back to, which is what hides the
+   * chevron. Welcome never renders a header at all; Confirmation renders one
+   * without a back affordance because the wallet already exists by then —
+   * both match the design system, where 20 of the 23 `.obtop` rows carry a
+   * back button and the three that don't are the Confirmation states.
+   */
+  onBack?: () => void;
   currentStep: number | null;
   totalSteps: number;
   onboardingType?: 'import' | 'create' | null;
-}> = ({ currentStep, totalSteps }) => {
+}> = ({ onBack, currentStep, totalSteps }) => {
+  const { t } = useTranslation();
+
   return (
-    <div className="w-full flex items-center px-4 pt-4">
+    // The design system's `.obtop`: the step chrome row, gap 0.625rem, padded
+    // 0.25rem above / 0.875rem below, inside the onboarding gutter (`px-6`,
+    // same as `OnboardingScreen`) so the bar lines up with the content and the
+    // action zone underneath it. Was `px-4 pt-4` with no bottom padding, which
+    // both sat on a different gutter to the screens and dumped the whole gap
+    // onto whatever the step rendered first.
+    <div className="w-full flex items-center gap-2.5 px-6 pt-1 pb-3.5">
+      {onBack && (
+        // `.obtop .obback` — the back chevron shares the progress row, so it
+        // costs no vertical space while still carrying a full 44pt tap target
+        // (`size-11` = 2.75rem, the touch floor). The negative left margin is
+        // the spec's exact -0.8125rem: it is between `-ml-3` (0.75rem) and
+        // `-ml-3.5` (0.875rem) on the Tailwind scale, so it is written as an
+        // arbitrary rem value rather than rounded to a step that would put the
+        // glyph off the gutter line.
+        <button
+          type="button"
+          aria-label={t('back')}
+          onClick={() => {
+            hapticLight();
+            onBack();
+          }}
+          className={classNames(
+            'size-11 -ml-[0.8125rem] flex-none',
+            'flex items-center justify-center',
+            'p-0 border-0 bg-transparent cursor-pointer',
+            'text-ink rounded-full',
+            'transition-colors active:bg-surface-2'
+          )}
+        >
+          {/* The mock draws a text `‹`, whose ink measures 6.25 x 9.5px at its
+              specified 1.25rem. A text glyph's optical alignment drifts with
+              the font, so this uses the repo's own stroked chevron instead:
+              at `xs` (1rem) its ink is 5.33 x 9.33px, effectively the same
+              mark, and it inherits `text-ink` through `currentColor`. */}
+          <Icon name={IconName.ChevronLeftLucide} size="xs" fill="none" aria-hidden />
+        </button>
+      )}
       <div className="flex-1 flex justify-center">
         <ProgressIndicator
           currentStep={currentStep ?? 1}
@@ -94,7 +142,6 @@ export const OnboardingFlow: FC<OnboardingFlowProps> = ({
   onBiometricChange,
   onAction
 }) => {
-  const { t } = useTranslation();
   const reduceMotion = useReducedMotion();
   const [navigationDirection, setNavigationDirection] = useState<'forward' | 'backward'>('forward');
 
@@ -286,16 +333,22 @@ export const OnboardingFlow: FC<OnboardingFlowProps> = ({
   };
 
   return (
+    // `max-w-105` is 26.25rem — the same 420px the inline `maxWidth` used to
+    // hardcode, but on the rem scale, so the shell grows with the user's text
+    // size instead of clipping the content it frames.
     <div
       data-onboarding-root="true"
-      className={classNames('flex flex-col', 'bg-app-bg', 'overflow-hidden', 'w-full h-full mx-auto')}
-      style={{ maxWidth: 420 }}
+      className={classNames('flex flex-col', 'bg-app-bg', 'overflow-hidden', 'w-full h-full mx-auto max-w-105')}
     >
       <div className="flex flex-col flex-1 min-h-0">
         <AnimatePresence mode={'wait'} initial={false}>
           {step !== OnboardingStep.Welcome && (
             <Header
-              onBack={onBack}
+              // Welcome is the first step and renders no header at all, so it
+              // is already back-less. Confirmation is the other step the design
+              // system leaves without a chevron — the wallet has been created
+              // by then, so there is nothing to go back to.
+              onBack={step === OnboardingStep.Confirmation ? undefined : onBack}
               currentStep={currentProgress}
               totalSteps={totalSteps}
               onboardingType={onboardingType}
@@ -303,46 +356,54 @@ export const OnboardingFlow: FC<OnboardingFlowProps> = ({
             />
           )}
         </AnimatePresence>
-        <AnimatePresence mode={'wait'} initial={false}>
-          <motion.div
-            className="flex flex-col flex-1 min-h-0"
-            key={step}
-            initial="initialState"
-            animate="animateState"
-            exit="exitState"
-            transition={{
-              type: 'tween',
-              // Only animate on mobile (disable for Chrome extension)
-              duration: isMobile() ? 0.2 : 0
-            }}
-            variants={{
-              initialState: {
-                x: reduceMotion ? 0 : navigationDirection === 'forward' ? '1vw' : '-1vw',
-                opacity: 0
-              },
-              animateState: {
-                x: 0,
-                opacity: 1
-              },
-              exitState: {
-                x: reduceMotion ? 0 : navigationDirection === 'forward' ? '-1vw' : '1vw',
-                opacity: 0
-              }
-            }}
-          >
-            {renderStep()}
-            {step !== OnboardingStep.Welcome &&
-              step !== OnboardingStep.ChooseProtection &&
-              step !== OnboardingStep.SetupPasscode &&
-              step !== OnboardingStep.SetupBiometric &&
-              step !== OnboardingStep.ChooseGuardian &&
-              step !== OnboardingStep.Confirmation && (
-                <div className="px-4 pt-2 pb-4">
-                  <Button title={t('back')} variant={ButtonVariant.Secondary} onClick={onBack} className="w-full" />
-                </div>
-              )}
-          </motion.div>
-        </AnimatePresence>
+        {/* A parallax push is two layers moving at once — that difference in
+            travel IS the effect — so the two screens must be on screen
+            together, and both must be full size while they are.
+
+            Hence: default (sync) mode, NOT `wait` and NOT `popLayout`.
+              - `wait` runs the exit to completion before the enter starts, so
+                the layers never coexist and there is nothing to be parallax
+                between; it also doubles the duration to 2 x 540ms.
+              - `popLayout` does overlap them, but it takes the exiting screen
+                out of flow with `position:absolute`, which stops `flex-1` from
+                applying to it — so the outgoing layer COLLAPSES as it leaves
+                instead of sliding out at full size.
+            Sizing both layers `absolute inset-0` inside a `relative` box sizes
+            them from the box rather than from flex, so neither depends on being
+            in flow and both stay full-bleed for the whole transition.
+
+            The onboarding root already clips with `overflow-hidden`, so the
+            off-screen layer cannot produce a horizontal scrollbar mid-flight. */}
+        <div className="relative flex-1 min-h-0">
+          <AnimatePresence initial={false}>
+            <motion.div
+              className="absolute inset-0 flex flex-col"
+              key={step}
+              initial="initialState"
+              animate="animateState"
+              exit="exitState"
+              // Apple's iOS parallax push, per the design system, which chose
+              // it over the four competing "push from right" specs its audit
+              // found.
+              //
+              // What was here travelled `1vw` — about 4px on a 402pt screen —
+              // over 200ms, with both layers moving the same distance: at that
+              // amplitude the transition is invisible, and with equal travel
+              // there is no parallax at all.
+              //
+              // It was also `duration: 0` off-mobile, i.e. switched off
+              // entirely in the extension and desktop. The design system
+              // specifies one page transition for every target.
+              transition={iosPush}
+              variants={pushVariants({ direction: navigationDirection, reduceMotion })}
+            >
+              {/* Back now lives in `.obtop` as the design system draws it, so
+                  the bottom secondary "Back" button that used to stack a second
+                  ActionZone underneath the step's own one is gone. */}
+              {renderStep()}
+            </motion.div>
+          </AnimatePresence>
+        </div>
       </div>
     </div>
   );

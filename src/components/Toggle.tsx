@@ -47,6 +47,10 @@ export const Toggle: React.FC<ToggleProps> = ({
           'bg-white': value,
           'bg-primary-500': !value
         })}
+        // Raw hex on purpose: framer-motion interpolates this value, so it needs
+        // a parseable colour, not `var(--…)`. The knob must also stay white on
+        // the orange track in both themes — --surface would darken it to #232323
+        // in dark mode.
         animate={{ backgroundColor: value ? '#ffffff' : PRIMARY_HEX }}
         layout={!isExtension()}
         transition={

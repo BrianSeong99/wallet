@@ -8,8 +8,8 @@ import Alert from 'app/atoms/Alert';
 import FormField from 'app/atoms/FormField';
 import { Icon, IconName } from 'app/icons/v2';
 import { Button, ButtonVariant } from 'components/Button';
-import { NavigationHeader } from 'components/NavigationHeader';
 import { PasscodeEntry } from 'components/PasscodeEntry';
+import { ScreenHeader } from 'components/ScreenHeader';
 import { Vault } from 'lib/miden/back/vault';
 import { useMidenContext, useSecretState } from 'lib/miden/front';
 import { hapticLight } from 'lib/mobile/haptics';
@@ -116,7 +116,14 @@ const RevealSeedPhrase: FC = () => {
   if (secret && words.length > 0) {
     return (
       <div className="flex flex-col flex-1 min-h-0 bg-app-bg text-heading-gray">
-        <NavigationHeader title={t('recoveryPhrase')} onBack={handleHide} />
+        <ScreenHeader
+          align="center"
+          showBorder={false}
+          className="px-4 bg-app-bg"
+          title={t('recoveryPhrase')}
+          backLabel={t('back')}
+          onBack={handleHide}
+        />
 
         <div className="flex-1 flex flex-col px-4 pt-4">
           {/* Hidden field for copy */}
@@ -171,7 +178,14 @@ const RevealSeedPhrase: FC = () => {
   if (authError) {
     return (
       <div className="flex flex-col flex-1 min-h-0 bg-app-bg">
-        <NavigationHeader title={t('recoveryPhrase')} onBack={() => goBack()} />
+        <ScreenHeader
+          align="center"
+          showBorder={false}
+          className="px-4 bg-app-bg"
+          title={t('recoveryPhrase')}
+          backLabel={t('back')}
+          onBack={() => goBack()}
+        />
         <div className="px-4 pt-4">
           <Alert type="error" title={t('error')} description={authError} className="rounded-lg text-black" />
         </div>
@@ -186,7 +200,14 @@ const RevealSeedPhrase: FC = () => {
 
   return (
     <div className="flex flex-col flex-1 min-h-0 bg-app-bg">
-      <NavigationHeader title={t('recoveryPhrase')} onBack={() => goBack()} />
+      <ScreenHeader
+        align="center"
+        showBorder={false}
+        className="px-4 bg-app-bg"
+        title={t('recoveryPhrase')}
+        backLabel={t('back')}
+        onBack={() => goBack()}
+      />
 
       <Drawer open={showPasswordDrawer} onOpenChange={open => !open && handlePasswordDrawerClose()}>
         <DrawerContent>

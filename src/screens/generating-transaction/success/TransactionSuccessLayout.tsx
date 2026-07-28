@@ -26,8 +26,6 @@ import { TransactionSummaryBadge } from '../TransactionSummaryBadge';
  * the in-progress screen.
  */
 
-const SUCCESS_HERO_BG = '#90BA89';
-
 /** Props shared by every per-type success view and the dispatcher. */
 export interface TransactionSuccessProps {
   transaction?: ITransaction;
@@ -68,11 +66,7 @@ export const useReceiptAmount = (transaction?: ITransaction) => {
 };
 
 export const SuccessHero: FC = () => (
-  <div
-    className="flex size-30 items-center justify-center rounded-full"
-    style={{ backgroundColor: SUCCESS_HERO_BG }}
-    aria-hidden="true"
-  >
+  <div className="flex size-30 items-center justify-center rounded-full bg-status-positive" aria-hidden="true">
     <svg width="57" height="43" viewBox="0 0 57 43" fill="none" xmlns="http://www.w3.org/2000/svg">
       <path
         d="M50.3513 6.00879L19.8658 36.4943L6.00879 22.6372"
@@ -86,7 +80,7 @@ export const SuccessHero: FC = () => (
 );
 
 /** Full-width hairline shown under the title on the amount-led variants. */
-export const SuccessDivider: FC = () => <div className="mt-6 h-1 w-full rounded-xs bg-[#F2F2F4]" />;
+export const SuccessDivider: FC = () => <div className="mt-6 h-1 w-full rounded-xs bg-rule" />;
 
 /** Emphasized amount block ("12 MDN") with an optional sub-line below it. */
 export const SuccessAmountBlock: FC<{ amountText?: string; subline?: ReactNode }> = ({ amountText, subline }) => {
@@ -94,7 +88,9 @@ export const SuccessAmountBlock: FC<{ amountText?: string; subline?: ReactNode }
 
   return (
     <div className="mt-4 flex w-full flex-col items-center">
-      <div className="font-heading text-center text-3xl font-bold leading-none text-pure-black">{amountText}</div>
+      <div className="font-heading font-tnum text-center text-3xl font-bold leading-none text-pure-black">
+        {amountText}
+      </div>
       {subline}
     </div>
   );
@@ -124,7 +120,7 @@ export const ReceiptRows: FC<{ rows: ReceiptRow[]; className?: string }> = ({ ro
           key={row.label}
           className={classNames(
             'flex items-center justify-between gap-3 py-5',
-            index < rows.length - 1 && 'border-b border-[#00000014]'
+            index < rows.length - 1 && 'border-b border-rule'
           )}
         >
           <ReviewLabel>{row.label}</ReviewLabel>
@@ -202,7 +198,9 @@ export const TransactionSuccessLayout: FC<TransactionSuccessLayoutProps> = ({
         <section className="flex flex-1 flex-col items-center px-3 pt-6">
           <SuccessHero />
 
-          <h2 className="mt-6 w-full text-center text-[2rem] font-heading font-bold text-heading-gray">{title}</h2>
+          <h2 className="mt-6 w-full text-center text-numeric-hero font-heading font-bold text-heading-gray">
+            {title}
+          </h2>
 
           {children}
         </section>

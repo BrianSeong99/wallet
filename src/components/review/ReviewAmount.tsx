@@ -30,12 +30,15 @@ export const ReviewAmount: React.FC<ReviewAmountProps> = ({ symbol, amount, fiat
       )}
       <div className="flex items-center gap-2 mt-3">
         <TokenLogo symbol={logoSymbol ?? symbol} size="md" />
-        <span className="font-heading text-[40px] font-extrabold text-heading-gray leading-none">
+        {/* Review hero: the amount is the numeric role (display face, tabular +
+            lining figures) so it does not reflow between the draft and the
+            confirmed value. */}
+        <span className="font-heading font-tnum text-[40px] font-extrabold text-heading-gray leading-none">
           {amount} {symbol}
         </span>
       </div>
       {fiat != null && (
-        <p className="text-center font-heading text-sm text-gray">
+        <p className="text-center font-heading font-tnum text-sm text-gray">
           {t('approxFiatValue', { value: `$${fiat.toFixed(2)}` })}
         </p>
       )}

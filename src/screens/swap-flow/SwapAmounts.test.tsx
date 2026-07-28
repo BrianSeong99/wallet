@@ -273,7 +273,7 @@ describe('SwapAmounts', () => {
       renderComponent({ statusMessage: 'fetching price', statusIsError: false });
       const msg = screen.getByText('fetching price');
       expect(msg).toBeInTheDocument();
-      expect(msg).toHaveClass('text-[#808080]');
+      expect(msg).toHaveClass('text-ink-3');
       expect(msg).not.toHaveClass('text-status-negative');
     });
 
@@ -282,7 +282,7 @@ describe('SwapAmounts', () => {
       const msg = screen.getByText('pair unavailable');
       expect(msg).toBeInTheDocument();
       expect(msg).toHaveClass('text-status-negative');
-      expect(msg).not.toHaveClass('text-[#808080]');
+      expect(msg).not.toHaveClass('text-ink-3');
     });
   });
 });

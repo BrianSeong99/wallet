@@ -141,14 +141,15 @@ describe('SetupBiometricScreen', () => {
       expect(screen.getByRole('button', { name: 'biometricSetUp' })).toBeInTheDocument();
     });
 
-    it('renders the primary-coloured scan frame brackets in the prompt phase', async () => {
+    it('renders the accent-coloured scan frame brackets in the prompt phase', async () => {
       mockIsMobile.mockReturnValue(false);
       const { container } = renderComponent();
       await flush();
 
-      // ScanFrame color="primary" -> text-primary-500 brackets.
-      expect(container.querySelector('.text-primary-500')).toBeInTheDocument();
-      expect(container.querySelector('.text-status-positive')).not.toBeInTheDocument();
+      // ScanFrame color="primary" -> `--accent` brackets (was `primary-500`,
+      // the same colour under the pre-token name).
+      expect(container.querySelector('.text-accent')).toBeInTheDocument();
+      expect(container.querySelector('.text-pos')).not.toBeInTheDocument();
     });
   });
 
@@ -206,7 +207,9 @@ describe('SetupBiometricScreen', () => {
       expect(screen.getByText('onlyOneMoreStep')).toBeInTheDocument();
       // Checkmark icon + positive-coloured scan frame.
       expect(screen.getByTestId('icon')).toHaveAttribute('data-name', 'Checkmark');
-      expect(container.querySelector('.text-status-positive')).toBeInTheDocument();
+      // `--pos` brackets (was `status-positive`, the same colour under the
+      // pre-token name).
+      expect(container.querySelector('.text-pos')).toBeInTheDocument();
       // Prompt-phase affordances are gone; the continue button replaces them.
       expect(screen.queryByTestId('btn-usePasscodeInstead')).not.toBeInTheDocument();
       expect(screen.getByTestId('btn-continue')).toBeInTheDocument();
@@ -229,7 +232,11 @@ describe('SetupBiometricScreen', () => {
   });
 
   describe('button wiring', () => {
-    it('invokes onSwitchToPasscode from the ghost passcode button in the prompt phase', async () => {
+    // The escape hatch is a FILLED-GREY secondary, not a transparent ghost:
+    // "Use passcode instead" is the only way off this screen when biometrics
+    // are unavailable, and a borderless ghost gave it no visible affordance at
+    // all against the cream ground. The assertion still pins the exact variant.
+    it('invokes onSwitchToPasscode from the secondary passcode button in the prompt phase', async () => {
       mockIsMobile.mockReturnValue(false);
       const onSwitchToPasscode = jest.fn();
 
@@ -237,7 +244,7 @@ describe('SetupBiometricScreen', () => {
       await flush();
 
       const button = screen.getByTestId('btn-usePasscodeInstead');
-      expect(button).toHaveAttribute('data-variant', 'ghost');
+      expect(button).toHaveAttribute('data-variant', 'secondary');
       fireEvent.click(button);
       expect(onSwitchToPasscode).toHaveBeenCalledTimes(1);
     });

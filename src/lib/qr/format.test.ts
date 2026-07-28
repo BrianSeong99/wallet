@@ -1,8 +1,15 @@
+import { isValidMidenAddress as isValidMidenAccountId } from 'utils/miden';
+
 import { encodeAddress, decodeAddress, isValidMidenAddress } from './format';
 
 describe('QR format utilities', () => {
   const testnetAddress = 'mtst1aplqzwh6s4gvcyzsvx726y6xvsgt5qv5qruqqypuyph';
-  const mainnetAddress = 'm1aplqzwh6s4gvcyzsvx726y6xvsgt5qv5qruqqypuyph';
+  // bech32 is <hrp>1<data>, and Miden's mainnet HRP is `mm` — so a mainnet
+  // address is `mm1…`. This fixture said `m1…`, i.e. HRP `m`, which is not a
+  // Miden network at all; it existed only because format.ts carried its own
+  // prefix list and tested for exactly that string.
+  const mainnetAddress = 'mm1aplqzwh6s4gvcyzsvx726y6xvsgt5qv5qruqqypuyph';
+  const devnetAddress = 'mdev1aplqzwh6s4gvcyzsvx726y6xvsgt5qv5qruqqypuyph';
 
   describe('encodeAddress', () => {
     it('adds miden: prefix to address', () => {
@@ -51,6 +58,20 @@ describe('QR format utilities', () => {
 
     it('validates mainnet address', () => {
       expect(isValidMidenAddress(mainnetAddress)).toBe(true);
+    });
+
+    it('validates devnet address', () => {
+      // `yarn build:devnet` is a shipped build, and this validator gates its
+      // scanner: with no devnet prefix here, every devnet QR was rejected.
+      expect(isValidMidenAddress(devnetAddress)).toBe(true);
+    });
+
+    it('agrees with the wallet-wide validator on every network', () => {
+      // Two functions with the same name in two modules used to disagree.
+      // They share one prefix list now; this is what stops them drifting again.
+      [mainnetAddress, testnetAddress, devnetAddress].forEach(address => {
+        expect(isValidMidenAddress(address)).toBe(isValidMidenAccountId(address));
+      });
     });
 
     it('rejects empty string', () => {

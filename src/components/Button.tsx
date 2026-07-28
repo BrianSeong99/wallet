@@ -29,6 +29,13 @@ const propsPerButtonVariant = {
   [ButtonVariant.Primary]: {
     color: 'text-pure-white',
     fontWeight: 'font-bold',
+    // White on the brand orange is exactly 3.00:1, which conforms under
+    // SC 1.4.3 ONLY as large text (>=18.66px bold). At the shared text-base
+    // (16px) this button was non-conformant everywhere it appeared, so the
+    // label size is an accessibility constraint here, not styling: --t-cta is
+    // 19px and it must never be set smaller while the label stays white.
+    // Margin at 3.00:1 is zero.
+    fontSize: 'text-cta',
     disabledColor: 'text-heading-gray',
     disabledFontWeight: 'font-semibold',
     backgroundColor: 'bg-primary-500 focus:bg-primary-500',
@@ -40,6 +47,7 @@ const propsPerButtonVariant = {
   [ButtonVariant.Secondary]: {
     color: 'text-heading-gray',
     fontWeight: 'font-bold',
+    fontSize: 'text-base',
     disabledColor: 'text-heading-gray',
     disabledFontWeight: 'font-semibold',
     backgroundColor: 'bg-button-secondary',
@@ -51,13 +59,17 @@ const propsPerButtonVariant = {
   [ButtonVariant.Ghost]: {
     color: 'text-heading-gray',
     fontWeight: 'font-bold',
+    fontSize: 'text-base',
     disabledColor: 'text-grey-400',
     disabledFontWeight: 'font-semibold',
     backgroundColor: 'bg-transparent',
     hoverBackgroundColor: 'hover:bg-gray-100',
     disabledBackgroundColor: 'bg-gray-50',
     iconColor: 'black',
-    border: 'border border-border-button'
+    // No border. Actions are filled-primary, filled-secondary or
+    // borderless-ghost; a border on a tap target is reserved for structural
+    // separation (cards, rows, dividers), never for the target itself.
+    border: ''
   }
 };
 
@@ -78,6 +90,7 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(function 
   const variantProps = propsPerButtonVariant[variant];
   let color = variantProps.color;
   let fontWeight = variantProps.fontWeight;
+  const fontSize = variantProps.fontSize;
   let backgroundColor = variantProps.backgroundColor;
   let hoverBackgroundColor = variantProps.hoverBackgroundColor;
   const iconColor = variantProps.iconColor;
@@ -104,7 +117,12 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(function 
   };
 
   const onClick = (e: React.MouseEvent<HTMLButtonElement>) => {
-    e.currentTarget.blur();
+    // Deliberately does NOT blur(). It used to, which threw focus back to
+    // <body> on every click -- so a keyboard user advancing through onboarding
+    // lost their place on every step (SC 2.4.3). The blur was there to stop a
+    // focus ring sticking after a touch tap; :focus-visible is the mechanism
+    // for that, and it is applied on the element below, so the ring now shows
+    // for keyboard users and not for touch.
     hapticLight();
     props.onClick?.(e);
   };
@@ -120,9 +138,13 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(function 
         'flex justify-center items-center gap-x-2 font-heading',
         // Fixed design-system dimensions: 370px × 56px (override with w-full etc via className).
         'max-w-92.5 h-14 px-4 rounded-full w-full',
-        'transition-colors duration-150 ease-hover text-base',
+        'transition-colors duration-150 ease-hover',
+        // Replaces the blur-on-click hack: a visible ring for keyboard focus,
+        // nothing on touch or mouse.
+        'outline-none focus-visible:ring-3 focus-visible:ring-accent/50',
         color,
         fontWeight,
+        fontSize,
         backgroundColor,
         hoverBackgroundColor,
         border,

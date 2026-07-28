@@ -164,10 +164,7 @@ export const TransactionStepRow: React.FC<TransactionStepRowProps> = ({ step, st
   return (
     <motion.div
       key={step.id}
-      className={classNames(
-        'flex items-center justify-between gap-3 mx-6 py-3.5',
-        !isLast && 'border-b border-[#ECEBE8]'
-      )}
+      className={classNames('flex items-center justify-between gap-3 mx-6 py-3.5', !isLast && 'border-b border-rule')}
       data-transaction-step={step.id}
       data-state={state}
       layout
@@ -178,16 +175,16 @@ export const TransactionStepRow: React.FC<TransactionStepRowProps> = ({ step, st
         <span
           className={classNames(
             'min-w-0 truncate font-heading text-base font-bold leading-none',
-            state === 'pending' ? 'text-[#8E8A84] dark:text-[#9B968D]' : 'text-[#161513] dark:text-pure-white'
+            state === 'pending' ? 'text-ink-3' : 'text-ink'
           )}
         >
           {resolvedLabel}
         </span>
       </div>
+      {/* Per-step elapsed time ticks up live; tabular figures keep the row from
+          reflowing as "9 sec" becomes "10 sec". */}
       {meta && (
-        <span className="shrink-0 font-heading text-base font-medium leading-none text-[#8E8A84] dark:text-[#9B968D]">
-          {meta}
-        </span>
+        <span className="shrink-0 font-heading font-tnum text-base font-medium leading-none text-ink-3">{meta}</span>
       )}
     </motion.div>
   );

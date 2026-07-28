@@ -7,18 +7,47 @@ const BINANCE_API_BASE = 'https://api.binance.com/api/v3';
 /**
  * Map of wallet token symbols to Binance trading pair symbols.
  * Only tokens listed here will have real price data fetched.
- * All other tokens default to $1 USD.
  */
 
 export interface TokenPriceInfo {
   price: number;
   change24h: number;
   percentageChange24h: number;
+  /**
+   * Whether `price` is a real quote. FALSE means "we do not know what this is
+   * worth" — it does NOT mean zero, and a caller must not render it as a fiat
+   * figure. Callers that show money check this and show nothing instead.
+   */
+  isKnown: boolean;
 }
 
 export type TokenPrices = Record<string, TokenPriceInfo>;
 
-export const DEFAULT_PRICE: TokenPriceInfo = { price: 1, change24h: 0, percentageChange24h: 0 };
+/**
+ * The unpriced case, and it is the NORMAL case on this wallet: Binance lists
+ * none of the devnet or testnet tokens.
+ *
+ * This used to be `{ price: 1 }`, returned for any symbol Binance does not
+ * list. That is not a fallback, it is a fabricated exchange rate — a wallet
+ * holding 500 of an unlisted token reported "$500.00" with no hedging anywhere
+ * in the UI, and the number was indistinguishable from a real quote.
+ *
+ * `price: 0` is paired with `isKnown: false` so arithmetic downstream cannot
+ * silently produce a plausible-looking total; anything rendering money is
+ * expected to branch on `isKnown` rather than multiply.
+ */
+export const DEFAULT_PRICE: TokenPriceInfo = { price: 0, change24h: 0, percentageChange24h: 0, isKnown: false };
+
+/**
+ * The one carve-out, made explicitly rather than globally.
+ *
+ * A dollar stablecoin is worth a dollar by construction — that is the asset's
+ * entire design — so $1 is a real assertion about USDC in a way it is not
+ * about an arbitrary unlisted token. Depegs exist, which is why these are
+ * still overridden by a live Binance quote whenever one is available; this is
+ * only what we fall back to.
+ */
+const DOLLAR_STABLECOINS = new Set(['USDC', 'USDT', 'DAI', 'USDS', 'PYUSD', 'USDP', 'TUSD']);
 
 interface BinanceTicker24hr {
   symbol: string;
@@ -62,7 +91,8 @@ export async function fetchTokenPrices(): Promise<TokenPrices> {
       const percentageChange24h = parseFloat(ticker.priceChangePercent);
 
       if (!isNaN(price) && !isNaN(change24h) && !isNaN(percentageChange24h)) {
-        prices[walletSymbol] = { price, change24h, percentageChange24h };
+        // A live Binance quote is by definition known.
+        prices[walletSymbol] = { price, change24h, percentageChange24h, isKnown: true };
       }
     }
 
@@ -82,7 +112,12 @@ export async function fetchTokenPrices(): Promise<TokenPrices> {
  * Get price info for a token symbol, defaulting to $1 / 0% if not found.
  */
 export function getTokenPrice(prices: TokenPrices, symbol: string): TokenPriceInfo {
-  return prices[symbol] ?? DEFAULT_PRICE;
+  const quoted = prices[symbol];
+  if (quoted) return quoted;
+  if (DOLLAR_STABLECOINS.has(symbol.toUpperCase())) {
+    return { price: 1, change24h: 0, percentageChange24h: 0, isKnown: true };
+  }
+  return DEFAULT_PRICE;
 }
 
 // --- Kline (candlestick) chart data ---

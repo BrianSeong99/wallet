@@ -80,25 +80,25 @@ describe('AssetListItem', () => {
     it('applies the positive color for an explicit positive direction', () => {
       renderItem({ delta: { value: '+2.5%', direction: 'positive' } });
 
-      expect(screen.getByText('+2.5%').className).toContain('text-status-positive');
+      expect(screen.getByText('+2.5%').className).toContain('text-pos');
     });
 
     it('defaults to the positive color when direction is undefined', () => {
       renderItem({ delta: { value: '+1.0%' } });
 
-      expect(screen.getByText('+1.0%').className).toContain('text-status-positive');
+      expect(screen.getByText('+1.0%').className).toContain('text-pos');
     });
 
     it('applies the negative color for a negative direction', () => {
       renderItem({ delta: { value: '-3.1%', direction: 'negative' } });
 
-      expect(screen.getByText('-3.1%').className).toContain('text-status-negative');
+      expect(screen.getByText('-3.1%').className).toContain('text-neg');
     });
 
     it('applies the tertiary color for a neutral direction', () => {
       renderItem({ delta: { value: '0.0%', direction: 'neutral' } });
 
-      expect(screen.getByText('0.0%').className).toContain('text-text-tertiary-token');
+      expect(screen.getByText('0.0%').className).toContain('text-ink-2');
     });
   });
 

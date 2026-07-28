@@ -6,13 +6,16 @@ import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
 import FormField, { PASSWORD_ERROR_CAPTION } from 'app/atoms/FormField';
-import FormSubmitButton from 'app/atoms/FormSubmitButton';
 import { Icon, IconName } from 'app/icons/v2';
+import { Button } from 'components/Button';
+import { ActionZone } from 'components/ui/ActionZone';
 import { decrypt, decryptJson, deriveKey, generateKey } from 'lib/miden/passworder';
 import { importDb } from 'lib/miden/repo';
 import { getMidenClient } from 'lib/miden/sdk/miden-client';
 import type { WalletAccount } from 'lib/shared/types';
 import { DecryptedWalletFile, ENCRYPTED_WALLET_FILE_PASSWORD_CHECK, EncryptedWalletFile } from 'screens/shared';
+
+import { OnboardingHeading, OnboardingScreen, OnboardingSubcopy } from '../common/layout';
 
 interface FormData {
   password?: string;
@@ -212,7 +215,9 @@ export const ImportWalletFileScreen: React.FC<ImportWalletFileScreenProps> = ({ 
 
   const uploadFileComponent = (): JSX.Element => {
     return (
-      <span onClick={onUploadFileClick} className="cursor-pointer text-blue-500">
+      // --accent-ink, not the raw brand orange: --accent measures 2.90:1 as
+      // text on --paper, so an accent-coloured link has to use the ink pair.
+      <span onClick={onUploadFileClick} className="cursor-pointer font-bold text-accent-ink">
         {t('chooseFromDevice')}
       </span>
     );
@@ -225,102 +230,104 @@ export const ImportWalletFileScreen: React.FC<ImportWalletFileScreenProps> = ({ 
   };
 
   return (
-    <form
-      className={classNames(
-        'flex-1 h-full',
-        'flex flex-col justify-content items-center gap-y-2',
-        'bg-app-bg text-heading-gray px-4 pt-6',
-        className
-      )}
-      onSubmit={handleSubmit(handleImportSubmit)}
-    >
-      <h1 className="text-2xl font-semibold">{t('importWallet')}</h1>
-      <p className="text-sm text-center mb-6">{t('importWithEncryptedWalletFileDescription')}</p>
-      {walletFile == null ? (
-        <div
-          className={classNames(
-            'p-10',
-            'flex flex-col items-center gap-y-2 mb-6',
-            'border border-dashed border-border-card rounded-2xl',
-            isDragging && 'border-blue-500'
-          )}
-          onDrop={onDropFile}
-          onDragEnter={onDragEnter}
-          onDragLeave={onDragLeave}
-          onDragOver={e => {
-            e.preventDefault();
-          }}
-        >
-          <Icon name={IconName.UploadFile} size="xxl" />
-          <p className="text-sm">
-            {t('dragAndDropFile')} {uploadFileComponent()}
-          </p>
-          <p className="text-sm text-text-muted">{t('jsonFileType')}</p>
-          <div>
-            <input style={{ display: 'none' }} ref={walletFileRef} onChange={onUploadFile} type="file" />
+    <OnboardingScreen className={className}>
+      <form className="flex w-full flex-1 flex-col" onSubmit={handleSubmit(handleImportSubmit)}>
+        <div className="flex w-full flex-col gap-stack-loose py-stack-loose">
+          <div className="flex flex-col gap-stack-tight">
+            <OnboardingHeading>{t('importWallet')}</OnboardingHeading>
+            <OnboardingSubcopy>{t('importWithEncryptedWalletFileDescription')}</OnboardingSubcopy>
           </div>
-        </div>
-      ) : (
-        <div
-          className={classNames(
-            'flex justify-between items-center',
-            'bg-surface-solid rounded-2xl',
-            'w-[360px] py-5 px-3',
-            'mx-auto'
-          )}
-        >
-          <div className="flex">
-            <Icon name={IconName.UploadedFile} size="md" />
-            <div className="flex items-center pl-4">{walletFile.name}</div>
-          </div>
-          <button type="button" onClick={handleClear}>
-            <Icon name={IconName.Close} fill="currentColor" size="md" />
-          </button>
-        </div>
-      )}
 
-      {walletFile != null && pendingRestore == null && (
-        <div className="flex flex-col w-[360px]">
-          <p className="text-sm text-black my-3">{t('enterDecryptionPassword')}</p>
-          <FormField
-            {...register('password', {
-              required: PASSWORD_ERROR_CAPTION
-            })}
-            label={t('password')}
-            id="newwallet-password"
-            type="password"
-            name="password"
-            placeholder="********"
-            errorCaption={
-              isWrongPassword
-                ? 'Wrong password'
-                : isRestoreError
-                  ? "Couldn't restore the wallet. Please try again."
-                  : errors.password?.message
-            }
-            containerClassName="mb-4"
+          {walletFile == null ? (
+            // The dashed rule stays: it is the drop-target boundary, i.e.
+            // structural separation, not a bordered tap target. Only its colour
+            // moves onto theme-flipping tokens.
+            <div
+              className={classNames(
+                'flex flex-col items-center gap-stack-tight p-8',
+                'rounded-lg-token border border-dashed transition-colors',
+                // --rule-strong, not --rule: at 8% the dashed edge is the only
+                // thing marking the drop target and it all but disappears on
+                // the cream ground.
+                isDragging ? 'border-accent bg-accent-wash' : 'border-rule-strong'
+              )}
+              onDrop={onDropFile}
+              onDragEnter={onDragEnter}
+              onDragLeave={onDragLeave}
+              onDragOver={e => {
+                e.preventDefault();
+              }}
+            >
+              <Icon name={IconName.UploadFile} size="xxl" />
+              <p className="text-center text-label text-ink">
+                {t('dragAndDropFile')} {uploadFileComponent()}
+              </p>
+              <p className="text-caption text-ink-2">{t('jsonFileType')}</p>
+              <div>
+                <input className="hidden" ref={walletFileRef} onChange={onUploadFile} type="file" />
+              </div>
+            </div>
+          ) : (
+            <div className="flex w-full items-center justify-between rounded-md-token bg-surface-2 px-3 py-4">
+              <div className="flex items-center gap-3">
+                <Icon name={IconName.UploadedFile} size="md" />
+                <div className="flex items-center break-all text-label text-ink">{walletFile.name}</div>
+              </div>
+              <button type="button" className="shrink-0 text-ink-2" onClick={handleClear}>
+                <Icon name={IconName.Close} fill="currentColor" size="md" />
+              </button>
+            </div>
+          )}
+
+          {walletFile != null && pendingRestore == null && (
+            <div className="flex w-full flex-col gap-stack-tight">
+              <p className="text-label text-ink">{t('enterDecryptionPassword')}</p>
+              <FormField
+                {...register('password', {
+                  required: PASSWORD_ERROR_CAPTION
+                })}
+                label={t('password')}
+                id="newwallet-password"
+                type="password"
+                name="password"
+                placeholder="********"
+                errorCaption={
+                  isWrongPassword
+                    ? 'Wrong password'
+                    : isRestoreError
+                      ? "Couldn't restore the wallet. Please try again."
+                      : errors.password?.message
+                }
+              />
+            </div>
+          )}
+
+          {pendingRestore != null && (
+            // --neg / --neg-wash instead of a raw red ramp plus dark: overrides.
+            // The tokens already flip, so the dark variants were re-specifying
+            // (and slightly contradicting) what the theme does for free.
+            <div className="w-full rounded-md-token bg-neg-wash px-3 py-2 text-caption font-semibold leading-[1.4] text-neg">
+              {t('encryptedFileImportedAccountsOmittedRestoreNotice', {
+                importedCount: String(pendingRestore.omittedImportedAccountCount)
+              })}
+            </div>
+          )}
+        </div>
+
+        <ActionZone>
+          {/* Was FormSubmitButton with `className="w-full text-base"` plus an
+              inline `padding: '12px 0px'` — the text-base override beat
+              Button's --t-cta and dropped white-on-accent below the size it
+              needs to stay legible. `type="submit"` keeps the react-hook-form
+              submit path intact. */}
+          <Button
+            type="submit"
+            title={pendingRestore != null ? t('continueImport') : t('import')}
+            isLoading={isSubmitting}
+            disabled={pendingRestore != null ? false : !isValid || !walletFile}
           />
-        </div>
-      )}
-
-      {pendingRestore != null && (
-        <div className="w-[360px] mb-4 rounded-xl border border-red-300 bg-red-50 px-4 py-3 text-sm text-red-800 dark:border-red-500/30 dark:bg-red-500/15 dark:text-red-500">
-          {t('encryptedFileImportedAccountsOmittedRestoreNotice', {
-            importedCount: String(pendingRestore.omittedImportedAccountCount)
-          })}
-        </div>
-      )}
-
-      <div className="mt-auto w-full pt-4">
-        <FormSubmitButton
-          loading={isSubmitting}
-          className="w-full text-base"
-          style={{ display: 'block', fontWeight: 500, padding: '12px 0px' }}
-          disabled={pendingRestore != null ? false : !isValid || !walletFile}
-        >
-          {pendingRestore != null ? t('continueImport') : t('import')}
-        </FormSubmitButton>
-      </div>
-    </form>
+        </ActionZone>
+      </form>
+    </OnboardingScreen>
   );
 };

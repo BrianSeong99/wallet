@@ -32,7 +32,10 @@ const propsPerVariant = {
   },
   [AlertVariant.Error]: {
     icon: IconName.CloseCircleFill,
-    color: colors.yellow[500],
+    // Was colors.yellow[500] -- the error icon rendered amber on a red wash,
+    // reading as a warning rather than an error. The background on this same
+    // line was already red, which is what gave the copy-paste away.
+    color: colors.red[500],
     backgroundColor: 'bg-red-50 dark:bg-red-500/15'
   },
   [AlertVariant.Success]: {

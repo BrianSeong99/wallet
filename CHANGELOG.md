@@ -1,6 +1,30 @@
 # Changelog
 
-## 1.15.11 (TBD)
+## 1.15.12 (TBD)
+
+### Changes
+
+* [CHANGE][all] **The wallet stops inventing prices for tokens it has no quote for.** `getTokenPrice` returned a hardcoded price of one for any symbol Binance does not list — which is every token on devnet and testnet, so the fabricated rate was the normal case rather than an edge case. A wallet holding 500 of an unlisted token reported $500.00, indistinguishable from a real quote. Dollar stablecoins keep a $1 fallback explicitly, still overridden by a live quote so a depeg is not hidden; every other unlisted token now reports that it has no price, and the rows that showed a fiat value, a 24h delta or a dead-flat sparkline for it show nothing instead.
+
+* [CHANGE][all] **Inter, Nunito and Geist Mono are now self-hosted, and the design-system token layer has landed.** Every HTML entrypoint used to fetch Inter and Nunito from `fonts.googleapis.com` at runtime; they are now bundled, so boot makes no third-party request and the fonts work offline and under the extension's CSP. Inter is imported as its optical-size cut to match what the Google Fonts URL requested — the weight-only cut drops the axis and reflows every paragraph. `font-mono` also stops being a lie: it mapped to Inter, and now resolves to the Geist Mono that already shipped in `fonts/` unreferenced, which affects the two surfaces that use it (advanced transaction details and the public key in Advanced Settings). Alongside this, the Crust colour/type/spacing/motion tokens are declared in `src/main.css` and exposed through `tailwind.config.ts`; only legacy names whose values are byte-identical in both themes are re-pointed at them, so nothing else moves on screen.
+
+* [CHANGE][all] **Colours that were hardcoded in the onboarding, swap and transaction-progress screens now follow the theme.** A number of dividers, borders, helper texts and badges were written as fixed hex values, so they rendered the same in light and dark — several were effectively invisible in dark mode (a near-white divider on the dark drawer, dark-grey helper text on the dark background). They now resolve from the design-system tokens and flip with the theme. Third-party brand colours (USDC, Bitcoin) and the QR code's background are deliberately left fixed, since those are identity and scannability requirements rather than surfaces.
+
+### Fixes
+
+* [FIX][all] **A valid mainnet or devnet QR code is no longer rejected.** Two functions named `isValidMidenAddress` lived in two modules and disagreed on every network but testnet: the one the scanner runs tested `m1` for mainnet where the wallet-wide one declares `mm1`, and carried no devnet prefix at all — so a correct mainnet code was refused, and a `build:devnet` bundle refused every code it could be shown. Both now read one prefix list.
+* [FIX][all] **The receipt no longer shows raw translation keys in non-English locales.** `totalPaid`, `sourceTx` and `transactionComplete`, along with four other keys in the transaction screens, were missing from the catalogue and survived only on in-code fallbacks; English looked correct because the fallback text sat in the call.
+* [FIX][ci] **`lint` and `lint:i18n` now actually lint the app.** Both were `eslint src` with no `--ext`, so ESLint fell back to its `.js` default and checked three files — a polyfill mock, a colour helper and an xhr shim — and zero components. The i18n rule CI enforces had never run on a single `.tsx` file. Turning it on surfaced 92 hardcoded strings across 29 files; the recent ones are fixed and the rest are listed explicitly so the rule is live for all new code.
+
+* [FIX][all] **Error alerts now draw their icon in red instead of amber.** The error variant was using the warning colour while its background was already red, so errors read as warnings.
+* [FIX][all] **The syncing shimmer now uses the Bread accent.** It was drawing a different orange (Tailwind's `#F97316` rather than the brand `#E77537`), so the sync animation didn't match any other accent surface in the app. It now follows the accent token, which also means it picks up the slate devnet colour.
+* [FIX][all] **Keyboard focus is no longer thrown away every time a button is clicked.** `Button` called `blur()` on every click, which sent focus back to the top of the document — so anyone navigating onboarding by keyboard lost their place on every single step, and had to tab back from the beginning. The blur existed to stop a focus ring sticking after a touch tap; that is now handled by `:focus-visible`, so the ring appears for keyboard users and not for touch.
+* [FIX][all] **The primary button label is now large enough to be legible on the orange fill.** White on the brand orange measures exactly 3.00:1, which only meets the contrast standard at "large text" sizes — but the label was being drawn at 16px, below that threshold, so every primary action in the app fell short. The label is now 19px bold, which conforms. Secondary and ghost buttons are unchanged.
+* [FIX][all] **The ghost button no longer draws an outline.** Buttons are filled or borderless; an outline on a tap target reads as structural separation and made ghost actions compete with the primary action next to them.
+
+* [FIX][all] **The home action bar (Overview/Send/Receive/Swap) now announces itself as navigation instead of a tab widget.** Its segments change the route rather than swapping a tabpanel, so `role="tablist"`/`role="tab"` were wrong on two counts: screen readers announced "tab, selected, 1 of 5" for what is page navigation, and `role="tab"` advertises an arrow-key traversal contract the component never implemented. The bar is now a labelled `<nav>` whose active segment carries `aria-current="page"` — the same semantics the bottom nav already used. No visual or animation change.
+
+## 1.15.11 (2026-07-26)
 
 ### Changes
 

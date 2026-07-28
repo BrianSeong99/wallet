@@ -204,19 +204,19 @@ const PendingSummary: React.FC<PendingSummaryProps> = ({
         <div className="bg-surface-interactive rounded-10 px-4 py-4 flex items-center justify-between">
           <div className="flex flex-col">
             <span className="text-[10px] font-semibold text-accent-primary leading-none">{t('totalPending')}</span>
-            <span className="font-heading text-[32px] font-bold text-text-primary-token leading-none tracking-tight">
+            <span className="font-heading font-tnum text-numeric-hero font-bold text-text-primary-token leading-none tracking-tight">
               {formatUsd(totals.totalUsd)}
             </span>
           </div>
           <div className="flex flex-col items-end gap-0.5 justify-center">
             <div className="flex items-center gap-1.5 text-[10px]">
               <span className="font-medium text-accent-primary flex gap-1">
-                <p className="font-bold text-black">{`${totals.notesCount} `}</p>
+                <p className="font-tnum font-bold text-black">{`${totals.notesCount} `}</p>
                 {t('pendingNotesCount')}
               </span>
             </div>
             <span className="font-medium text-text-primary-token flex gap-1 text-[10px]">
-              <p className="font-bold text-black">{`${totals.assetsCount} `}</p> {t('pendingAssetsCount')}
+              <p className="font-tnum font-bold text-black">{`${totals.assetsCount} `}</p> {t('pendingAssetsCount')}
             </span>
           </div>
         </div>
@@ -359,13 +359,13 @@ const AssetPendingDetail: React.FC<AssetPendingDetailProps> = ({
           </div>
 
           <div className="mt-4 flex items-end gap-2 leading-none">
-            <span className="font-heading text-[44px] font-extrabold text-text-primary-token leading-none tracking-tight">
+            <span className="font-heading font-tnum text-[44px] font-extrabold text-text-primary-token leading-none tracking-tight">
               {formattedAmount}
             </span>
             <span className="font-heading text-base font-bold text-heading-gray pb-1">{symbol}</span>
           </div>
 
-          <div className="font-heading mt-2 text-sm text-heading-gray">
+          <div className="font-heading font-tnum mt-2 text-sm text-heading-gray">
             <span className="mr-1">≈</span>
             {formatUsd(usdValue)}
           </div>
@@ -499,7 +499,11 @@ const DetailNoteRow: React.FC<DetailNoteRowProps> = ({
     <div className={classNames('relative', showDivider && 'border-b border-rule-default')}>
       <SyncWaveBackground isSyncing={showSpinner} className="rounded-none" />
       <div className="grid grid-cols-[1fr_auto_auto_auto] items-center gap-3 px-4 py-3 relative z-10">
-        <span className="text-sm text-text-primary-token truncate">{senderDisplay}</span>
+        {/* Mono only when this is really an address — the fallback is the word
+            "unknown", which is copy. */}
+        <span className={classNames('text-sm text-text-primary-token truncate', note.senderAddress && 'font-address')}>
+          {senderDisplay}
+        </span>
         <div className="text-accent-primary flex justify-center">
           {isPublic ? (
             <EyeOpenIcon style={{ width: 16, height: 16 }} />
@@ -507,7 +511,7 @@ const DetailNoteRow: React.FC<DetailNoteRowProps> = ({
             <EyeClosedIcon style={{ width: 16, height: 16 }} />
           )}
         </div>
-        <span className="font-heading text-sm font-medium text-text-primary-token text-right">
+        <span className="font-heading font-tnum text-sm font-medium text-text-primary-token text-right">
           {formattedAmount}
           {symbol}
         </span>

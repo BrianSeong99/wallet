@@ -74,8 +74,17 @@ jest.mock('components/AssetRow', () => ({
   )
 }));
 
+// Home reads connectivity as DATA now (to decide whether the 24h delta is
+// still trustworthy) and renders the notice as a prompt in the carousel —
+// the banner strip above the balance card is gone.
 jest.mock('components/ConnectivityIssueBanner', () => ({
-  ConnectivityIssueBanner: () => <div data-testid="connectivity-banner" />
+  ConnectivityIssueBanner: () => <div data-testid="connectivity-banner" />,
+  useConnectivityIssue: () => ({
+    view: null,
+    onRetry: jest.fn(),
+    onDismiss: jest.fn(),
+    isBalanceStale: false
+  })
 }));
 
 jest.mock('components/ui', () => ({
@@ -224,7 +233,7 @@ describe('Explore', () => {
   });
 
   describe('base rendering', () => {
-    it('renders the page shell, banner, balance card, prompts and asset rows', async () => {
+    it('renders the page shell, balance card, prompts and asset rows', async () => {
       mockAllBalances = [
         // faucet-native token sorts to the front (ternary -> -1)
         makeToken('faucet-native', 'MIDEN', 'Miden'),
@@ -236,7 +245,11 @@ describe('Explore', () => {
       await renderExplore();
 
       expect(screen.getByTestId('explore-page')).toBeInTheDocument();
-      expect(screen.getByTestId('connectivity-banner')).toBeInTheDocument();
+      // The connectivity strip above the balance is deliberately NOT here any
+      // more: it is a prompt in the carousel, so it can no longer push the
+      // balance down the screen at the moment the user opened the app to read
+      // it. See HomePrompts.
+      expect(screen.queryByTestId('connectivity-banner')).not.toBeInTheDocument();
       expect(screen.getByTestId('balance-card')).toBeInTheDocument();
       // amount is `$${toLocalFormat(balance)}` and account fields flow through.
       expect(screen.getByTestId('balance-amount')).toHaveTextContent('$0');
@@ -283,46 +296,10 @@ describe('Explore', () => {
     });
   });
 
-  describe('token search filtering', () => {
-    beforeEach(() => {
-      mockAllBalances = [
-        makeToken('faucet-native', 'MIDEN', 'Miden'),
-        makeToken('t-btc', 'BTC', 'Bitcoin'),
-        makeToken('t-eth', 'ETH') // name is undefined -> optional chaining short-circuits
-      ];
-    });
-
-    it('shows all tokens (sorted) when the search box is empty', async () => {
-      await renderExplore();
-      expect(screen.getAllByTestId('asset-row')).toHaveLength(3);
-    });
-
-    it('filters by symbol (left match) and name (right match), excluding undefined-name tokens', async () => {
-      await renderExplore();
-
-      // query "i": MIDEN symbol matches (left true); BTC symbol misses but
-      // "Bitcoin" name matches (right true); ETH symbol misses and name is
-      // undefined (right short-circuits to falsy) -> excluded.
-      await act(async () => {
-        fireEvent.change(screen.getByTestId('search-input'), { target: { value: 'i' } });
-      });
-
-      const rows = screen.getAllByTestId('asset-row');
-      const tokens = rows.map(r => r.getAttribute('data-token'));
-      expect(tokens).toEqual(['faucet-native', 't-btc']);
-      expect(tokens).not.toContain('t-eth');
-    });
-
-    it('treats a whitespace-only query as empty (trim branch)', async () => {
-      await renderExplore();
-
-      await act(async () => {
-        fireEvent.change(screen.getByTestId('search-input'), { target: { value: '   ' } });
-      });
-
-      expect(screen.getAllByTestId('asset-row')).toHaveLength(3);
-    });
-  });
+  // The 'token search filtering' block was removed with the search bar: the
+  // design system's Home has no search affordance, so Home lists every asset
+  // and there is nothing to filter. The sort (native token first) is still
+  // covered by the ordering assertions above.
 
   describe('HomeOverview interactions', () => {
     beforeEach(() => {

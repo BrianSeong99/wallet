@@ -161,6 +161,14 @@ describe('CardItem', () => {
       expect(screen.getByTestId('left-node')).toBeInTheDocument();
     });
 
+    // Merged in from ListItem: the left icon slot accepts caller classes.
+    it('applies iconLeftClassName to the left icon slot', () => {
+      render(<CardItem iconLeft={IconName.ArrowRight} iconLeftClassName="left-extra" />);
+
+      const slot = screen.getByTestId('left-icon').closest('div.shrink-0') as HTMLElement;
+      expect(slot).toHaveClass('shrink-0', 'left-extra');
+    });
+
     it('does not render a left icon when iconLeft is omitted', () => {
       render(<CardItem />);
 
@@ -176,6 +184,21 @@ describe('CardItem', () => {
       expect(icon).toBeInTheDocument();
       expect(icon).toHaveAttribute('data-color', 'black');
       expect(icon).toHaveClass('text-black');
+    });
+
+    // Merged in from ListItem: the right icon slot accepts caller classes.
+    it('applies iconRightClassName to the right icon slot', () => {
+      render(<CardItem iconRight={IconName.Home} iconRightClassName="right-extra" />);
+
+      const slot = screen.getByTestId('right-icon').parentElement as HTMLElement;
+      expect(slot).toHaveClass('shrink-0', 'right-extra');
+    });
+
+    it('renders both left and right icons together', () => {
+      render(<CardItem iconLeft={IconName.ArrowRight} iconRight={IconName.Home} />);
+
+      expect(screen.getByTestId('left-icon')).toBeInTheDocument();
+      expect(screen.getByTestId('right-icon')).toBeInTheDocument();
     });
 
     it('does not render a right icon when iconRight is omitted', () => {

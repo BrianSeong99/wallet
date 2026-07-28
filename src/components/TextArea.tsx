@@ -25,7 +25,9 @@ export const TextArea: React.FC<TextAreaProps> = ({ className, value, ...props }
       value={value}
       {...props}
       className={classNames(
-        'border rounded-[10px] border-border-light ',
+        // radius-sm (8px) is the input step on the Crust scale. The arbitrary
+        // 10px this replaces is one of the values the system retires.
+        'border rounded-sm-token border-border-light ',
         'transition-colors duration-150 ease-hover',
         'min-h-[48px] p-3',
         'resize-none overflow-hidden',

@@ -7,8 +7,8 @@ import Alert from 'app/atoms/Alert';
 import FormField from 'app/atoms/FormField';
 import { Icon, IconName } from 'app/icons/v2';
 import { Button, ButtonVariant } from 'components/Button';
-import { NavigationHeader } from 'components/NavigationHeader';
 import { PasscodeEntry } from 'components/PasscodeEntry';
+import { ScreenHeader } from 'components/ScreenHeader';
 import { Vault } from 'lib/miden/back/vault';
 import { useMidenContext } from 'lib/miden/front';
 import { hapticLight, hapticMedium } from 'lib/mobile/haptics';
@@ -118,7 +118,14 @@ const VerifySeedPhraseFlow: FC = () => {
   if (step === 'warning') {
     return (
       <div className="flex flex-col flex-1 min-h-0 bg-app-bg">
-        <NavigationHeader title={t('verifySeedPhrase')} onBack={onExit} />
+        <ScreenHeader
+          align="center"
+          showBorder={false}
+          className="px-4 bg-app-bg"
+          title={t('verifySeedPhrase')}
+          backLabel={t('back')}
+          onBack={onExit}
+        />
         <div className="flex-1 flex flex-col">
           <div className="mt-6 px-4">
             <div className="bg-gray-25 rounded-2xl px-6 py-8">
@@ -174,7 +181,14 @@ const VerifySeedPhraseFlow: FC = () => {
     if (isMobile()) {
       return (
         <div className="flex flex-col flex-1 min-h-0 bg-app-bg">
-          <NavigationHeader title={t('verifySeedPhrase')} onBack={() => setStep('warning')} />
+          <ScreenHeader
+            align="center"
+            showBorder={false}
+            className="px-4 bg-app-bg"
+            title={t('verifySeedPhrase')}
+            backLabel={t('back')}
+            onBack={() => setStep('warning')}
+          />
           <div className="flex-1 flex flex-col px-4 pt-4 pb-6">
             <div className="flex flex-col gap-2 mb-6">
               <h1 className="text-2xl font-semibold text-heading-gray">{t('enterYourPasscode')}</h1>
@@ -194,7 +208,14 @@ const VerifySeedPhraseFlow: FC = () => {
 
     return (
       <div className="flex flex-col flex-1 min-h-0 bg-app-bg">
-        <NavigationHeader title={t('verifySeedPhrase')} onBack={() => setStep('warning')} />
+        <ScreenHeader
+          align="center"
+          showBorder={false}
+          className="px-4 bg-app-bg"
+          title={t('verifySeedPhrase')}
+          backLabel={t('back')}
+          onBack={() => setStep('warning')}
+        />
         <form className="flex-1 flex flex-col px-4 pt-4 pb-6" onSubmit={handleSubmit(onPasswordSubmit)}>
           <div className="flex flex-col gap-2 mb-6">
             <h1 className="text-2xl font-semibold text-heading-gray">{t('enterPassword')}</h1>
@@ -233,7 +254,14 @@ const VerifySeedPhraseFlow: FC = () => {
   if (step === 'review' && words.length === 12) {
     return (
       <div className="flex flex-col flex-1 min-h-0 bg-app-bg text-heading-gray">
-        <NavigationHeader title={t('recoveryPhrase')} onBack={onExit} />
+        <ScreenHeader
+          align="center"
+          showBorder={false}
+          className="px-4 bg-app-bg"
+          title={t('recoveryPhrase')}
+          backLabel={t('back')}
+          onBack={onExit}
+        />
         <div className="flex-1 flex flex-col px-4 pt-4 pb-6">
           <p className="text-sm text-text-muted text-center mb-4">{t('verifySeedPhraseReviewBody')}</p>
 
@@ -263,7 +291,14 @@ const VerifySeedPhraseFlow: FC = () => {
 
   return (
     <div className="flex flex-col flex-1 min-h-0 bg-app-bg">
-      <NavigationHeader title={t('verifySeedPhrase')} onBack={() => setStep('review')} />
+      <ScreenHeader
+        align="center"
+        showBorder={false}
+        className="px-4 bg-app-bg"
+        title={t('verifySeedPhrase')}
+        backLabel={t('back')}
+        onBack={() => setStep('review')}
+      />
       <VerifySeedPhraseScreen
         seedPhrase={words}
         showIntro={false}

@@ -78,7 +78,7 @@ export const TransactionAssetView: React.FC<TransactionAssetViewProps> = ({ view
               <Icon name={IconName.Globe} fill="currentColor" size="md" />
               <span className="text-text-muted">{t('account')}</span>
             </div>
-            <div>{truncateAddress(view.account)}</div>
+            <div className="font-address">{truncateAddress(view.account)}</div>
           </div>
         )}
 
@@ -98,7 +98,7 @@ export const TransactionAssetView: React.FC<TransactionAssetViewProps> = ({ view
                 </span>
                 <span
                   className={classNames(
-                    'font-heading text-lg',
+                    'font-heading font-tnum text-lg',
                     isVerified ? 'text-black-500 font-semibold' : 'text-text-muted font-normal'
                   )}
                   data-verified={isVerified ? 'true' : 'false'}
@@ -119,7 +119,7 @@ export const TransactionAssetView: React.FC<TransactionAssetViewProps> = ({ view
                 </span>
                 <span
                   className={classNames(
-                    'font-heading text-lg',
+                    'font-heading font-tnum text-lg',
                     isVerified ? 'text-green-500 font-semibold' : 'text-text-muted font-normal'
                   )}
                   data-verified={isVerified ? 'true' : 'false'}

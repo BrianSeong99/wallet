@@ -94,7 +94,9 @@ export const PasscodeEntry: React.FC<PasscodeEntryProps> = ({
           return (
             <div
               key={index}
-              className={cn('w-3.5 h-3.5 rounded-full border-2 border-[#C7C7CC]', filled && 'bg-[#C7C7CC]')}
+              // --rule-strong is the nearest token to the old fixed #C7C7CC and,
+              // unlike it, flips with the theme.
+              className={cn('w-3.5 h-3.5 rounded-full border-2 border-rule-strong', filled && 'bg-rule-strong')}
             />
           );
         })}
