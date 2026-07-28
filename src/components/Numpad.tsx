@@ -9,13 +9,6 @@ import { cn } from 'lib/ui/util';
 export interface NumpadProps {
   onDigit: (digit: string) => void;
   onDelete: () => void;
-  /**
-   * Renders the decimal separator in the slot the passcode pad leaves blank.
-   * The amount pad needs it; the passcode pad must not have it. Same grid,
-   * same key geometry — one key differs, so this is a prop rather than a
-   * second component whose spacing would drift from this one.
-   */
-  decimalKey?: string;
   className?: string;
 }
 
@@ -33,7 +26,7 @@ const keyClass =
   'transition-[transform,background-color] duration-[var(--dur-fast)] active:scale-[0.94] active:bg-surface-3 ' +
   'motion-reduce:transition-none';
 
-export const Numpad: React.FC<NumpadProps> = ({ onDigit, onDelete, decimalKey, className }) => {
+export const Numpad: React.FC<NumpadProps> = ({ onDigit, onDelete, className }) => {
   const { t } = useTranslation();
   const handleDigit = (digit: string) => {
     hapticLight();
@@ -61,13 +54,7 @@ export const Numpad: React.FC<NumpadProps> = ({ onDigit, onDelete, decimalKey, c
           {digit}
         </button>
       ))}
-      {decimalKey ? (
-        <button type="button" className={keyClass} onClick={() => handleDigit(decimalKey)} data-testid="numpad-decimal">
-          {decimalKey}
-        </button>
-      ) : (
-        <div aria-hidden="true" />
-      )}
+      <div aria-hidden="true" />
       <button type="button" className={keyClass} onClick={() => handleDigit('0')} data-testid="numpad-0">
         0
       </button>

@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { render, screen, fireEvent, within } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 
 import { hapticLight } from 'lib/mobile/haptics';
 import { isMobile } from 'lib/platform';
@@ -60,7 +60,6 @@ jest.mock('components/AmountInput', () => ({
     helper,
     tokenSelector,
     onValueChange,
-    autoFocus,
     'data-testid': dataTestId
   }: {
     label?: React.ReactNode;
@@ -69,10 +68,9 @@ jest.mock('components/AmountInput', () => ({
     helper?: React.ReactNode;
     tokenSelector?: React.ReactNode;
     onValueChange?: OnValueChange;
-    autoFocus?: boolean;
     'data-testid'?: string;
   }) => (
-    <div data-testid="amount-input" data-forwarded-testid={dataTestId} data-auto-focus={String(!!autoFocus)}>
+    <div data-testid="amount-input" data-forwarded-testid={dataTestId}>
       <div data-testid="ai-label">{label}</div>
       {error !== undefined && <div data-testid="ai-error">{error}</div>}
       {helper !== undefined && <div data-testid="ai-helper">{helper}</div>}
@@ -114,10 +112,11 @@ describe('SelectAmount', () => {
   });
 
   describe('page variant', () => {
-    it('renders the amount field, token logo, balance helper and confirm CTA', () => {
+    it('renders the network pill, amount field, token logo, balance helper and confirm CTA', () => {
       renderComponent();
 
       // Network pill (default showNetworkPill = true).
+      expect(screen.getByText('miden')).toBeInTheDocument();
 
       // Token logo defaults its symbol to token.name.
       const logo = screen.getByTestId('token-logo');
@@ -126,16 +125,10 @@ describe('SelectAmount', () => {
 
       // Token name chip + chevron icon.
       expect(screen.getByText('USDC')).toBeInTheDocument();
-      // The .sh2 back control is an Icon too now, so scope this to the chip.
-      expect(within(screen.getByTestId('send-token-selector')).getByTestId('icon')).toHaveAttribute(
-        'data-name',
-        'chevron-down'
-      );
+      expect(screen.getByTestId('icon')).toHaveAttribute('data-name', 'chevron-down');
 
       // Default label + forwarded testid.
-      // The page variant is `bare`: its .sh2 header names the screen, so the
-      // field draws no label of its own. Swap (embedded) still gets one.
-      expect(screen.getByTestId('ai-label')).toBeEmptyDOMElement();
+      expect(screen.getByTestId('ai-label')).toHaveTextContent('selectAmount');
       expect(screen.getByTestId('amount-input')).toHaveAttribute('data-forwarded-testid', 'send-amount-input');
 
       // Balance helper: trimmed balance + fiat value (200 * 0.2 = $40.00).
@@ -183,8 +176,8 @@ describe('SelectAmount', () => {
       expect(screen.getByTestId('confirm-btn')).toHaveTextContent('Swap Now');
     });
 
-    it('draws no network pill — the recipient row carries the network', () => {
-      renderComponent({});
+    it('hides the network pill when showNetworkPill is false', () => {
+      renderComponent({ showNetworkPill: false });
       expect(screen.queryByText('miden')).not.toBeInTheDocument();
     });
 
@@ -198,65 +191,25 @@ describe('SelectAmount', () => {
       expect(screen.getByTestId('extra-child')).toBeInTheDocument();
     });
 
-    it('uses the system gutter, not a platform split', () => {
-      // Was px-8 on mobile / px-6 elsewhere. The gutter is the frame's, and it
-      // narrows on a 320-360pt screen rather than widening on a phone.
+    it('applies the mobile horizontal padding when isMobile() is true', () => {
+      (isMobile as jest.Mock).mockReturnValue(true);
       const { container } = renderComponent();
-      expect(container.firstChild).toHaveClass('px-4');
-      expect(container.firstChild).toHaveClass('min-[360px]:px-6');
+      expect(container.firstChild).toHaveClass('px-8');
+      expect(container.firstChild).not.toHaveClass('px-6');
     });
 
-    it('restates the recipient and offers a route back to it', () => {
-      const onBack = jest.fn();
-      renderComponent({ recipientAddress: 'mtst1aplqzwh6s4gvcyzsvx726y6xvsgt5qv5qruqqypuyph', onBack });
-
-      // The step used to commit an amount without naming who receives it, and
-      // had no back control at all outside the mobile hardware handler.
-      fireEvent.click(screen.getByTestId('send-amount-recipient'));
-      expect(onBack).toHaveBeenCalledTimes(1);
-
-      fireEvent.click(screen.getByTestId('send-amount-back'));
-      expect(onBack).toHaveBeenCalledTimes(2);
+    it('applies the desktop horizontal padding when isMobile() is false', () => {
+      const { container } = renderComponent();
+      expect(container.firstChild).toHaveClass('px-6');
     });
 
-    it('states why Confirm is dead instead of only greying it out', () => {
-      renderComponent({ amount: '', isValidAmount: false });
-      expect(screen.getByTestId('send-amount-subline')).toHaveTextContent('enterAnAmountToContinue');
-      expect(screen.getByTestId('confirm-btn')).toBeDisabled();
-    });
+    it('uses the default footer padding and honors a footerClassName override', () => {
+      const { container: def } = renderComponent();
+      expect(def.querySelector('.pb-24')).not.toBeNull();
 
-    it('fills the EXACT balance on Max, not the rounded display value', () => {
-      // formatBalance rounds to 4dp for display while the field takes 6 and the
-      // send converts with the token's own decimals. Filling the displayed
-      // string is the "I sent everything and still have 0.00003 left" bug.
-      const onAmountChange = jest.fn();
-      renderComponent({ token: baseToken({ balance: 1204.5678912 }), onAmountChange });
-
-      fireEvent.click(screen.getByTestId('send-amount-max'));
-      expect(onAmountChange).toHaveBeenCalledWith('1204.5678912');
-    });
-
-    it('does NOT focus the field unless the step is the visible page', () => {
-      // HomeSwipeContainer mounts all five home-group pages at once. Focusing a
-      // descendant makes the browser scroll the nearest scrollable ancestor to
-      // reveal it — and it does that even when the ancestor is
-      // `overflow: hidden`. An unconditional autoFocus here scrolled the
-      // carousel off its rail and stranded the home group between pages.
-      renderComponent({});
-      expect(screen.getByTestId('amount-input')).not.toHaveAttribute('data-auto-focus', 'true');
-
-      renderComponent({ autoFocus: true });
-      expect(screen.getAllByTestId('amount-input').at(-1)).toHaveAttribute('data-auto-focus', 'true');
-    });
-
-    it('says Max is engaged in words, not only in colour', () => {
-      renderComponent({ token: baseToken({ balance: 200 }) });
-      const max = screen.getByTestId('send-amount-max');
-      expect(max).toHaveAttribute('aria-pressed', 'false');
-
-      fireEvent.click(max);
-      expect(screen.getByTestId('send-amount-max')).toHaveAttribute('aria-pressed', 'true');
-      expect(screen.getByText('wholeBalanceSelected')).toBeInTheDocument();
+      const { container: override } = renderComponent({ footerClassName: 'pt-2' });
+      expect(override.querySelector('.pt-2')).not.toBeNull();
+      expect(override.querySelector('.pb-24')).toBeNull();
     });
   });
 
@@ -314,10 +267,8 @@ describe('SelectAmount', () => {
   });
 
   describe('label and error', () => {
-    it('renders the label override in place of the default (embedded only)', () => {
-      // Only the embedded variant carries a label at all — swap stacks two of
-      // these fields and each one needs naming. The page variant is `bare`.
-      renderComponent({ label: 'You Pay', embedded: true });
+    it('renders the label override in place of the default', () => {
+      renderComponent({ label: 'You Pay' });
       expect(screen.getByTestId('ai-label')).toHaveTextContent('You Pay');
       expect(screen.getByTestId('ai-label')).not.toHaveTextContent('selectAmount');
     });

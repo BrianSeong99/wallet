@@ -52,26 +52,13 @@ export const SelectRecipient: React.FC<SelectRecipientProps> = ({
   return (
     <div className={clsx('flex flex-col h-full min-h-0 bg-app-bg px-6')}>
       <div className="flex flex-col flex-1 min-h-0 overflow-y-auto no-scrollbar pt-10">
-        {/* The heading IS the field's label. `aria-labelledby` below points at
-            it, so the name is programmatic under SC 3.3.2 without printing the
-            same word twice on screen. There was no <label> of any kind before
-            this — the field was an unnamed textarea. */}
-        <span id="send-recipient-heading" className="font-heading text-2xl leading-none font-bold text-gray">
-          {t('chooseRecipient')}
-        </span>
+        <span className="font-heading text-2xl leading-none font-bold text-gray">{t('chooseRecipient')}</span>
 
         <div className="relative mt-3">
           <textarea
             ref={textareaRef}
             data-testid="send-recipient-input"
             rows={1}
-            aria-labelledby="send-recipient-heading"
-            // The error was rendered as a bare <p> with no association and no
-            // live region, so a screen reader announced NOTHING: the user typed
-            // an invalid address, the app turned it red, and said so only in a
-            // colour. SC 1.4.1 and SC 3.3.1 both.
-            aria-invalid={error ? true : undefined}
-            aria-describedby={error ? 'send-recipient-error' : undefined}
             placeholder={t('enterMidenOrEthereumAddress')}
             className={clsx(
               'font-heading w-full resize-none bg-transparent outline-none',
@@ -87,11 +74,7 @@ export const SelectRecipient: React.FC<SelectRecipientProps> = ({
           />
         </div>
 
-        {error && (
-          <p id="send-recipient-error" role="alert" aria-live="assertive" className="text-red-500 text-sm mt-2">
-            {t(`${error}`)}
-          </p>
-        )}
+        {error && <p className="text-red-500 text-sm mt-2">{t(`${error}`)}</p>}
 
         <div className="mt-4 flex">
           <Button
