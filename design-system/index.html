@@ -2034,7 +2034,11 @@ button.fam{min-height:44px;padding-inline:0.625rem}
    ride on a statement row that has since gone, and the 10px it carried then was a within-group
    step measured from that row -- with the row removed the same 10 read as the field and the
    question belonging to each other. The container gap supplies --stack; this adds the rest. */
-.netpick{margin-top:calc(var(--stack-loose) - var(--stack))}
+/* Inline padding cancelled by an equal negative margin, so the selected row's fill has 8px to
+   bleed into and the rows themselves do not move. Without it the bleed overflowed .netpick by
+   exactly 8px -- flagged by the reflow sweep at the AUTHORED width, not just at 320. .mlist
+   already carries its own version of this for the account cards' outer rings. */
+.netpick{margin-top:calc(var(--stack-loose) - var(--stack));padding-inline:0.5rem;margin-inline:-0.5rem}
 .netpick .npq{font-size:var(--t-caption);font-weight:700;color:var(--ink-2);margin-bottom:0.5rem}
 /* Recent is send HISTORY, not the address book, so most entries will not be
    contacts. The two cases invert: a saved contact leads with the name and
