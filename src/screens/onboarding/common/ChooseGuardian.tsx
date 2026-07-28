@@ -179,7 +179,7 @@ export const ChooseGuardianScreen: React.FC<ChooseGuardianScreenProps> = ({
                 // 2.90:1 on paper and would fail SC 1.4.11 as a ring.
                 'outline-3 outline-offset-5 outline-transparent',
                 'transition-[outline-color,outline-offset] duration-150 motion-reduce:transition-none',
-                isSelected && 'outline-accent-ink outline-offset-3',
+                isSelected && 'outline-accent-edge outline-offset-3',
                 // The always-on outline would otherwise swallow the browser's
                 // default focus ring, so keyboard focus gets its own.
                 'focus-visible:ring-3 focus-visible:ring-accent/50'
@@ -207,7 +207,7 @@ export const ChooseGuardianScreen: React.FC<ChooseGuardianScreenProps> = ({
                     // same move the system already makes for --accent-critical
                     // on irreversible actions: when white has to stay, the fill
                     // is what moves. Still unmistakably the brand orange.
-                    isCurrent ? 'bg-surface-3 text-ink' : 'bg-accent-deep text-on-accent'
+                    isCurrent ? 'bg-surface-3 text-ink' : 'bg-accent text-on-accent-sm'
                   )}
                 >
                   {isCurrent ? t('currentLabel') : t('default')}
@@ -223,7 +223,7 @@ export const ChooseGuardianScreen: React.FC<ChooseGuardianScreenProps> = ({
                 className={cn(
                   'flex flex-1 items-center justify-center gap-[0.3125rem] px-2.5 py-1.5 min-h-[2.375rem]',
                   'dark:mx-2.5 dark:my-1.5 dark:min-h-[1.875rem] dark:rounded-sm-token dark:bg-pure-white dark:px-2',
-                  '[&>svg]:max-h-6 [&>svg]:max-w-full [&>svg]:w-auto [&>svg]:h-auto'
+                  '[&>svg]:max-h-5 [&>svg]:max-w-[78%] [&>svg]:w-auto [&>svg]:h-auto'
                 )}
               >
                 <Logo />
@@ -231,10 +231,10 @@ export const ChooseGuardianScreen: React.FC<ChooseGuardianScreenProps> = ({
               {/* `.gmeta` — 11px is the type floor; this row was 10px. */}
               <div className="px-1 pb-[0.4375rem] text-caption leading-[1.4] text-ink-2">
                 <p>
-                  {t('guardianOperatedBy')} <span className="font-bold">{option.operatedBy}</span>
+                  {t('guardianOperatedBy')} <span>{option.operatedBy}</span>
                 </p>
                 <p>
-                  {t('guardianLocation')} <span className="font-bold">{option.location}</span>
+                  {t('guardianLocation')} <span>{option.location}</span>
                 </p>
               </div>
             </button>
