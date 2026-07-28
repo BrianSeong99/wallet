@@ -196,12 +196,7 @@ const TabLayout: FC<PropsWithChildren> = ({ children }) => {
           stays fixed across intra-home-group navigations. */}
       {showActionBar && (
         <div className="shrink-0 relative z-10">
-          <SegmentedActionBar
-            items={actionItems}
-            activeId={activeAction}
-            onChange={handleActionChange}
-            layoutId="tab-layout-action-fill"
-          />
+          <SegmentedActionBar items={actionItems} activeId={activeAction} onChange={handleActionChange} />
         </div>
       )}
 

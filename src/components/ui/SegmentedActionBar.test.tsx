@@ -64,8 +64,9 @@ describe('SegmentedActionBar — exports & structure', () => {
     const nav = screen.getByRole('navigation', { name: 'walletActions' });
     expect(nav).toBeTruthy();
     // Base layout classes always present on the container.
-    expect(nav.className).toContain('h-16');
-    expect(nav.className).toContain('bg-gray-25');
+    expect(nav.className).toContain('rounded-full');
+    expect(nav.className).toContain('bg-surface-2');
+    expect(nav.className).toContain('p-1');
 
     const segments = screen.getAllByRole('button');
     expect(segments).toHaveLength(3);
@@ -128,14 +129,15 @@ describe('SegmentedActionBar — active vs inactive rendering', () => {
     renderBar({ activeId: 'send' });
 
     // Active: shrinks to content, shows the gap + label padding.
-    expect(getSegment('Send').className).toContain('shrink-0');
-    expect(getSegment('Send').className).toContain('gap-1.5');
-    expect(getSegment('Send').className).toContain('px-2.5');
+    expect(getSegment('Send').className).toContain('grow-[1.7]');
+    expect(getSegment('Send').className).toContain('shadow-e1');
+    expect(getSegment('Send').className).toContain('font-extrabold');
 
-    // Inactive: stretches to fill the row with no horizontal padding.
+    // Inactive: an equal flex share, no raised surface, no bold.
     expect(getSegment('Receive').className).toContain('flex-1');
-    expect(getSegment('Receive').className).toContain('px-0');
-    expect(getSegment('Receive').className).not.toContain('shrink-0');
+    expect(getSegment('Receive').className).not.toContain('shadow-e1');
+    expect(getSegment('Receive').className).not.toContain('font-extrabold');
+    expect(getSegment('Receive').className).not.toContain('grow-[1.7]');
   });
 
   it('renders the pill and the label only inside the active segment', () => {
@@ -144,38 +146,49 @@ describe('SegmentedActionBar — active vs inactive rendering', () => {
     // The label text appears exactly once — on the active segment.
     expect(screen.getByText('Send')).toBeTruthy();
     // Inactive segments render their icon but not their label text.
-    expect(screen.queryByText('Receive')).toBeNull();
-    expect(screen.queryByText('Swap')).toBeNull();
+    // Inactive labels stay MOUNTED and collapse to zero width — revealing by
+    // width rather than mounting keeps them available to assistive tech.
+    expect(screen.getByText('Receive').className).toContain('max-w-0');
+    expect(screen.getByText('Swap').className).toContain('max-w-0');
 
-    // The sliding pill (bg-white) lives inside the active segment only.
-    const activePill = getSegment('Send').querySelector('.bg-white');
+    // There is no separate pill element any more — the active SEGMENT carries
+    // the raised surface itself, which is what removes the shared layoutId.
+    const activePill = getSegment('Send');
     expect(activePill).not.toBeNull();
-    expect(getSegment('Receive').querySelector('.bg-white')).toBeNull();
+    expect(getSegment('Receive').className).not.toContain('bg-surface ');
   });
 
   it('moves the pill and label when a different segment is active', () => {
     renderBar({ activeId: 'swap' });
 
     expect(screen.getByText('Swap')).toBeTruthy();
-    expect(screen.queryByText('Send')).toBeNull();
-    expect(getSegment('Swap').querySelector('.bg-white')).not.toBeNull();
-    expect(getSegment('Send').querySelector('.bg-white')).toBeNull();
+    expect(screen.getByText('Send').className).toContain('max-w-0');
+    expect(getSegment('Swap').className).toContain('bg-surface');
+    expect(getSegment('Send').className).not.toContain('grow-[1.7]');
   });
 });
 
-describe('SegmentedActionBar — layoutId plumbing', () => {
-  it('defaults the pill layoutId to the shared namespace', () => {
+describe('SegmentedActionBar — label unfurl', () => {
+  // Replaces the old layoutId tests. There is no shared layout id to plumb any
+  // more: the motion is a CSS flex-grow/max-width transition, so the thing
+  // worth guarding is that every label STAYS in the DOM and is revealed by
+  // width rather than mounted on activation — conditional rendering would hide
+  // the inactive labels from assistive tech entirely.
+  it('keeps every label mounted, collapsed on the inactive segments', () => {
     renderBar({ activeId: 'send' });
 
-    const pill = getSegment('Send').querySelector('.bg-white');
-    expect(pill?.getAttribute('data-layout-id')).toBe('segmented-action-pill');
+    for (const label of ['Send', 'Receive', 'Swap']) {
+      expect(screen.getByText(label)).toBeInTheDocument();
+    }
   });
 
-  it('forwards a caller-provided layoutId override to the pill', () => {
-    renderBar({ activeId: 'send', layoutId: 'custom-pill' });
+  it('reveals the active label by width and collapses the rest', () => {
+    renderBar({ activeId: 'send' });
 
-    const pill = getSegment('Send').querySelector('.bg-white');
-    expect(pill?.getAttribute('data-layout-id')).toBe('custom-pill');
+    expect(screen.getByText('Send').className).toContain('max-w-25');
+    expect(screen.getByText('Send').className).toContain('opacity-100');
+    expect(screen.getByText('Receive').className).toContain('max-w-0');
+    expect(screen.getByText('Receive').className).toContain('opacity-0');
   });
 });
 

@@ -362,6 +362,31 @@ button,
 
 /* Wallet navigation is React-only: BottomNav is mounted inside TabLayout. */
 
+/**
+ * Liquid Glass bottom-nav indicator — the bubble DEFORMS as it travels rather
+ * than rigidly sliding, which is the part that separates the material from a
+ * segmented control. Lives here (not in tailwind.config's theme.keyframes)
+ * because it is a one-shot the component re-arms imperatively, and because
+ * `scale` is deliberately the ONLY property it touches: as an independent
+ * transform property it composes with the indicator's `translate` instead of
+ * overwriting it, which is what lets the travel be a pure `--i` derivation with
+ * nothing to measure. Approximates springs.pill (320/30) as a tween.
+ *
+ * Applied from BottomNav.tsx as `animate-[navliquid_…]`; reduced motion drops
+ * it there via `motion-reduce:animate-none`.
+ */
+@keyframes navliquid {
+  0% {
+    scale: 1;
+  }
+  45% {
+    scale: 1.03 0.975;
+  }
+  100% {
+    scale: 1;
+  }
+}
+
 /* Parked-dApp bubble host — default transform is identity, and it
  * rides a ~spring transition so that when the drawer-open rule
  * below kicks in the bubble slides off the bottom of the screen on
